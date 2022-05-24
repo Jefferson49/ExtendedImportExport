@@ -1,20 +1,22 @@
 # DownloadGedcomWithURL
-A [weebtrees](https://webtrees.net) 2.0 middleware module to download GEDCOM files with URL requests with the GEDCOM file name and authorization provided as URL parameters.
+A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files on URL requests with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
 
 **Example URL:**  
-http://SOME_URL/webtrees/index.php?route=SOME_ROUTE&downloadgedcom=FILENAME&accesslevel=ACCESS_LEVEL
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL/tree/MY_TREE/filename/MY_FILENAME/privacy/MY_PRIVACY_LEVEL
 
-FILENAME has to be provided without .ged extension, i.e. use my_file instead of my_file.ged
+MY_TREE specifies the webtrees tree name
 
-For ACCESS_LEVEL, the following values can be used:
+MY_FILENAME has to be provided without .ged extension, i.e. use this_file instead of this_file.ged
+
+For MY_PRIVACY_LEVEL, the following values can be used:
 * gedadmin
 * user 
 * visitor  
-*	none     (Default)
+* none     (Default)
 
 **Note:** The Gedcom file will always be downloaded from the last tree, which was used in the frontend.
 
 **IMPORTANT SECURITY NOTE:**  
-Please note that installing this module will enable everyone, who can reach the webtrees URLs, to download the GEDCOM files from webtrees. This even works if no user is logged in. Therefore, you should only consider to use this module in secure private networks etc.
+Please note that installing this module will enable everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. This even works if no user is logged in. Therefore, you should only consider to use this module in secure private networks etc.
 
-The module was developed and tested with [webtrees 2.0.19](https://webtrees.net/download)
+The module was developed and tested with [webtrees 2.1.4](https://webtrees.net/download)

@@ -2,7 +2,7 @@
 
 /**
  * webtrees: online genealogy
- * Copyright (C) 2021 webtrees development team
+ * Copyright (C) 2022 webtrees development team
  * Copyright (C) 2022 Webmaster @ Familienforschung Hemprich, 
  *                    <http://www.familienforschung-hemprich.de>
  * This program is free software: you can redistribute it and/or modify
@@ -20,16 +20,18 @@
  *
  * DownloadGedcomWithURL
  *
- * A middleware module to download GEDCOM files on URL requests 
- * with the GEDCOM file name and authorization provided as URL parameters
+ * A weebtrees(https://webtrees.net) 2.1 custom module to download GEDCOM files on URL requests 
+ * with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
  * 
  * Example URL:
- * http://SOME_URL/webtrees/index.php?route=SOME_ROUTE&downloadgedcom=FILENAME&accesslevel=ACCESS_LEVEL
+ * http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL/tree/MY_TREE/filename/MY_FILENAME/privacy/MY_PRIVACY_LEVEL
  *
- * FILENAME has to be provided without .ged extension
+ * MY_TREE specifies the webtrees tree name
+ *
+ * M>_FILENAME has to be provided without .ged extension
  * i.e. use my_file instead of my_file.ged
  *
- * For ACCESS_LEVEL, the following values can be used
+ * For MY_PRIVACY_LEVEL, the following values can be used
  *  	gedadmin
  * 		user 
  * 		visitor  
@@ -41,9 +43,10 @@
  * 
  * IMPORTANT SECURITY NOTE:
  * Please note that installing this module will enable everyone who can reach the
- * webtrees URLs to download the GEDCOM files from webtrees. This even works if no user
+ * webtrees URL to download the GEDCOM files from webtrees. This even works if no user
  * is logged in. Therefore, you should only consider to use this module in private 
  * networks etc.
+ *
  *
  */
  

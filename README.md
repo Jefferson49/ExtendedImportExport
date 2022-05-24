@@ -18,7 +18,7 @@ For MY_PRIVACY_LEVEL, the following values can be used:
 The file ExamplePythonScript.py contains an example, how an automatic download could be performed with a Python script
 
 **IMPORTANT SECURITY NOTE:**  
-Please note that installing this module will enable everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply addition access restrictions, e.g. for certain IP addresses only.
+Please note that installing this module will enable everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
 
 **Webtrees versions:**  
 The module was developed and tested with [webtrees 2.1.4](https://webtrees.net/download)

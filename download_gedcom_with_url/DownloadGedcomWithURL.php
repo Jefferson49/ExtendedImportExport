@@ -107,23 +107,21 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
             ->allows(RequestMethodInterface::METHOD_POST);
     }
 	
-	/**
+    /**
      * How should this module be identified in the control panel, etc.?
      *
      * @return string
-     */
-	 
+     */	 
     public function title(): string
     {
-        return 'DownloadGedcomWithURL module';
+        return 'DownloadGedcomWithURL custom module';
     }
 
      /**
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
-     */
-	
+     */	
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $tree         = Validator::attributes($request)->tree();

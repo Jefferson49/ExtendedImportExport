@@ -14,7 +14,6 @@ For MY_PRIVACY_LEVEL, the following values can be used:
 * visitor  
 * none     (Default)
 
-**Note:** The Gedcom file will always be downloaded from the last tree, which was used in the frontend.
 
 **IMPORTANT SECURITY NOTE:**  
 Please note that installing this module will enable everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. This even works if no user is logged in. Therefore, you should only consider to use this module in secure private networks etc.

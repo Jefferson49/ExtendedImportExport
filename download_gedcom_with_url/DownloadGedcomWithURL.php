@@ -89,10 +89,10 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
      */
     public function __construct()
     {
-		$response_factory = app(ResponseFactoryInterface::class);
-        $psr17factory = new Psr17Factory();
+	$response_factory = app(ResponseFactoryInterface::class);
+        $stream_factory = new Psr17Factory();
 
-        $this->gedcom_export_service = new GedcomExportService($response_factory, $psr17factory);
+        $this->gedcom_export_service = new GedcomExportService($response_factory, $stream_factory);
     }
 
     /**

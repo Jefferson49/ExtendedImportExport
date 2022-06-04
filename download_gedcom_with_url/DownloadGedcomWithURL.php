@@ -20,6 +20,8 @@
  *
  * DownloadGedcomWithURL
  *
+ * Github repository: https://github.com/Jefferson49/DownloadGedcomWithURL
+ *
  * A weebtrees(https://webtrees.net) 2.1 custom module to download GEDCOM files on URL requests 
  * with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
  * 
@@ -127,7 +129,7 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
 		
 		$is_valid_tree = $find_tree instanceof Tree;
 		
-        if ($is_valid_tree) {
+		if ($is_valid_tree) {
             $this->download_tree = $find_tree;
         }
 		
@@ -164,13 +166,13 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
             $default_tree_name = $tree->name();
         }
    		
-        $params = $request->getQueryParams();
+		$params = $request->getQueryParams();
 		$tree_name = $params['tree'] ?? $default_tree_name;	
 		$file_name = $params['file'] ?? $tree_name;	
 		$privacy = $params['privacy'] ?? 'none';	
-        $format = $params['format'] ?? 'gedcom';
-        $encoding = $params['encoding'] ?? UTF8::NAME;
-        $line_endings = $params['line_endings'] ?? 'CRLF';
+		$format = $params['format'] ?? 'gedcom';
+		$encoding = $params['encoding'] ?? UTF8::NAME;
+		$line_endings = $params['line_endings'] ?? 'CRLF';
 
         //Take tree name if file name is empty 
         if ($file_name == '') {
@@ -190,7 +192,7 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
 			$response = $this->showErrorMessage(I18N::translate('Export format not accepted') . ': ' . $format);
         }       
         //Error if encoding is not valid
-        elseif (!in_array($encoding, [UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
+		elseif (!in_array($encoding, [UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
 			$response = $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
         }       
         //Error if line ending is not valid

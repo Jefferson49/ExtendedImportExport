@@ -4,14 +4,14 @@ A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files o
 **URL Format:**  
 http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS
 
-**Example URLs**
+**Example URLs**  
 http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1
 
 http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&file=download
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&file=test&privacy=user&format=zip&encoding=ANSII&line_endings=LF
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&file=test&privacy=user&format=zip&encoding=ANSEL&line_endings=LF
 
-**URL parameters**
+**URL parameters**  
 * MY_TREE specifies the webtrees tree name
   * Mandatory parameter
 
@@ -36,7 +36,7 @@ The file ExamplePythonScript.py contains an example, how an automatic download c
 **IMPORTANT SECURITY NOTE:**  
 Please note that installing this module will enable everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
 
-**Installation**
+**Installation**  
 Copy the folder "change_language_with_url" into the "module_v4" folder of your webtrees installation.
 
 **Webtrees versions:**  

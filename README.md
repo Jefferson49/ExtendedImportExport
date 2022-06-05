@@ -40,7 +40,7 @@ Please note that installing this module will enable everyone, who can reach the 
 Copy the folder "change_language_with_url" into the "module_v4" folder of your webtrees installation.
 
 **Webtrees versions:**  
-The module was developed and tested with [webtrees 2.1.4](https://webtrees.net/download), but should also run with any other webtrees 2.0 and 2.1 version.
+The module was developed and tested with [webtrees 2.1.4](https://webtrees.net/download), but should also run with any other webtrees 2.1 version.
 
 **Github repository:**  
 https://github.com/Jefferson49/DownloadGedcomWithURL

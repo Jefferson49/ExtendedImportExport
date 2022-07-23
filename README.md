@@ -10,13 +10,15 @@ A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files o
 Please note that installing this module will enable everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
 
 ## Installation
-Copy the folder "download_gedcom_with_url" into the "module_v4" folder of your webtrees installation.
++ Download the [latest release](https://github.com/Jefferson49/DownloadGedcomWithURL/releases/latest) of the module
++ Copy the folder "download_gedcom_with_url" into the "module_v4" folder of your webtrees installation
++ Check if the module is activated in the control panel:
+    + Login to webtrees as an administrator
+	+ Go to "Control Panel/All Modules", and find the module called "DownloadGedcomWithURL"
+	+ Check if it has a tick for "Enabled"
 
 ## Webtrees Version
 The module was developed and tested with [webtrees 2.1.4](https://webtrees.net/download), but should also run with any other 2.1 version.
-
-## Github Repository
-https://github.com/Jefferson49/DownloadGedcomWithURL
 
 ## Usage and API
 
@@ -52,3 +54,5 @@ http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree
 ### Example Script 
 The file ExamplePythonScript.py contains an example, how an automatic download could be performed with a Python script
 
+## Github Repository
+https://github.com/Jefferson49/DownloadGedcomWithURL

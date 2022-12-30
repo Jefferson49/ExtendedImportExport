@@ -1,3 +1,6 @@
+[![Latest Release](https://img.shields.io/github/v/release/Jefferson49/DownloadGedcomWithURL?display_name=tag)](https://github.com/Jefferson49/DownloadGedcomWithURL/releases/latest)
+[![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)](https://webtrees.net/download)
+
 ## DownloadGedcomWithURL
 A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files on URL requests with the tree name, GEDCOM file name, and authorization provided as parameters within the URL.
 
@@ -7,7 +10,9 @@ A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files o
 + Gedcom files can be downloaded and further processed in an automated tool and script environment
 
 ## IMPORTANT SECURITY NOTE  
-Please note that installing this module will enable everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
+Please note for versions below v3.0.0 that installing the module enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
+
+**Module versions starting from v3.0.0** use an access key, which is stored in a file in the module folder. Access to the download is only given if the provided key in the URL is identical to the key in the key file.
 
 ## Installation
 + Download the [latest release](https://github.com/Jefferson49/DownloadGedcomWithURL/releases/latest) of the module
@@ -18,22 +23,25 @@ Please note that installing this module will enable everyone, who can reach the 
 	+ Check if it has a tick for "Enabled"
 
 ## Webtrees Version
-The module was developed and tested with [webtrees 2.1.4](https://webtrees.net/download), but should also run with any other 2.1 version.
+The module was developed and tested with [webtrees 2.1.15](https://webtrees.net/download), but should also run with any other 2.1 version.
 
 ## Usage and API
 
 ### URL Format
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&key=MY_KEY&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS
 
 ### Example URLs  
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&file=download
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9&file=download
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&file=test&privacy=user&format=zip&encoding=ANSEL&line_endings=LF
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9&file=test&privacy=user&format=zip&encoding=ANSEL&line_endings=LF
 
 ### URL Parameters  
 * MY_TREE specifies the webtrees tree name
+  * Mandatory parameter
+
+* MY_KEY specifies a secure key, which restricts the access to the download
   * Mandatory parameter
 
 * MY_FILENAME has to be provided without .ged extension, i.e. use this_file instead of this_file.ged
@@ -51,8 +59,16 @@ http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree
 * MY_ENDINGS specifies the line endings in the generated GEDCOM file
   * Valid values: CRLF (Default), LF
 
+### Key file
+The key parameter of the URL is checked against a secret key. The secret key is stored in the "key" file in the module folder. 
+
+Please generate your own secret key and store it in the "key" file. Afterwards, use the same key as parameter in the URL.
+
 ### Example Script 
 The file ExamplePythonScript.py contains an example, how an automatic download could be performed with a Python script
+
+## Bugs and feature requests
+If you experience any bugs or have a feature request for this webtrees custom module, you can [create a new issue](https://github.com/Jefferson49/DownloadGedcomWithURL/issues).
 
 ## Github Repository
 https://github.com/Jefferson49/DownloadGedcomWithURL

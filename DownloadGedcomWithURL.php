@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- *
- *
+ * 
  * DownloadGedcomWithURL
  *
  * Github repository: https://github.com/Jefferson49/DownloadGedcomWithURL
@@ -118,7 +117,7 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
      */
     public function title(): string
     {
-        return 'DownloadGedcomWithURL' . I18n::translate('custom module');
+        return 'DownloadGedcomWithURL';
     }
 
     /**

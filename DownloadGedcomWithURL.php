@@ -46,16 +46,12 @@ use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Tree;
-use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use function route;
 
 
 class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterface, RequestHandlerInterface {
@@ -146,7 +142,7 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
 		return $this->viewResponse($this->name() . '::error', [
             'title'        	=> 'Error',
 			'tree'			=> null,
-			'text'  	   	=> I18N::translate('Custom module') . ': ' . $this->name() . '<br><b>'. $text . '</b>',
+			'text'  	   	=> I18N::translate('Custom module') . ': ' . $this->name() . '<br><b>'. e($text) . '</b>',
 		]);	 
 	 }
  
@@ -165,8 +161,19 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
         else {
             $default_tree_name = $tree->name();
         }
+
+		//Open file and read key from file
+		$key_file = __DIR__ . '/key';
+
+        if (!$fp = fopen($key_file, "r")) {
+            throw new RuntimeException('Cannot open file: ' . $key_file);
+        }
+
+        $secret_key = fread($fp, filesize($key_file)); 
+        fclose($fp);
    		
 		$params = $request->getQueryParams();
+		$key = $params['key'] ?? '';	
 		$tree_name = $params['tree'] ?? $default_tree_name;	
 		$file_name = $params['file'] ?? $tree_name;	
 		$privacy = $params['privacy'] ?? 'none';	
@@ -182,6 +189,10 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
         //Error if tree name is not valid
         if (!$this->isValidTree($tree_name)) {
 			$response = $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
+		}
+        //Error if key name is not valid
+        if ($key !== $secret_key) {
+			$response = $this->showErrorMessage(I18N::translate('Key  not accepted'));
 		}
         //Error if privacy level is not valid
 		elseif (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {

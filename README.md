@@ -68,6 +68,13 @@ The provided secret key needs to have a minimum length of 8 characters.
 ### Example Script 
 The file ExamplePythonScript.py contains an example, how an automatic download could be performed with a Python script
 
+## Translation
+You can help to translate this module. The translation is based on [gettext](https://en.wikipedia.org/wiki/Gettext) and uses .po files, which can be found in [/resources/lang/](https://github.com/Jefferson49/DownloadGedcomWithURL/tree/main/resources/lang). You can use a local editor like [Poedit](https://poedit.net/) or notepad++ to work on translations and provide them in the [Github repository](https://github.com/Jefferson49/DownloadGedcomWithURL) of the module. You can do this via a pull request (if you know how to do), or by opening a new issue and attaching a .po file. Updated translations will be included in the next release of this module.
+
+Currently, the following languages are already available:
++ English
++ German
+
 ## Bugs and feature requests
 If you experience any bugs or have a feature request for this webtrees custom module, you can [create a new issue](https://github.com/Jefferson49/DownloadGedcomWithURL/issues).
 

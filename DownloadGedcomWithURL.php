@@ -298,18 +298,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 			//If provided secret key is too short
 			if(strlen($params[self::PREF_SECRET_KEY])<8) {
-				$message = I18N::translate('The provided secret key is too short. Please provide a minimum length of 8.', $this->title());
+				$message = I18N::translate('The provided secret key is too short. Please provide a minimum length of 8 characters.', $this->title());
 				FlashMessages::addMessage($message, 'danger');				
 			}
 			//If secret key does not escape correctly
 			elseif($params[self::PREF_SECRET_KEY] !== e($params[self::PREF_SECRET_KEY])) {
-				$message = I18N::translate('The provided secret key contains characters, which are not accepted. Please provide a different key', $this->title());
+				$message = I18N::translate('The provided secret key contains characters, which are not accepted. Please provide a different key.', $this->title());
 				FlashMessages::addMessage($message, 'danger');				
 			}
 			else {
 				$this->setPreference(self::PREF_SECRET_KEY, isset($params[self::PREF_SECRET_KEY]) ? $params[self::PREF_SECRET_KEY] : '');
 
-				$message = I18N::translate('The preferences for the module “%s” were updated.', $this->title());
+				$message = I18N::translate('The preferences for the module "%s" were updated.', $this->title());
 				FlashMessages::addMessage($message, 'success');	
 			}
         }
@@ -349,7 +349,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		return $this->viewResponse($this->name() . '::error', [
             'title'        	=> 'Error',
 			'tree'			=> null,
-			'module_name'	=> $this->name(),
+			'module_name'	=> $this->title(),
 			'text'  	   	=> $text,
 		]);	 
 	 }
@@ -393,7 +393,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		}
         //Error if key is empty
         elseif ($key === '') {
-			$response = $this->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL'));
+			$response = $this->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
 		}
 		//Error if secret key is empty
         elseif ($secret_key === '') {

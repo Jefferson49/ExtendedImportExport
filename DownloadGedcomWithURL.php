@@ -391,7 +391,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
         if (!$this->isValidTree($tree_name)) {
 			$response = $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
 		}
-        //Error if secret key is empty
+        //Error if key is empty
+        elseif ($key === '') {
+			$response = $this->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL'));
+		}
+		//Error if secret key is empty
         elseif ($secret_key === '') {
 			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ' . $this->title()));
 		}

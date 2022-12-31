@@ -12,7 +12,7 @@ A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files o
 ## IMPORTANT SECURITY NOTE  
 Please note for versions below v3.0.0 that installing the module enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
 
-**Module versions starting from v3.0.0 use an access key, which is stored in a protected file in the module folder. Access to the download is only allowed if the provided key in the URL is identical to the key in the key file.**
+**Module versions starting from v3.0.0 use an access key, which is stored in the module preferences in webtrees. Access to the download is only allowed if the provided key in the URL is identical to the key in the key file.**
 
 ## Installation
 + Download the [latest release](https://github.com/Jefferson49/DownloadGedcomWithURL/releases/latest) of the module
@@ -21,6 +21,7 @@ Please note for versions below v3.0.0 that installing the module enables everyon
     + Login to webtrees as an administrator
 	+ Go to "Control Panel/All Modules", and find the module called "DownloadGedcomWithURL"
 	+ Check if it has a tick for "Enabled"
++ Provide a secret key in the module settings, see chapter below.
 
 ## Webtrees Version
 The module was developed and tested with [webtrees 2.1.15](https://webtrees.net/download), but should also run with any other 2.1 version.
@@ -59,14 +60,10 @@ http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree
 * MY_ENDINGS specifies the line endings in the generated GEDCOM file
   * Valid values: CRLF (Default), LF
 
-### Key file
-The key parameter of the URL is checked against a secret key. The secret key is stored in the following file: **\modules_v4\download_gedcom_with_ulr\resources\keys\key** 
+### Secret Key in the Module Settings
+The key parameter of the URL is checked against a secret key. **The secret key is stored in the module settings**: Control Panel / Modules / All Modules / DownloadGedcomWithURL.
 
-The file is protected against remote read access by a .htaccess file. **To assure the file protection, you should never change or delete this .htaccess file**.
-
-In a new installation, the key folder also contains a "default_key" file. You can put your own key into this file and rename it from "default_key" to "key".
-
-After creating the "key" file with your key, use the same key as parameter in the URL, i.e. "&key=MY_KEY".
+The provided secret key needs to have a minimum length of 8 characters.
 
 ### Example Script 
 The file ExamplePythonScript.py contains an example, how an automatic download could be performed with a Python script

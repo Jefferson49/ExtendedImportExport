@@ -298,7 +298,7 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
         }
 
 		//Open file and read key from file
-		$key_file = __DIR__ . '/key';
+		$key_file = $this->resourcesFolder() . 'keys/key';
 
         if (!$fp = fopen($key_file, "r")) {
             throw new RuntimeException('Cannot open file: ' . $key_file);
@@ -327,7 +327,7 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
 		}
         //Error if key name is not valid
         if ($key !== $secret_key) {
-			$response = $this->showErrorMessage(I18N::translate('Key  not accepted'));
+			$response = $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
 		}
         //Error if privacy level is not valid
 		elseif (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {

@@ -12,7 +12,7 @@ A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files o
 ## IMPORTANT SECURITY NOTE  
 Please note for versions below v3.0.0 that installing the module enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
 
-**Module versions starting from v3.0.0 use an access key**, which is stored in a file in the module folder. Access to the download is only given if the provided key in the URL is identical to the key in the key file.
+**Module versions starting from v3.0.0 use an access key, which is stored in a protected file in the module folder. Access to the download is only allowed if the provided key in the URL is identical to the key in the key file.**
 
 ## Installation
 + Download the [latest release](https://github.com/Jefferson49/DownloadGedcomWithURL/releases/latest) of the module
@@ -60,9 +60,13 @@ http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree
   * Valid values: CRLF (Default), LF
 
 ### Key file
-The key parameter of the URL is checked against a secret key. The secret key is stored in the "key" file in the module folder. 
+The key parameter of the URL is checked against a secret key. The secret key is stored in the following file: **\modules_v4\download_gedcom_with_ulr\resources\keys\key** 
 
-Please generate your own secret key and store it in the "key" file. Afterwards, use the same key as parameter in the URL.
+The file is protected against remote read access by a .htaccess file. **To assure the file protection, you should never change or delete this .htaccess file**.
+
+In a new installation, the key folder also contains a "default_key" file. You can put your own key into this file and rename it from "default_key" to "key".
+
+After creating the "key" file with your key, use the same key as parameter in the URL, i.e. "&key=MY_KEY".
 
 ### Example Script 
 The file ExamplePythonScript.py contains an example, how an automatic download could be performed with a Python script

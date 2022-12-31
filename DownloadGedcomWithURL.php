@@ -39,8 +39,11 @@ use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
+use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Module\AbstractModule;
+use Fisharebest\Webtrees\Module\ModuleConfigInterface;
+use Fisharebest\Webtrees\Module\ModuleConfigTrait;
 use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Registry;
@@ -57,9 +60,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterface, RequestHandlerInterface {
-
+class DownloadGedcomWithURL extends AbstractModule implements 
+	ModuleCustomInterface, 
+	ModuleConfigInterface,
+	RequestHandlerInterface 
+{
     use ModuleCustomTrait;
+    use ModuleConfigTrait;
  
     private GedcomExportService $gedcom_export_service;
 
@@ -80,6 +87,9 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
 
 	//Author of custom module
 	public const CUSTOM_AUTHOR = 'Markus Hemprich';
+
+    //Prefences, Settings
+	private const PREF_SECRET_KEY = "secret_key";
 
 
    /**
@@ -104,7 +114,7 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
             ->get(static::class, self::ROUTE_URL, $this)
             ->allows(RequestMethodInterface::METHOD_POST);
 
-		// Register a namespace for our views.
+		// Register a namespace for the views.
 		View::registerNamespace($this->name(), $this->resourcesFolder() . 'views/');
     }
 	
@@ -198,8 +208,15 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
                         $content = $response->getBody()->getContents();
                         preg_match_all('/' . self::GITHUB_API_TAG_NAME_PREFIX . '\d+\.\d+\.\d+/', $content, $matches, PREG_OFFSET_CAPTURE);
 
-                        $version = $matches[0][0][0];
-                        $version = substr($version, strlen(self::GITHUB_API_TAG_NAME_PREFIX));
+						if(!empty($matches[0]))
+						{
+							$version = $matches[0][0][0];
+							$version = substr($version, strlen(self::GITHUB_API_TAG_NAME_PREFIX));	
+						}
+						else
+						{
+							$version = $this->customModuleVersion();
+						}
 
                         return $version;
                     }
@@ -245,6 +262,61 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
         }
     }
 
+    /**
+     * View module settings in control panel
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     */
+    public function getAdminAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $this->layout = 'layouts/administration';
+
+        return $this->viewResponse(
+            $this->name() . '::settings',
+            [
+                'title'                 => $this->title(),
+				self::PREF_SECRET_KEY   => $this->getPreference(self::PREF_SECRET_KEY, ''),
+            ]
+        );
+    }
+
+    /**
+     * Save module settings after returning from control panel
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     */
+    public function postAdminAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $params = (array) $request->getParsedBody();
+
+        //Save the received settings to the user preferences
+        if ($params['save'] === '1') {
+
+			//If provided secret key is too short
+			if(strlen($params[self::PREF_SECRET_KEY])<8) {
+				$message = I18N::translate('The provided secret key is too short. Please provide a minimum length of 8.', $this->title());
+				FlashMessages::addMessage($message, 'danger');				
+			}
+			//If secret key does not escape correctly
+			elseif($params[self::PREF_SECRET_KEY] !== e($params[self::PREF_SECRET_KEY])) {
+				$message = I18N::translate('The provided secret key contains characters, which are not accepted. Please provide a different key', $this->title());
+				FlashMessages::addMessage($message, 'danger');				
+			}
+			else {
+				$this->setPreference(self::PREF_SECRET_KEY, isset($params[self::PREF_SECRET_KEY]) ? $params[self::PREF_SECRET_KEY] : '');
+
+				$message = I18N::translate('The preferences for the module “%s” were updated.', $this->title());
+				FlashMessages::addMessage($message, 'success');	
+			}
+        }
+
+        return redirect($this->getConfigLink());
+    }
+
      /**
      * Check if tree is a valid tree
      *
@@ -277,7 +349,8 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
 		return $this->viewResponse($this->name() . '::error', [
             'title'        	=> 'Error',
 			'tree'			=> null,
-			'text'  	   	=> I18N::translate('Custom module') . ': ' . $this->name() . '<br><b>'. e($text) . '</b>',
+			'module_name'	=> $this->name(),
+			'text'  	   	=> $text,
 		]);	 
 	 }
  
@@ -297,19 +370,8 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
             $default_tree_name = $tree->name();
         }
 
-		//Open file and read key from file
-		$key_file = $this->resourcesFolder() . 'keys/key';
-
-        try {
-			$fp = fopen($key_file, "r");
-		} 
-		catch(Exception $ex) {
-			$response = $this->showErrorMessage(I18N::translate('Cannot open key file') . ': ' . $key_file);
-			return $response;
-		}
-
-        $secret_key = fread($fp, filesize($key_file)); 
-        fclose($fp);
+		//Load secret key from preferences
+        $secret_key = $this->getPreference(self::PREF_SECRET_KEY, ''); 
    		
 		$params = $request->getQueryParams();
 		$key = $params['key'] ?? '';	
@@ -329,8 +391,12 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
         if (!$this->isValidTree($tree_name)) {
 			$response = $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
 		}
-        //Error if key name is not valid
-        if ($key !== $secret_key) {
+        //Error if secret key is empty
+        elseif ($secret_key === '') {
+			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ' . $this->title()));
+		}
+		//Error if key is not valid
+        elseif ($key !== $secret_key) {
 			$response = $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
 		}
         //Error if privacy level is not valid

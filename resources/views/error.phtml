@@ -4,10 +4,14 @@ use Fisharebest\Webtrees\I18N;
 
 /**
  * @var string       $text
+ * @var string       $module_name
+ * @var string       $text
  */
 
 ?>
 
 <div class="alert alert-danger">
-    <?= $text ?>
+	<?= I18N::translate('Custom module') . ': ' . $module_name ?>
+	<br>
+	<b><?= e($text) ?></b>
 </div>

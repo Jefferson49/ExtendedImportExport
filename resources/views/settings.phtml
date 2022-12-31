@@ -1,0 +1,60 @@
+<?php
+
+namespace Jefferson49\Webtrees\Module\RepositoryHierarchyNamespace;
+
+use Cissee\WebtreesExt\MoreI18N;
+use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\View;
+
+/**
+ * @var  string		$title
+ * @var  string		$secret_key
+ */
+
+?>
+
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => MoreI18N::xlate('Control panel'), $title]]) ?>
+
+<h1><?=e($title) ?></h1>
+
+<div class="row mb-3">
+	<form method="post">
+		<?= csrf_field() ?>
+		<input type="hidden" name="save" id="save" value="1">
+
+        <div class="row mb-3 justify-content-between m-0">
+
+            <div class="row"><?= view('icons/spacer') ?></div> 
+            <h3><?= I18N::translate('Settings for secret key') ?></h3>			
+            <div class="row">
+                <label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
+                    <?= I18N::translate('Secret key') ?>
+                </label>
+                <div class="col-sm-9 wt-page-options-value">
+                    <input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($secret_key) ?>">
+                </div>
+            </div>
+        </div>
+			
+        <div class="col">
+            <p></p>
+            <button type="submit" class="btn btn-primary">
+                <?= view('icons/save') ?>
+                <?= I18N::translate('save') ?>
+            </button>
+        </div>
+    </form>	
+</div>
+
+<?php View::push('javascript') ?>
+<script>
+    $('#select-all-1').change(function(e) {
+        if (e.currentTarget.checked) {
+            $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', true);
+        } else {
+            $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', false);
+        }
+    });
+</script>
+<?php View::endpush() ?>

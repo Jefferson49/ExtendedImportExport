@@ -30,6 +30,7 @@ declare(strict_types=1);
 
 namespace DownloadGedcomWithURLNamespace;
 
+use Exception;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
@@ -55,7 +56,6 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 
 class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterface, RequestHandlerInterface {
 
@@ -300,9 +300,13 @@ class DownloadGedcomWithURL extends AbstractModule implements ModuleCustomInterf
 		//Open file and read key from file
 		$key_file = $this->resourcesFolder() . 'keys/key';
 
-        if (!$fp = fopen($key_file, "r")) {
-            throw new RuntimeException('Cannot open file: ' . $key_file);
-        }
+        try {
+			$fp = fopen($key_file, "r");
+		} 
+		catch(Exception $ex) {
+			$response = $this->showErrorMessage(I18N::translate('Cannot open key file') . ': ' . $key_file);
+			return $response;
+		}
 
         $secret_key = fread($fp, filesize($key_file)); 
         fclose($fp);

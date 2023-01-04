@@ -30,7 +30,6 @@ declare(strict_types=1);
 
 namespace DownloadGedcomWithURLNamespace;
 
-use Exception;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
@@ -48,17 +47,21 @@ use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\GedcomExportService;
-use Fisharebest\Webtrees\Services\GedcomImportService;
-use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Database\Capsule\Manager as DB;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Collection;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+use function substr;
+
 
 class DownloadGedcomWithURL extends AbstractModule implements 
 	ModuleCustomInterface, 
@@ -317,16 +320,44 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return redirect($this->getConfigLink());
     }
 
+    /**
+     * All the trees that the current user has permission to access.
+     *
+     * @return Collection<array-key,Tree>
+     */
+    public function all(): Collection
+    {
+        return Registry::cache()->array()->remember('all-trees', static function (): Collection {
+            // All trees
+            $query = DB::table('gedcom')
+                ->leftJoin('gedcom_setting', static function (JoinClause $join): void {
+                    $join->on('gedcom_setting.gedcom_id', '=', 'gedcom.gedcom_id')
+                        ->where('gedcom_setting.setting_name', '=', 'title');
+                })
+                ->where('gedcom.gedcom_id', '>', 0)
+                ->select([
+                    'gedcom.gedcom_id AS tree_id',
+                    'gedcom.gedcom_name AS tree_name',
+                    'gedcom_setting.setting_value AS tree_title',
+                ])
+                ->orderBy('gedcom.sort_order')
+                ->orderBy('gedcom_setting.setting_value');
+
+            return $query
+                ->get()
+                ->mapWithKeys(static function (object $row): array {
+                    return [$row->tree_name => Tree::rowMapper()($row)];
+                });
+        });
+    }
      /**
      * Check if tree is a valid tree
      *
      * @return bool
      */ 
      private function isValidTree(string $tree_name): bool
-	 {		 
-		$tree_service = new TreeService(new GedcomImportService);
-		
-		$find_tree = $tree_service->all()->first(static function (Tree $tree) use ($tree_name): bool {
+	 {
+		$find_tree = $this->all()->first(static function (Tree $tree) use ($tree_name): bool {
             return $tree->name() === $tree_name;
         });
 		

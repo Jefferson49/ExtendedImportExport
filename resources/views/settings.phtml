@@ -2,7 +2,6 @@
 
 namespace Jefferson49\Webtrees\Module\RepositoryHierarchyNamespace;
 
-use Cissee\WebtreesExt\MoreI18N;
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\View;
@@ -14,7 +13,7 @@ use Fisharebest\Webtrees\View;
 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => MoreI18N::xlate('Control panel'), $title]]) ?>
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), $title]]) ?>
 
 <h1><?=e($title) ?></h1>
 

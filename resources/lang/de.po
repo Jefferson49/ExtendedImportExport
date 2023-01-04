@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2022-12-31 16:20+0100\n"
-"PO-Revision-Date: 2022-12-31 16:20+0100\n"
+"POT-Creation-Date: 2023-01-04 10:42+0100\n"
+"PO-Revision-Date: 2023-01-04 10:42+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: DownloadGedcomWithURL.php:143
+#: DownloadGedcomWithURL.php:146
 msgid ""
 "A custom module to download GEDCOM files on URL requests with the tree name, "
 "GEDCOM file name, and authorization provided as parameters within the URL."
@@ -24,7 +24,7 @@ msgstr ""
 "von URL Anfragen, welche den Stammbaum-Namen, den GEDCOM Dateinamen und die "
 "Authorisierung als Paramter innerhalb der URL beinhalten."
 
-#: DownloadGedcomWithURL.php:301
+#: DownloadGedcomWithURL.php:304
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -32,7 +32,7 @@ msgstr ""
 "Der angegebene Geheim-Schlüssel ist zu kurz. Bitte geben Sie mindestens eine "
 "Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:306
+#: DownloadGedcomWithURL.php:309
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -40,16 +40,16 @@ msgstr ""
 "Der eingegebene Geheim-Schlüssel enthält Schriftzeichen, welche nicht "
 "akzeptiert werden. Bitte geben Sie einen anderen Geheim-Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:312
+#: DownloadGedcomWithURL.php:315
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:392
+#: DownloadGedcomWithURL.php:423
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:396
+#: DownloadGedcomWithURL.php:427
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -58,7 +58,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:400
+#: DownloadGedcomWithURL.php:431
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -66,29 +66,33 @@ msgstr ""
 "Kein Geheim-Schlüssel definiert. Bitte definieren Sie einen Geheim-Schlüssel "
 "in den Modul-Einstellungen: Verwaltung / Module / Alle Module / "
 
-#: DownloadGedcomWithURL.php:404
+#: DownloadGedcomWithURL.php:435
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:408
+#: DownloadGedcomWithURL.php:439
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:412
+#: DownloadGedcomWithURL.php:443
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:416
+#: DownloadGedcomWithURL.php:447
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:420
+#: DownloadGedcomWithURL.php:451
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
 #: resources/views/error.phtml:14
 msgid "Custom module"
 msgstr "Benutzerdefiniertes Modul"
+
+#: resources/views/settings.phtml:17
+msgid "Control panel"
+msgstr "Verwaltung"
 
 #: resources/views/settings.phtml:29
 msgid "Settings for secret key"

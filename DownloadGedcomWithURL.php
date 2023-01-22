@@ -33,6 +33,7 @@ namespace DownloadGedcomWithURLNamespace;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -412,6 +413,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$format = $params['format'] ?? 'gedcom';
 		$encoding = $params['encoding'] ?? UTF8::NAME;
 		$line_endings = $params['line_endings'] ?? 'CRLF';
+		$gedcom7 = $params['gedcom7'] ?? '';
+
+		$response_factory = app(ResponseFactoryInterface::class);
+		$stream_factory = new Psr17Factory();
 
         //Take tree name if file name is empty 
         if ($file_name == '') {
@@ -449,7 +454,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Error if line ending is not valid
         elseif (!in_array($line_endings, ['CRLF', 'LF'])) {
 			$response = $this->showErrorMessage(I18N::translate('Line endings not accepted') . ': ' . $line_endings);
-        }       
+        }   
+		//If Gedcom 7, create Gedcom 7 response
+		elseif (($format === 'gedcom') && ($gedcom7 === 'yes')) {
+			$response_factory = app(ResponseFactoryInterface::class);
+			$stream_factory = new Psr17Factory();
+			$gedcom7_export_service = new GedcomSevenExportService($response_factory, $stream_factory);
+            $response = $gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format); 
+		}    
 		//Create response to download GEDCOM file
         else {
             $response = $this->gedcom_export_service->downloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format); 

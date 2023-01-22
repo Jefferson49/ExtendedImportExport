@@ -33,5 +33,6 @@ declare(strict_types=1);
 namespace DownloadGedcomWithURLNamespace;
 
 require __DIR__ . '/DownloadGedcomWithURL.php';
+require __DIR__ . '/GedcomSevenExportService.php';
 
 return new DownloadGedcomWithURL();

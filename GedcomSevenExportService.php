@@ -19,10 +19,7 @@ declare(strict_types=1);
 
 namespace DownloadGedcomWithURLNamespace;
 
-use Fisharebest\Localization\Locale;
-use Fisharebest\Localization\Locale\LocaleInterface;
 use Fisharebest\Webtrees\Auth;
-use Fisharebest\Webtrees\Elements\LanguageId;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF16LE;
 use Fisharebest\Webtrees\Encodings\UTF8;
@@ -32,7 +29,6 @@ use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Header;
-use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Webtrees;
@@ -104,7 +100,7 @@ class GedcomSevenExportService
 		$iana_language_registry = file_get_contents($iana_language_registry_file_name);
 
 		//Create language table
-		preg_match_all("/Subtag: ([^\n]+)\nDescription: ([^\n]+)\n/", $iana_language_registry, $matches, PREG_SET_ORDER);
+		preg_match_all("/Type: language\nSubtag: ([^\n]+)\nDescription: ([^\n]+)\n/", $iana_language_registry, $matches, PREG_SET_ORDER);
 
 		foreach ($matches as $match) {
 			$this->language_to_code_table[strtoupper($match[2])]= $match[1];
@@ -323,6 +319,9 @@ class GedcomSevenExportService
 			"2 PEDI birth\n" => "2 PEDI BIRTH\n",
 			"2 PEDI adopted\n" => "2 PEDI ADOPTED\n",
 			"2 TYPE RELI\n" => "2 TYPE RELIGIOUS\n",
+			"2 LANG SERB\n" => "2 LANG Serbian\n",
+			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",
+			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",
 		];
 
 		foreach ($replace_pairs as $search => $replace) {

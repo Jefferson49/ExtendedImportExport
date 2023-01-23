@@ -94,26 +94,22 @@ class GedcomSevenExportService
      * @param ResponseFactoryInterface $response_factory
      * @param StreamFactoryInterface   $stream_factory
      */
-    public function __construct(ResponseFactoryInterface $response_factory, StreamFactoryInterface $stream_factory)
-    {
-        $this->response_factory = $response_factory;
-        $this->stream_factory   = $stream_factory;
+	public function __construct(ResponseFactoryInterface $response_factory, StreamFactoryInterface $stream_factory)
+	{
+		$this->response_factory = $response_factory;
+		$this->stream_factory   = $stream_factory;
 
-		//Create language tables
-		/*
-		foreach (I18N::activeLocales() as $locale) {
-			$code = $locale->code();
-			$endonym = $locale->endonym();
-			$endonym_to_code[$endonym] = $code;
+		$iana_language_registry_file_name = __DIR__ . '/vendor/iana/iana_languages.txt';
+
+		$iana_language_registry = file_get_contents($iana_language_registry_file_name);
+
+		//Create language table
+		preg_match_all("/Subtag: ([^\n]+)\nDescription: ([^\n]+)\n/", $iana_language_registry, $matches, PREG_SET_ORDER);
+
+		foreach ($matches as $match) {
+			$this->language_to_code_table[strtoupper($match[2])]= $match[1];
 		}
-
-		$language_to_endonym_table = (new LanguageId(I18N::translate('Language')))->values();
-
-		foreach ($language_to_endonym_table as $language => $endonym) {
-			$this->language_to_code_table[$language] = $endonym_to_code[$endonym];
-		}
-		*/
-    }
+	}
 
     /**
      * @param Tree            $tree         - Export data from this tree
@@ -352,19 +348,17 @@ class GedcomSevenExportService
 		}
 
 		//Languages
-		/*
 		preg_match_all("/([12]) LANG (.[^\n]+)\n/", $gedcom, $matches, PREG_SET_ORDER);
 
 		foreach ($matches as $match) {
 
-			if (!empty($this->language_to_code_table[strtoupper($match[2])])) {
+			if (isset($this->language_to_code_table[strtoupper($match[2])])) {
 
 				$search =  $match[1] . " LANG " . $match[2] . "\n";
 				$replace = $match[1] . " LANG " . $this->language_to_code_table[strtoupper($match[2])] . "\n";
 				$gedcom = str_replace($search, $replace, $gedcom);
 			}
 		}
-		*/	
 
 		//Roles
 		preg_match_all("/([\d]) ROLE (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);

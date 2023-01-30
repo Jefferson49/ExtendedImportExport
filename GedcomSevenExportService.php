@@ -318,7 +318,7 @@ class GedcomSevenExportService
 			"2 _ASSO" => "2 ASSO",
 			"2 PEDI birth\n" => "2 PEDI BIRTH\n",
 			"2 PEDI adopted\n" => "2 PEDI ADOPTED\n",
-			"2 TYPE RELI\n" => "2 TYPE RELIGIOUS\n",
+			"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",
 			"2 LANG SERB\n" => "2 LANG Serbian\n",
 			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",
 			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",

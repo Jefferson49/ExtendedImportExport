@@ -272,7 +272,7 @@ class GedcomSevenExportService
                     }
                 }
 
-				//Do NOT wrap long lines
+				//Do NOT wrap long lines for Gedcom 7
                 //$gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH) . "\n";
 				$gedcom .= "\n";
 
@@ -314,14 +314,13 @@ class GedcomSevenExportService
 			"3 RELA " => "3 ROLE ",
 			"ROLE (Godparent)\n" => "ROLE GODP\n",
 			"ROLE godparent\n" => "ROLE GODP\n",
-			"TYPE married\n" => "TYPE MARRIED\n",
 			"2 _ASSO" => "2 ASSO",
 			"2 PEDI birth\n" => "2 PEDI BIRTH\n",
 			"2 PEDI adopted\n" => "2 PEDI ADOPTED\n",
-			"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",
-			"2 LANG SERB\n" => "2 LANG Serbian\n",
-			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",
-			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",
+			"2 LANG SERB\n" => "2 LANG Serbian\n",				//Otherwise not found by language replacement below
+			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
+			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below
+			"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",			//GEDCOM-L
 		];
 
 		foreach ($replace_pairs as $search => $replace) {
@@ -337,8 +336,12 @@ class GedcomSevenExportService
 			"/2 AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1m $2d",
 			"/1 FILE .+\.ged\n/" => "",
 			"/2 RESN .+\n/" => "",
-			"/2 FORM (jpg|JPG)\n3 TYPE .[^\n]+/" => "2 FORM image/jpeg",
+			//Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
+			//GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
+			"/2 FORM (bmp|BMP)\n3 TYPE .[^\n]+/" => "2 FORM image/bmp",
 			"/2 FORM (gif|GIF)\n3 TYPE .[^\n]+/" => "2 FORM image/gif",
+			"/2 FORM (jpg|JPG|jpeg|JPEG)\n3 TYPE .[^\n]+/" => "2 FORM image/jpeg",
+			"/2 FORM (tif|TIF)\n3 TYPE .[^\n]+/" => "2 FORM image/tiff",
 			"/2 FORM (pdf|PDF)\n3 TYPE .[^\n]+/" => "2 FORM application/pdf",
 		];
 
@@ -347,6 +350,7 @@ class GedcomSevenExportService
 		}
 
 		//Languages
+		//Allowed GEDCOM 7 language tags: https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
 		preg_match_all("/([12]) LANG (.[^\n]+)\n/", $gedcom, $matches, PREG_SET_ORDER);
 
 		foreach ($matches as $match) {
@@ -375,20 +379,9 @@ class GedcomSevenExportService
 			}
 		}		
 
-		//Types
+		//Name types
 		$allowed_types = [
-			"ADOPTED",
-			"BIRTH",
-			"FOSTER",
-			"SEALING",
-			"AKA",
-			"BIRTH",
-			"IMMIGRANT",
-			"MAIDEN",
-			"MARRIED",
-			"PROFESSIONAL",
-			"CIVIL",
-			"RELIGIOUS",
+			"ADOPTED", "BIRTH", "FOSTER", "SEALING", "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "CIVIL", "RELIGIOUS",
 		];
 
 		preg_match_all("/1 NAME (.[^\n]+)\n2 TYPE (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
@@ -459,14 +452,14 @@ class GedcomSevenExportService
 
 		//Add schema with extension tags
 		$gedcom .= "\n1 SCHMA ";
-		$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/ ";
-		$gedcom .= "\n2 TAG _STAT https://genealogy.net/GEDCOM/ ";
-		$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/ ";
-		$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/ ";
-		$gedcom .= "\n2 TAG _GODP https://genealogy.net/GEDCOM/ ";
-		$gedcom .= "\n2 TAG _ASSO https://genealogy.net/GEDCOM/ ";
-		$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/ ";
-		$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/ ";
+		$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _STAT https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _GODP https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _ASSO https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/";
 
         // Preserve some values from the original header
         $header = Registry::headerFactory()->make('HEAD', $tree) ?? Registry::headerFactory()->new('HEAD', '0 HEAD', null, $tree);

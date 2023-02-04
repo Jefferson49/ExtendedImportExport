@@ -471,13 +471,13 @@ class GedcomSevenExportService
         $gedcom .= "\n1 FILE " . $filename;
 
 		//Add schema with extension tags
-		$gedcom .= "\n1 SCHMA ";
-		$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n1 SCHMA";
 		$gedcom .= "\n2 TAG _GODP https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
 		$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
+		$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
 
         // Preserve some values from the original header
         $header = Registry::headerFactory()->make('HEAD', $tree) ?? Registry::headerFactory()->new('HEAD', '0 HEAD', null, $tree);

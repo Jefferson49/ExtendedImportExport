@@ -316,6 +316,7 @@ class GedcomSevenExportService
 			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
 			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below
 			"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",			//GEDCOM-L
+			"1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//GEDCOM-L
 		];
 
 		foreach ($replace_pairs as $search => $replace) {
@@ -394,7 +395,8 @@ class GedcomSevenExportService
 
 		//Nested enumsets
 		$nested_enumsets = [
-			[ "tags" => ["NAME", "TYPE"], "values" => ["ADOPTED", "BIRTH", "FOSTER", "SEALING", "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "CIVIL", "RELIGIOUS",]]
+			[ "tags" => ["NAME", "TYPE"], "values" => ["ADOPTED", "BIRTH", "FOSTER", "SEALING", "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "CIVIL", "RELIGIOUS",]],
+			[ "tags" => ["FAMC", "STAT"], "values" => ["CHALLENGED", "DISPROVEN", "PROVEN",]],
 		];
 
 		foreach ($nested_enumsets as $enumset) {
@@ -471,7 +473,6 @@ class GedcomSevenExportService
 		//Add schema with extension tags
 		$gedcom .= "\n1 SCHMA ";
 		$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _STAT https://genealogy.net/GEDCOM/";
 		$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
 		$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
 		$gedcom .= "\n2 TAG _GODP https://genealogy.net/GEDCOM/";

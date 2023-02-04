@@ -127,12 +127,13 @@ class GedcomSevenExportService
         string $line_endings,
         string $filename,
         string $format,
+		bool $gedcom_l = false,
         Collection $records = null
     ): ResponseInterface {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
         if ($format === 'gedcom') {
-            $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records);
+            $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records, $gedcom_l);
             $stream   = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()
@@ -156,7 +157,7 @@ class GedcomSevenExportService
             $media_path = null;
         }
 
-        $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records, $zip_filesystem, $media_path);
+        $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records, $gedcom_l, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
@@ -197,8 +198,9 @@ class GedcomSevenExportService
         int $access_level = Auth::PRIV_HIDE,
         string $line_endings = 'CRLF',
         Collection $records = null,
+		bool $gedcom_l = false,
         FilesystemOperator $zip_filesystem = null,
-        string $media_path = null
+        string $media_path = null,
     ) {
         $stream = fopen('php://memory', 'wb+');
 
@@ -211,14 +213,14 @@ class GedcomSevenExportService
         if ($records instanceof Collection) {
             // Export just these records - e.g. from clippings cart.
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, false)]),
+                new Collection([$this->createHeader($tree, $encoding, false, $gedcom_l)]),
                 $records,
                 new Collection(['0 TRLR']),
             ];
         } elseif ($access_level === Auth::PRIV_HIDE) {
             // If we will be applying privacy filters, then we will need the GEDCOM record objects.
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, true)]),
+                new Collection([$this->createHeader($tree, $encoding, true, $gedcom_l)]),
                 $this->individualQuery($tree, $sort_by_xref)->cursor(),
                 $this->familyQuery($tree, $sort_by_xref)->cursor(),
                 $this->sourceQuery($tree, $sort_by_xref)->cursor(),
@@ -233,7 +235,7 @@ class GedcomSevenExportService
             });
 
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, true)]),
+                new Collection([$this->createHeader($tree, $encoding, true, $gedcom_l)]),
                 $this->individualQuery($tree, $sort_by_xref)->get()->map(Registry::individualFactory()->mapper($tree)),
                 $this->familyQuery($tree, $sort_by_xref)->get()->map(Registry::familyFactory()->mapper($tree)),
                 $this->sourceQuery($tree, $sort_by_xref)->get()->map(Registry::sourceFactory()->mapper($tree)),
@@ -277,7 +279,7 @@ class GedcomSevenExportService
 				$gedcom .= "\n";
 
 				//Convert to Gedcom 7
-				$gedcom = $this->convertToGedcom7($gedcom);
+				$gedcom = $this->convertToGedcom7($gedcom, $gedcom_l);
 
 				if ($line_endings === 'CRLF') {
 					$gedcom = strtr($gedcom, ["\n" => "\r\n"]);
@@ -306,7 +308,7 @@ class GedcomSevenExportService
      *
      * @return string
      */
-    public function convertToGedcom7(string $gedcom): string
+    public function convertToGedcom7(string $gedcom, bool $gedcom_l= false): string
     {
 		$replace_pairs = [
 			"ROLE (Godparent)\n" => "ROLE GODP\n",
@@ -314,12 +316,23 @@ class GedcomSevenExportService
 			"2 LANG SERB\n" => "2 LANG Serbian\n",				//Otherwise not found by language replacement below
 			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
 			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below
-			"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",			//Convert webtrees value to GEDCOM-L standard value
-			"1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
 		];
 
 		foreach ($replace_pairs as $search => $replace) {
 			$gedcom = str_replace($search, $replace, $gedcom);
+		}
+
+		//GEDCOM-L
+		if($gedcom_l) {
+
+			$replace_pairs_gedcom_l = [
+				"1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
+				"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",			//Convert webtrees value to GEDCOM-L standard value
+			];
+	
+			foreach ($replace_pairs_gedcom_l as $search => $replace) {
+				$gedcom = str_replace($search, $replace, $gedcom);
+			}	
 		}
 
 		$preg_replace_pairs = [
@@ -445,7 +458,7 @@ class GedcomSevenExportService
      *
      * @return string
      */
-    public function createHeader(Tree $tree, string $encoding, bool $include_sub): string
+    public function createHeader(Tree $tree, string $encoding, bool $include_sub, bool $gedcom_l = false): string
     {
         // Force a ".ged" suffix
         $filename = $tree->name();
@@ -472,14 +485,17 @@ class GedcomSevenExportService
         $gedcom .= "\n2 TIME " . date('H:i:s');
         $gedcom .= "\n1 GEDC\n2 VERS 7.0.11";
 
-		//Add schema with extension tags
-		$gedcom .= "\n1 SCHMA";
-		$gedcom .= "\n2 TAG _GODP https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
+		//Schema tags for GEDCOM-L
+		if($gedcom_l) {
+			//Add schema with extension tags
+			$gedcom .= "\n1 SCHMA";
+			$gedcom .= "\n2 TAG _GODP https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
+		}
 
         // Preserve some values from the original header
         $header = Registry::headerFactory()->make('HEAD', $tree) ?? Registry::headerFactory()->new('HEAD', '0 HEAD', null, $tree);

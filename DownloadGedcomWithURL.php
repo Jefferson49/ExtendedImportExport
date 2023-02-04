@@ -49,6 +49,7 @@ use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\GedcomExportService;
 use Fisharebest\Webtrees\Tree;
+use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -393,35 +394,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */	
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $tree = $request->getAttribute('tree');
-        
-        if ($tree === null) {
-            $default_tree_name = '';
-        }
-        else {
-            $default_tree_name = $tree->name();
-        }
-
 		//Load secret key from preferences
         $secret_key = $this->getPreference(self::PREF_SECRET_KEY, ''); 
    		
-		$params = $request->getQueryParams();
-		$key = $params['key'] ?? '';	
-		$tree_name = $params['tree'] ?? $default_tree_name;	
-		$file_name = $params['file'] ?? $tree_name;	
-		$privacy = $params['privacy'] ?? 'none';	
-		$format = $params['format'] ?? 'gedcom';
-		$encoding = $params['encoding'] ?? UTF8::NAME;
-		$line_endings = $params['line_endings'] ?? 'CRLF';
-		$gedcom7 = $params['gedcom7'] ?? '';
+		$tree_name    = Validator::queryParams($request)->string('tree', '');
+        $file_name    = Validator::queryParams($request)->string('file', $tree_name);
+        $format       = Validator::queryParams($request)->string('format', 'gedcom');
+        $privacy      = Validator::queryParams($request)->string('privacy', 'visitor');
+        $encoding     = Validator::queryParams($request)->string('encoding', UTF8::NAME);
+        $line_endings = Validator::queryParams($request)->string('line_endings', 'CRLF');
+		$key          = Validator::queryParams($request)->string('key', '');
+		$gedcom7      = Validator::queryParams($request)->boolean('gedcom7', false);
+		$gedcom_l     = Validator::queryParams($request)->boolean('gedcom_l', false);
 
 		$response_factory = app(ResponseFactoryInterface::class);
 		$stream_factory = new Psr17Factory();
-
-        //Take tree name if file name is empty 
-        if ($file_name == '') {
-			$file_name = $tree_name;
-		}   
 
         //Error if tree name is not valid
         if (!$this->isValidTree($tree_name)) {
@@ -456,11 +443,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			$response = $this->showErrorMessage(I18N::translate('Line endings not accepted') . ': ' . $line_endings);
         }   
 		//If Gedcom 7, create Gedcom 7 response
-		elseif (($format === 'gedcom') && ($gedcom7 === 'yes')) {
+		elseif (($format === 'gedcom') && ($gedcom7)) {
 			$response_factory = app(ResponseFactoryInterface::class);
 			$stream_factory = new Psr17Factory();
 			$gedcom7_export_service = new GedcomSevenExportService($response_factory, $stream_factory);
-            $response = $gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format); 
+            $response = $gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_l); 
 		}    
 		//Create response to download GEDCOM file
         else {

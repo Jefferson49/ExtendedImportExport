@@ -309,14 +309,13 @@ class GedcomSevenExportService
     public function convertToGedcom7(string $gedcom): string
     {
 		$replace_pairs = [
-			"1 CHAR UTF-8\n" => "",
 			"ROLE (Godparent)\n" => "ROLE GODP\n",
 			"ROLE godparent\n" => "ROLE GODP\n",
 			"2 LANG SERB\n" => "2 LANG Serbian\n",				//Otherwise not found by language replacement below
 			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
 			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below
-			"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",			//GEDCOM-L
-			"1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//GEDCOM-L
+			"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",			//Convert webtrees value to GEDCOM-L standard value
+			"1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
 		];
 
 		foreach ($replace_pairs as $search => $replace) {
@@ -324,15 +323,17 @@ class GedcomSevenExportService
 		}
 
 		$preg_replace_pairs = [
+			//Date and age values
 			"/0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (.[\d]{1,4})/" => "$1 $2 $3",
 			"/2 AGE 0([\d]{1,2})y/" => "2 AGE $1y",
 			"/2 AGE ([\d]{1,3})y 0(.)m/" => "2 AGE $1y $2m",
 			"/2 AGE ([\d]{1,3})y ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1y $2m $3d",
 			"/2 AGE ([\d]{1,2})m 00([\d])d/" => "2 AGE $1m $2d",
 			"/2 AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1m $2d",
-			"/1 FILE .+\.ged\n/" => "",
+			//RELA, ROLE, ASSO
 			"/([\d]) RELA/" => "$1 ROLE",
 			"/([\d]) _ASSO/" => "$1 ASSO",
+			//Media types
 			//Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
 			//GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
 			"/2 FORM (bmp|BMP)\n3 TYPE .[^\n]+/" => "2 FORM image/bmp",
@@ -348,6 +349,7 @@ class GedcomSevenExportService
 
 		//Languages
 		//Allowed GEDCOM 7 language tags: https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+
 		preg_match_all("/([12]) LANG (.[^\n]+)\n/", $gedcom, $matches, PREG_SET_ORDER);
 
 		foreach ($matches as $match) {
@@ -361,6 +363,7 @@ class GedcomSevenExportService
 		}
 
 		//enumsets
+
 		$enumsets = [
 			"ADOP" => ["HUSB", "WIFE", "BOTH",],
 			"MEDI" => ["AUDIO", "BOOK","CARD", "ELECTRONIC", "FICHE", "FILM", "MAGAZINE", "MANUSCRIPT", "MAP", "NEWSPAPER", "PHOTO", "TOMBSTONE", "VIDEO", "OTHER",],
@@ -394,6 +397,7 @@ class GedcomSevenExportService
 		}		
 
 		//Nested enumsets
+
 		$nested_enumsets = [
 			[ "tags" => ["NAME", "TYPE"], "values" => ["ADOPTED", "BIRTH", "FOSTER", "SEALING", "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "CIVIL", "RELIGIOUS",]],
 			[ "tags" => ["FAMC", "STAT"], "values" => ["CHALLENGED", "DISPROVEN", "PROVEN",]],
@@ -467,8 +471,6 @@ class GedcomSevenExportService
         $gedcom .= "\n1 DATE " . strtoupper(date('d M Y'));
         $gedcom .= "\n2 TIME " . date('H:i:s');
         $gedcom .= "\n1 GEDC\n2 VERS 7.0.11";
-        $gedcom .= "\n1 CHAR " . $encoding;
-        $gedcom .= "\n1 FILE " . $filename;
 
 		//Add schema with extension tags
 		$gedcom .= "\n1 SCHMA";

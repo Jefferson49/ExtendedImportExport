@@ -359,84 +359,73 @@ class GedcomSevenExportService
 			}
 		}
 
-		//PEDI
-		$enumset_PEDI = [
-			"ADOPTED", "BIRTH", "FOSTER", "SEALING", "OTHER",
+		//enumsets
+		$enumsets = [
+			"ADOP" => ["HUSB", "WIFE", "BOTH",],
+			"MEDI" => ["AUDIO", "BOOK","CARD", "ELECTRONIC", "FICHE", "FILM", "MAGAZINE", "MANUSCRIPT", "MAP", "NEWSPAPER", "PHOTO", "TOMBSTONE", "VIDEO", "OTHER",],
+			"PEDI" => ["ADOPTED", "BIRTH", "FOSTER", "SEALING", "OTHER",],
+			"QUAY" => ["1", "2", "3",],
+			"RESN" => ["CONFIDENTIAL", "LOCKED", "PRIVACY",],
+			"ROLE" => ["CHIL", "CLERGY", "FATH", "FRIEND", "GODP", "HUSB", "MOTH", "MULTIPLE", "NGHBR", "OFFICIATOR", "PARENT", "SPOU", "WIFE", "WITN", "OTHER",],
+			"SEX" =>  ["M", "F", "X", "U",],
 		];
 
-		preg_match_all("/([\d]) PEDI (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
+		foreach ($enumsets as $enumset => $values) {
 
-		foreach ($matches as $match) {
+			preg_match_all("/([\d]) " . $enumset . " (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
 
-			$level = (int) $match[1];
+			foreach ($matches as $match) {
+				$level = (int) $match[1];
 
-			//If allowed value
-			if (in_array(strtoupper($match[2]), $enumset_PEDI)) {
-				$search =  $level . " PEDI " . $match[2];
-				$replace = $level . " PEDI " . strtoupper($match[2]);
-				$gedcom = str_replace($search, $replace, $gedcom);
-			}
-			//Use phrase instead
-			else {
-				$search =  $level . " PEDI " . $match[2];
-				$replace = $level . " PEDI OTHER\n" . $level + 1 . " PHRASE " . $match[2];
-				$gedcom = str_replace($search, $replace, $gedcom);
-			}
-		}			
-
-		//ROLE
-		$enumset_ROLE = [
-			"CHIL", "CLERGY", "FATH", "FRIEND", "GODP", "HUSB", "MOTH", "MULTIPLE", "NGHBR", "OFFICIATOR", "PARENT", "SPOU", "WIFE", "WITN", "OTHER",
-		];
-		preg_match_all("/([\d]) ROLE (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
-
-		foreach ($matches as $match) {
-
-			$level = (int) $match[1];
-
-			//If allowed value
-			if (in_array(strtoupper($match[2]), $enumset_ROLE)) {
-				$search =  $level . " ROLE " . $match[2];
-				$replace = $level . " ROLE " . strtoupper($match[2]);
-				$gedcom = str_replace($search, $replace, $gedcom);
-			}
-			//Use phrase instead
-			else {
-				$search =  $level . " ROLE " . $match[2];
-				$replace = $level . " ROLE OTHER\n" . $level + 1 . " PHRASE " . $match[2];
-				$gedcom = str_replace($search, $replace, $gedcom);
+				//If allowed value
+				if (in_array(strtoupper($match[2]), $values)) {
+					$search =  $level . " " . $enumset . " " . $match[2];
+					$replace = $level . " " . $enumset . " " . strtoupper($match[2]);
+					$gedcom = str_replace($search, $replace, $gedcom);
+				}
+				//Use phrase instead
+				else {
+					$search =  $level . " " . $enumset . " " . $match[2];
+					$replace = $level . " " . $enumset . " OTHER\n" . $level + 1 . " PHRASE " . $match[2];
+					$gedcom = str_replace($search, $replace, $gedcom);
+				}
 			}
 		}		
 
-		//Name types
-		$enumset_NAME_TYPE = [
-			"ADOPTED", "BIRTH", "FOSTER", "SEALING", "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "CIVIL", "RELIGIOUS",
+		//Nested enumsets
+		$nested_enumsets = [
+			[ "tags" => ["NAME", "TYPE"], "values" => ["ADOPTED", "BIRTH", "FOSTER", "SEALING", "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "CIVIL", "RELIGIOUS",]]
 		];
 
-		preg_match_all("/1 NAME (.[^\n]+)\n2 TYPE (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
+		foreach ($nested_enumsets as $enumset) {
 
-		foreach ($matches as $match) {
+			$tags = $enumset["tags"];
+			$enum_values = $enumset["values"];
+			$level1_tag = $tags[0];
+			$level2_tag = $tags[1];
 
-			if (sizeof($match) < 3) {
-				$found_type =  $match[1];
-			} 
-			else {
-				$found_type =  $match[2];				
-			}
+			preg_match_all("/([\d]) " . $level1_tag . " (.[^\n]+)\n([\d]) " . $level2_tag . " (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
 
-			//If allowed type
-			if (in_array(strtoupper($found_type), $enumset_NAME_TYPE)) {
-				$search =  "2 TYPE " . $found_type;
-				$replace = "2 TYPE " . strtoupper($found_type);
-				$gedcom = str_replace($search, $replace, $gedcom);
-			}
-			//Use phrase instead
-			else {
-				$search =  "2 TYPE " . $found_type;
-				$replace = "2 TYPE OTHER\n3 PHRASE " . $found_type;
-				$gedcom = str_replace($search, $replace, $gedcom);
-			}
-		}		
+			foreach ($matches as $match) {
+
+				$size = sizeof($match);
+				$level = (int) $match[$size - 2];
+				$found_type =  $match[$size - 1];		
+
+				//If allowed type
+				if (in_array(strtoupper($found_type), $enum_values)) {
+					$search =  $level . " " . $level2_tag . " " . $found_type;
+					$replace = $level . " " . $level2_tag . " " . strtoupper($found_type);
+					$gedcom = str_replace($search, $replace, $gedcom);
+				}
+				//Use phrase instead
+				else {
+					$search =  $level  . " " . $level2_tag . " " . $found_type;
+					$replace = $level  . " " . $level2_tag . " OTHER\n" . $level + 1 . " PHRASE " . $found_type;
+					$gedcom = str_replace($search, $replace, $gedcom);
+				}
+			}	
+		}	
 
 		return $gedcom;
 	}

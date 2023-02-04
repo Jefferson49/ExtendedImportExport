@@ -310,13 +310,8 @@ class GedcomSevenExportService
     {
 		$replace_pairs = [
 			"1 CHAR UTF-8\n" => "",
-			"2 RELA " => "2 ROLE ",
-			"3 RELA " => "3 ROLE ",
 			"ROLE (Godparent)\n" => "ROLE GODP\n",
 			"ROLE godparent\n" => "ROLE GODP\n",
-			"2 _ASSO" => "2 ASSO",
-			"2 PEDI birth\n" => "2 PEDI BIRTH\n",
-			"2 PEDI adopted\n" => "2 PEDI ADOPTED\n",
 			"2 LANG SERB\n" => "2 LANG Serbian\n",				//Otherwise not found by language replacement below
 			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
 			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below
@@ -335,7 +330,8 @@ class GedcomSevenExportService
 			"/2 AGE ([\d]{1,2})m 00([\d])d/" => "2 AGE $1m $2d",
 			"/2 AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1m $2d",
 			"/1 FILE .+\.ged\n/" => "",
-			"/2 RESN .+\n/" => "",
+			"/([\d]) RELA/" => "$1 ROLE",
+			"/([\d]) _ASSO/" => "$1 ASSO",
 			//Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
 			//GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
 			"/2 FORM (bmp|BMP)\n3 TYPE .[^\n]+/" => "2 FORM image/bmp",
@@ -363,24 +359,57 @@ class GedcomSevenExportService
 			}
 		}
 
-		//Roles
+		//PEDI
+		$enumset_PEDI = [
+			"ADOPTED", "BIRTH", "FOSTER", "SEALING", "OTHER",
+		];
+
+		preg_match_all("/([\d]) PEDI (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
+
+		foreach ($matches as $match) {
+
+			$level = (int) $match[1];
+
+			//If allowed value
+			if (in_array(strtoupper($match[2]), $enumset_PEDI)) {
+				$search =  $level . " PEDI " . $match[2];
+				$replace = $level . " PEDI " . strtoupper($match[2]);
+				$gedcom = str_replace($search, $replace, $gedcom);
+			}
+			//Use phrase instead
+			else {
+				$search =  $level . " PEDI " . $match[2];
+				$replace = $level . " PEDI OTHER\n" . $level + 1 . " PHRASE " . $match[2];
+				$gedcom = str_replace($search, $replace, $gedcom);
+			}
+		}			
+
+		//ROLE
+		$enumset_ROLE = [
+			"CHIL", "CLERGY", "FATH", "FRIEND", "GODP", "HUSB", "MOTH", "MULTIPLE", "NGHBR", "OFFICIATOR", "PARENT", "SPOU", "WIFE", "WITN", "OTHER",
+		];
 		preg_match_all("/([\d]) ROLE (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
 
 		foreach ($matches as $match) {
 
-			//If not TAG 
-			if (!((strlen($match[2]) === 4) && (strtoupper($match[2]) === $match[2]))) {
+			$level = (int) $match[1];
 
-				$level = (int) $match[1];
-				$next_level = (string) $level + 1;
+			//If allowed value
+			if (in_array(strtoupper($match[2]), $enumset_ROLE)) {
 				$search =  $level . " ROLE " . $match[2];
-				$replace = $level . " ROLE OTHER\n" . $next_level . " PHRASE " . $match[2];
+				$replace = $level . " ROLE " . strtoupper($match[2]);
+				$gedcom = str_replace($search, $replace, $gedcom);
+			}
+			//Use phrase instead
+			else {
+				$search =  $level . " ROLE " . $match[2];
+				$replace = $level . " ROLE OTHER\n" . $level + 1 . " PHRASE " . $match[2];
 				$gedcom = str_replace($search, $replace, $gedcom);
 			}
 		}		
 
 		//Name types
-		$allowed_types = [
+		$enumset_NAME_TYPE = [
 			"ADOPTED", "BIRTH", "FOSTER", "SEALING", "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "CIVIL", "RELIGIOUS",
 		];
 
@@ -396,7 +425,7 @@ class GedcomSevenExportService
 			}
 
 			//If allowed type
-			if (in_array(strtoupper($found_type), $allowed_types)) {
+			if (in_array(strtoupper($found_type), $enumset_NAME_TYPE)) {
 				$search =  "2 TYPE " . $found_type;
 				$replace = "2 TYPE " . strtoupper($found_type);
 				$gedcom = str_replace($search, $replace, $gedcom);
@@ -457,7 +486,6 @@ class GedcomSevenExportService
 		$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
 		$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
 		$gedcom .= "\n2 TAG _GODP https://genealogy.net/GEDCOM/";
-		$gedcom .= "\n2 TAG _ASSO https://genealogy.net/GEDCOM/";
 		$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
 		$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/";
 

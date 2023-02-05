@@ -307,58 +307,58 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function postAdminAction(ServerRequestInterface $request): ResponseInterface
     {
-		//ToDo Validator
-        $params = (array) $request->getParsedBody();
+        $save                = Validator::parsedBody($request)->string('save', '');
+        $use_hash            = Validator::parsedBody($request)->boolean(self::PREF_USE_HASH, false);
+        $allow_download      = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_DOWNLOAD, false);
+        $new_secret_key      = Validator::parsedBody($request)->string('new_secret_key', '');
+        $folder_to_save      = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, '');
 
         //Save the received settings to the user preferences
-        if ($params['save'] === '1') {
+        if ($save === '1') {
 
-			//If provided secret key is empty
-			if($params['new_secret_key'] === '') {
-				//If no hashing
-				if (!isset($params[self::PREF_USE_HASH])) {
+			if($new_secret_key === '') {
+				//If use hash changed from true to false, reset key (hash cannot be used any more)
+				if(boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$use_hash) {
 					$this->setPreference(self::PREF_SECRET_KEY, '');
+				}
+				//If use hash changed from false to true, take old key (for future encryption)
+				elseif(!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && $use_hash) {
+					$new_secret_key = $this->getPreference(self::PREF_SECRET_KEY, '');
 				}
 			}
 			//If provided secret key is too short
-			elseif(strlen($params['new_secret_key'])<8) {
+			elseif(strlen($new_secret_key)<8) {
 				$message = I18N::translate('The provided secret key is too short. Please provide a minimum length of 8 characters.');
 				FlashMessages::addMessage($message, 'danger');				
 			}
 			//If secret key does not escape correctly
-			elseif($params['new_secret_key'] !== e($params['new_secret_key'])) {
+			elseif($new_secret_key !== e($new_secret_key)) {
 				$message = I18N::translate('The provided secret key contains characters, which are not accepted. Please provide a different key.');
 				FlashMessages::addMessage($message, 'danger');				
 			}
-			//If secret key has to be stored with a hash
-			elseif(isset($params[self::PREF_USE_HASH])) {
+			//If secret key be stored with a hash
+			elseif($use_hash) {
 
-				$hash_value = password_hash($params['new_secret_key'], PASSWORD_BCRYPT);
-				$this->setPreference(self::PREF_SECRET_KEY, isset($params[self::PREF_SECRET_KEY]) ? $hash_value : '');
+				$hash_value = password_hash($new_secret_key, PASSWORD_BCRYPT);
+				$this->setPreference(self::PREF_SECRET_KEY, $hash_value);
 			}
 			else {
-				$this->setPreference(self::PREF_SECRET_KEY, isset($params['new_secret_key']) ? $params['new_secret_key'] : '');
+				$this->setPreference(self::PREF_SECRET_KEY, $new_secret_key);
 			}
 
-			$this->setPreference(self::PREF_USE_HASH, isset($params[self::PREF_USE_HASH]) ? '1' : '0');
-			$this->setPreference(self::PREF_ALLOW_DOWNLOAD, isset($params[self::PREF_ALLOW_DOWNLOAD]) ? '1' : '0');
+			//Set 
+			if (!str_ends_with($folder_to_save, '/')) {
+				$folder_to_save .= '/';
+			}
+	
+			if (is_dir($folder_to_save)) {
+				$this->setPreference(self::PREF_FOLDER_TO_SAVE, $folder_to_save);
+			} else {
+				FlashMessages::addMessage(I18N::translate('The folder “%s” does not exist.', e($folder_to_save)), 'danger');
+			}
 
-			//If folder to save does not escape correctly
-			if($params[self::PREF_SECRET_KEY] !== e($params[self::PREF_SECRET_KEY])) {
-				$message = I18N::translate('The provided folder name contains characters, which are not accepted. Please provide a folder name.');
-				FlashMessages::addMessage($message, 'danger');				
-			}
-			else {
-				try {
-					//create folder
-					$this->setPreference(self::PREF_FOLDER_TO_SAVE, isset($params[self::PREF_FOLDER_TO_SAVE]) ? $params[self::PREF_FOLDER_TO_SAVE] : '');
-				}
-				catch(RuntimeException) {
-					//error of folder cannot be created
-					$message = I18N::translate('The folder cannot be created. Please provide a different folder name.');
-					FlashMessages::addMessage($message, 'danger');				
-				}
-			}
+			$this->setPreference(self::PREF_USE_HASH, $use_hash ? '1' : '0');
+			$this->setPreference(self::PREF_ALLOW_DOWNLOAD, $allow_download ? '1' : '0');
 
 			$message = I18N::translate('The preferences for the module "%s" were updated.', $this->title());
 			FlashMessages::addMessage($message, 'success');	
@@ -511,7 +511,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			//Save or both
 			if (($action === 'save') or ($action === 'both')) {
 
-				$data_filesystem = Registry::filesystem()->data();
+				$toot_filesystem = Registry::filesystem()->root();
 				$access_level = GedcomSevenExportService::ACCESS_LEVELS[$privacy];
 
 				// Force a ".ged" suffix
@@ -519,19 +519,22 @@ class DownloadGedcomWithURL extends AbstractModule implements
 					$file_name .= '.ged';
 				}
 
+				//Get folder from settings
+				$folder_to_save = $this->getPreference(self::PREF_FOLDER_TO_SAVE, '');
+
 				//If Gedcom 7, create Gedcom 7 response
 				if (($format === 'gedcom') && ($gedcom7)) {
 					try {
 						$resource = $this->gedcom7_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings, $gedcom7);
-						$data_filesystem->writeStream($file_name, $resource);
+						$toot_filesystem->writeStream($folder_to_save . $file_name, $resource);
 						fclose($resource);
 
 						/* I18N: %s is a filename */
-						FlashMessages::addMessage(I18N::translate('The family tree has been exported to %s.', Html::filename($file_name)), 'success');
+						FlashMessages::addMessage(I18N::translate('The family tree has been exported to %s.', Html::filename($folder_to_save . $file_name)), 'success');
 
 					} catch (FilesystemException | UnableToWriteFile $ex) {
 						FlashMessages::addMessage(
-							I18N::translate('The file %s could not be created.', Html::filename($file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
+							I18N::translate('The file %s could not be created.', Html::filename($folder_to_save . $file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
 							'danger'
 						);
 					}
@@ -541,15 +544,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				else {
 					try {
 						$resource = $this->gedcom_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings);
-						$data_filesystem->writeStream($file_name, $resource);
+						$toot_filesystem->writeStream($folder_to_save . $file_name, $resource);
 						fclose($resource);
 
 						/* I18N: %s is a filename */
-						FlashMessages::addMessage(I18N::translate('The family tree has been exported to %s.', Html::filename($file_name)), 'success');
+						FlashMessages::addMessage(I18N::translate('The family tree has been exported to %s.', Html::filename($folder_to_save . $file_name)), 'success');
 
 					} catch (FilesystemException | UnableToWriteFile $ex) {
 						FlashMessages::addMessage(
-							I18N::translate('The file %s could not be created.', Html::filename($file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
+							I18N::translate('The file %s could not be created.', Html::filename($folder_to_save . $file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
 							'danger'
 						);
 					}
@@ -558,23 +561,26 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				$response = response('Successfully saved GEDCOM file to local file system');
 			}
 
-			//If download
+			//If download is requested
 			if ($action === 'download') {
-
-				//If Gedcom 7, create Gedcom 7 response
-				if (($format === 'gedcom') && ($gedcom7)) {
-
-					$response = $this->gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_l);
-				}
-				//Create Gedcom 5.5.1 response
+				
+				//if download is allowed
+				if(boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1'))) {
+					//If Gedcom 7, create Gedcom 7 response
+					if (($format === 'gedcom') && ($gedcom7)) {
+						$response = $this->gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_l);
+					}
+					//Create Gedcom 5.5.1 response
+					else {
+						$response = $this->gedcom_export_service->downloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format);
+					}
+				} 
 				else {
-					$response = $this->gedcom_export_service->downloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format);
+					$response = $this->showErrorMessage(I18N::translate('Download is not allowed. Please change the module settings to allow downloads.'));
 				}
 			}
 		}
-
-		return $response;
-		
+		return $response;		
     }
 }
 

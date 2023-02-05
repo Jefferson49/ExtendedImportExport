@@ -30,7 +30,7 @@ use Fisharebest\Webtrees\View;
             <h3><?= I18N::translate('Settings for secret key') ?></h3>			
 			<div class="row">
 				<?php if ($use_hash && ($secret_key !== '')) : ?>
-					<? $secret_key = I18N::translate('The secret key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key')?>
+					<? $secret_key = I18N::translate('The secret key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.') ?>
 				<?php endif ?>
 				<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
                     <?= I18N::translate('Current secret key') ?>

@@ -40,6 +40,7 @@ use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\FlashMessages;
+use Fisharebest\Webtrees\Html;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleConfigInterface;
@@ -56,6 +57,8 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\UnableToWriteFile;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -74,6 +77,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
     use ModuleConfigTrait;
  
     private GedcomExportService $gedcom_export_service;
+
+    private GedcomSevenExportService $gedcom7_export_service;
 
     private Tree $download_tree;
 
@@ -106,6 +111,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $stream_factory = new Psr17Factory();
 
         $this->gedcom_export_service = new GedcomExportService($response_factory, $stream_factory);
+        $this->gedcom7_export_service = new GedcomSevenExportService($response_factory, $stream_factory);
     }
 
     /**
@@ -403,12 +409,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $privacy      = Validator::queryParams($request)->string('privacy', 'visitor');
         $encoding     = Validator::queryParams($request)->string('encoding', UTF8::NAME);
         $line_endings = Validator::queryParams($request)->string('line_endings', 'CRLF');
-		$key          = Validator::queryParams($request)->string('key', '');
 		$gedcom7      = Validator::queryParams($request)->boolean('gedcom7', false);
 		$gedcom_l     = Validator::queryParams($request)->boolean('gedcom_l', false);
-
-		$response_factory = app(ResponseFactoryInterface::class);
-		$stream_factory = new Psr17Factory();
+		$action       = Validator::queryParams($request)->string('action', 'download');
+		$time_stamp   = Validator::queryParams($request)->string('time_stamp', '');
+		$key          = Validator::queryParams($request)->string('key', '');
 
         //Error if tree name is not valid
         if (!$this->isValidTree($tree_name)) {
@@ -438,23 +443,95 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		elseif (!in_array($encoding, [UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
 			$response = $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
         }       
-        //Error if line ending is not valid
+        //Error action is not valid
+        elseif (!in_array($action, ['download', 'save', 'both'])) {
+			$response = $this->showErrorMessage(I18N::translate('Action not accepted') . ': ' . $action);
+        }  
+		//Error if line ending is not valid
         elseif (!in_array($line_endings, ['CRLF', 'LF'])) {
 			$response = $this->showErrorMessage(I18N::translate('Line endings not accepted') . ': ' . $line_endings);
-        }   
-		//If Gedcom 7, create Gedcom 7 response
-		elseif (($format === 'gedcom') && ($gedcom7)) {
-			$response_factory = app(ResponseFactoryInterface::class);
-			$stream_factory = new Psr17Factory();
-			$gedcom7_export_service = new GedcomSevenExportService($response_factory, $stream_factory);
-            $response = $gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_l); 
-		}    
-		//Create response to download GEDCOM file
-        else {
-            $response = $this->gedcom_export_service->downloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format); 
-        }
+        } 
+		//Error if time_stamp is not valid
+        elseif (!in_array($time_stamp, ['prefix', 'postfix', ''])) {
+			$response = $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
+        } 	
 
-        return $response;
+		else {
+			//Add time stamp to file name if requested
+			if($time_stamp === 'prefix'){
+				$file_name = date('Y-m-d_H-i-s_') . $file_name;
+			} 
+			elseif($time_stamp === 'postfix'){
+				$file_name .= date('_Y-m-d_H-i-s');
+			}
+
+			//Save or both
+			if (($action === 'save') or ($action === 'both')) {
+
+				$data_filesystem = Registry::filesystem()->data();
+				$access_level = GedcomSevenExportService::ACCESS_LEVELS[$privacy];
+
+				// Force a ".ged" suffix
+				if (strtolower(pathinfo($file_name, PATHINFO_EXTENSION)) !== 'ged') {
+					$file_name .= '.ged';
+				}
+
+				//If Gedcom 7, create Gedcom 7 response
+				if (($format === 'gedcom') && ($gedcom7)) {
+					try {
+						$resource = $this->gedcom7_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings, $gedcom7);
+						$data_filesystem->writeStream($file_name, $resource);
+						fclose($resource);
+
+						/* I18N: %s is a filename */
+						FlashMessages::addMessage(I18N::translate('The family tree has been exported to %s.', Html::filename($file_name)), 'success');
+
+					} catch (FilesystemException | UnableToWriteFile $ex) {
+						FlashMessages::addMessage(
+							I18N::translate('The file %s could not be created.', Html::filename($file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
+							'danger'
+						);
+					}
+
+				}
+				//Create Gedcom 5.5.1 response
+				else {
+					try {
+						$resource = $this->gedcom_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings);
+						$data_filesystem->writeStream($file_name, $resource);
+						fclose($resource);
+
+						/* I18N: %s is a filename */
+						FlashMessages::addMessage(I18N::translate('The family tree has been exported to %s.', Html::filename($file_name)), 'success');
+
+					} catch (FilesystemException | UnableToWriteFile $ex) {
+						FlashMessages::addMessage(
+							I18N::translate('The file %s could not be created.', Html::filename($file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
+							'danger'
+						);
+					}
+				}
+
+				$response = response('Successfully saved GEDCOM file to local file system');
+			}
+
+			//If download
+			if ($action === 'download') {
+
+				//If Gedcom 7, create Gedcom 7 response
+				if (($format === 'gedcom') && ($gedcom7)) {
+
+					$response = $this->gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_l);
+				}
+				//Create Gedcom 5.5.1 response
+				else {
+					$response = $this->gedcom_export_service->downloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format);
+				}
+			}
+		}
+
+		return $response;
+		
     }
 }
 

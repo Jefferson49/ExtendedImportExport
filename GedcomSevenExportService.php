@@ -73,7 +73,7 @@ use const STREAM_FILTER_WRITE;
  */
 class GedcomSevenExportService
 {
-    private const ACCESS_LEVELS = [
+    public const ACCESS_LEVELS = [
         'gedadmin' => Auth::PRIV_NONE,
         'user'     => Auth::PRIV_USER,
         'visitor'  => Auth::PRIV_PRIVATE,
@@ -115,6 +115,7 @@ class GedcomSevenExportService
      * @param string          $line_endings
      * @param string          $filename     - Name of download file, without an extension
      * @param string          $format       - One of: gedcom, zip, zipmedia, gedzip
+	 * @param bool            $gedcom_l     - Whether export should consider GEDCOM-L
      * @param Collection|null $records
      *
      * @return ResponseInterface
@@ -133,7 +134,7 @@ class GedcomSevenExportService
         $access_level = self::ACCESS_LEVELS[$privacy];
 
         if ($format === 'gedcom') {
-            $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records, $gedcom_l);
+            $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, $records);
             $stream   = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()
@@ -157,7 +158,7 @@ class GedcomSevenExportService
             $media_path = null;
         }
 
-        $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records, $gedcom_l, $zip_filesystem, $media_path);
+        $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, $records, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
@@ -185,6 +186,7 @@ class GedcomSevenExportService
      * @param string                      $encoding       - Convert from UTF-8 to other encoding
      * @param int                         $access_level   - Apply privacy filtering
      * @param string                      $line_endings   - CRLF or LF
+	 * @param bool                        $gedcom_l       - Whether export should consider GEDCOM-L
      * @param Collection<int,string>|null $records        - Just export these records
      * @param FilesystemOperator|null     $zip_filesystem - Write media files to this filesystem
      * @param string|null                 $media_path     - Location within the zip filesystem
@@ -197,8 +199,8 @@ class GedcomSevenExportService
         string $encoding = UTF8::NAME,
         int $access_level = Auth::PRIV_HIDE,
         string $line_endings = 'CRLF',
-        Collection $records = null,
 		bool $gedcom_l = false,
+        Collection $records = null,
         FilesystemOperator $zip_filesystem = null,
         string $media_path = null,
     ) {
@@ -305,6 +307,7 @@ class GedcomSevenExportService
      * Convert to Gedcom 7
      *
      * @param string $gedcom
+	 * @param bool $gedcom_l
      *
      * @return string
      */
@@ -455,6 +458,7 @@ class GedcomSevenExportService
      * @param Tree   $tree
      * @param string $encoding
      * @param bool   $include_sub
+	 * @param bool   $gedcom_l
      *
      * @return string
      */

@@ -28,7 +28,7 @@
 
 declare(strict_types=1);
 
-namespace DownloadGedcomWithURLNamespace;
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
@@ -99,8 +99,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const CUSTOM_AUTHOR = 'Markus Hemprich';
 
     //Prefences, Settings
-	private const PREF_SECRET_KEY = "secret_key";
-
+	public const PREF_SECRET_KEY = "secret_key";
+	public const PREF_USE_HASH = "use_hash";
+	public const PREF_ALLOW_DOWNLOAD = "allow_download";
+	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
 
    /**
      * DownloadGedcomWithURL constructor.
@@ -287,8 +289,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return $this->viewResponse(
             $this->name() . '::settings',
             [
-                'title'                 => $this->title(),
-				self::PREF_SECRET_KEY   => $this->getPreference(self::PREF_SECRET_KEY, ''),
+                'title'                       => $this->title(),
+				self::PREF_SECRET_KEY         => $this->getPreference(self::PREF_SECRET_KEY, ''),
+				self::PREF_USE_HASH           => boolval($this->getPreference(self::PREF_USE_HASH, '0')),
+				self::PREF_ALLOW_DOWNLOAD     => boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1')),
+				self::PREF_FOLDER_TO_SAVE     => $this->getPreference(self::PREF_FOLDER_TO_SAVE, ''),
             ]
         );
     }
@@ -302,28 +307,62 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function postAdminAction(ServerRequestInterface $request): ResponseInterface
     {
+		//ToDo Validator
         $params = (array) $request->getParsedBody();
 
         //Save the received settings to the user preferences
         if ($params['save'] === '1') {
 
+			//If provided secret key is empty
+			if($params['new_secret_key'] === '') {
+				//If no hashing
+				if (!isset($params[self::PREF_USE_HASH])) {
+					$this->setPreference(self::PREF_SECRET_KEY, '');
+				}
+			}
 			//If provided secret key is too short
-			if(strlen($params[self::PREF_SECRET_KEY])<8) {
-				$message = I18N::translate('The provided secret key is too short. Please provide a minimum length of 8 characters.', $this->title());
+			elseif(strlen($params['new_secret_key'])<8) {
+				$message = I18N::translate('The provided secret key is too short. Please provide a minimum length of 8 characters.');
 				FlashMessages::addMessage($message, 'danger');				
 			}
 			//If secret key does not escape correctly
-			elseif($params[self::PREF_SECRET_KEY] !== e($params[self::PREF_SECRET_KEY])) {
-				$message = I18N::translate('The provided secret key contains characters, which are not accepted. Please provide a different key.', $this->title());
+			elseif($params['new_secret_key'] !== e($params['new_secret_key'])) {
+				$message = I18N::translate('The provided secret key contains characters, which are not accepted. Please provide a different key.');
+				FlashMessages::addMessage($message, 'danger');				
+			}
+			//If secret key has to be stored with a hash
+			elseif(isset($params[self::PREF_USE_HASH])) {
+
+				$hash_value = password_hash($params['new_secret_key'], PASSWORD_BCRYPT);
+				$this->setPreference(self::PREF_SECRET_KEY, isset($params[self::PREF_SECRET_KEY]) ? $hash_value : '');
+			}
+			else {
+				$this->setPreference(self::PREF_SECRET_KEY, isset($params['new_secret_key']) ? $params['new_secret_key'] : '');
+			}
+
+			$this->setPreference(self::PREF_USE_HASH, isset($params[self::PREF_USE_HASH]) ? '1' : '0');
+			$this->setPreference(self::PREF_ALLOW_DOWNLOAD, isset($params[self::PREF_ALLOW_DOWNLOAD]) ? '1' : '0');
+
+			//If folder to save does not escape correctly
+			if($params[self::PREF_SECRET_KEY] !== e($params[self::PREF_SECRET_KEY])) {
+				$message = I18N::translate('The provided folder name contains characters, which are not accepted. Please provide a folder name.');
 				FlashMessages::addMessage($message, 'danger');				
 			}
 			else {
-				$this->setPreference(self::PREF_SECRET_KEY, isset($params[self::PREF_SECRET_KEY]) ? $params[self::PREF_SECRET_KEY] : '');
-
-				$message = I18N::translate('The preferences for the module "%s" were updated.', $this->title());
-				FlashMessages::addMessage($message, 'success');	
+				try {
+					//create folder
+					$this->setPreference(self::PREF_FOLDER_TO_SAVE, isset($params[self::PREF_FOLDER_TO_SAVE]) ? $params[self::PREF_FOLDER_TO_SAVE] : '');
+				}
+				catch(RuntimeException) {
+					//error of folder cannot be created
+					$message = I18N::translate('The folder cannot be created. Please provide a different folder name.');
+					FlashMessages::addMessage($message, 'danger');				
+				}
 			}
-        }
+
+			$message = I18N::translate('The preferences for the module "%s" were updated.', $this->title());
+			FlashMessages::addMessage($message, 'success');	
+		}
 
         return redirect($this->getConfigLink());
     }
@@ -427,9 +466,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
         elseif ($secret_key === '') {
 			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ' . $this->title()));
 		}
-		//Error if key is not valid
-        elseif ($key !== $secret_key) {
+		//Error if no hashing and key is not valid
+        elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) &&($key !== $secret_key)) {
 			$response = $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
+		}
+		//Error if hashing and key does not fit to hash
+        elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) &&(!password_verify($key, $secret_key))) {
+			$response = $this->showErrorMessage(I18N::translate('Key (hash) not accepted. Access denied.'));
 		}
         //Error if privacy level is not valid
 		elseif (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {

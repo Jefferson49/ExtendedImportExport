@@ -30,7 +30,7 @@
 
 declare(strict_types=1);
 
-namespace DownloadGedcomWithURLNamespace;
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 require __DIR__ . '/DownloadGedcomWithURL.php';
 require __DIR__ . '/GedcomSevenExportService.php';

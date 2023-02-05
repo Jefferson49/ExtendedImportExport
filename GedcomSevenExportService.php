@@ -17,7 +17,7 @@
 
 declare(strict_types=1);
 
-namespace DownloadGedcomWithURLNamespace;
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF16BE;

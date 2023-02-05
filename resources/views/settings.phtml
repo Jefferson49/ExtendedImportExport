@@ -1,6 +1,6 @@
 <?php
 
-namespace Jefferson49\Webtrees\Module\RepositoryHierarchyNamespace;
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
@@ -8,8 +8,12 @@ use Fisharebest\Webtrees\View;
 
 /**
  * @var  string		$title
+ * @var  bool		$use_hash
  * @var  string		$secret_key
+ * @var  bool       $allow_download
+ * @var  string		$folder_to_save
  */
+
 
 ?>
 
@@ -21,28 +25,52 @@ use Fisharebest\Webtrees\View;
 	<form method="post">
 		<?= csrf_field() ?>
 		<input type="hidden" name="save" id="save" value="1">
-
         <div class="row mb-3 justify-content-between m-0">
-
             <div class="row"><?= view('icons/spacer') ?></div> 
             <h3><?= I18N::translate('Settings for secret key') ?></h3>			
-            <div class="row">
-                <label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
-                    <?= I18N::translate('Secret key') ?>
+			<div class="row">
+				<?php if ($use_hash && ($secret_key !== '')) : ?>
+					<? $secret_key = I18N::translate('The secret key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key')?>
+				<?php endif ?>
+				<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
+                    <?= I18N::translate('Current secret key') ?>
                 </label>
                 <div class="col-sm-9 wt-page-options-value">
                     <input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($secret_key) ?>">
                 </div>
+			</div>	
+			<div class="row">
+				<label class="col-sm-3 col-form-label wt-page-options-label" for="new_secret_key">
+                    <?= I18N::translate('New secret key') ?>
+                </label>
+                <div class="col-sm-9 wt-page-options-value">
+                    <input class="form-control" id="new_secret_key" name="new_secret_key" type="text">
+                </div>
             </div>
-        </div>
-			
-        <div class="col">
-            <p></p>
-            <button type="submit" class="btn btn-primary">
-                <?= view('icons/save') ?>
-                <?= I18N::translate('save') ?>
-            </button>
-        </div>
+			<div class="row">
+				<p></p>
+				<?= view('components/checkbox', ['label' => I18N::translate('Activate encryption of the secret key. This option is more secure, because the password is not visible to anyone and also encrypted in the database. However, the password is not readible any more and cannot be recoverd if it is forgotten.').'.', 'name' => DownloadGedcomWithURL::PREF_USE_HASH, 'checked' => $use_hash]) ?>
+			</div> 
+			<div class="row">
+				<p></p>
+				<?= view('components/checkbox', ['label' => I18N::translate('Allow download of GEDCOM files').'.', 'name' => DownloadGedcomWithURL::PREF_ALLOW_DOWNLOAD, 'checked' => $allow_download]) ?>
+			</div> 
+			<div class="row">
+				<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
+					<?= I18N::translate('Folder within media path to save GEDCOM files') ?>
+				</label>
+				<div class="col-sm-9 wt-page-options-value">
+					<input class="form-control" id="folder_to_save" name="folder_to_save" type="text" value="<?= e($folder_to_save) ?>">
+				</div>
+			</div>
+			<div class="col">
+				<p></p>
+				<button type="submit" class="btn btn-primary">
+					<?= view('icons/save') ?>
+					<?= I18N::translate('save') ?>
+				</button>
+			</div>
+		</div>
     </form>	
 </div>
 

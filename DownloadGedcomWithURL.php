@@ -508,15 +508,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				$file_name .= date('_Y-m-d_H-i-s');
 			}
 
-			//Save or both
+			//If save or both
 			if (($action === 'save') or ($action === 'both')) {
 
-				$toot_filesystem = Registry::filesystem()->root();
+				$root_filesystem = Registry::filesystem()->root();
 				$access_level = GedcomSevenExportService::ACCESS_LEVELS[$privacy];
+				$export_file_name = $file_name;
 
 				// Force a ".ged" suffix
-				if (strtolower(pathinfo($file_name, PATHINFO_EXTENSION)) !== 'ged') {
-					$file_name .= '.ged';
+				if (strtolower(pathinfo($export_file_name, PATHINFO_EXTENSION)) !== 'ged') {
+					$export_file_name .= '.ged';
 				}
 
 				//Get folder from settings
@@ -526,15 +527,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				if (($format === 'gedcom') && ($gedcom7)) {
 					try {
 						$resource = $this->gedcom7_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings, $gedcom7);
-						$toot_filesystem->writeStream($folder_to_save . $file_name, $resource);
+						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
 						/* I18N: %s is a filename */
-						FlashMessages::addMessage(I18N::translate('The family tree has been exported to %s.', Html::filename($folder_to_save . $file_name)), 'success');
+						FlashMessages::addMessage(I18N::translate('The family tree "%s1" has been exported to %2s.', e($tree_name), Html::filename($folder_to_save . $export_file_name)), 'success');
 
 					} catch (FilesystemException | UnableToWriteFile $ex) {
 						FlashMessages::addMessage(
-							I18N::translate('The file %s could not be created.', Html::filename($folder_to_save . $file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
+							I18N::translate('The file %s could not be created.', Html::filename($folder_to_save . $export_file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
 							'danger'
 						);
 					}
@@ -544,15 +545,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				else {
 					try {
 						$resource = $this->gedcom_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings);
-						$toot_filesystem->writeStream($folder_to_save . $file_name, $resource);
+						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
 						/* I18N: %s is a filename */
-						FlashMessages::addMessage(I18N::translate('The family tree has been exported to %s.', Html::filename($folder_to_save . $file_name)), 'success');
+						FlashMessages::addMessage(I18N::translate('The family tree "%s1" has been exported to %2s.', e($tree_name), Html::filename($folder_to_save . $export_file_name)), 'success');
 
 					} catch (FilesystemException | UnableToWriteFile $ex) {
 						FlashMessages::addMessage(
-							I18N::translate('The file %s could not be created.', Html::filename($folder_to_save . $file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
+							I18N::translate('The file %s could not be created.', Html::filename($folder_to_save . $export_file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
 							'danger'
 						);
 					}
@@ -561,8 +562,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				$response = response('Successfully saved GEDCOM file to local file system');
 			}
 
-			//If download is requested
-			if ($action === 'download') {
+			//If download or both
+			if (($action === 'download') OR ($action === 'both')){
 				
 				//if download is allowed
 				if(boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1'))) {
@@ -573,6 +574,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 					//Create Gedcom 5.5.1 response
 					else {
 						$response = $this->gedcom_export_service->downloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format);
+						FlashMessages::addMessage(I18N::translate('The family tree "%s" has been downloaded.', e($tree_name), 'success'));
 					}
 				} 
 				else {

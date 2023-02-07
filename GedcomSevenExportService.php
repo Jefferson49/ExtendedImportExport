@@ -126,7 +126,7 @@ class GedcomSevenExportService
         string $encoding,
         string $privacy,
         string $line_endings,
-        string $filename,
+        string $filename,  //without .ged
         string $format,
 		bool $gedcom_l = false,
         Collection $records = null

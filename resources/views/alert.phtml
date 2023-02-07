@@ -1,0 +1,25 @@
+<?php
+
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+
+use Fisharebest\Webtrees\I18N;
+
+/**
+ * @var string       $text
+ * @var string       $alert_type
+ * @var string       $module_name
+ * @var string       $text
+ */
+
+?>
+<?php if ($alert_type === DownloadGedcomWithURL::ALERT_DANGER) : ?>
+	<div class="alert alert-danger">
+<?php elseif ($alert_type === DownloadGedcomWithURL::ALERT_SUCCESS) : ?>
+	<div class="alert alert-success">
+<?php else : ?>
+	<div class="alert alert-success">
+<?php endif ?>
+		<b><?= I18N::translate('Custom module') . ': ' . e($module_name) ?></b>
+		<br>
+		<?= e($text) ?>
+	</div>

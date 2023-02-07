@@ -104,6 +104,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const PREF_ALLOW_DOWNLOAD = "allow_download";
 	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
 
+	//Alert tpyes
+	public const ALERT_DANGER = 'alert_danger';
+	public const ALERT_SUCCESS = 'alert_success';
+
    /**
      * DownloadGedcomWithURL constructor.
      */
@@ -424,15 +428,32 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */ 
      private function showErrorMessage(string $text): ResponseInterface
 	 {		
-		return $this->viewResponse($this->name() . '::error', [
+		return $this->viewResponse($this->name() . '::alert', [
             'title'        	=> 'Error',
 			'tree'			=> null,
+			'alert_type'    => DownloadGedcomWithURL::ALERT_DANGER,
 			'module_name'	=> $this->title(),
 			'text'  	   	=> $text,
 		]);	 
 	 }
  
-     /**
+	 /**
+     * Show success message in the front end
+     *
+     * @return ResponseInterface
+     */ 
+	private function showSuccessMessage(string $text): ResponseInterface
+	{		
+	   return $this->viewResponse($this->name() . '::alert', [
+		   'title'        	=> 'Success',
+		   'tree'			=> null,
+		   'alert_type'     => DownloadGedcomWithURL::ALERT_SUCCESS,
+		   'module_name'	=> $this->title(),
+		   'text'  	   	    => $text,
+	   ]);	 
+	}
+
+	 /**
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
@@ -530,14 +551,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
-						/* I18N: %s is a filename */
-						FlashMessages::addMessage(I18N::translate('The family tree "%s1" has been exported to %2s.', e($tree_name), Html::filename($folder_to_save . $export_file_name)), 'success');
+						$response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
 
 					} catch (FilesystemException | UnableToWriteFile $ex) {
-						FlashMessages::addMessage(
-							I18N::translate('The file %s could not be created.', Html::filename($folder_to_save . $export_file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
-							'danger'
-						);
+						$response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
 					}
 
 				}
@@ -548,18 +565,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
-						/* I18N: %s is a filename */
-						FlashMessages::addMessage(I18N::translate('The family tree "%s1" has been exported to %2s.', e($tree_name), Html::filename($folder_to_save . $export_file_name)), 'success');
+						$response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
 
 					} catch (FilesystemException | UnableToWriteFile $ex) {
-						FlashMessages::addMessage(
-							I18N::translate('The file %s could not be created.', Html::filename($folder_to_save . $export_file_name)) . '<hr><samp dir="ltr">' . $ex->getMessage() . '</samp>',
-							'danger'
-						);
+						$response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
 					}
 				}
-
-				$response = response('Successfully saved GEDCOM file to local file system');
 			}
 
 			//If download or both
@@ -574,7 +585,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 					//Create Gedcom 5.5.1 response
 					else {
 						$response = $this->gedcom_export_service->downloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format);
-						FlashMessages::addMessage(I18N::translate('The family tree "%s" has been downloaded.', e($tree_name), 'success'));
 					}
 				} 
 				else {
@@ -585,4 +595,3 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		return $response;		
     }
 }
-

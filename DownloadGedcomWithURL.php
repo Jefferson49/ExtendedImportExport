@@ -53,6 +53,7 @@ use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\GedcomExportService;
+use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
@@ -497,6 +498,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$action       = Validator::queryParams($request)->string('action', 'download');
 		$time_stamp   = Validator::queryParams($request)->string('time_stamp', '');
 		$key          = Validator::queryParams($request)->string('key', '');
+		$language     = Validator::queryParams($request)->string('language', '');
 
 		//Check module version
 		if ($this->getPreference(self::PREF_MODULE_VERSION) !== self::CUSTOM_VERSION) {
@@ -557,8 +559,30 @@ class DownloadGedcomWithURL extends AbstractModule implements
         elseif (!in_array($time_stamp, ['prefix', 'postfix', ''])) {
 			$response = $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
+		//Error if language is not valid
+        elseif ($language != '') {	
+            
+			$locales = I18N::activeLocales();	
+			$language_found = false; 		
 
+			foreach (I18N::activeLocales() as $locale) {
+				if ($locale->languageTag() == $language) {
+					$language_found = true;
+				}
+			}
+
+			if (!$language_found) {
+				$response = $this->showErrorMessage(I18N::translate('Requested language tag not found') . ': ' . $language);
+			}		
+		}
+
+		//If no errors, start the core activities of the module
 		else {
+
+			//Set language as requested
+			I18N::init($language);
+			Session::put('language', $language);
+
 			//Add time stamp to file name if requested
 			if($time_stamp === 'prefix'){
 				$file_name = date('Y-m-d_H-i-s_') . $file_name;

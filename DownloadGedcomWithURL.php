@@ -300,7 +300,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             [
                 'title'                       => $this->title(),
 				self::PREF_SECRET_KEY         => $this->getPreference(self::PREF_SECRET_KEY, ''),
-				self::PREF_USE_HASH           => boolval($this->getPreference(self::PREF_USE_HASH, '0')),
+				self::PREF_USE_HASH           => boolval($this->getPreference(self::PREF_USE_HASH, '1')),
 				self::PREF_ALLOW_DOWNLOAD     => boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1')),
 				self::PREF_FOLDER_TO_SAVE     => $this->getPreference(self::PREF_FOLDER_TO_SAVE, ''),
             ]
@@ -330,7 +330,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				if(boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$use_hash) {
 					$this->setPreference(self::PREF_SECRET_KEY, '');
 				}
-				//If use hash changed from false to true, take old key (for future encryption)
+				//If use hash changed from false to true, take old key (for planned encryption)
 				elseif(!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && $use_hash) {
 					$new_secret_key = $this->getPreference(self::PREF_SECRET_KEY, '');
 				}
@@ -363,7 +363,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			if (is_dir($folder_to_save)) {
 				$this->setPreference(self::PREF_FOLDER_TO_SAVE, $folder_to_save);
 			} else {
-				FlashMessages::addMessage(I18N::translate('The folder “%s” does not exist.', e($folder_to_save)), 'danger');
+				FlashMessages::addMessage(I18N::translate('The folder settings could not be saved, because the folder “%s” does not exist.', e($folder_to_save)), 'danger');
 			}
 
 			$this->setPreference(self::PREF_USE_HASH, $use_hash ? '1' : '0');

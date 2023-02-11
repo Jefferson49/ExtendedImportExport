@@ -27,6 +27,21 @@ use Fisharebest\Webtrees\View;
 		<input type="hidden" name="save" id="save" value="1">
         <div class="row mb-3 justify-content-between m-0">
             <div class="row"><?= view('icons/spacer') ?></div> 
+			<?php if ($allow_download) : ?>
+				<div class="alert alert-warning">
+					<p><?= I18N::translate('Currently, the download of GEDCOM files is allowed. Please note that everyone with access to the secret key, can download GEDCOM files from your webtrees installation.') ?></p>
+				</div>
+			<?php endif ?>
+			<?php if (!$use_hash) : ?>
+				<div class="alert alert-warning">
+					<p><?= I18N::translate('Currently, the secret key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the secret key.') ?></p>
+				</div>  
+			<?php endif ?>
+			<?php if ($secret_key === '') : ?>
+				<div class="alert alert-danger">
+					<p><?= I18N::translate('The secret key is empty or not available') ?></p>
+				</div>  
+			<?php endif ?>
             <h3><?= I18N::translate('Settings for secret key') ?></h3>			
 			<div class="row">
 				<?php if ($use_hash && ($secret_key !== '')) : ?>

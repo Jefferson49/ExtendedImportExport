@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2023-01-04 10:42+0100\n"
-"PO-Revision-Date: 2023-01-04 10:42+0100\n"
+"POT-Creation-Date: 2023-02-11 09:07+0100\n"
+"PO-Revision-Date: 2023-02-11 09:07+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: DownloadGedcomWithURL.php:146
+#: DownloadGedcomWithURL.php:161
 msgid ""
 "A custom module to download GEDCOM files on URL requests with the tree name, "
 "GEDCOM file name, and authorization provided as parameters within the URL."
@@ -24,32 +24,42 @@ msgstr ""
 "von URL Anfragen, welche den Stammbaum-Namen, den GEDCOM Dateinamen und die "
 "Authorisierung als Paramter innerhalb der URL beinhalten."
 
-#: DownloadGedcomWithURL.php:304
+#: DownloadGedcomWithURL.php:336
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
 msgstr ""
-"Der angegebene Geheim-Schlüssel ist zu kurz. Bitte geben Sie mindestens eine "
-"Länge von 8 Zeichen ein."
+"Der angegebene Autorisierungs-Schlüssel ist zu kurz. Bitte geben Sie "
+"mindestens eine Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:309
+#: DownloadGedcomWithURL.php:341
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
 msgstr ""
-"Der eingegebene Geheim-Schlüssel enthält Schriftzeichen, welche nicht "
-"akzeptiert werden. Bitte geben Sie einen anderen Geheim-Schlüssel ein."
+"Der eingegebene Autorisierungs-Schlüssel enthält Schriftzeichen, welche "
+"nicht akzeptiert werden. Bitte geben Sie einen anderen Autorisierungs-"
+"Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:315
+#: DownloadGedcomWithURL.php:362
+#, php-format
+msgid "The folder “%s” does not exist."
+msgstr "Der Ordner \"%s\" exisitiert nicht."
+
+#: DownloadGedcomWithURL.php:368
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:423
+#: DownloadGedcomWithURL.php:507
+msgid "Error during update of the module preferences"
+msgstr "Fehler während der Aktualisierung von Modul-Einstellungen"
+
+#: DownloadGedcomWithURL.php:516
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:427
+#: DownloadGedcomWithURL.php:520
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -58,50 +68,128 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:431
+#: DownloadGedcomWithURL.php:524
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
 msgstr ""
-"Kein Geheim-Schlüssel definiert. Bitte definieren Sie einen Geheim-Schlüssel "
-"in den Modul-Einstellungen: Verwaltung / Module / Alle Module / "
+"Kein Autorisierungs-Schlüssel definiert. Bitte definieren Sie einen "
+"Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
+"Alle Module / "
 
-#: DownloadGedcomWithURL.php:435
+#: DownloadGedcomWithURL.php:528
 msgid "Key not accepted. Access denied."
-msgstr "Autorisierungs-Schlüssel nicht akzeptiert"
+msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:439
+#: DownloadGedcomWithURL.php:532
+msgid "Key (encrypted) not accepted. Access denied."
+msgstr ""
+"Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
+"verweigert."
+
+#: DownloadGedcomWithURL.php:536
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:443
+#: DownloadGedcomWithURL.php:540
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:447
+#: DownloadGedcomWithURL.php:544
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:451
+#: DownloadGedcomWithURL.php:548
+msgid "Action not accepted"
+msgstr "Angeforderte Aktion nicht akzeptiert"
+
+#: DownloadGedcomWithURL.php:552
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: resources/views/error.phtml:14
+#: DownloadGedcomWithURL.php:556
+msgid "Time stamp setting not accepted"
+msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
+
+#: DownloadGedcomWithURL.php:590 DownloadGedcomWithURL.php:604
+#, php-format
+msgid "The family tree \"%s\" has been exported to: %s"
+msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
+
+#: DownloadGedcomWithURL.php:593 DownloadGedcomWithURL.php:607
+#, php-format
+msgid "The file %s could not be created."
+msgstr "Die Datei %s konnte nicht erzeugt werden."
+
+#: DownloadGedcomWithURL.php:627
+msgid ""
+"Download is not allowed. Please change the module settings to allow "
+"downloads."
+msgstr ""
+"Das Herunterladen ist nicht erlaubt. Bitte ändern Sie die Modul-"
+"Einstellungen, um Herunterladen zu erlauben."
+
+#: GedcomSevenExportService.php:371
+msgid "Godparents"
+msgstr "Pate(n)"
+
+#: GedcomSevenExportService.php:372
+msgid "Witnesses"
+msgstr "Zeuge(n)"
+
+#: resources/views/alert.phtml:22
 msgid "Custom module"
 msgstr "Benutzerdefiniertes Modul"
 
-#: resources/views/settings.phtml:17
+#: resources/views/settings.phtml:20
 msgid "Control panel"
 msgstr "Verwaltung"
 
-#: resources/views/settings.phtml:29
+#: resources/views/settings.phtml:30
 msgid "Settings for secret key"
-msgstr "Einstellungen für Geheim-Schlüssel"
+msgstr "Einstellungen für den Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:32
-msgid "Secret key"
-msgstr "Geheim-Schlüssel"
+#: resources/views/settings.phtml:33
+msgid ""
+"The secret key cannot be shown, because encryption is activated. If you "
+"forgot the key, you have to create a new key."
+msgstr ""
+"Der Autorisierungs-Schlüssel kann nicht angezeigt werden, weil "
+"Verschlüsselung aktiviert ist. Wenn Sie den Schlüssel vergessen haben, "
+"müssen Sie einen neuen erzeugen."
+
+#: resources/views/settings.phtml:36
+msgid "Current secret key"
+msgstr "Aktueller Autorisierungs-Schlüssel"
 
 #: resources/views/settings.phtml:44
+msgid "New secret key"
+msgstr "Neuer Autorisierungs-Schlüssel"
+
+#: resources/views/settings.phtml:52
+msgid ""
+"Activate encryption of the secret key. This option is more secure, because "
+"the secret key is not visible to anyone and also encrypted in the database. "
+"However, the secret key is not readible any more (e.g. for other "
+"administrators) and cannot be recovered if it is forgotten."
+msgstr ""
+"Verschlüsseltes Abspeichern des Autorisierungs-Schlüssels aktivieren. Diese "
+"Option ist sicherer, weil der Autorisierungs-Schlüssel nicht mehr sichtbar "
+"ist und auch in der Datenbank verschlüsselt wird. Allerdings ist der "
+"Autorisierungs-Schüssel in diesem Fall nicht mehr lesbar (z.B. für andere "
+"Administratoren) und kann auch nicht mehr wiederhergestellt werden, wenn er "
+"vergessen wurde."
+
+#: resources/views/settings.phtml:56
+msgid "Allow download of GEDCOM files"
+msgstr "Das Herunterladen von GEDCOM Dateien erlauben"
+
+#: resources/views/settings.phtml:60
+msgid "Folder within the webtrees root path to save GEDCOM files"
+msgstr ""
+"Ordner innerhalb des webtrees root Verzeichnisses zum Abspeichern von GEDCOM "
+"Dateien"
+
+#: resources/views/settings.phtml:70
 msgid "save"
 msgstr "Speichern"

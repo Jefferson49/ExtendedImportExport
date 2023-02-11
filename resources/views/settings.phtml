@@ -49,7 +49,7 @@ use Fisharebest\Webtrees\View;
             </div>
 			<div class="row">
 				<p></p>
-				<?= view('components/checkbox', ['label' => I18N::translate('Activate encryption of the secret key. This option is more secure, because the password is not visible to anyone and also encrypted in the database. However, the password is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.').'.', 'name' => DownloadGedcomWithURL::PREF_USE_HASH, 'checked' => $use_hash]) ?>
+				<?= view('components/checkbox', ['label' => I18N::translate('Activate encryption of the secret key. This option is more secure, because the secret key is not visible to anyone and also encrypted in the database. However, the secret key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.').'.', 'name' => DownloadGedcomWithURL::PREF_USE_HASH, 'checked' => $use_hash]) ?>
 			</div> 
 			<div class="row">
 				<p></p>
@@ -57,7 +57,7 @@ use Fisharebest\Webtrees\View;
 			</div> 
 			<div class="row">
 				<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
-					<?= I18N::translate('Folder within media path to save GEDCOM files') ?>
+					<?= I18N::translate('Folder within the webtrees root path to save GEDCOM files') ?>
 				</label>
 				<div class="col-sm-9 wt-page-options-value">
 					<input class="form-control" id="folder_to_save" name="folder_to_save" type="text" value="<?= e($folder_to_save) ?>">

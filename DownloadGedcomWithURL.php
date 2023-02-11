@@ -99,6 +99,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const CUSTOM_AUTHOR = 'Markus Hemprich';
 
     //Prefences, Settings
+	public const PREF_MODULE_VERSION = 'module_version';
 	public const PREF_SECRET_KEY = "secret_key";
 	public const PREF_USE_HASH = "use_hash";
 	public const PREF_ALLOW_DOWNLOAD = "allow_download";
@@ -371,6 +372,24 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return redirect($this->getConfigLink());
     }
 
+	/**
+     * Update the preferences (after new module version is detected)
+     *
+     * @return string
+     */
+    public function updatePreferences(): string
+    {
+ 		//If no module version is stored yet (i.e. before version v3.0.1)
+		if($this->getPreference(self::PREF_MODULE_VERSION, '') === '') {
+
+			//do not encrypt secret key
+			$this->setPreference(self::PREF_USE_HASH, '0');
+		}
+
+        $error = '';
+        return $error;
+    }
+
     /**
      * All the trees that the current user has permission to access.
      *
@@ -475,6 +494,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$time_stamp   = Validator::queryParams($request)->string('time_stamp', '');
 		$key          = Validator::queryParams($request)->string('key', '');
 
+		//Check module version
+		if ($this->getPreference(self::PREF_MODULE_VERSION) !== self::CUSTOM_VERSION) {
+
+			//Update prefences stored in database
+			$update_result = $this->updatePreferences();
+
+			//If error during update of preferences, show error message
+			if ($update_result !== '') {
+				return $this->showErrorMessage(I18N::translate('Error during update of the module preferences') . ': ' . $update_result);
+			}
+			else {
+				$this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
+			}
+		}
+		
         //Error if tree name is not valid
         if (!$this->isValidTree($tree_name)) {
 			$response = $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
@@ -493,7 +527,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		}
 		//Error if hashing and key does not fit to hash
         elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) &&(!password_verify($key, $secret_key))) {
-			$response = $this->showErrorMessage(I18N::translate('Key (hash) not accepted. Access denied.'));
+			$response = $this->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
 		}
         //Error if privacy level is not valid
 		elseif (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {

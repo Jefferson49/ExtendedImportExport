@@ -29,6 +29,7 @@ use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Header;
+use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Webtrees;
@@ -330,6 +331,7 @@ class GedcomSevenExportService
 
 			$replace_pairs_gedcom_l = [
 				"1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
+				"1 _STAT NEVER MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
 				"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",			//Convert webtrees value to GEDCOM-L standard value
 			];
 	
@@ -361,6 +363,28 @@ class GedcomSevenExportService
 
 		foreach ($preg_replace_pairs as $pattern => $replace) {
 			$gedcom = preg_replace($pattern, $replace, $gedcom);
+		}
+
+		//GEDCOM-L _GODP, _WITN
+		if($gedcom_l) {
+			$preg_replace_pairs_gedcom_l = [
+				"_GODP" => I18N::translate("Godparents"),
+				"_WITN" => I18N::translate("Witnesses"),
+			];
+
+			foreach ($preg_replace_pairs_gedcom_l as $pattern => $phrase_text) {
+
+				preg_match_all("/([\d]) " . $pattern . " (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
+
+				foreach ($matches as $match) {
+					$level = (int) $match[1];
+					$role = str_replace("_", "", $pattern);
+
+					$search =  $level . " " . $pattern . " " . $match[2];
+					$replace = $level . " " . "ASSO @VOID@\n" . $level + 1 . " PHRASE " . $phrase_text . ": " . $match[2] . "\n" .  $level + 1 . " ROLE " . $role;
+					$gedcom = str_replace($search, $replace, $gedcom);
+				}			
+			}
 		}
 
 		//Languages
@@ -497,7 +521,11 @@ class GedcomSevenExportService
 			$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/";
 			$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
 			$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _NAME https://genealogy.netd/GEDCOM/";
+			$gedcom .= "\n2 TAG _POST https://genealogy.netd/GEDCOM/";
 			$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _STAT https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _UID https://genealogy.net/GEDCOM/";
 			$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
 		}
 

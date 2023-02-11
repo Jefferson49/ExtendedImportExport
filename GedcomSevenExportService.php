@@ -374,11 +374,11 @@ class GedcomSevenExportService
 		//GEDCOM-L _GODP, _WITN
 		if($gedcom_l) {
 			$preg_replace_pairs_gedcom_l = [
-				"_GODP" => I18N::translate("Godparents"),
-				"_WITN" => I18N::translate("Witnesses"),
+				"_GODP",
+				"_WITN",
 			];
 
-			foreach ($preg_replace_pairs_gedcom_l as $pattern => $phrase_text) {
+			foreach ($preg_replace_pairs_gedcom_l as $pattern) {
 
 				preg_match_all("/([\d]) " . $pattern . " (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
 
@@ -387,7 +387,7 @@ class GedcomSevenExportService
 					$role = str_replace("_", "", $pattern);
 
 					$search =  $level . " " . $pattern . " " . $match[2];
-					$replace = $level . " " . "ASSO @VOID@\n" . $level + 1 . " PHRASE " . $phrase_text . ": " . $match[2] . "\n" .  $level + 1 . " ROLE " . $role;
+					$replace = $level . " " . "ASSO @VOID@\n" . $level + 1 . " PHRASE " . $match[2] . "\n" .  $level + 1 . " ROLE " . $role;
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}			
 			}

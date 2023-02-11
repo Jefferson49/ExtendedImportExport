@@ -33,14 +33,14 @@ The module was developed and tested with [webtrees 2.1.16](https://webtrees.net/
 ## Usage and API
 
 ### URL Format
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&key=MY_KEY&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS&action=MY_ACTION&gedcom7=MY_GEDCOM7_FLAG&gedcom_l=MY_GEDCOM_L_FLAG
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&key=MY_KEY&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS&action=MY_ACTION&time_stamp=MY_TIME_STAMP&gedcom7=MY_GEDCOM7_FLAG&gedcom_l=MY_GEDCOM_L_FLAG
 
 ### Example URLs  
 http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9
 
 http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9&file=export
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&gedcom7=1&gedcom_l=1
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&action=both&time_stamp=prefix&gedcom7=1&gedcom_l=1
 
 ### URL Parameters  
 * MY_TREE specifies the webtrees tree name
@@ -66,6 +66,9 @@ http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree
 
 * MY_ACTION specifies whether the Gedcom file will be downloaded, saved on the server, or both
   * Valid values: download (Default), save, both
+
+* MY_TIME_STAMP specifies whether a time stamp will be added to the file name of saved Gedcom files. MY_TIME_STAMP also defines whether the time stamp is added as prefix or as a postfix.
+  * Valid values: prefix, postfix
 
 * MY_GEDCOM7_FLAG specifies whether the generated GEDCOM file follows the GEDCOM 7 specification; default is GEDCOM 5.5.1
   * Valid values: 1

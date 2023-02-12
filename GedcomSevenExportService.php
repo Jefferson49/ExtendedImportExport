@@ -322,7 +322,8 @@ class GedcomSevenExportService
     {
 		$replace_pairs = [
 			"ROLE (Godparent)\n" => "ROLE GODP\n",
-			"ROLE godparent\n" => "ROLE GODP\n",
+			"RELA godparent\n" => "RELA GODP\n",
+			"RELA witness\n" => "RELA WITN\n",
 			"2 LANG SERB\n" => "2 LANG Serbian\n",				//Otherwise not found by language replacement below
 			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
 			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below

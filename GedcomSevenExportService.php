@@ -446,7 +446,7 @@ class GedcomSevenExportService
 		//Nested enumsets
 
 		$nested_enumsets = [
-			[ "tags" => ["NAME", "TYPE"], "values" => ["ADOPTED", "BIRTH", "FOSTER", "SEALING", "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "CIVIL", "RELIGIOUS",]],
+			[ "tags" => ["NAME", "TYPE"], "values" => ["AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL",]],
 			[ "tags" => ["FAMC", "STAT"], "values" => ["CHALLENGED", "DISPROVEN", "PROVEN",]],
 		];
 
@@ -471,7 +471,7 @@ class GedcomSevenExportService
 					$replace = $level . " " . $level2_tag . " " . strtoupper($found_type);
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}
-				//Use phrase instead
+				//Use OTHER/PHRASE instead
 				else {
 					$search =  $level  . " " . $level2_tag . " " . $found_type;
 					$replace = $level  . " " . $level2_tag . " OTHER\n" . $level + 1 . " PHRASE " . $found_type;

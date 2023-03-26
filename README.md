@@ -2,14 +2,14 @@
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)](https://webtrees.net/download)
 
 ## DownloadGedcomWithURL
-A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files on URL requests with the tree name, GEDCOM file name, and authorization provided as parameters within the URL.
+A [weebtrees](https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests with the tree name, GEDCOM file name, and authorization provided as parameters within the URL.
 
 ## What are the benefits of this module?
 + Gedcom files can be automatically downloaded without logging into the user interface (webtrees front end)
 + Gedcom files can be downloaded with a script, see attached example scripts
 + Gedcom files can be automatically saved to a folder on the webtrees server without logging into the user interface (webtrees front end)
 + Gedcom file backups on the server can be scheduled by a Cron Job on the server, see attached example script
-+ Gedcom files can be downloaded/stored in the Gedcom 7 format (beta version feature)
++ Gedcom files can be downloaded/stored in the Gedcom 7 format (beta version)
 
 ## IMPORTANT SECURITY NOTE  
 Please note for versions below v3.0.0 that installing the module enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
@@ -89,6 +89,16 @@ The release ZIP file also contains 3 example scripts for automatic download of G
 + **ExampleBashScript.sh** contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
 + **ExamplePythonScript.py** contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windwos PC
 + **ExamplePythonScript2.py** contains a more advanced example for an automatic download with a Python script, which allows to store the downloaded file to a specific folder and also includes some logging output
+
+### GEDCOM 7 export
+DownloadGedcomWithURL also contains a (beta version) feature to download Gedcom files with the new GEDCOM 7 standard. In general, the **Gedcom 7 feature has a beta and testing status**. 
+
+The GEDCOM 7 export also includes a further option to use the German GEDCOM-L standard.
+
+The generated GEDCOM 7 files were successfully valdidated with [GEDCOM Validator](https://chronoplexsoftware.com/gedcomvalidator/) and 
+[Gedcom Structure Analysis](https://ofb.hesmer.name/main_gsp_e.html#Analyse). Gedcom Structure Analysis also validates against the German GEDCOM-L standard.
+
+At the moment, **it is not planned that the GEDCOM 7 feature is supported**. However, if you are a programmer, it might be interesting to take the code as a base for own Gedcom 7 tests. The code of the Gedcom 7 export is contained in the GedcomSevenExportService.php file; mainly in the function convertToGedcom7. Pull request to the Github repository will be accepted, if improvements of the code are intended to be shared.
 
 ## Translation
 You can help to translate this module. The translation is based on [gettext](https://en.wikipedia.org/wiki/Gettext) and uses .po files, which can be found in [/resources/lang/](https://github.com/Jefferson49/DownloadGedcomWithURL/tree/main/resources/lang). You can use a local editor like [Poedit](https://poedit.net/) or notepad++ to work on translations and provide them in the [Github repository](https://github.com/Jefferson49/DownloadGedcomWithURL) of the module. You can do this via a pull request (if you know how to do), or by opening a new issue and attaching a .po file. Updated translations will be included in the next release of this module.

@@ -27,7 +27,7 @@
  * 
  * DownloadGedcomWithURL
  *
- * A weebtrees(https://webtrees.net) 2.1 custom module to download GEDCOM files on URL requests 
+ * A weebtrees(https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests 
  * with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
  * 
  */
@@ -88,7 +88,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     private Tree $download_tree;
 
 	//Custom module version
-	public const CUSTOM_VERSION = '3.0.1';
+	public const CUSTOM_VERSION = '3.1.0';
 
 	//Route
 	protected const ROUTE_URL = '/DownloadGedcomWithURL'; 

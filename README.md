@@ -6,9 +6,10 @@ A [weebtrees](https://webtrees.net) 2.1 custom module to download GEDCOM files o
 
 ## What are the benefits of this module?
 + Gedcom files can be automatically downloaded without logging into the user interface (webtrees front end)
-+ Gedcom files can be downloaded with a script, see attached example scripts (in Python)
++ Gedcom files can be downloaded with a script, see attached example scripts
 + Gedcom files can be automatically saved to a folder on the webtrees server without logging into the user interface (webtrees front end)
 + Gedcom file backups on the server can be scheduled by a Cron Job on the server, see attached example script
++ Gedcom files can be downloaded/stored in the Gedcom 7 format (beta version feature)
 
 ## IMPORTANT SECURITY NOTE  
 Please note for versions below v3.0.0 that installing the module enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
@@ -24,8 +25,8 @@ Module versions starting from v3.0.0 use an access key, which is stored in the m
     + Login to webtrees as an administrator
 	+ Go to "Control Panel/All Modules", and find the module called "DownloadGedcomWithURL"
 	+ Check if it has a tick for "Enabled"
-+ Provide a secret key in the module settings, see chapter below.
-+ Specify in the module settings whether Gedcom files are allowed to be downloaded or not.
++ Provide a secret key in the module settings, see chapter below
++ Specify in the module settings whether Gedcom files are allowed to be downloaded or not
 
 ## Webtrees Version
 The module was developed and tested with [webtrees 2.1.16](https://webtrees.net/download), but should also run with any other 2.1 version.
@@ -67,7 +68,7 @@ http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree
 * MY_ACTION specifies whether the Gedcom file will be downloaded, saved on the server, or both
   * Valid values: download (Default), save, both
 
-* MY_TIME_STAMP specifies whether a time stamp will be added to the file name of saved Gedcom files. MY_TIME_STAMP also defines whether the time stamp is added as prefix or as a postfix.
+* MY_TIME_STAMP specifies whether a (GMT) time stamp will be added to the file name of saved Gedcom files. MY_TIME_STAMP also defines whether the time stamp is added as prefix or as a postfix.
   * Valid values: prefix, postfix
 
 * MY_GEDCOM7_FLAG specifies whether the generated GEDCOM file follows the GEDCOM 7 specification; default is GEDCOM 5.5.1
@@ -83,8 +84,11 @@ The provided secret key needs to have a minimum length of 8 characters.
 
 **The control panel also provides an option for the key to be saved as an encrypted hash value**. This option is more secure, because the secret key is not visible to anyone and also encrypted in the database. However, the secret key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.
 
-### Example Script 
-The file ExamplePythonScript.py contains an example, how an automatic download could be performed with a Python script
+### Example Scripts 
+The release ZIP file also contains 3 example scripts for automatic download of Gedcom files or storage on the server:
++ **ExampleBashScript.sh** contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
++ **ExamplePythonScript.py** contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windwos PC
++ **ExamplePythonScript2.py** contains a more advanced example for an automatic download with a Python script, which allows to store the downloaded file to a specific folder and also includes some logging output
 
 ## Translation
 You can help to translate this module. The translation is based on [gettext](https://en.wikipedia.org/wiki/Gettext) and uses .po files, which can be found in [/resources/lang/](https://github.com/Jefferson49/DownloadGedcomWithURL/tree/main/resources/lang). You can use a local editor like [Poedit](https://poedit.net/) or notepad++ to work on translations and provide them in the [Github repository](https://github.com/Jefferson49/DownloadGedcomWithURL) of the module. You can do this via a pull request (if you know how to do), or by opening a new issue and attaching a .po file. Updated translations will be included in the next release of this module.

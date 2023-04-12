@@ -478,8 +478,7 @@ class GedcomSevenExportService
 				//Use OTHER/PHRASE instead
 				else {
 					$search =  $level  . " " . $level2_tag . " " . $found_type;
-                    $found_type_without_brackets = str_replace(['<', '>'], ['', ''], $found_type);    //for user defined types: <user defined>
-					$replace = $level  . " " . $level2_tag . " OTHER\n" . $level + 1 . " PHRASE " . $found_type_without_brackets;
+					$replace = $level  . " " . $level2_tag . " OTHER\n" . $level + 1 . " PHRASE " . $found_type;
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}
 			}	

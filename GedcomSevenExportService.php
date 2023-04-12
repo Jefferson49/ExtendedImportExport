@@ -437,6 +437,10 @@ class GedcomSevenExportService
 				//Use phrase instead
 				else {
 					$search =  $level . " " . $enumset . " " . $match[2];
+                    //For specific role descriptions
+                    if ($enumset == "ROLE") {
+                        $match[2] = str_replace(['(', ')'], ['', ''], $match[2]);  // (<ROLE_DESCRIPTOR>)
+                    }
 					$replace = $level . " " . $enumset . " OTHER\n" . $level + 1 . " PHRASE " . $match[2];
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}

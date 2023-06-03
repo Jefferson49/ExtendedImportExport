@@ -532,8 +532,8 @@ class GedcomSevenExportService
 			$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/";
 			$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
 			$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _NAME https://genealogy.netd/GEDCOM/";
-			$gedcom .= "\n2 TAG _POST https://genealogy.netd/GEDCOM/";
+			$gedcom .= "\n2 TAG _NAME https://genealogy.net/GEDCOM/";
+			$gedcom .= "\n2 TAG _POST https://genealogy.net/GEDCOM/";
 			$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
 			$gedcom .= "\n2 TAG _STAT https://genealogy.net/GEDCOM/";
 			$gedcom .= "\n2 TAG _UID https://genealogy.net/GEDCOM/";

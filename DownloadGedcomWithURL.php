@@ -109,6 +109,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const PREF_USE_HASH = "use_hash";
 	public const PREF_ALLOW_DOWNLOAD = "allow_download";
 	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
+    public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
+    public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
+    public const PREF_DEFAULT_PRIVACY_LEVEL = 'default_privacy_level'; 
+    public const PREF_DEFAULT_EXPORT_FORMAT = 'default_export_format';
+    public const PREF_DEFAULT_ENCODING = 'default_encoding';
+    public const PREF_DEFAULT_ENDING = 'default_ending';
+    public const PREF_DEFAULT_ACTION = 'default_action';
+    public const PREF_DEFAULT_TIME_STAMP = 'default_time_stamp';
+    public const PREF_DEFAULT_GEDCOM_VERSION = 'default_gedcom_version';
+    public const PREF_DEFAULT_GEDCOM_L_SELECTION = 'default_gedcom_l_selection';
 
 	//Alert tpyes
 	public const ALERT_DANGER = 'alert_danger';
@@ -296,14 +306,32 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         $this->layout = 'layouts/administration';
 
+        $tree_list = [];
+        $all_trees = $this->all();
+
+        foreach($all_trees as $tree) {
+            $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
+        }
+
         return $this->viewResponse(
             $this->name() . '::settings',
             [
-                'title'                       => $this->title(),
-				self::PREF_SECRET_KEY         => $this->getPreference(self::PREF_SECRET_KEY, ''),
-				self::PREF_USE_HASH           => boolval($this->getPreference(self::PREF_USE_HASH, '1')),
-				self::PREF_ALLOW_DOWNLOAD     => boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1')),
-				self::PREF_FOLDER_TO_SAVE     => $this->getPreference(self::PREF_FOLDER_TO_SAVE, ''),
+                'title'                               => $this->title(),
+                'tree_list'                           => $tree_list,
+				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
+				self::PREF_USE_HASH                   => boolval($this->getPreference(self::PREF_USE_HASH, '1')),
+				self::PREF_ALLOW_DOWNLOAD             => boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1')),
+				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, ''),
+                self::PREF_DEFAULT_TREE_NAME          => $this->getPreference(self::PREF_DEFAULT_TREE_NAME, array_key_first($tree_list)),
+                self::PREF_DEFAULT_FiLE_NAME          => $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, array_key_first($tree_list)),
+                self::PREF_DEFAULT_PRIVACY_LEVEL      => $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none'),
+                self::PREF_DEFAULT_EXPORT_FORMAT      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
+                self::PREF_DEFAULT_ENCODING           => $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME),
+                self::PREF_DEFAULT_ENDING             => $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'),
+                self::PREF_DEFAULT_ACTION             => $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'),
+                self::PREF_DEFAULT_TIME_STAMP         => $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'),
+                self::PREF_DEFAULT_GEDCOM_VERSION     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_VERSION, '0'),
+                self::PREF_DEFAULT_GEDCOM_L_SELECTION => $this->getPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0'),
             ]
         );
     }
@@ -317,11 +345,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function postAdminAction(ServerRequestInterface $request): ResponseInterface
     {
-        $save                = Validator::parsedBody($request)->string('save', '');
-        $use_hash            = Validator::parsedBody($request)->boolean(self::PREF_USE_HASH, false);
-        $allow_download      = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_DOWNLOAD, false);
-        $new_secret_key      = Validator::parsedBody($request)->string('new_secret_key', '');
-        $folder_to_save      = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, '');
+        $save                       = Validator::parsedBody($request)->string('save', '');
+        $use_hash                   = Validator::parsedBody($request)->boolean(self::PREF_USE_HASH, false);
+        $allow_download             = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_DOWNLOAD, false);
+        $new_secret_key             = Validator::parsedBody($request)->string('new_secret_key', '');
+        $folder_to_save             = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, '');
+        $default_tree_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TREE_NAME, '');
+        $default_file_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_FiLE_NAME, 'tree');
+        $default_privacy_level      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none');
+        $default_export_format      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom');
+        $default_encoding           = Validator::parsedBody($request)->string(self::PREF_DEFAULT_ENCODING, UTF8::NAME);
+        $default_ending             = Validator::parsedBody($request)->string(self::PREF_DEFAULT_ENDING, 'CRLF');
+        $default_action             = Validator::parsedBody($request)->string(self::PREF_DEFAULT_ACTION, 'download');
+        $default_time_stamp         = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TIME_STAMP, 'none');
+        $default_gedcom_version     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_VERSION, '0');
+        $default_gedcom_l_selection = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0');
 
         //Save the received settings to the user preferences
         if ($save === '1') {
@@ -369,6 +407,17 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 			$this->setPreference(self::PREF_USE_HASH, $use_hash ? '1' : '0');
 			$this->setPreference(self::PREF_ALLOW_DOWNLOAD, $allow_download ? '1' : '0');
+
+            $this->setPreference(self::PREF_DEFAULT_TREE_NAME, $default_tree_name);           
+            $this->setPreference(self::PREF_DEFAULT_FiLE_NAME, $default_file_name);           
+            $this->setPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, $default_privacy_level);           
+            $this->setPreference(self::PREF_DEFAULT_EXPORT_FORMAT, $default_export_format);           
+            $this->setPreference(self::PREF_DEFAULT_ENCODING, $default_encoding);           
+            $this->setPreference(self::PREF_DEFAULT_ENDING, $default_ending);           
+            $this->setPreference(self::PREF_DEFAULT_ACTION, $default_action);           
+            $this->setPreference(self::PREF_DEFAULT_TIME_STAMP, $default_time_stamp);           
+            $this->setPreference(self::PREF_DEFAULT_GEDCOM_VERSION, $default_gedcom_version);           
+            $this->setPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, $default_gedcom_l_selection);           
 
 			$message = I18N::translate('The preferences for the module "%s" were updated.', $this->title());
 			FlashMessages::addMessage($message, 'success');	
@@ -487,17 +536,17 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		//Load secret key from preferences
         $secret_key = $this->getPreference(self::PREF_SECRET_KEY, ''); 
    		
-		$tree_name    = Validator::queryParams($request)->string('tree', '');
-        $file_name    = Validator::queryParams($request)->string('file', $tree_name);
-        $format       = Validator::queryParams($request)->string('format', 'gedcom');
-        $privacy      = Validator::queryParams($request)->string('privacy', 'visitor');
-        $encoding     = Validator::queryParams($request)->string('encoding', UTF8::NAME);
-        $line_endings = Validator::queryParams($request)->string('line_endings', 'CRLF');
-		$gedcom7      = Validator::queryParams($request)->boolean('gedcom7', false);
-		$gedcom_l     = Validator::queryParams($request)->boolean('gedcom_l', false);
-		$action       = Validator::queryParams($request)->string('action', 'download');
-		$time_stamp   = Validator::queryParams($request)->string('time_stamp', '');
 		$key          = Validator::queryParams($request)->string('key', '');
+		$tree_name    = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
+        $file_name    = Validator::queryParams($request)->string('file',  $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, $tree_name));
+        $format       = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
+        $privacy      = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
+        $encoding     = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
+        $line_endings = Validator::queryParams($request)->string('line_endings',  $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'));
+		$gedcom7      = Validator::queryParams($request)->boolean('gedcom7', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_VERSION, '0')));
+		$gedcom_l     = Validator::queryParams($request)->boolean('gedcom_l', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0')));
+		$action       = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'));
+		$time_stamp   = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'));
 
 		//Check module version
 		if ($this->getPreference(self::PREF_MODULE_VERSION) !== self::CUSTOM_VERSION) {
@@ -514,10 +563,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			}
 		}
 		
-        //Error if tree name is not valid
-        if (!$this->isValidTree($tree_name)) {
-			$response = $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
-		}
         //Error if key is empty
         elseif ($key === '') {
 			$response = $this->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
@@ -533,6 +578,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		//Error if hashing and key does not fit to hash
         elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) &&(!password_verify($key, $secret_key))) {
 			$response = $this->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
+		}
+        //Error if tree name is not valid
+        if (!$this->isValidTree($tree_name)) {
+			$response = $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
 		}
         //Error if privacy level is not valid
 		elseif (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {
@@ -555,7 +604,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			$response = $this->showErrorMessage(I18N::translate('Line endings not accepted') . ': ' . $line_endings);
         } 
 		//Error if time_stamp is not valid
-        elseif (!in_array($time_stamp, ['prefix', 'postfix', ''])) {
+        elseif (!in_array($time_stamp, ['prefix', 'postfix', 'none'])) {
 			$response = $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
 

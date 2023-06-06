@@ -3,17 +3,33 @@
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\Encodings\ANSEL;
+use Fisharebest\Webtrees\Encodings\ASCII;
+use Fisharebest\Webtrees\Encodings\UTF16BE;
+use Fisharebest\Webtrees\Encodings\UTF8;
+use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\View;
 
+
 /**
  * @var  string		$title
+ * @var  array      $tree_list
  * @var  bool		$use_hash
  * @var  string		$secret_key
  * @var  bool       $allow_download
- * @var  string		$folder_to_save
+ * @var  string		$folder_to_save 
+ * @var  string     $default_tree_name
+ * @var  string     $default_file_name
+ * @var  string     $default_privacy_level 
+ * @var  string     $default_export_format
+ * @var  string     $default_encoding
+ * @var  string     $default_ending
+ * @var  string     $default_action
+ * @var  string     $default_time_stamp
+ * @var  bool       $default_gedcom_version
+ * @var  bool       $default_gedcom_l_selection
  */
-
 
 ?>
 
@@ -42,6 +58,7 @@ use Fisharebest\Webtrees\View;
 					<p><?= I18N::translate('The secret key is empty or not available') ?></p>
 				</div>  
 			<?php endif ?>
+
             <h3><?= I18N::translate('Settings for secret key') ?></h3>			
 			<div class="row">
 				<?php if ($use_hash && ($secret_key !== '')) : ?>
@@ -72,12 +89,193 @@ use Fisharebest\Webtrees\View;
 			</div> 
 			<div class="row">
 				<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
-					<?= I18N::translate('Folder within the webtrees root path to save GEDCOM files') ?>
+					<?= I18N::translate('Folder name') ?>
 				</label>
 				<div class="col-sm-9 wt-page-options-value">
 					<input class="form-control" id="folder_to_save" name="folder_to_save" type="text" value="<?= e($folder_to_save) ?>">
 				</div>
+				<div class="form-text col-sm-9 offset-sm-3">
+					<?= I18N::translate('Folder within the webtrees root path to save GEDCOM files'); ?>
+				</div>			
 			</div>
+
+            <h3><?= I18N::translate('Default settings') ?></h3>			
+			<div class="row mb-3">
+				<label class="col-form-label col-sm-3">
+					<?= I18N::translate('Default tree') ?>
+				</label>
+				<div class="col-sm-3">
+					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, 'selected' => $default_tree_name, 
+						'options' => $tree_list]) ?>
+				</div>
+				<div class="form-text col-sm-9 offset-sm-3">
+					<?= I18N::translate('Select the default tree. This tree will be chosen if no specific tree is provided as URL parameter'); ?>
+				</div>
+	        </div>
+			<div class="row">
+				<label class="col-sm-3 col-form-label wt-page-options-label" for="default_file_name">
+					<?= I18N::translate('Default file name') ?>
+				</label>
+				<div class="col-sm-9 wt-page-options-value">
+					<input class="form-control" id="default_file_name" name="default_file_name" type="text" value="<?= e($default_file_name) ?>">
+				</div>
+				<div class="form-text col-sm-9 offset-sm-3">
+					<?= I18N::translate('Specifiy the default file name. This file name will be chosen if no specific file name is provided as URL parameter'); ?>
+				</div>
+			</div>
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Default privacy level') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL,'selected' => $default_privacy_level, 
+							'options' => [
+								'none'     => 'none (' . I18N::translate('None') .')', 
+								'gedadmin' => 'gedadmin (' . I18N::translate('Manager') .')', 
+								'user'     => 'user (' . I18N::translate('Member') .')',  
+								'visitor'  => 'visitor (' . I18N::translate('Visitor') .')', 
+							]
+						]) ?>
+						<div class="form-text">
+							<?= I18N::translate('Select the default privacy level. This privacy level will be chosen if no specific privacy level is provided as URL parameter')?>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Default export format') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'selected' => $default_export_format,
+							'options' => [
+								'gedcom'   => 'gedcom', 
+								'zip'      => 'zip', 
+								'zipmedia' => 'zipmedia (' . I18N::translate ('includes media files') .')', 
+								'gedzip'   => 'gedzip (' . I18N::translate ('includes media files') .')', 
+							]
+						]) ?>
+						<div class="form-text">
+							<?= I18N::translate('Select the default export format. This export format will be chosen if no specific export format is provided as URL parameter')?>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Default encoding') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ENCODING, 'selected' => $default_encoding,
+							'options' => [
+								UTF8::NAME        => UTF8::NAME, 
+								UTF16BE::NAME     => UTF16BE::NAME, 
+								ANSEL::NAME       => ANSEL::NAME, 
+								ASCII::NAME       => ASCII::NAME, 
+								Windows1252::NAME => Windows1252::NAME,
+							]
+						]) ?>
+						<div class="form-text">
+							<?= I18N::translate('Select the default export format. This export format will be chosen if no specific export format is provided as URL parameter')?>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Default ending') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'selected' => $default_ending,
+							'options' => [
+								'CRLF' => 'CRLF (Windows)',
+								'LF'   => 'LF (UNIX)',
+							]
+						]) ?>
+						<div class="form-text">
+							<?= I18N::translate('Select the default ending. This ending will be chosen if no specific ending is provided as URL parameter')?>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Default action') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ACTION, 'selected' => $default_action,
+							'options' => [
+								'download' => 'download (' . I18N::translate('Download') . ')',
+								'save'     => 'save (' . I18N::translate('Save') . ')',
+								'both'     => 'both (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
+							]
+						]) ?>
+						<div class="form-text">
+							<?= I18N::translate('Select the default action. This action will be chosen if no specific action is provided as URL parameter. If "both" is chosen, the file is downloaded and saved in parallel.')?>
+						</div>
+					</div>
+				</div>
+			</fieldset>		
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Default time stamp') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, 'selected' => $default_time_stamp,
+							'options' => [
+								'none'    => 'none (' . I18N::translate('No time stamp') . ')',
+								'prefix'  => 'prefix (' .  I18N::translate('Prefix time stamp') . ')',
+								'postfix' => 'postfix (' . I18N::translate('Postfix time stamp') . ')',
+							] 
+						]) ?>
+						<div class="form-text">
+							<?= I18N::translate('Select the default time stamp. This time stamp will be chosen if no specific time stamp is provided as URL parameter. If "none" is chosen, no time stamp will be used.')?>
+						</div>
+					</div>
+				</div>
+			</fieldset>	
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Default GEDCOM 7 flag') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_VERSION, 'selected' => (int) $default_gedcom_version,
+							'options' => [
+								'0 (GEDCOM 5.5.1)', 
+								'1 (GEDCOM 7.0)',
+							]
+						]) ?>
+						<div class="form-text">
+							<?= I18N::translate('Select the default GEDCOM version. This GEDCOM version will be chosen if no specific GEDCOM version is provided as URL parameter.')?>
+						</div>
+					</div>
+				</div>
+			</fieldset>									
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Default GEDCOM-L flag') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_L_SELECTION, 'selected' => (int) $default_gedcom_l_selection,
+							'options' => [
+								'0'  => '0 (Do not use GEDCOM-L)', 
+								'1'  => '1 (Use GEDCOM-L)',
+							] 
+						]) ?>
+						<div class="form-text">
+							<?= I18N::translate('Select the default for GEDCOM-L usage. This GEDCOM-L setting will be chosen for GEDCOM 7.0 exports if no specific GEDCOM-L setting is provided as URL parameter.')?>
+						</div>
+					</div>
+				</div>
+			</fieldset>	
 			<div class="col">
 				<p></p>
 				<button type="submit" class="btn btn-primary">

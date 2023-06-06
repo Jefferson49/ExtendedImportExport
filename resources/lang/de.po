@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2023-03-26 12:03+0200\n"
-"PO-Revision-Date: 2023-03-26 12:05+0200\n"
+"POT-Creation-Date: 2023-06-06 21:20+0200\n"
+"PO-Revision-Date: 2023-06-06 21:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -10,12 +10,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.3.1\n"
 "X-Poedit-Basepath: ../..\n"
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: DownloadGedcomWithURL.php:166
+#: DownloadGedcomWithURL.php:176
 msgid ""
 "A custom module to download GEDCOM files on URL requests with the tree name, "
 "GEDCOM file name, and authorization provided as parameters within the URL."
@@ -24,7 +24,7 @@ msgstr ""
 "von URL Anfragen, welche den Stammbaum-Namen, den GEDCOM Dateinamen und die "
 "Authorisierung als Paramter innerhalb der URL beinhalten."
 
-#: DownloadGedcomWithURL.php:341
+#: DownloadGedcomWithURL.php:379
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -32,7 +32,7 @@ msgstr ""
 "Der angegebene Autorisierungs-Schlüssel ist zu kurz. Bitte geben Sie "
 "mindestens eine Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:346
+#: DownloadGedcomWithURL.php:384
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -41,7 +41,7 @@ msgstr ""
 "nicht akzeptiert werden. Bitte geben Sie einen anderen Autorisierungs-"
 "Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:367
+#: DownloadGedcomWithURL.php:405
 #, php-format
 msgid ""
 "The folder settings could not be saved, because the folder “%s” does not "
@@ -50,20 +50,16 @@ msgstr ""
 "Die Einstellungen für den Ordner konnten nicht gespeichert werden, weil der "
 "Ordner \"%s\" nicht existiert."
 
-#: DownloadGedcomWithURL.php:373
+#: DownloadGedcomWithURL.php:422
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:510
+#: DownloadGedcomWithURL.php:559
 msgid "Error during update of the module preferences"
 msgstr "Fehler während der Aktualisierung von Modul-Einstellungen"
 
-#: DownloadGedcomWithURL.php:519
-msgid "Tree not found"
-msgstr "Stammbaum nicht gefunden"
-
-#: DownloadGedcomWithURL.php:523
+#: DownloadGedcomWithURL.php:568
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -72,7 +68,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:527
+#: DownloadGedcomWithURL.php:572
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -81,51 +77,55 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:531
+#: DownloadGedcomWithURL.php:576
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:535
+#: DownloadGedcomWithURL.php:580
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:539
+#: DownloadGedcomWithURL.php:584
+msgid "Tree not found"
+msgstr "Stammbaum nicht gefunden"
+
+#: DownloadGedcomWithURL.php:588
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:543
+#: DownloadGedcomWithURL.php:592
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:547
+#: DownloadGedcomWithURL.php:596
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:551
+#: DownloadGedcomWithURL.php:600
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:555
+#: DownloadGedcomWithURL.php:604
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:559
+#: DownloadGedcomWithURL.php:608
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:595 DownloadGedcomWithURL.php:609
+#: DownloadGedcomWithURL.php:644 DownloadGedcomWithURL.php:658
 #, php-format
 msgid "The family tree \"%s\" has been exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:598 DownloadGedcomWithURL.php:612
+#: DownloadGedcomWithURL.php:647 DownloadGedcomWithURL.php:661
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:632
+#: DownloadGedcomWithURL.php:681
 msgid ""
 "Download is not allowed. Please change the module settings to allow "
 "downloads."
@@ -137,11 +137,11 @@ msgstr ""
 msgid "Custom module"
 msgstr "Benutzerdefiniertes Modul"
 
-#: resources/views/settings.phtml:20
+#: resources/views/settings.phtml:36
 msgid "Control panel"
 msgstr "Verwaltung"
 
-#: resources/views/settings.phtml:32
+#: resources/views/settings.phtml:48
 msgid ""
 "Currently, the download of GEDCOM files is allowed. Please note that "
 "everyone with access to the secret key, can download GEDCOM files from your "
@@ -151,7 +151,7 @@ msgstr ""
 "Sie, dass jeder mit Zugriff auf den AutorisierungsSchlüssel GEDCOM-Dateien "
 "von Ihrer webtrees Installation herunterladen kann."
 
-#: resources/views/settings.phtml:37
+#: resources/views/settings.phtml:53
 msgid ""
 "Currently, the secret key is not encrypted. This option is less secure and "
 "should only be used in local environments with limited users. Otherwise, "
@@ -162,15 +162,15 @@ msgstr ""
 "begrenzten Benutzern verwendet werden. Andernfalls, aktivieren sie bitte die "
 "Verschlüsselung des Autorisierungs-Schlüssels."
 
-#: resources/views/settings.phtml:42
+#: resources/views/settings.phtml:58
 msgid "The secret key is empty or not available"
 msgstr "Der Autorisierungs-Schlüssel ist leer oder nicht verfügbar"
 
-#: resources/views/settings.phtml:45
+#: resources/views/settings.phtml:62
 msgid "Settings for secret key"
 msgstr "Einstellungen für den Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:48
+#: resources/views/settings.phtml:65
 msgid ""
 "The secret key cannot be shown, because encryption is activated. If you "
 "forgot the key, you have to create a new key."
@@ -179,15 +179,15 @@ msgstr ""
 "Verschlüsselung aktiviert ist. Wenn Sie den Schlüssel vergessen haben, "
 "müssen Sie einen neuen erzeugen."
 
-#: resources/views/settings.phtml:51
+#: resources/views/settings.phtml:68
 msgid "Current secret key"
 msgstr "Aktueller Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:59
+#: resources/views/settings.phtml:76
 msgid "New secret key"
 msgstr "Neuer Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:67
+#: resources/views/settings.phtml:84
 msgid ""
 "Activate encryption of the secret key. This option is more secure, because "
 "the secret key is not visible to anyone and also encrypted in the database. "
@@ -201,19 +201,189 @@ msgstr ""
 "Administratoren) und kann auch nicht mehr wiederhergestellt werden, wenn er "
 "vergessen wurde."
 
-#: resources/views/settings.phtml:71
+#: resources/views/settings.phtml:88
 msgid "Allow download of GEDCOM files"
 msgstr "Das Herunterladen von GEDCOM Dateien erlauben"
 
-#: resources/views/settings.phtml:75
+#: resources/views/settings.phtml:92
+msgid "Folder name"
+msgstr "Ordnername"
+
+#: resources/views/settings.phtml:98
 msgid "Folder within the webtrees root path to save GEDCOM files"
 msgstr ""
 "Ordner innerhalb des webtrees root Verzeichnisses zum Abspeichern von GEDCOM "
 "Dateien"
 
-#: resources/views/settings.phtml:85
+#: resources/views/settings.phtml:102
+msgid "Default settings"
+msgstr "Voreinstellungen"
+
+#: resources/views/settings.phtml:105
+msgid "Default tree"
+msgstr "Voreinstellung Stammbaum"
+
+#: resources/views/settings.phtml:112
+msgid ""
+"Select the default tree. This tree will be chosen if no specific tree is "
+"provided as URL parameter"
+msgstr ""
+"Geben Sie die Voreinstellung für den Stammbaum an. Dieser Stammbaum wird "
+"genutzt, wenn kein spezifischer Stammbaum über die URL bereitgestellt wird."
+
+#: resources/views/settings.phtml:117
+msgid "Default file name"
+msgstr "Voreinstellung Dateiname"
+
+#: resources/views/settings.phtml:123
+msgid ""
+"Specifiy the default file name. This file name will be chosen if no specific "
+"file name is provided as URL parameter"
+msgstr ""
+"Geben Sie die Voreinstellung für den Dateinamen an. Dieser Dateinamen wird "
+"genutzt, wenn kein spezifischer Dateinamen über die URL bereitgestellt wird."
+
+#: resources/views/settings.phtml:129
+msgid "Default privacy level"
+msgstr "Voreinstellung für Datenschutzeinstellung"
+
+#: resources/views/settings.phtml:134
+msgid "None"
+msgstr ""
+
+#: resources/views/settings.phtml:135
+msgid "Manager"
+msgstr ""
+
+#: resources/views/settings.phtml:136
+msgid "Member"
+msgstr ""
+
+#: resources/views/settings.phtml:137
+msgid "Visitor"
+msgstr ""
+
+#: resources/views/settings.phtml:141
+msgid ""
+"Select the default privacy level. This privacy level will be chosen if no "
+"specific privacy level is provided as URL parameter"
+msgstr ""
+"Geben Sie die Voreinstellung für die Datenschutzeinstellung an. Diese "
+"Einstellung wird genutzt, wenn keine spezifische Einstellung über die URL "
+"bereitgestellt wird."
+
+#: resources/views/settings.phtml:149
+msgid "Default export format"
+msgstr "Voreinstellung Exportformat"
+
+#: resources/views/settings.phtml:156 resources/views/settings.phtml:157
+msgid "includes media files"
+msgstr "enthält Mediendateien"
+
+#: resources/views/settings.phtml:161 resources/views/settings.phtml:182
+msgid ""
+"Select the default export format. This export format will be chosen if no "
+"specific export format is provided as URL parameter"
+msgstr ""
+"Geben Sie die Voreinstellung für das Exportformat an. Dieses Exportformat "
+"wird genutzt, wenn keine spezifisches Exportformat über die URL "
+"bereitgestellt wird."
+
+#: resources/views/settings.phtml:169
+msgid "Default encoding"
+msgstr "Voreinstellung Zeichencodierung"
+
+#: resources/views/settings.phtml:190
+msgid "Default ending"
+msgstr "Voreinstellung Zeilenenden"
+
+#: resources/views/settings.phtml:200
+msgid ""
+"Select the default ending. This ending will be chosen if no specific ending "
+"is provided as URL parameter"
+msgstr ""
+"Geben Sie die Voreinstellung für die Zeilenenden an. Diese Zeilenenden "
+"werden genutzt, wenn keine spezifischen Zeilenenden über die URL "
+"bereitgestellt werden."
+
+#: resources/views/settings.phtml:208
+msgid "Default action"
+msgstr "Voreinstellung Aktion"
+
+#: resources/views/settings.phtml:213
+msgid "Download"
+msgstr ""
+
+#: resources/views/settings.phtml:214
+msgid "Save"
+msgstr ""
+
+#: resources/views/settings.phtml:215
+msgid "Both, i.e. download and save in parallel"
+msgstr "Beides, d.h. Herunterladen und gleichzeitig Speichern"
+
+#: resources/views/settings.phtml:219
+msgid ""
+"Select the default action. This action will be chosen if no specific action "
+"is provided as URL parameter. If \"both\" is chosen, the file is downloaded "
+"and saved in parallel."
+msgstr ""
+"Geben Sie die Voreinstellung für die Aktion an. Diese Aktion wird "
+"durchgeführt, wenn keine spezifische Aktion über die URL bereitgestellt wird."
+
+#: resources/views/settings.phtml:227
+msgid "Default time stamp"
+msgstr "Voreinstellung für Zeitstempel"
+
+#: resources/views/settings.phtml:232
+msgid "No time stamp"
+msgstr "Kein Zeitstempel"
+
+#: resources/views/settings.phtml:233
+msgid "Prefix time stamp"
+msgstr "Prefix Zeitstempel"
+
+#: resources/views/settings.phtml:234
+msgid "Postfix time stamp"
+msgstr "Postfix Zeitstempel"
+
+#: resources/views/settings.phtml:238
+msgid ""
+"Select the default time stamp. This time stamp will be chosen if no specific "
+"time stamp is provided as URL parameter. If \"none\" is chosen, no time "
+"stamp will be used."
+msgstr ""
+"Geben Sie die Voreinstellung für den Zeitstempel an. Diese Einstellung wird "
+"genutzt, wenn keine spezifische Einstellung über die URL bereitgestellt wird."
+
+#: resources/views/settings.phtml:246
+msgid "Default GEDCOM 7 flag"
+msgstr "Voreinstellung GEDCOM 7 Flag"
+
+#: resources/views/settings.phtml:256
+msgid ""
+"Select the default GEDCOM version. This GEDCOM version will be chosen if no "
+"specific GEDCOM version is provided as URL parameter."
+msgstr ""
+"Geben Sie die Voreinstellung für das GEDCOM 7 Flag an. Dieser Wert wird "
+"genutzt, wenn kein spezifischer Wert über die URL bereitgestellt wird."
+
+#: resources/views/settings.phtml:264
+msgid "Default GEDCOM-L flag"
+msgstr "Voreinstellung GEDCOM-L Flag"
+
+#: resources/views/settings.phtml:274
+msgid ""
+"Select the default for GEDCOM-L usage. This GEDCOM-L setting will be chosen "
+"for GEDCOM 7.0 exports if no specific GEDCOM-L setting is provided as URL "
+"parameter."
+msgstr ""
+"Geben Sie die Voreinstellung für das GEDCOM-L Flag an. Dieser Wert wird "
+"genutzt, wenn kein spezifischer Wert über die URL bereitgestellt wird."
+
+#: resources/views/settings.phtml:283
 msgid "save"
-msgstr "Speichern"
+msgstr ""
 
 #~ msgid "Godparents"
 #~ msgstr "Pate(n)"

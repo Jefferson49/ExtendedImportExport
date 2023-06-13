@@ -69,13 +69,13 @@ http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree
   * Valid values: download (Default), save, both
 
 * MY_TIME_STAMP specifies whether a (GMT) time stamp will be added to the file name of saved Gedcom files. MY_TIME_STAMP also defines whether the time stamp is added as prefix or as a postfix.
-  * Valid values: prefix, postfix
+  * Valid values: none, prefix, postfix
 
 * MY_GEDCOM7_FLAG specifies whether the generated GEDCOM file follows the GEDCOM 7 specification; default is GEDCOM 5.5.1
-  * Valid values: 1
+  * Valid values: 0, 1
    
 * MY_GEDCOM_L_FLAG specifies whether the GEDCOM-L standard shall be used additionally to GEDCOM 7
-  * Valid values: 1
+  * Valid values: 0, 1
 
 ### Secret Key in the Module Settings
 The key parameter of the URL is checked against a secret key. **The secret key is stored in the module settings**: Control Panel / Modules / All Modules / DownloadGedcomWithURL.

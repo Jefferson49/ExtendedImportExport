@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2023-06-14 07:04+0200\n"
-"PO-Revision-Date: 2023-06-14 07:05+0200\n"
+"POT-Creation-Date: 2023-06-14 21:24+0200\n"
+"PO-Revision-Date: 2023-06-14 21:24+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -185,7 +185,7 @@ msgstr "Aktueller Autorisierungs-Schlüssel"
 
 #: resources/views/settings.phtml:76
 msgid "New authorization key"
-msgstr ""
+msgstr "Neuer Autorisierungs-Schlüssel"
 
 #: resources/views/settings.phtml:85
 msgid "Activate encryption of the authorization key"
@@ -357,7 +357,7 @@ msgstr "Voreinstellung Aktion"
 msgid "Download"
 msgstr ""
 
-#: resources/views/settings.phtml:235
+#: resources/views/settings.phtml:235 resources/views/settings.phtml:304
 msgid "Save"
 msgstr ""
 
@@ -431,10 +431,6 @@ msgid ""
 msgstr ""
 "Geben Sie die Voreinstellung für das GEDCOM-L Flag an. Dieser Wert wird "
 "genutzt, wenn kein spezifischer Wert in der URL angegeben wird."
-
-#: resources/views/settings.phtml:304
-msgid "save"
-msgstr ""
 
 #: resources/views/settings.phtml:318
 msgid "Test Download"

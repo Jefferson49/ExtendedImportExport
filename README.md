@@ -12,11 +12,11 @@ A [weebtrees](https://webtrees.net) 2.1 custom module to download or store GEDCO
 + Gedcom files can be downloaded/stored in the Gedcom 7 format (beta version)
 
 ## IMPORTANT SECURITY NOTE  
-Please note for versions below v3.0.0 that installing the module enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
+**Module versions starting from v3.0.0 use an authorization key**, which is stored in the module preferences in webtrees. Access to the download is only allowed if the provided key in the URL is identical to a authorization key in the webtrees database (settings). 
 
-Module versions starting from v3.0.0 use an **authorization key**, which is stored in the module preferences in webtrees. Access to the download is only allowed if the provided key in the URL is identical to a authorization key in the webtrees database (settings). 
+**Please note that everyone with access to the authorization key, can download GEDCOM files from your webtrees installation.**
 
-<span style="color:red">Please note that everyone with access to the authorization key, can download GEDCOM files from your webtrees installation.</span>
+Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authorization key**. This means that installing this module versions enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module versions in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
 
 ## Installation
 + Download the [latest release](https://github.com/Jefferson49/DownloadGedcomWithURL/releases/latest) of the module

@@ -14,9 +14,9 @@ A [weebtrees](https://webtrees.net) 2.1 custom module to download or store GEDCO
 ## IMPORTANT SECURITY NOTE  
 Please note for versions below v3.0.0 that installing the module enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
 
-Module versions starting from v3.0.0 use an access key, which is stored in the module preferences in webtrees. Access to the download is only allowed if the provided key in the URL is identical to a secret key in the webtrees database (settings). 
+Module versions starting from v3.0.0 use an **authorization key**, which is stored in the module preferences in webtrees. Access to the download is only allowed if the provided key in the URL is identical to a authorization key in the webtrees database (settings). 
 
-<span style="color:red">Please note that everyone with access to the secret key, can download GEDCOM files from your webtrees installation.</span>
+<span style="color:red">Please note that everyone with access to the authorization key, can download GEDCOM files from your webtrees installation.</span>
 
 ## Installation
 + Download the [latest release](https://github.com/Jefferson49/DownloadGedcomWithURL/releases/latest) of the module
@@ -25,8 +25,10 @@ Module versions starting from v3.0.0 use an access key, which is stored in the m
     + Login to webtrees as an administrator
 	+ Go to "Control Panel/All Modules", and find the module called "DownloadGedcomWithURL"
 	+ Check if it has a tick for "Enabled"
-+ Provide a secret key in the module settings, see chapter below
++ Provide an authorization key in the module settings, see chapter below
 + Specify in the module settings whether Gedcom files are allowed to be downloaded or not
++ Optionally, specify default settings in the control panel, which might reduce the number of parameters provided within the URL
++ Optionally, test the download setting with the "Test Download" button in the control panel
 
 ## Webtrees Version
 The module was developed and tested with [webtrees 2.1.16](https://webtrees.net/download), but should also run with any other 2.1 version.
@@ -34,55 +36,75 @@ The module was developed and tested with [webtrees 2.1.16](https://webtrees.net/
 ## Usage and API
 
 ### URL Format
+The full URL format, which contains all possible parameters is defined as follows:
+
 http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&key=MY_KEY&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS&action=MY_ACTION&time_stamp=MY_TIME_STAMP&gedcom7=MY_GEDCOM7_FLAG&gedcom_l=MY_GEDCOM_L_FLAG
 
+The "MY_xxx" place holders need to be replaced by the specific parameter values, which shall be used for the download. The possible values for the URL parameters are described below.
+
+It is not mandatory to provide all parameters. The only mandatory parameter is the authorization key. If any of the other parameters is not provided, the default value, which is specified in the control panel is used.
+
 ### Example URLs  
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9&file=export
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&action=both&time_stamp=prefix&gedcom7=1&gedcom_l=1
+http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&action=both&time_stamp=prefix&gedcom7=1&gedcom_l=1
 
-### URL Parameters  
+### Values for URL Parameters  
+* MY_KEY specifies a authorization key, which restricts the access to the download
+  * This is the only mandatory parameter. If it is not provided in the URL, the download will be denied.
+
 * MY_TREE specifies the webtrees tree name
-  * Mandatory parameter
-
-* MY_KEY specifies a secure key, which restricts the access to the download
-  * Mandatory parameter
+  * The default tree is specified in the control panel
 
 * MY_FILENAME has to be provided without .ged extension, i.e. use this_file instead of this_file.ged
-  * Tree name is taken as default if MY_FILENAME is not provided
+  * The tree name (MY_TREE) is taken as default if MY_FILENAME is not provided
 
 * MY_PRIVACY_LEVEL specifies the user role, in which the GEDCOM export is executed
-  * Valid values: gedadmin, user, visitor, none (Default)
+  * Valid values: none (default), gedadmin, user, visitor
 
 * MY_EXPORT_FORMAT specifies the file format for the export
-  * Valid values: gedcom (Default), zip, zipmedia, gedzip
+  * Valid values: gedcom (default), zip, zipmedia, gedzip
 
 * MY_ENCODING specifies the encoding of the generated GEDCOM file
-  * Valid values: UTF-8 (Default), UTF-16BE, ANSEL, ASCII, CP1252
+  * Valid values: UTF-8 (default), UTF-16BE, ANSEL, ASCII, CP1252
 
 * MY_ENDINGS specifies the line endings in the generated GEDCOM file
-  * Valid values: CRLF (Default), LF
+  * Valid values: CRLF (default), LF
 
 * MY_ACTION specifies whether the Gedcom file will be downloaded, saved on the server, or both
-  * Valid values: download (Default), save, both
+  * Valid values: download (default), save, both
 
 * MY_TIME_STAMP specifies whether a (GMT) time stamp will be added to the file name of saved Gedcom files. MY_TIME_STAMP also defines whether the time stamp is added as prefix or as a postfix.
-  * Valid values: none, prefix, postfix
+  * Valid values: none (default), prefix, postfix
 
 * MY_GEDCOM7_FLAG specifies whether the generated GEDCOM file follows the GEDCOM 7 specification; default is GEDCOM 5.5.1
-  * Valid values: 0, 1
+  * Valid values: 0 (default), 1
    
 * MY_GEDCOM_L_FLAG specifies whether the GEDCOM-L standard shall be used additionally to GEDCOM 7
-  * Valid values: 0, 1
+  * Valid values: 0 (default), 1
 
-### Secret Key in the Module Settings
-The key parameter of the URL is checked against a secret key. **The secret key is stored in the module settings**: Control Panel / Modules / All Modules / DownloadGedcomWithURL.
+### Authorization Key in the Module Settings
+The key parameter of the URL is checked against an authorization key. **The authorization key is specified and stored in the module settings**: Control Panel / Modules / All Modules / DownloadGedcomWithURL.
 
-The provided secret key needs to have a minimum length of 8 characters.
+The provided authorization key needs to have a minimum length of 8 characters.
 
-**The control panel also provides an option for the key to be saved as an encrypted hash value**. This option is more secure, because the secret key is not visible to anyone and also encrypted in the database. However, the secret key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.
+**The control panel also provides an option for the authorization key to be saved as an encrypted hash value**. This option is more secure, because the authorization key is not visible to anyone and also encrypted in the database. However, the authorization key is not readible any more (even for administrators) and cannot be recovered if it is forgotten.
+
+### Default Values in the Module Settings
+In the control panel, it is possible to provide default values for most of the URL parameters. These default settings are used if no specific parameter values are provided within the URL. By specifying the default values, the URLs to be called for a download can be simplified. If the default values shall be used for a download, it is sufficient to only provide the "key" parameter (authorization key) in the URL.
+
+Any parameters provided in the URL have a higher priority and will overrule the default settings from the control panel.
+
+![Screenshot: Default value settings in the control panel](resources/img/screenshot_control_panel_default_settings.jpg)
+
+### Button to Test Downloads in the Module Settings
+In the control panel, a "Test Download" button is available. If the button is pressed, a download is started with the current default settings of the control panel. This provides the possibility for a fast test of certain default values without calling a download URL.
+
+In order to use changed settings for a test download, the settings need to be saved first.
+
+![Screenshot: Test Download button in the control panel](resources/img/screenshot_control_panel_test_download_button.jpg)
 
 ### Example Scripts 
 The release ZIP file also contains 3 example scripts for automatic download of Gedcom files or storage on the server:

@@ -45,27 +45,27 @@ use Fisharebest\Webtrees\View;
 		<div class="row mb-3"><?= view('icons/spacer') ?></div> 
 		<?php if ($allow_download) : ?>
 			<div class="alert alert-warning">
-				<p><?= I18N::translate('Currently, the download of GEDCOM files is allowed. Please note that everyone with access to the secret key, can download GEDCOM files from your webtrees installation.') ?></p>
+				<p><?= I18N::translate('Currently, the download of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download GEDCOM files from your webtrees installation.') ?></p>
 			</div>
 		<?php endif ?>
 		<?php if (!$use_hash) : ?>
 			<div class="alert alert-warning">
-				<p><?= I18N::translate('Currently, the secret key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the secret key.') ?></p>
+				<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
 			</div>  
 		<?php endif ?>
 		<?php if ($secret_key === '') : ?>
 			<div class="alert alert-danger">
-				<p><?= I18N::translate('The secret key is empty or not available') ?></p>
+				<p><?= I18N::translate('The authorization key is empty or not available') ?></p>
 			</div>  
 		<?php endif ?>
 
-		<h3><?= I18N::translate('Settings for secret key') ?></h3>			
+		<h3><?= I18N::translate('Settings for authorization key') ?></h3>			
 		<div class="row mb-3">
 			<?php if ($use_hash && ($secret_key !== '')) : ?>
-				<? $secret_key = I18N::translate('The secret key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.') ?>
+				<? $secret_key = I18N::translate('The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.') ?>
 			<?php endif ?>
 			<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
-				<?= I18N::translate('Current secret key') ?>
+				<?= I18N::translate('Current authorization key') ?>
 			</label>
 			<div class="col-sm-9 wt-page-options-value">
 				<input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($secret_key) ?>">
@@ -73,7 +73,7 @@ use Fisharebest\Webtrees\View;
 		</div>	
 		<div class="row mb-3">
 			<label class="col-sm-3 col-form-label wt-page-options-label" for="new_secret_key">
-				<?= I18N::translate('New secret key') ?>
+				<?= I18N::translate('New authorization key') ?>
 			</label>
 			<div class="col-sm-9 wt-page-options-value">
 				<input class="form-control" id="new_secret_key" name="new_secret_key" type="text">
@@ -82,12 +82,12 @@ use Fisharebest\Webtrees\View;
 		<fieldset class="mb-3">
 			<div class="row">
 				<legend class="col-form-label col-sm-3">
-					<?= I18N::translate('Activate encryption of the secret key') ?>
+					<?= I18N::translate('Activate encryption of the authorization key') ?>
 				</legend>
 				<div class="col-sm-9">
 				<?= view('components/checkbox', ['label' => I18N::translate('Activate'), 'name' => DownloadGedcomWithURL::PREF_USE_HASH, 'checked' => $use_hash]) ?>
 					<div class="form-text">
-						<?= I18N::translate('The encryption of the secret key is more secure, because the secret key is not visible to anyone and also encrypted in the database. However, the secret key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.'); ?>
+						<?= I18N::translate('The encryption of the authorization key is more secure, because the authorization key is not visible to anyone and also encrypted in the database. However, the authorization key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.'); ?>
 					</div>
 				</div>
 			</div>
@@ -118,7 +118,7 @@ use Fisharebest\Webtrees\View;
 		</div>
 
 		<h3><?= I18N::translate('Default settings for downloads') ?></h3>		
-		<p><?= I18N::translate('These settings are used if no specific parameter values are provided in the URL. By specifying the default values, the URLs to be called for a download can be simplified. If the default values are used for a download, it is sufficient to simply provide the "key" parameter (secret key) in the URL.') ?></p>	
+		<p><?= I18N::translate('These default settings are used if no specific parameter values are provided within the URL. By specifying the default values, the URLs to be called for a download can be simplified. If the default values shall be used for a download, it is sufficient to only provide the "key" parameter (authorization key) in the URL.') ?></p>	
 		<p><?= I18N::translate('Any parameters provided in the URL have a higher priority and will overrule the default settings.') ?></p>
 
 		<div class="row mb-3">

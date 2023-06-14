@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2023-06-13 21:29+0200\n"
-"PO-Revision-Date: 2023-06-13 21:29+0200\n"
+"POT-Creation-Date: 2023-06-14 07:04+0200\n"
+"PO-Revision-Date: 2023-06-14 07:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -144,18 +144,18 @@ msgstr "Verwaltung"
 #: resources/views/settings.phtml:48
 msgid ""
 "Currently, the download of GEDCOM files is allowed. Please note that "
-"everyone with access to the secret key, can download GEDCOM files from your "
-"webtrees installation."
+"everyone with access to the authorization key, can download GEDCOM files "
+"from your webtrees installation."
 msgstr ""
 "Aktuell ist das Herunterladen von GEDCOM Dateien erlaubt. Bitte beachten "
-"Sie, dass jeder mit Zugriff auf den AutorisierungsSchlüssel GEDCOM-Dateien "
+"Sie, dass jeder mit Zugriff auf den Autorisierungs-Schlüssel GEDCOM-Dateien "
 "von Ihrer webtrees Installation herunterladen kann."
 
 #: resources/views/settings.phtml:53
 msgid ""
-"Currently, the secret key is not encrypted. This option is less secure and "
-"should only be used in local environments with limited users. Otherwise, "
-"please activate encrpytion of the secret key."
+"Currently, the authorization key is not encrypted. This option is less "
+"secure and should only be used in local environments with limited users. "
+"Otherwise, please activate encrpytion of the authorization key."
 msgstr ""
 "Aktuell ist der Autorisierungs-Schlüssel nicht verschlüsselt. Diese "
 "Einstellung ist weniger sicher und sollte nur in einer lokalen Umgebung mit "
@@ -163,32 +163,32 @@ msgstr ""
 "Verschlüsselung des Autorisierungs-Schlüssels."
 
 #: resources/views/settings.phtml:58
-msgid "The secret key is empty or not available"
+msgid "The authorization key is empty or not available"
 msgstr "Der Autorisierungs-Schlüssel ist leer oder nicht verfügbar"
 
 #: resources/views/settings.phtml:62
-msgid "Settings for secret key"
+msgid "Settings for authorization key"
 msgstr "Einstellungen für den Autorisierungs-Schlüssel"
 
 #: resources/views/settings.phtml:65
 msgid ""
-"The secret key cannot be shown, because encryption is activated. If you "
-"forgot the key, you have to create a new key."
+"The authorization key cannot be shown, because encryption is activated. If "
+"you forgot the key, you have to create a new key."
 msgstr ""
 "Der Autorisierungs-Schlüssel kann nicht angezeigt werden, weil "
 "Verschlüsselung aktiviert ist. Wenn Sie den Schlüssel vergessen haben, "
 "müssen Sie einen neuen erzeugen."
 
 #: resources/views/settings.phtml:68
-msgid "Current secret key"
+msgid "Current authorization key"
 msgstr "Aktueller Autorisierungs-Schlüssel"
 
 #: resources/views/settings.phtml:76
-msgid "New secret key"
-msgstr "Neuer Autorisierungs-Schlüssel"
+msgid "New authorization key"
+msgstr ""
 
 #: resources/views/settings.phtml:85
-msgid "Activate encryption of the secret key"
+msgid "Activate encryption of the authorization key"
 msgstr "Verschlüsselung des Autorisierungs-Schlüssel aktivieren"
 
 #: resources/views/settings.phtml:88
@@ -197,10 +197,10 @@ msgstr "Aktivieren"
 
 #: resources/views/settings.phtml:90
 msgid ""
-"The encryption of the secret key is more secure, because the secret key is "
-"not visible to anyone and also encrypted in the database. However, the "
-"secret key is not readible any more (e.g. for other administrators) and "
-"cannot be recovered if it is forgotten."
+"The encryption of the authorization key is more secure, because the "
+"authorization key is not visible to anyone and also encrypted in the "
+"database. However, the authorization key is not readible any more (e.g. for "
+"other administrators) and cannot be recovered if it is forgotten."
 msgstr ""
 "Die Verschlüsselung des Autorisierungs-Schlüssels ist sicherer, weil der "
 "Autorisierungs-Schlüssel nicht mehr sichtbar ist und auch in der Datenbank "
@@ -243,10 +243,11 @@ msgstr "Voreinstellungen für Downloads"
 
 #: resources/views/settings.phtml:121
 msgid ""
-"These settings are used if no specific parameter values are provided in the "
-"URL. By specifying the default values, the URLs to be called for a download "
-"can be simplified. If the default values are used for a download, it is "
-"sufficient to simply provide the \"key\" parameter (secret key) in the URL."
+"These default settings are used if no specific parameter values are provided "
+"within the URL. By specifying the default values, the URLs to be called for "
+"a download can be simplified. If the default values shall be used for a "
+"download, it is sufficient to only provide the \"key\" parameter "
+"(authorization key) in the URL."
 msgstr ""
 "Diese Einstellungen werden genutzt, wenn keine speziellen Parameter über die "
 "URL übergeben werden. Durch Festlegung dieser Einstellungen können die URLs "
@@ -446,6 +447,9 @@ msgid ""
 msgstr ""
 "Um geänderte Einstellungen für \"Herunterladen testen\" zu nutzen, müssen "
 "die Einstellungen zunächst gespeichert werden."
+
+#~ msgid "New secret key"
+#~ msgstr "Neuer Autorisierungs-Schlüssel"
 
 #~ msgid "Godparents"
 #~ msgstr "Pate(n)"

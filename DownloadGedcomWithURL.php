@@ -364,37 +364,41 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Save the received settings to the user preferences
         if ($save === '1') {
 
+            //If no new secret key is provided
 			if($new_secret_key === '') {
 				//If use hash changed from true to false, reset key (hash cannot be used any more)
 				if(boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$use_hash) {
 					$this->setPreference(self::PREF_SECRET_KEY, '');
 				}
-				//If use hash changed from false to true, take old key (for planned encryption)
+				//If use hash changed from false to true, take old key (for planned encryption) and save as hash
 				elseif(!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && $use_hash) {
 					$new_secret_key = $this->getPreference(self::PREF_SECRET_KEY, '');
+                    $hash_value = password_hash($new_secret_key, PASSWORD_BCRYPT);
+                    $this->setPreference(self::PREF_SECRET_KEY, $hash_value);
 				}
+                //If no new secret key and no changes in hashing, do nothing
 			}
-			//If provided secret key is too short
+			//If new secret key is too short
 			elseif(strlen($new_secret_key)<8) {
 				$message = I18N::translate('The provided secret key is too short. Please provide a minimum length of 8 characters.');
 				FlashMessages::addMessage($message, 'danger');				
 			}
-			//If secret key does not escape correctly
+			//If new secret key does not escape correctly
 			elseif($new_secret_key !== e($new_secret_key)) {
 				$message = I18N::translate('The provided secret key contains characters, which are not accepted. Please provide a different key.');
 				FlashMessages::addMessage($message, 'danger');				
 			}
-			//If secret key be stored with a hash
+			//If new secret key shall be stored with a hash, create and save hash
 			elseif($use_hash) {
-
 				$hash_value = password_hash($new_secret_key, PASSWORD_BCRYPT);
 				$this->setPreference(self::PREF_SECRET_KEY, $hash_value);
 			}
+            //Otherwise, simply store the new secret key
 			else {
 				$this->setPreference(self::PREF_SECRET_KEY, $new_secret_key);
 			}
 
-			//Set 
+			//Check and set folder to save
 			if (!str_ends_with($folder_to_save, '/')) {
 				$folder_to_save .= '/';
 			}
@@ -405,9 +409,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				FlashMessages::addMessage(I18N::translate('The folder settings could not be saved, because the folder “%s” does not exist.', e($folder_to_save)), 'danger');
 			}
 
+            //Save settings to preferences
 			$this->setPreference(self::PREF_USE_HASH, $use_hash ? '1' : '0');
 			$this->setPreference(self::PREF_ALLOW_DOWNLOAD, $allow_download ? '1' : '0');
 
+            //Save default settings to preferences
             $this->setPreference(self::PREF_DEFAULT_TREE_NAME, $default_tree_name);           
             $this->setPreference(self::PREF_DEFAULT_FiLE_NAME, $default_file_name);           
             $this->setPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, $default_privacy_level);           
@@ -419,6 +425,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $this->setPreference(self::PREF_DEFAULT_GEDCOM_VERSION, $default_gedcom_version);           
             $this->setPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, $default_gedcom_l_selection);           
 
+            //Finally, show a success message
 			$message = I18N::translate('The preferences for the module "%s" were updated.', $this->title());
 			FlashMessages::addMessage($message, 'success');	
 		}
@@ -576,7 +583,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ' . $this->title()));
 		}
 		//Error if no hashing and key is not valid
-        elseif ((!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_test_download) && ($key !== $secret_key)) {
+        elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_test_download && ($key !== $secret_key)) {
 			$response = $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
 		}
 		//Error if hashing and key does not fit to hash

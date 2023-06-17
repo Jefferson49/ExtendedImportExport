@@ -2,14 +2,14 @@
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
-use Cissee\WebtreesExt\MoreI18N;
-use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
+use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\View;
 
 
@@ -61,16 +61,18 @@ use Fisharebest\Webtrees\View;
 
 		<h3><?= I18N::translate('Settings for authorization key') ?></h3>			
 		<div class="row mb-3">
-			<?php if ($use_hash && ($secret_key !== '')) : ?>
-				<? $secret_key = I18N::translate('The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.') ?>
-			<?php endif ?>
 			<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
 				<?= I18N::translate('Current authorization key') ?>
 			</label>
+			<?php if ($use_hash && ($secret_key !== '')) : ?>
+				<?php $text_shown_for_secret_key = I18N::translate('The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.')  ?>
+			<?php else : ?>
+				<?php $text_shown_for_secret_key = $secret_key  ?>
+			<?php endif ?>
 			<div class="col-sm-9 wt-page-options-value">
-				<input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($secret_key) ?>">
+				<input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($text_shown_for_secret_key) ?>">
 			</div>
-		</div>	
+		</div>				
 		<div class="row mb-3">
 			<label class="col-sm-3 col-form-label wt-page-options-label" for="new_secret_key">
 				<?= I18N::translate('New authorization key') ?>
@@ -308,7 +310,8 @@ use Fisharebest\Webtrees\View;
 </form>	
 
 <form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-					'key' => $secret_key,
+					'key'                 => 'test_downlaod',
+					'test_downlaod_token' => md5($secret_key . Session::getCsrfToken()),
 					])) ?>">
 	<?= csrf_field() ?>
 	<div class="row mb-3 justify-content-between m-0">

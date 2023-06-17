@@ -536,17 +536,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		//Load secret key from preferences
         $secret_key = $this->getPreference(self::PREF_SECRET_KEY, ''); 
    		
-		$key          = Validator::queryParams($request)->string('key', '');
-		$tree_name    = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
-        $file_name    = Validator::queryParams($request)->string('file',  $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, $tree_name));
-        $format       = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
-        $privacy      = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
-        $encoding     = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
-        $line_endings = Validator::queryParams($request)->string('line_endings',  $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'));
-		$gedcom7      = Validator::queryParams($request)->boolean('gedcom7', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_VERSION, '0')));
-		$gedcom_l     = Validator::queryParams($request)->boolean('gedcom_l', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0')));
-		$action       = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'));
-		$time_stamp   = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'));
+		$key                 = Validator::queryParams($request)->string('key', '');
+		$tree_name           = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
+        $file_name           = Validator::queryParams($request)->string('file',  $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, $tree_name));
+        $format              = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
+        $privacy             = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
+        $encoding            = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
+        $line_endings        = Validator::queryParams($request)->string('line_endings',  $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'));
+		$gedcom7             = Validator::queryParams($request)->boolean('gedcom7', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_VERSION, '0')));
+		$gedcom_l            = Validator::queryParams($request)->boolean('gedcom_l', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0')));
+		$action              = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'));
+		$time_stamp          = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'));
+		$test_downlaod_token = Validator::queryParams($request)->string('test_downlaod_token', '');
+
+        //A test download is allowed if a valid token is submitted
+        $allow_test_download =  $test_downlaod_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
 
 		//Check module version
 		if ($this->getPreference(self::PREF_MODULE_VERSION) !== self::CUSTOM_VERSION) {
@@ -564,7 +568,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		}
 		
         //Error if key is empty
-        elseif ($key === '') {
+        if ($key === '') {
 			$response = $this->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
 		}
 		//Error if secret key is empty
@@ -572,15 +576,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ' . $this->title()));
 		}
 		//Error if no hashing and key is not valid
-        elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) &&($key !== $secret_key)) {
+        elseif ((!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_test_download) && ($key !== $secret_key)) {
 			$response = $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
 		}
 		//Error if hashing and key does not fit to hash
-        elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) &&(!password_verify($key, $secret_key))) {
+        elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_test_download && (!password_verify($key, $secret_key))) {
 			$response = $this->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
 		}
         //Error if tree name is not valid
-        if (!$this->isValidTree($tree_name)) {
+        elseif (!$this->isValidTree($tree_name)) {
 			$response = $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
 		}
         //Error if privacy level is not valid

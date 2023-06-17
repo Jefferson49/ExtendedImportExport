@@ -304,6 +304,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function getAdminAction(ServerRequestInterface $request): ResponseInterface
     {
+        //Check update of module version
+        $this->checkModuleVersionUpdate();
+
         $this->layout = 'layouts/administration';
 
         $tree_list = [];
@@ -360,7 +363,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $default_time_stamp         = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TIME_STAMP, 'none');
         $default_gedcom_version     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_VERSION, '0');
         $default_gedcom_l_selection = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0');
-
+        
         //Save the received settings to the user preferences
         if ($save === '1') {
 
@@ -433,22 +436,25 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return redirect($this->getConfigLink());
     }
 
-	/**
-     * Update the preferences (after new module version is detected)
+    /**
+     * Check if module version is new and start update activities if needed
      *
-     * @return string
+     * @return void
      */
-    public function updatePreferences(): string
+    public function checkModuleVersionUpdate(): void
     {
  		//If no module version is stored yet (i.e. before version v3.0.1)
-		if($this->getPreference(self::PREF_MODULE_VERSION, '') === '') {
+        if($this->getPreference(self::PREF_MODULE_VERSION, '') === '' && $this->getPreference(self::PREF_SECRET_KEY, '') !== "") {
 
 			//Set secret key hashing to false
 			$this->setPreference(self::PREF_USE_HASH, '0');
+
+            //Show flash message for update of preferences
+            $message = I18N::translate('The preferences for the custom module "%s" were sucessfully updated to the new module version %s.', $this->title(), self::CUSTOM_VERSION);
+            FlashMessages::addMessage($message, 'success');	
 		}
 
-        $error = '';
-        return $error;
+        $this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
     }
 
     /**
@@ -559,20 +565,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //A test download is allowed if a valid token is submitted
         $allow_test_download =  $test_downlaod_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
 
-		//Check module version
-		if ($this->getPreference(self::PREF_MODULE_VERSION) !== self::CUSTOM_VERSION) {
-
-			//Update prefences stored in database
-			$update_result = $this->updatePreferences();
-
-			//If error during update of preferences, show error message
-			if ($update_result !== '') {
-				return $this->showErrorMessage(I18N::translate('Error during update of the module preferences') . ': ' . $update_result);
-			}
-			else {
-				$this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
-			}
-		}
+		//Check update of module version
+        $this->checkModuleVersionUpdate();
 		
         //Error if key is empty
         if ($key === '') {

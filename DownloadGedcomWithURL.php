@@ -367,6 +367,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Save the received settings to the user preferences
         if ($save === '1') {
 
+            $new_key_error = false;
+
             //If no new secret key is provided
 			if($new_secret_key === '') {
 				//If use hash changed from true to false, reset key (hash cannot be used any more)
@@ -384,13 +386,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			//If new secret key is too short
 			elseif(strlen($new_secret_key)<8) {
 				$message = I18N::translate('The provided secret key is too short. Please provide a minimum length of 8 characters.');
-				FlashMessages::addMessage($message, 'danger');				
+				FlashMessages::addMessage($message, 'danger');
+                $new_key_error = true;				
 			}
 			//If new secret key does not escape correctly
 			elseif($new_secret_key !== e($new_secret_key)) {
 				$message = I18N::translate('The provided secret key contains characters, which are not accepted. Please provide a different key.');
 				FlashMessages::addMessage($message, 'danger');				
-			}
+                $new_key_error = true;		
+            }
 			//If new secret key shall be stored with a hash, create and save hash
 			elseif($use_hash) {
 				$hash_value = password_hash($new_secret_key, PASSWORD_BCRYPT);
@@ -413,7 +417,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			}
 
             //Save settings to preferences
-			$this->setPreference(self::PREF_USE_HASH, $use_hash ? '1' : '0');
+            if(!$new_key_error) {
+                $this->setPreference(self::PREF_USE_HASH, $use_hash ? '1' : '0');
+            }
 			$this->setPreference(self::PREF_ALLOW_DOWNLOAD, $allow_download ? '1' : '0');
 
             //Save default settings to preferences

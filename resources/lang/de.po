@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2023-06-17 18:53+0200\n"
-"PO-Revision-Date: 2023-06-17 18:53+0200\n"
+"POT-Creation-Date: 2023-06-18 09:30+0200\n"
+"PO-Revision-Date: 2023-06-18 09:31+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -64,7 +64,7 @@ msgstr ""
 "Die Einstellungen für das benutzerdefinierte Modul \"%s\" wurden für die "
 "neue Modul-Version %s aktualisiert."
 
-#: DownloadGedcomWithURL.php:573
+#: DownloadGedcomWithURL.php:576
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -73,7 +73,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:577
+#: DownloadGedcomWithURL.php:580
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -82,55 +82,55 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:581
+#: DownloadGedcomWithURL.php:584
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:585
+#: DownloadGedcomWithURL.php:588
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:589
+#: DownloadGedcomWithURL.php:592
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:593
+#: DownloadGedcomWithURL.php:596
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:597
+#: DownloadGedcomWithURL.php:600
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:601
+#: DownloadGedcomWithURL.php:604
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:605
+#: DownloadGedcomWithURL.php:608
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:609
+#: DownloadGedcomWithURL.php:612
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:613
+#: DownloadGedcomWithURL.php:616
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:649 DownloadGedcomWithURL.php:663
+#: DownloadGedcomWithURL.php:652 DownloadGedcomWithURL.php:666
 #, php-format
 msgid "The family tree \"%s\" has been exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:652 DownloadGedcomWithURL.php:666
+#: DownloadGedcomWithURL.php:655 DownloadGedcomWithURL.php:669
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:686
+#: DownloadGedcomWithURL.php:689
 msgid ""
 "Download is not allowed. Please change the module settings to allow "
 "downloads."
@@ -252,13 +252,18 @@ msgid ""
 "within the URL. By specifying the default values, the URLs to be called for "
 "a download can be simplified. If the default values shall be used for a "
 "download, it is sufficient to only provide the \"key\" parameter "
-"(authorization key) in the URL."
+"(authorization key) in the URL. Please note that the default settings can "
+"only be used after saving at least once (i.e. by pressing the \"Save\" "
+"button)."
 msgstr ""
 "Diese Einstellungen werden genutzt, wenn keine speziellen Parameter über die "
 "URL übergeben werden. Durch Festlegung dieser Einstellungen können die URLs "
 "zum Herunterladen vereinfacht werden. Wenn die Voreinstellungen für das "
-"Herunterladen genutzt werden, reicht es aus, einfach nur den \"key\" "
-"Parameter (Authorisierungs-Schlüssel) in der URL zu übergeben."
+"Herunterladen genutzt werden sollen, reicht es aus, einfach nur den \"key\" "
+"Parameter (Authorisierungs-Schlüssel) in der URL zu übergeben. Bitte beachte "
+"Sie, dass die Voreinstellungen nur genutzt werden können, nachdem sie "
+"zumindest einmal gespeichert wurden (d.h. durch Drücken des \"Speichern\" "
+"Buttons)."
 
 #: resources/views/settings.phtml:124
 msgid ""

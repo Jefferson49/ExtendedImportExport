@@ -10,6 +10,7 @@ use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Session;
+use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\View;
 
 
@@ -51,6 +52,14 @@ use Fisharebest\Webtrees\View;
 		<?php if (!$use_hash) : ?>
 			<div class="alert alert-warning">
 				<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
+			</div>  
+		<?php endif ?>
+		<?php if (!str_starts_with($folder_to_save, Site::getPreference('INDEX_DIRECTORY'))) : ?>
+			<div class="alert alert-warning">
+				<p>
+					<?= I18N::translate('Currently, the folder to save is not a sub-directory of the webtrees data folder. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to this folder. If you choose a folder outside of the webtrees data folder, the saved GEDCOM file might be unprotected against unauthorized access. The current setting (Control panel / Website preferences) for the webtrees data folder is: ' ) ?>
+					<b><?= Site::getPreference('INDEX_DIRECTORY'); ?></b>
+				</p>
 			</div>  
 		<?php endif ?>
 		<?php if ($secret_key === '') : ?>
@@ -115,7 +124,8 @@ use Fisharebest\Webtrees\View;
 				<input class="form-control" id="folder_to_save" name="folder_to_save" type="text" value="<?= e($folder_to_save) ?>">
 			</div>
 			<div class="form-text col-sm-9 offset-sm-3">
-				<?= I18N::translate('Folder within the webtrees root path to save GEDCOM files'); ?>
+				<?= I18N::translate('Folder within the webtrees root path, where GEDCOM exports are saved. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to the data folder. The current setting (Control panel / Website preferences) for the webtrees data folder is: '); ?> 
+				<b><?= Site::getPreference('INDEX_DIRECTORY'); ?></b>
 			</div>			
 		</div>
 

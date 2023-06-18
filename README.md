@@ -75,6 +75,7 @@ http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBi
 
 * MY_ACTION specifies whether the Gedcom file will be downloaded, saved on the server, or both
   * Valid values: download (default), save, both
+  * The folder within the webtrees root path to save GEDCOM files can be specified in the module settings in the control panel 
 
 * MY_TIME_STAMP specifies whether a (GMT) time stamp will be added to the file name of saved Gedcom files. MY_TIME_STAMP also defines whether the time stamp is added as prefix or as a postfix.
   * Valid values: none (default), prefix, postfix

@@ -443,8 +443,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function checkModuleVersionUpdate(): void
     {
- 		//If no module version is stored yet (i.e. before version v3.0.1)
-        if($this->getPreference(self::PREF_MODULE_VERSION, '') === '' && $this->getPreference(self::PREF_SECRET_KEY, '') !== "") {
+ 		//If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1) 
+        if($this->getPreference(self::PREF_SECRET_KEY, '') !== '' && $this->getPreference(self::PREF_USE_HASH, '') === '') {
 
 			//Set secret key hashing to false
 			$this->setPreference(self::PREF_USE_HASH, '0');
@@ -454,7 +454,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
             FlashMessages::addMessage($message, 'success');	
 		}
 
-        $this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
+        //Update custom module version if changed
+        if($this->getPreference(self::PREF_MODULE_VERSION, '') !== self::CUSTOM_VERSION) {
+            $this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
+        }
     }
 
     /**
@@ -574,7 +577,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		}
 		//Error if secret key is empty
         elseif ($secret_key === '') {
-			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ' . $this->title()));
+			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $this->title());
 		}
 		//Error if no hashing and key is not valid
         elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_test_download && ($key !== $secret_key)) {

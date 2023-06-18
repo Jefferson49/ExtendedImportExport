@@ -110,7 +110,7 @@ In order to use changed settings for a test download, the settings need to be sa
 ### Example Scripts 
 The release ZIP file also contains 3 example scripts for automatic download of Gedcom files or storage on the server:
 + **ExampleBashScript.sh** contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
-+ **ExamplePythonScript.py** contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windwos PC
++ **ExamplePythonScript.py** contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windows PC
 + **ExamplePythonScript2.py** contains a more advanced example for an automatic download with a Python script, which allows to store the downloaded file to a specific folder and also includes some logging output
 
 ### GEDCOM 7 export
@@ -121,7 +121,7 @@ The GEDCOM 7 export also includes a further option to use the German GEDCOM-L st
 The generated GEDCOM 7 files were successfully valdidated with [GEDCOM Validator](https://chronoplexsoftware.com/gedcomvalidator/) and 
 [Gedcom Structure Analysis](https://ofb.hesmer.name/main_gsp_e.html#Analyse). Gedcom Structure Analysis also validates against the German GEDCOM-L standard.
 
-At the moment, **it is not planned that the GEDCOM 7 feature is supported**. However, if you are a programmer, it might be interesting to take the code as a base for own Gedcom 7 tests. The code of the Gedcom 7 export is contained in the GedcomSevenExportService.php file; mainly in the function convertToGedcom7. Pull request to the Github repository will be accepted, if improvements of the code are intended to be shared.
+At the moment, **it is not planned that the GEDCOM 7 feature is supported**. However, if you are a programmer, it might be interesting to take the code as a base for your own Gedcom 7 tests. The code of the Gedcom 7 export is contained in the GedcomSevenExportService.php file; mainly in the function convertToGedcom7. Pull request to the Github repository will be accepted, if improvements of the code are intended to be shared.
 
 ## Translation
 You can help to translate this module. The translation is based on [gettext](https://en.wikipedia.org/wiki/Gettext) and uses .po files, which can be found in [/resources/lang/](https://github.com/Jefferson49/DownloadGedcomWithURL/tree/main/resources/lang). You can use a local editor like [Poedit](https://poedit.net/) or notepad++ to work on translations and provide them in the [Github repository](https://github.com/Jefferson49/DownloadGedcomWithURL) of the module. You can do this via a pull request (if you know how to do), or by opening a new issue and attaching a .po file. Updated translations will be included in the next release of this module.

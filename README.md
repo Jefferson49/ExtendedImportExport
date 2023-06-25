@@ -2,7 +2,7 @@
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)](https://webtrees.net/download)
 
 ## DownloadGedcomWithURL
-A [weebtrees](https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests with the tree name, GEDCOM file name, and authorization provided as parameters within the URL.
+A [webtrees](https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests with the tree name, GEDCOM file name, and authorization provided as parameters within the URL.
 
 ## What are the benefits of this module?
 + Gedcom files can be automatically downloaded without logging into the user interface (webtrees front end)

@@ -16,6 +16,8 @@ A [webtrees](https://webtrees.net) 2.1 custom module to download or store GEDCOM
 
 **Please note that everyone with access to the authorization key, can download GEDCOM files from your webtrees installation.**
 
+**It is highly recommended to use the HTTPS protocol** (i.e. URLs with https://...) in order to encrypt the URL parameters, especially the authorization key.
+
 Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authorization key**. This means that installing this module versions enables everyone, who can reach the webtrees URL, to download the GEDCOM files from webtrees. Therefore, you should consider to use this module versions in secure private networks only or apply additional access restrictions, e.g. for certain IP addresses only.
 
 ## Installation
@@ -38,18 +40,18 @@ The module was developed and tested with [webtrees 2.1.16](https://webtrees.net/
 ### URL Format
 The full URL format, which contains all possible parameters is defined as follows:
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&key=MY_KEY&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS&action=MY_ACTION&time_stamp=MY_TIME_STAMP&gedcom7=MY_GEDCOM7_FLAG&gedcom_l=MY_GEDCOM_L_FLAG
+https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&key=MY_KEY&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS&action=MY_ACTION&time_stamp=MY_TIME_STAMP&gedcom7=MY_GEDCOM7_FLAG&gedcom_l=MY_GEDCOM_L_FLAG
 
 The "MY_xxx" place holders need to be replaced by the specific parameter values, which shall be used for the download. The possible values for the URL parameters are described below.
 
 It is not mandatory to provide all parameters. The only mandatory parameter is the authorization key. If any of the other parameters is not provided, the default value, which is specified in the control panel is used.
 
 ### Example URLs  
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9
+https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export
+https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export
 
-http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&action=both&time_stamp=prefix&gedcom7=1&gedcom_l=1
+https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&action=both&time_stamp=prefix&gedcom7=1&gedcom_l=1
 
 ### Values for URL Parameters  
 * MY_KEY specifies a authorization key, which restricts the access to the download

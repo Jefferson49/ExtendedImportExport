@@ -11,7 +11,7 @@ A [webtrees](https://webtrees.net) 2.1 custom module to download or store GEDCOM
 + Gedcom file backups on the server can be scheduled by a Cron Job on the server, see attached example script
 + Gedcom files can be downloaded/stored in the Gedcom 7 format (beta version)
 
-## IMPORTANT SECURITY NOTE  
+## IMPORTANT SECURITY NOTES
 **Module versions starting from v3.0.0 use an authorization key**, which is stored in the module preferences in webtrees. Access to the download is only allowed if the provided key in the URL is identical to a authorization key in the webtrees database (settings). 
 
 **Please note that everyone with access to the authorization key, can download GEDCOM files from your webtrees installation.**

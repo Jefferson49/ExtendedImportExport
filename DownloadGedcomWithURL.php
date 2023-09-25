@@ -660,7 +660,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//If Gedcom 7, create Gedcom 7 response
 				if (($format === 'gedcom') && ($gedcom7)) {
 					try {
-						$resource = $this->gedcom7_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings, $gedcom7);
+						$resource = $this->gedcom7_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings, $gedcom_l);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 

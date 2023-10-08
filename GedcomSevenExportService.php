@@ -548,7 +548,11 @@ class GedcomSevenExportService
         }
 
         if ($include_sub) {
-            foreach ($header->facts(['SUBM', 'SUBN']) as $fact) {
+            // Apply access level of 'none', because the export needs to be consistent if a submitter/submission exists
+            // Privacy of the submitter/submission is handled in the submitter/submission object itself
+            // Note: HEAD:SUBN does not exist in GEDCOM 7. It will still be exported, because it is subject to the user to change it
+
+            foreach ($header->facts(['SUBM', 'SUBN'], false, Auth::PRIV_HIDE) as $fact) {
                 $gedcom .= "\n" . $fact->gedcom();
             }
         }

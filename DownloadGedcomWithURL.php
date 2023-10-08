@@ -52,7 +52,6 @@ use Fisharebest\Webtrees\Module\ModuleConfigTrait;
 use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Registry;
-use Fisharebest\Webtrees\Services\GedcomExportService;
 use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Tree;
@@ -82,7 +81,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     use ModuleCustomTrait;
     use ModuleConfigTrait;
  
-    private GedcomExportService $gedcom_export_service;
+    private RemoteGedcomExportService $gedcom_export_service;
 
     private GedcomSevenExportService $gedcom7_export_service;
 
@@ -133,7 +132,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	    $response_factory = app(ResponseFactoryInterface::class);
         $stream_factory = new Psr17Factory();
 
-        $this->gedcom_export_service = new GedcomExportService($response_factory, $stream_factory);
+        $this->gedcom_export_service = new RemoteGedcomExportService($response_factory, $stream_factory);
         $this->gedcom7_export_service = new GedcomSevenExportService($response_factory, $stream_factory);
     }
 

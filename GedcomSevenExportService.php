@@ -387,8 +387,8 @@ class GedcomSevenExportService
 					$level = (int) $match[1];
 					$role = str_replace("_", "", $pattern);
 
-					$search =  $level . " " . $pattern . " " . $match[2];
-					$replace = $level . " " . "ASSO @VOID@\n" . $level + 1 . " PHRASE " . $match[2] . "\n" .  $level + 1 . " ROLE " . $role;
+					$search =  (string) $level . " " . $pattern . " " . $match[2];
+					$replace = (string) $level . " " . "ASSO @VOID@\n" . (string) ($level + 1) . " PHRASE " . $match[2] . "\n" .  (string) ($level + 1) . " ROLE " . $role;
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}			
 			}
@@ -430,18 +430,18 @@ class GedcomSevenExportService
 
 				//If allowed value
 				if (in_array(strtoupper($match[2]), $values)) {
-					$search =  $level . " " . $enumset . " " . $match[2];
-					$replace = $level . " " . $enumset . " " . strtoupper($match[2]);
+					$search =  (string) $level . " " . $enumset . " " . $match[2];
+					$replace = (string) $level . " " . $enumset . " " . strtoupper($match[2]);
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}
 				//Use phrase instead
 				else {
-					$search =  $level . " " . $enumset . " " . $match[2];
+					$search =  (string) $level . " " . $enumset . " " . $match[2];
                     //For specific role descriptions
                     if ($enumset == "ROLE") {
                         $match[2] = str_replace(['(', ')'], ['', ''], $match[2]);  // (<ROLE_DESCRIPTOR>)
                     }
-					$replace = $level . " " . $enumset . " OTHER\n" . $level + 1 . " PHRASE " . $match[2];
+					$replace = (string) $level . " " . $enumset . " OTHER\n" . (string) ($level + 1) . " PHRASE " . $match[2];
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}
 			}
@@ -471,14 +471,14 @@ class GedcomSevenExportService
 
 				//If allowed type
 				if (in_array(strtoupper($found_type), $enum_values)) {
-					$search =  $level . " " . $level2_tag . " " . $found_type;
-					$replace = $level . " " . $level2_tag . " " . strtoupper($found_type);
+					$search =  (string) $level . " " . $level2_tag . " " . $found_type;
+					$replace = (string) $level . " " . $level2_tag . " " . strtoupper($found_type);
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}
 				//Use OTHER/PHRASE instead
 				else {
-					$search =  $level  . " " . $level2_tag . " " . $found_type;
-					$replace = $level  . " " . $level2_tag . " OTHER\n" . $level + 1 . " PHRASE " . $found_type;
+					$search =  (string) $level  . " " . $level2_tag . " " . $found_type;
+					$replace = (string) $level  . " " . $level2_tag . " OTHER\n" . (string) ($level + 1) . " PHRASE " . $found_type;
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}
 			}	

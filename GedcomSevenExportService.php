@@ -80,6 +80,20 @@ use const STREAM_FILTER_WRITE;
  */
 class GedcomSevenExportService
 {
+    //Custom tags and schema definitions
+    private const SCHEMAS = [
+        '_GODP'    => 'https://genealogy.net/GEDCOM/',
+        '_GOV'     => 'https://genealogy.net/GEDCOM/',
+        '_GOVTYPE' => 'https://genealogy.net/GEDCOM/',
+        '_LOC'     => 'https://genealogy.net/GEDCOM/',
+        '_NAME'    => 'https://genealogy.net/GEDCOM/',
+        '_POST'    => 'https://genealogy.net/GEDCOM/',
+        '_RUFNAME' => 'https://genealogy.net/GEDCOM/',
+        '_STAT'    => 'https://genealogy.net/GEDCOM/',
+        '_UID'     => 'https://genealogy.net/GEDCOM/',
+        '_WITN'    => 'https://genealogy.net/GEDCOM/',    
+    ];
+
     public const ACCESS_LEVELS = [
         'gedadmin' => Auth::PRIV_NONE,
         'user'     => Auth::PRIV_USER,
@@ -93,6 +107,10 @@ class GedcomSevenExportService
 
 	private array $language_to_code_table;
 
+    //List of custom tags, which were found in the GEDCOM data
+    private array $custom_tags_found;
+
+
     /**
      * @param ResponseFactoryInterface $response_factory
      * @param StreamFactoryInterface   $stream_factory
@@ -101,7 +119,8 @@ class GedcomSevenExportService
 	{
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
-
+        $this->custom_tags_found = [];
+        
 		$iana_language_registry_file_name = __DIR__ . '/vendor/iana/iana_languages.txt';
 
 		$iana_language_registry = file_get_contents($iana_language_registry_file_name);
@@ -286,6 +305,9 @@ class GedcomSevenExportService
 				//Do NOT wrap long lines for Gedcom 7
                 //$gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH) . "\n";
 				$gedcom .= "\n";
+
+                //Find known custom tags
+                $this->findCustomTags($gedcom);
 
 				//Convert to Gedcom 7
 				$gedcom = $this->convertToGedcom7($gedcom, $gedcom_l);
@@ -708,5 +730,24 @@ class GedcomSevenExportService
         }
 
         return $query;
+    }
+
+    /**
+     * Find custom tags.
+     * 
+     * @param string $gedcom
+     */
+    public function findCustomTags(string $gedcom) : void
+    {
+        foreach (self::SCHEMAS as $tag => $uri) {
+
+            if(str_contains($gedcom, $tag)) {
+
+                if(!in_array($tag, $this->custom_tags_found)) {
+
+                    $this->custom_tags_found[] = $tag;
+                }
+            } 
+        }
     }
 }

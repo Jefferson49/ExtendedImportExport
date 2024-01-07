@@ -364,8 +364,10 @@ class GedcomSevenExportService
 			"/2 FORM (bmp|BMP)\n3 TYPE .[^\n]+/" => "2 FORM image/bmp",
 			"/2 FORM (gif|GIF)\n3 TYPE .[^\n]+/" => "2 FORM image/gif",
 			"/2 FORM (jpg|JPG|jpeg|JPEG)\n3 TYPE .[^\n]+/" => "2 FORM image/jpeg",
-			"/2 FORM (tif|TIF)\n3 TYPE .[^\n]+/" => "2 FORM image/tiff",
+			"/2 FORM (tif|TIF|tiff|TIFF)\n3 TYPE .[^\n]+/" => "2 FORM image/tiff",
 			"/2 FORM (pdf|PDF)\n3 TYPE .[^\n]+/" => "2 FORM application/pdf",
+			"/2 FORM (emf|EMF)\n3 TYPE .[^\n]+/" => "2 FORM image/emf",
+			"/2 FORM (htm|HTM|html|HTML)\n3 TYPE .[^\n]+/" => "2 FORM text/html",            
 		];
 
 		foreach ($preg_replace_pairs as $pattern => $replace) {

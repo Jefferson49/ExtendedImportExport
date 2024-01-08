@@ -361,13 +361,13 @@ class GedcomSevenExportService
 			//Media types
 			//Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
 			//GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
-			"/2 FORM (bmp|BMP)\n3 TYPE .[^\n]+/" => "2 FORM image/bmp",
-			"/2 FORM (gif|GIF)\n3 TYPE .[^\n]+/" => "2 FORM image/gif",
-			"/2 FORM (jpg|JPG|jpeg|JPEG)\n3 TYPE .[^\n]+/" => "2 FORM image/jpeg",
-			"/2 FORM (tif|TIF|tiff|TIFF)\n3 TYPE .[^\n]+/" => "2 FORM image/tiff",
-			"/2 FORM (pdf|PDF)\n3 TYPE .[^\n]+/" => "2 FORM application/pdf",
-			"/2 FORM (emf|EMF)\n3 TYPE .[^\n]+/" => "2 FORM image/emf",
-			"/2 FORM (htm|HTM|html|HTML)\n3 TYPE .[^\n]+/" => "2 FORM text/html",            
+			"/2 FORM (bmp|BMP)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/bmp",
+			"/2 FORM (gif|GIF)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/gif",
+			"/2 FORM (jpg|JPG|jpeg|JPEG)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/jpeg",
+			"/2 FORM (tif|TIF|tiff|TIFF)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/tiff",
+			"/2 FORM (pdf|PDF)(\n3 TYPE .[^\n]+)*/" => "2 FORM application/pdf",
+			"/2 FORM (emf|EMF)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/emf",
+			"/2 FORM (htm|HTM|html|HTML)(\n3 TYPE .[^\n]+)*/" => "2 FORM text/html",            
 		];
 
 		foreach ($preg_replace_pairs as $pattern => $replace) {

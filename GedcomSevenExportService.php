@@ -394,9 +394,11 @@ class GedcomSevenExportService
 			"/2 AGE ([\d]{1,3})y ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1y $2m $3d",
 			"/2 AGE ([\d]{1,2})m 00([\d])d/" => "2 AGE $1m $2d",
 			"/2 AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1m $2d",
+
 			//RELA, ROLE, ASSO
 			"/([\d]) RELA/" => "$1 ROLE",
 			"/([\d]) _ASSO/" => "$1 ASSO",
+
 			//Media types
 			//Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
 			//GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
@@ -406,7 +408,11 @@ class GedcomSevenExportService
 			"/2 FORM (tif|TIF|tiff|TIFF)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/tiff",
 			"/2 FORM (pdf|PDF)(\n3 TYPE .[^\n]+)*/" => "2 FORM application/pdf",
 			"/2 FORM (emf|EMF)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/emf",
-			"/2 FORM (htm|HTM|html|HTML)(\n3 TYPE .[^\n]+)*/" => "2 FORM text/html",            
+			"/2 FORM (htm|HTM|html|HTML)(\n3 TYPE .[^\n]+)*/" => "2 FORM text/html",
+
+            //Shared notes (SNOTE)
+			"/([\d)]) NOTE @(.[^\n]+)@/" => "$1 SNOTE @$2@",
+			"/0 @(.[^\n]+)@ NOTE (.[^\n]+)/" => "0 @$1@ SNOTE $2",
 		];
 
 		foreach ($preg_replace_pairs as $pattern => $replace) {

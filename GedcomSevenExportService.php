@@ -80,6 +80,30 @@ use const STREAM_FILTER_WRITE;
  */
 class GedcomSevenExportService
 {
+    //Custom tags and schema definitions
+    private const SCHEMAS = [
+        //GEDCOM-L Addendum, R2
+        '_GODP'    => 'https://genealogy.net/GEDCOM/',
+        '_GOV'     => 'https://genealogy.net/GEDCOM/',
+        '_GOVTYPE' => 'https://genealogy.net/GEDCOM/',
+        '_LOC'     => 'https://genealogy.net/GEDCOM/',
+        '_NAME'    => 'https://genealogy.net/GEDCOM/',
+        '_POST'    => 'https://genealogy.net/GEDCOM/',
+        '_RUFNAME' => 'https://genealogy.net/GEDCOM/',
+        '_STAT'    => 'https://genealogy.net/GEDCOM/',
+        '_UID'     => 'https://genealogy.net/GEDCOM/',
+        '_WITN'    => 'https://genealogy.net/GEDCOM/',    
+        '_TODO'    => 'https://genealogy.net/GEDCOM/',           
+        '_SCHEMA'  => 'https://genealogy.net/GEDCOM/',
+        '_CAT'     => 'https://genealogy.net/GEDCOM/',
+        '_CDATE'   => 'https://genealogy.net/GEDCOM/',
+        '_RDATE'   => 'https://genealogy.net/GEDCOM/',
+        '_PRIM'    => 'https://genealogy.net/GEDCOM/',
+
+        //webtrees
+        '_WT_USER' => 'https://www.webtrees.net/',
+    ];
+
     public const ACCESS_LEVELS = [
         'gedadmin' => Auth::PRIV_NONE,
         'user'     => Auth::PRIV_USER,
@@ -93,6 +117,10 @@ class GedcomSevenExportService
 
 	private array $language_to_code_table;
 
+    //List of custom tags, which were found in the GEDCOM data
+    private array $custom_tags_found;
+
+
     /**
      * @param ResponseFactoryInterface $response_factory
      * @param StreamFactoryInterface   $stream_factory
@@ -101,7 +129,8 @@ class GedcomSevenExportService
 	{
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
-
+        $this->custom_tags_found = [];
+        
 		$iana_language_registry_file_name = __DIR__ . '/vendor/iana/iana_languages.txt';
 
 		$iana_language_registry = file_get_contents($iana_language_registry_file_name);
@@ -140,8 +169,11 @@ class GedcomSevenExportService
     ): ResponseInterface {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
+        //First, check custom tags only => flag $check_custom_tags = true
+        $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, true, $records);
+
         if ($format === 'gedcom') {
-            $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, $records);
+            $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, false, $records);
             $stream   = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()
@@ -165,7 +197,7 @@ class GedcomSevenExportService
             $media_path = null;
         }
 
-        $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, $records, $zip_filesystem, $media_path);
+        $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, false, $records, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
@@ -188,15 +220,16 @@ class GedcomSevenExportService
     /**
      * Write GEDCOM data to a stream.
      *
-     * @param Tree                        $tree           - Export data from this tree
-     * @param bool                        $sort_by_xref   - Write GEDCOM records in XREF order
-     * @param string                      $encoding       - Convert from UTF-8 to other encoding
-     * @param int                         $access_level   - Apply privacy filtering
-     * @param string                      $line_endings   - CRLF or LF
-	 * @param bool                        $gedcom_l       - Whether export should consider GEDCOM-L
-     * @param Collection<int,string>|null $records        - Just export these records
-     * @param FilesystemOperator|null     $zip_filesystem - Write media files to this filesystem
-     * @param string|null                 $media_path     - Location within the zip filesystem
+     * @param Tree                        $tree              - Export data from this tree
+     * @param bool                        $sort_by_xref      - Write GEDCOM records in XREF order
+     * @param string                      $encoding          - Convert from UTF-8 to other encoding
+     * @param int                         $access_level      - Apply privacy filtering
+     * @param string                      $line_endings      - CRLF or LF
+	 * @param bool                        $gedcom_l          - Whether export should consider GEDCOM-L
+     * @param bool                        $check_custom_tags - Just check custom tags; do not create a stream
+     * @param Collection<int,string>|null $records           - Just export these records
+     * @param FilesystemOperator|null     $zip_filesystem    - Write media files to this filesystem
+     * @param string|null                 $media_path        - Location within the zip filesystem
      *
      * @return resource
      */
@@ -207,6 +240,7 @@ class GedcomSevenExportService
         int $access_level = Auth::PRIV_HIDE,
         string $line_endings = 'CRLF',
 		bool $gedcom_l = false,
+        bool $check_custom_tags = false,
         Collection $records = null,
         FilesystemOperator $zip_filesystem = null,
         string $media_path = null
@@ -222,14 +256,14 @@ class GedcomSevenExportService
         if ($records instanceof Collection) {
             // Export just these records - e.g. from clippings cart.
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, false, $gedcom_l)]),
+                new Collection([$this->createHeader($tree, $encoding, false)]),
                 $records,
                 new Collection(['0 TRLR']),
             ];
         } elseif ($access_level === Auth::PRIV_HIDE) {
             // If we will be applying privacy filters, then we will need the GEDCOM record objects.
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, true, $gedcom_l)]),
+                new Collection([$this->createHeader($tree, $encoding, true)]),
                 $this->individualQuery($tree, $sort_by_xref)->cursor(),
                 $this->familyQuery($tree, $sort_by_xref)->cursor(),
                 $this->sourceQuery($tree, $sort_by_xref)->cursor(),
@@ -244,7 +278,7 @@ class GedcomSevenExportService
             });
 
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, true, $gedcom_l)]),
+                new Collection([$this->createHeader($tree, $encoding, true)]),
                 $this->individualQuery($tree, $sort_by_xref)->get()->map(Registry::individualFactory()->mapper($tree)),
                 $this->familyQuery($tree, $sort_by_xref)->get()->map(Registry::familyFactory()->mapper($tree)),
                 $this->sourceQuery($tree, $sort_by_xref)->get()->map(Registry::sourceFactory()->mapper($tree)),
@@ -287,19 +321,24 @@ class GedcomSevenExportService
                 //$gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH) . "\n";
 				$gedcom .= "\n";
 
-				//Convert to Gedcom 7
-				$gedcom = $this->convertToGedcom7($gedcom, $gedcom_l);
-
-				if ($line_endings === 'CRLF') {
-					$gedcom = strtr($gedcom, ["\n" => "\r\n"]);
-				}
-
-                $bytes_written = fwrite($stream, $gedcom);
-
-                if ($bytes_written !== strlen($gedcom)) {
-                    throw new RuntimeException('Unable to write to stream.  Perhaps the disk is full?');
+                if($check_custom_tags) {
+                    //Just find known custom tags
+                    $this->findCustomTags($gedcom);
                 }
+                else {
+                    //Convert to Gedcom 7
+                    $gedcom = $this->convertToGedcom7($gedcom, $gedcom_l);
 
+                    if ($line_endings === 'CRLF') {
+                        $gedcom = strtr($gedcom, ["\n" => "\r\n"]);
+                    }
+
+                    $bytes_written = fwrite($stream, $gedcom);
+
+                    if ($bytes_written !== strlen($gedcom)) {
+                        throw new RuntimeException('Unable to write to stream.  Perhaps the disk is full?');
+                    }
+                }
 			}
         }
 
@@ -495,11 +534,10 @@ class GedcomSevenExportService
      * @param Tree   $tree
      * @param string $encoding
      * @param bool   $include_sub
-	 * @param bool   $gedcom_l
      *
      * @return string
      */
-    public function createHeader(Tree $tree, string $encoding, bool $include_sub, bool $gedcom_l = false): string
+    public function createHeader(Tree $tree, string $encoding, bool $include_sub): string
     {
         // Force a ".ged" suffix
         $filename = $tree->name();
@@ -526,21 +564,15 @@ class GedcomSevenExportService
         $gedcom .= "\n2 TIME " . date('H:i:s');
         $gedcom .= "\n1 GEDC\n2 VERS 7.0.11";
 
-		//Schema tags for GEDCOM-L
-		if($gedcom_l) {
-			//Add schema with extension tags
-			$gedcom .= "\n1 SCHMA";
-			$gedcom .= "\n2 TAG _GODP https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _GOV https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _GOVTYPE https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _LOC https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _NAME https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _POST https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _RUFNAME https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _STAT https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _UID https://genealogy.net/GEDCOM/";
-			$gedcom .= "\n2 TAG _WITN https://genealogy.net/GEDCOM/";
-		}
+		// Add schemas with extension tags
+        if (sizeof($this->custom_tags_found) > 0) {
+
+            $gedcom .= "\n1 SCHMA";
+
+            foreach($this->custom_tags_found as $tag) {
+                $gedcom .= "\n2 TAG " . $tag . " " . self::SCHEMAS[$tag];
+            }
+        }
 
         // Preserve some values from the original header
         $header = Registry::headerFactory()->make('HEAD', $tree) ?? Registry::headerFactory()->new('HEAD', '0 HEAD', null, $tree);
@@ -710,5 +742,24 @@ class GedcomSevenExportService
         }
 
         return $query;
+    }
+
+    /**
+     * Find custom tags.
+     * 
+     * @param string $gedcom
+     */
+    public function findCustomTags(string $gedcom) : void
+    {
+        foreach (self::SCHEMAS as $tag => $uri) {
+
+            if(str_contains($gedcom, $tag)) {
+
+                if(!in_array($tag, $this->custom_tags_found)) {
+
+                    $this->custom_tags_found[] = $tag;
+                }
+            } 
+        }
     }
 }

@@ -413,6 +413,9 @@ class GedcomSevenExportService
             //Shared notes (SNOTE)
 			"/([\d)]) NOTE @(.[^\n]+)@/" => "$1 SNOTE @$2@",
 			"/0 @(.[^\n]+)@ NOTE (.[^\n]+)/" => "0 @$1@ SNOTE $2",
+
+            //External IDs (EXID)
+			"/1 (AFN|RFN|RIN) (.[^\n]+)/" => "1 EXID $2\n2 TYPE https://gedcom.io/terms/v7/$1",
 		];
 
 		foreach ($preg_replace_pairs as $pattern => $replace) {

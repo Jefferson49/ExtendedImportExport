@@ -35,7 +35,6 @@ use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Header;
-use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Webtrees;
@@ -82,26 +81,49 @@ class GedcomSevenExportService
 {
     //Custom tags and schema definitions
     private const SCHEMAS = [
-        //GEDCOM-L Addendum, R2
-        '_GODP'    => 'https://genealogy.net/GEDCOM/',
-        '_GOV'     => 'https://genealogy.net/GEDCOM/',
-        '_GOVTYPE' => 'https://genealogy.net/GEDCOM/',
-        '_LOC'     => 'https://genealogy.net/GEDCOM/',
-        '_NAME'    => 'https://genealogy.net/GEDCOM/',
-        '_POST'    => 'https://genealogy.net/GEDCOM/',
-        '_RUFNAME' => 'https://genealogy.net/GEDCOM/',
-        '_STAT'    => 'https://genealogy.net/GEDCOM/',
-        '_UID'     => 'https://genealogy.net/GEDCOM/',
-        '_WITN'    => 'https://genealogy.net/GEDCOM/',    
-        '_TODO'    => 'https://genealogy.net/GEDCOM/',           
-        '_SCHEMA'  => 'https://genealogy.net/GEDCOM/',
-        '_CAT'     => 'https://genealogy.net/GEDCOM/',
-        '_CDATE'   => 'https://genealogy.net/GEDCOM/',
-        '_RDATE'   => 'https://genealogy.net/GEDCOM/',
-        '_PRIM'    => 'https://genealogy.net/GEDCOM/',
+
+        //Collection of known custom tags
+        //Source: https://wiki.genealogy.net/GEDCOM/_Nutzerdef-Tag#.C3.9Cbersicht_bekannter_Nutzerdefinierter_Kennzeichen
+        ['https://wiki.genealogy.net/GEDCOM/_Nutzerdef-Tag' =>
+            [
+                '_ABBR', '_ADPF', '_ADPM', '_ADPN', '_AHNNR', '_AIDN', '_AKA', '_AKAN', '_ALIA', '_ALTPATH', '_AON', '_APID', '_ASSO', '_AUTO', '_BIRN', 
+                '_BRTM', '_BKM', '_BUCH', '_BUERGERORT', '_CALL', '_CDATE', '_CENN', '_CIRC', '_COML', '_CONF_FLAG', '_COR', '_CORR', '_CRE', '_CREAT',
+                '_Creat', '_CTYP', '_CURN', '_CUTOUT', '_DATE', '_DATE_TYPE', '_DATE2', '_DCAUSE', '_DEFN', '_DEG', '_DEP', '_DETS', '_DIVERSES', '_DMGD',
+                '_DNA', '_ELEC', '_EMAIL', '_EMPLOY', '_EVENT_DEFN', '_EVID', '_EVN', '_EXCM', '_EXPORTED_FROM_SITE_ID', '_EYEC', '_EYES', '_FARN', '_FA1',
+                '_FCTRY', '_FID', '_FILESIZE', '_FKAN', '_FNRL', '_FOKOID', '_FOOT', '_FPOST', '_FREL', '_FRKA', '_FSFTID', '_FSTAE', '_FUN', '_GERN',
+                '_GODF', '_GODP', '_GODT', '_GOV', '_GOVTYPE', '_GRUPPE', '_HAIR', '_HEBN', '_HEIG', '_HEIM', '_HEIRATNAME', '_HME', '_HNM', '_HOL', '_HOME',
+                '_HUSB', '_IMPF', '_INDG', '_INDN', '_INET', '_INFO', '_INTE', '_ITALIC', '_JAG', '_JUST', '_KTIT', '_LAD ', '_LAM ', '_LAS ', '_LAN', '_LEBENSORT',
+                '_LINK', '_LIV', '_LNCH', '_LOC', '_LOD ', '_LOM ', '_LOS ', '_LON', '_MAIDENHEAD', '_MARI', '_MARN', '_MARNM', '_MARR', '_MARRNAME', 
+                '_MARRNAMEHUSB', '_MARRNAMEWIFE', '_MASTER', '_MBON', '_MDCL', '_MEDC', '_MEDI', '_MEND', '_MHRM', '_MHSM', '_MHAV', '_MILI', '_MILT', '_MILTID',
+                '_MISN', '_MREL', '_MREL', '_MSTAT', '_NAM', '_NAMC', '_NAME', '_NAMM', '_NAMS', '_NAMW', '_NAVI', '_NAVM', '_NCHI', '_NEW', '_NLIV', '_NMAR',
+                '_NMR', '_NONE', '_NONE', '_NOTH', '_NR', '_ORGSOUR', '_ORI', '_OTHN', '_OVER', '_PAREN', '_PEI', '_PERC', '_PHOM', '_PHOTO', '_PHOTO_RIN',
+                '_PLAC', '_PLAC_DEFN', '_PLACE_TYPE', '_PLACE', '_PLACTODAY', '_PMOB', '_POSITION', '_POST', '_POST', '_PREF', '_PREP', '_PRI', '_PRIM',
+                '_PRIM', '_PRIMARY', '_PRIM_CUTOUT', '_PRIO', '_PRIV', '_PRMN', '_PROJECT_GUID', '_QUAL', '_QUAY', '_QUOTED', '_RDATE', '_REC', '_REL', '_RELN',
+                '_RINS', '_RTLSAVE', '_RUFNAME', '_RUID', '_SCBK', '_SCHA', '_SCHEMA', '_SDATE', '_SENDOF', '_SENDOM', '_SENDOU', '_SENDPF', '_SENDPM', '_SENDPU',
+                '_SENF', '_SENM', '_SENPOF', '_SENPOM', '_SENPOU', '_SENU', '_SEPR', '_SHON', '_SIC', '_SIGN', '_SLDN', '_SM_MERGES', '_SOUND', '_SOUR', '_SSHOW',
+                '_STAT', '_STP', '_STYLE', '_SUBM', '_SURN', '_TASK', '_TODO', '_TXT', '_TYPE', '_TYPE', '_UID', '_UNKN', '_UPD', '_URL', '_URKU', '_VERI',
+                '_WEIG', '_WGFM', '_WIFE', '_WITN', '_WT_USER', '_WT_OBJE_SORT', '_WTN', '_YART', '_ZUS', '_ZVST',
+            ],
+        ],
 
         //webtrees
-        '_WT_USER' => 'https://www.webtrees.net/',
+        ['https://www.webtrees.net/' =>
+            [
+                '_WT_USER',
+            ],
+        ],        
+    ];
+
+    //GEDCOM-L custom tags and schema definitions
+    private const GEDCOM_L_SCHEMAS = [
+        
+        //GEDCOM-L Addendum, R2
+        ['https://genealogy.net/GEDCOM/' =>
+            [
+                '_ASSO', '_CAT', '_CDATE', '_GODP', '_GOV', '_GOVTYPE', '_LOC', '_NAME', '_POST', '_PRIM', '_RDATE', '_RUFNAME', '_SCHEMA', '_STAT', '_TODO',
+                '_UID', '_WITN',
+            ],
+        ],
     ];
 
     public const ACCESS_LEVELS = [
@@ -117,6 +139,9 @@ class GedcomSevenExportService
 
 	private array $language_to_code_table;
 
+    //List of schemas which ware used for the export
+    private array $schemas;
+
     //List of custom tags, which were found in the GEDCOM data
     private array $custom_tags_found;
 
@@ -130,6 +155,7 @@ class GedcomSevenExportService
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
         $this->custom_tags_found = [];
+        $this->schemas = [];
         
 		$iana_language_registry_file_name = __DIR__ . '/vendor/iana/iana_languages.txt';
 
@@ -168,6 +194,13 @@ class GedcomSevenExportService
         Collection $records = null
     ): ResponseInterface {
         $access_level = self::ACCESS_LEVELS[$privacy];
+
+        //Create schema list
+        $this->schemas = [];
+        $this->addToSchemas(self::SCHEMAS);
+        if($gedcom_l) {
+            $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
+        }
 
         //First, check custom tags only => flag $check_custom_tags = true
         $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, true, $records);
@@ -231,7 +264,7 @@ class GedcomSevenExportService
      * @param FilesystemOperator|null     $zip_filesystem    - Write media files to this filesystem
      * @param string|null                 $media_path        - Location within the zip filesystem
      *
-     * @return resource
+     * @return ?resource
      */
     public function export(
         Tree $tree,
@@ -245,13 +278,15 @@ class GedcomSevenExportService
         FilesystemOperator $zip_filesystem = null,
         string $media_path = null
     ) {
-        $stream = fopen('php://memory', 'wb+');
+        if(!$check_custom_tags) {
+            $stream = fopen('php://memory', 'wb+');
 
-        if ($stream === false) {
-            throw new RuntimeException('Failed to create temporary stream');
+            if ($stream === false) {
+                throw new RuntimeException('Failed to create temporary stream');
+            }
+
+            stream_filter_append($stream, GedcomEncodingFilter::class, STREAM_FILTER_WRITE, ['src_encoding' => UTF8::NAME, 'dst_encoding' => $encoding]);
         }
-
-        stream_filter_append($stream, GedcomEncodingFilter::class, STREAM_FILTER_WRITE, ['src_encoding' => UTF8::NAME, 'dst_encoding' => $encoding]);
 
         if ($records instanceof Collection) {
             // Export just these records - e.g. from clippings cart.
@@ -305,7 +340,7 @@ class GedcomSevenExportService
                         $datum->o_gedcom;
                 }
 
-                if ($media_path !== null && $zip_filesystem !== null && preg_match('/0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
+                if (!$check_custom_tags && $media_path !== null && $zip_filesystem !== null && preg_match('/0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
                     preg_match_all('/\n1 FILE (.+)/', $gedcom, $matches, PREG_SET_ORDER);
 
                     foreach ($matches as $match) {
@@ -321,14 +356,14 @@ class GedcomSevenExportService
                 //$gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH) . "\n";
 				$gedcom .= "\n";
 
+                //Convert to Gedcom 7
+                $gedcom = $this->convertToGedcom7($gedcom, $gedcom_l);
+
                 if($check_custom_tags) {
-                    //Just find known custom tags
+                    //Find known custom tags
                     $this->findCustomTags($gedcom);
                 }
                 else {
-                    //Convert to Gedcom 7
-                    $gedcom = $this->convertToGedcom7($gedcom, $gedcom_l);
-
                     if ($line_endings === 'CRLF') {
                         $gedcom = strtr($gedcom, ["\n" => "\r\n"]);
                     }
@@ -342,11 +377,15 @@ class GedcomSevenExportService
 			}
         }
 
-        if (rewind($stream) === false) {
-            throw new RuntimeException('Cannot rewind temporary stream');
+        if(!$check_custom_tags) {        
+            if (rewind($stream) === false) {
+                throw new RuntimeException('Cannot rewind temporary stream');
+            }
+
+            return $stream;
         }
 
-        return $stream;
+        return;
     }
 
     /**
@@ -579,7 +618,7 @@ class GedcomSevenExportService
             $gedcom .= "\n1 SCHMA";
 
             foreach($this->custom_tags_found as $tag) {
-                $gedcom .= "\n2 TAG " . $tag . " " . self::SCHEMAS[$tag];
+                $gedcom .= "\n2 TAG " . $tag . " " . $this->schemas[$tag];
             }
         }
 
@@ -757,10 +796,12 @@ class GedcomSevenExportService
      * Find custom tags.
      * 
      * @param string $gedcom
+     * 
+     * @return void 
      */
     public function findCustomTags(string $gedcom) : void
     {
-        foreach (self::SCHEMAS as $tag => $uri) {
+        foreach ($this->schemas as $tag => $uri) {
 
             if(str_contains($gedcom, $tag)) {
 
@@ -771,4 +812,25 @@ class GedcomSevenExportService
             } 
         }
     }
+
+    /**
+     * Add to schemas
+     * 
+     * @param array $schemas     //An array with schemas to add
+     * 
+     * @return void
+     */
+    public function addToSchemas(array $schemas) : void
+    {
+        foreach ($schemas as $schema) {
+        
+            foreach($schema as $uri => $custom_tags) {
+
+                foreach($custom_tags as $tag) {
+                    $this->schemas[$tag] = $uri;
+                }
+            }
+        }
+    }
+
 }

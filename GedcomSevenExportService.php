@@ -83,8 +83,8 @@ class GedcomSevenExportService
     private const SCHEMAS = [
 
         //Collection of known custom tags
-        //Source: https://wiki.genealogy.net/GEDCOM/_Nutzerdef-Tag#.C3.9Cbersicht_bekannter_Nutzerdefinierter_Kennzeichen
-        ['https://wiki.genealogy.net/GEDCOM/_Nutzerdef-Tag' =>
+        //Source: https://wiki.genealogy.net/GEDCOM/_Nutzerdef-Tag#Tabelle_1
+        ['https://wiki.genealogy.net/GEDCOM/_Nutzerdef-Tag#Tabelle_1' =>
             [
                 '_ABBR', '_ADPF', '_ADPM', '_ADPN', '_AHNNR', '_AIDN', '_AKA', '_AKAN', '_ALIA', '_ALTPATH', '_AON', '_APID', '_ASSO', '_AUTO', '_BIRN', 
                 '_BRTM', '_BKM', '_BUCH', '_BUERGERORT', '_CALL', '_CDATE', '_CENN', '_CIRC', '_COML', '_CONF_FLAG', '_COR', '_CORR', '_CRE', '_CREAT',

@@ -5,11 +5,11 @@
 A [webtrees](https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests with the tree name, GEDCOM file name, and authorization provided as parameters within the URL.
 
 ## What are the benefits of this module?
-+ Gedcom files can be automatically downloaded without logging into the user interface (webtrees front end)
-+ Gedcom files can be downloaded with a script, see attached example scripts
-+ Gedcom files can be automatically saved to a folder on the webtrees server without logging into the user interface (webtrees front end)
-+ Gedcom file backups on the server can be scheduled by a Cron Job on the server, see attached example script
-+ Gedcom files can be downloaded/stored in the Gedcom 7 format (beta version)
++ Automatically download GEDCOM files without logging into the user interface (webtrees front end)
++ Download GEDCOM files with a script, see attached [example scripts](#example-scripts)
++ Automatically save GEDCOM files to a folder on the webtrees server without logging into the user interface (webtrees front end)
++ Schedule GEDCOM file backups on the server by using a Cron Job, see attached [example script](#example-scripts)
++ Download/store GEDCOM files in the GEDCOM 7 format (beta version)
 
 ## IMPORTANT SECURITY NOTES
 **Module versions starting from v3.0.0 use an authorization key**, which is stored in the module preferences in webtrees. Access to the download is only allowed if the provided key in the URL is identical to a authorization key in the webtrees database (settings). 
@@ -28,7 +28,7 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 	+ Go to "Control Panel/All Modules", and find the module called "DownloadGedcomWithURL"
 	+ Check if it has a tick for "Enabled"
 + Provide an authorization key in the module settings, see chapter below
-+ Specify in the module settings whether Gedcom files are allowed to be downloaded or not
++ Specify in the module settings whether GEDCOM files are allowed to be downloaded or not
 + Optionally, specify default settings in the control panel, which might reduce the number of parameters provided within the URL
 + Optionally, test the download setting with the "Test Download" button in the control panel
 
@@ -40,18 +40,22 @@ The module was developed and tested with [webtrees 2.1.16](https://webtrees.net/
 ### URL Format
 The full URL format, which contains all possible parameters is defined as follows:
 
-https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&key=MY_KEY&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS&action=MY_ACTION&time_stamp=MY_TIME_STAMP&gedcom7=MY_GEDCOM7_FLAG&gedcom_l=MY_GEDCOM_L_FLAG
+BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&tree=MY_TREE&key=MY_KEY&file=MY_FILENAME&privacy=MY_PRIVACY_LEVEL&format=MY_EXPORT_FORMAT&encoding=MY_ENCODING&line_endings=MY_ENDINGS&action=MY_ACTION&time_stamp=MY_TIME_STAMP&gedcom7=MY_GEDCOM7_FLAG&gedcom_l=MY_GEDCOM_L_FLAG
 
-The "MY_xxx" place holders need to be replaced by the specific parameter values, which shall be used for the download. The possible values for the URL parameters are described below.
+Where BASE_URL is the webtrees base URL, which is defined in the config.ini.php file, e.g. base_url="https://dev.webtrees.net/demo-stable".
+
+The "MY_xxx" place holders need to be replaced by the specific parameter values, which shall be used for the download. The possible values for the URL parameters are described below. 
+
+Most of the parameters match 1:1 to the webtrees export settings in the control panel. To gain a better understanding of these parameters, it is helpful to check these parameters and run some manual test exports in the control panel.
 
 It is not mandatory to provide all parameters. The only mandatory parameter is the authorization key. If any of the other parameters is not provided, the default value, which is specified in the control panel is used.
 
 ### Example URLs  
-https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9
+BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9
 
-https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export
+BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export
 
-https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&action=both&time_stamp=prefix&gedcom7=1&gedcom_l=1
+BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHBiZM9&tree=tree1&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&action=both&time_stamp=prefix&gedcom7=1&gedcom_l=1
 
 ### Values for URL Parameters  
 * MY_KEY specifies a authorization key, which restricts the access to the download
@@ -75,11 +79,11 @@ https://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&key=hYHB
 * MY_ENDINGS specifies the line endings in the generated GEDCOM file
   * Valid values: CRLF (default), LF
 
-* MY_ACTION specifies whether the Gedcom file will be downloaded, saved on the server, or both
+* MY_ACTION specifies whether the GEDCOM file will be downloaded, saved on the server, or both
   * Valid values: download (default), save, both
   * The folder within the webtrees root path to save GEDCOM files can be specified in the module settings in the control panel 
 
-* MY_TIME_STAMP specifies whether a (GMT) time stamp will be added to the file name of saved Gedcom files. MY_TIME_STAMP also defines whether the time stamp is added as prefix or as a postfix.
+* MY_TIME_STAMP specifies whether a (GMT) time stamp will be added to the file name of saved GEDCOM files. MY_TIME_STAMP also defines whether the time stamp is added as prefix or as a postfix.
   * Valid values: none (default), prefix, postfix
 
 * MY_GEDCOM7_FLAG specifies whether the generated GEDCOM file follows the GEDCOM 7 specification; default is GEDCOM 5.5.1
@@ -110,20 +114,28 @@ In order to use changed settings for a test download, the settings need to be sa
 ![Screenshot: Test Download button in the control panel](resources/img/screenshot_control_panel_test_download_button.jpg)
 
 ### Example Scripts 
-The release ZIP file also contains 3 example scripts for automatic download of Gedcom files or storage on the server:
-+ **ExampleBashScript.sh** contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
-+ **ExamplePythonScript.py** contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windows PC
-+ **ExamplePythonScript2.py** contains a more advanced example for an automatic download with a Python script, which allows to store the downloaded file to a specific folder and also includes some logging output
+The release ZIP file also contains 3 example scripts for automatic download of GEDCOM files or storage on the server:
++ [ExampleBashScript\.sh](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/ExampleBashScript.sh) contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
++ [ExamplePythonScript\.py](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/ExamplePythonScript.py) contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windows PC
++ [ExamplePythonScript2\.py](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/ExamplePyhtonScript2.py) contains a more advanced example for an automatic download with a Python script, which allows to store the downloaded file to a specific folder and also includes some logging output
+
+### Recommended steps to test the module
+In order to test systematically and have some control about the effects, the following steps are recommend. Only proceed to the next step if the prior step was successful:
++ Choose or create a small test tree
++ Run a manual export in the webtrees control panel with certain export settings
++ Run a manual test export in the DownloadGedcomWithURL control panel with exactly the same settings like above
++ Run a script (e.g. based on one of the provided [example scripts](#example-scripts)) with exactly the same settings like above
++ If everything works fine, choose larger trees etc.
 
 ### GEDCOM 7 export
-DownloadGedcomWithURL also contains a (beta version) feature to download Gedcom files with the new GEDCOM 7 standard. In general, the **Gedcom 7 feature has a beta and testing status**. 
+DownloadGedcomWithURL also contains a (beta version) feature to download GEDCOM files with the new GEDCOM 7 standard. In general, the **GEDCOM 7 feature has a beta and testing status**. 
 
 The GEDCOM 7 export also includes a further option to use the German GEDCOM-L standard.
 
 The generated GEDCOM 7 files were successfully valdidated with [GEDCOM Validator](https://chronoplexsoftware.com/gedcomvalidator/) and 
 [Gedcom Structure Analysis](https://ofb.hesmer.name/main_gsp_e.html#Analyse). Gedcom Structure Analysis also validates against the German GEDCOM-L standard.
 
-At the moment, **it is not planned that the GEDCOM 7 feature is supported**. However, if you are a programmer, it might be interesting to take the code as a base for your own Gedcom 7 tests. The code of the Gedcom 7 export is contained in the GedcomSevenExportService.php file; mainly in the function convertToGedcom7. Pull request to the Github repository will be accepted, if improvements of the code are intended to be shared.
+At the moment, **it is not planned that the GEDCOM 7 feature is supported**. However, if you are a programmer, it might be interesting to take the code as a base for your own GEDCOM 7 tests. The code of the GEDCOM 7 export is contained in the GedcomSevenExportService.php file; mainly in the function convertToGedcom7. Pull request to the Github repository will be accepted, if improvements of the code are intended to be shared.
 
 ## Translation
 You can help to translate this module. The translation is based on [gettext](https://en.wikipedia.org/wiki/Gettext) and uses .po files, which can be found in [/resources/lang/](https://github.com/Jefferson49/DownloadGedcomWithURL/tree/main/resources/lang). You can use a local editor like [Poedit](https://poedit.net/) or notepad++ to work on translations and provide them in the [Github repository](https://github.com/Jefferson49/DownloadGedcomWithURL) of the module. You can do this via a pull request (if you know how to do), or by opening a new issue and attaching a .po file. Updated translations will be included in the next release of this module.

@@ -9,9 +9,16 @@ def downloadFile(url, params, local_filename):
     
     for param in params:
         logging.debug(param + ': ' + params[param])
+        
+    headers = requests.utils.default_headers()
+    headers.update(
+        {
+            "User-Agent": "Python script",
+        }
+    )
       
     try:
-        response = requests.get(url, params, stream=True, timeout=60)
+        response = requests.get(url, params, stream=True, timeout=60, headers = headers)
         response.raise_for_status()
     except HTTPError as http_err:
         logging.exception(f'HTTP error occurred: {http_err}')
@@ -43,7 +50,7 @@ print("Started: " + executed_file )
 logging.info("Started: " + executed_file)
    
 local_path = 'c:/temp/gedcom/'
-url = '"http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL'
+url = 'http://BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL'
 
 print("Downloading: " + url)
 filename = 'export'

@@ -657,7 +657,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				$folder_to_save = $this->getPreference(self::PREF_FOLDER_TO_SAVE, '');
 
 				//If Gedcom 7, create Gedcom 7 response
-				if (($format === 'gedcom') && ($gedcom7)) {
+				if ($gedcom7) {
 					try {
 						$resource = $this->gedcom7_export_service->saveGedcomSevenResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $gedcom_l);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
@@ -691,7 +691,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//if download is allowed
 				if(boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1'))) {
 					//If Gedcom 7, create Gedcom 7 response
-					if (($format === 'gedcom') && ($gedcom7)) {
+					if ($gedcom7) {
 						$response = $this->gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_l);
 					}
 					//Create Gedcom 5.5.1 response

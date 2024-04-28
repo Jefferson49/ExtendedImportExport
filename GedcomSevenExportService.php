@@ -251,6 +251,44 @@ class GedcomSevenExportService
     }
 
     /**
+     * @param Tree            $tree         - Export data from this tree
+     * @param bool            $sort_by_xref - Write GEDCOM records in XREF order
+     * @param string          $encoding     - Convert from UTF-8 to other encoding
+     * @param string          $privacy      - Filter records by role
+     * @param string          $line_endings
+     * @param string          $format       - One of: gedcom, zip, zipmedia, gedzip
+	 * @param bool            $gedcom_l     - Whether export should consider GEDCOM-L
+     * @param Collection|null $records
+     *
+     * @return ?resource
+     */
+    public function saveGedcomSevenResponse(
+        Tree $tree,
+        bool $sort_by_xref,
+        string $encoding,
+        string $privacy,
+        string $line_endings,
+        string $format,
+		bool $gedcom_l = false,
+        Collection $records = null
+    ) {
+        $access_level = self::ACCESS_LEVELS[$privacy];
+
+        //Create schema list
+        $this->schemas = [];
+        $this->addToSchemas(self::SCHEMAS);
+        if($gedcom_l) {
+            $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
+        }
+
+        //First, check custom tags only => flag $check_custom_tags = true
+        $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, true, $records);
+
+        return $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, false, $records);
+    }
+
+
+    /**
      * Write GEDCOM data to a stream.
      *
      * @param Tree                        $tree              - Export data from this tree

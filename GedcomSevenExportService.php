@@ -440,27 +440,21 @@ class GedcomSevenExportService
 			"ROLE (Godparent)\n" => "ROLE GODP\n",
 			"RELA godparent\n" => "RELA GODP\n",
 			"RELA witness\n" => "RELA WITN\n",
+            "1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
+            "1 _STAT NEVER MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
 			"2 LANG SERB\n" => "2 LANG Serbian\n",				//Otherwise not found by language replacement below
 			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
 			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below
 		];
 
+		if($gedcom_l) {
+			$replace_pairs = array_merge($replace_pairs, [
+				"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",		//Convert webtrees value to GEDCOM-L standard value
+			]);
+        }
+        
 		foreach ($replace_pairs as $search => $replace) {
 			$gedcom = str_replace($search, $replace, $gedcom);
-		}
-
-		//GEDCOM-L
-		if($gedcom_l) {
-
-			$replace_pairs_gedcom_l = [
-				"1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
-				"1 _STAT NEVER MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
-				"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",			//Convert webtrees value to GEDCOM-L standard value
-			];
-	
-			foreach ($replace_pairs_gedcom_l as $search => $replace) {
-				$gedcom = str_replace($search, $replace, $gedcom);
-			}	
 		}
 
 		$preg_replace_pairs = [
@@ -499,27 +493,25 @@ class GedcomSevenExportService
 			$gedcom = preg_replace($pattern, $replace, $gedcom);
 		}
 
-		//GEDCOM-L _GODP, _WITN
-		if($gedcom_l) {
-			$preg_replace_pairs_gedcom_l = [
-				"_GODP",
-				"_WITN",
-			];
+		//_GODP, _WITN
+        $preg_replace_pairs_gedcom_l = [
+            "_GODP",
+            "_WITN",
+        ];
 
-			foreach ($preg_replace_pairs_gedcom_l as $pattern) {
+        foreach ($preg_replace_pairs_gedcom_l as $pattern) {
 
-				preg_match_all("/([\d]) " . $pattern . " (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
+            preg_match_all("/([\d]) " . $pattern . " (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
 
-				foreach ($matches as $match) {
-					$level = (int) $match[1];
-					$role = str_replace("_", "", $pattern);
+            foreach ($matches as $match) {
+                $level = (int) $match[1];
+                $role = str_replace("_", "", $pattern);
 
-					$search =  (string) $level . " " . $pattern . " " . $match[2];
-					$replace = (string) $level . " " . "ASSO @VOID@\n" . (string) ($level + 1) . " PHRASE " . $match[2] . "\n" .  (string) ($level + 1) . " ROLE " . $role;
-					$gedcom = str_replace($search, $replace, $gedcom);
-				}			
-			}
-		}
+                $search =  (string) $level . " " . $pattern . " " . $match[2];
+                $replace = (string) $level . " " . "ASSO @VOID@\n" . (string) ($level + 1) . " PHRASE " . $match[2] . "\n" .  (string) ($level + 1) . " ROLE " . $role;
+                $gedcom = str_replace($search, $replace, $gedcom);
+            }			
+        }
 
 		//Languages
 		//Allowed GEDCOM 7 language tags: https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry

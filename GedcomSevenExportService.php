@@ -517,14 +517,14 @@ class GedcomSevenExportService
 			foreach ($matches as $match) {
 				$level = (int) $match[1];
 
-				//If allowed value
+				//If allowed value, convert to upper case
 				if (in_array(strtoupper($match[2]), $values)) {
 					$search =  (string) $level . " " . $enumset . " " . $match[2];
 					$replace = (string) $level . " " . $enumset . " " . strtoupper($match[2]);
 					$gedcom = str_replace($search, $replace, $gedcom);
 				}
-				//Use phrase instead
-				else {
+				//If phrase is allowed for this enumtype, use phrase instead 
+				elseif (in_array($enumset, ["ADOP", "MEDI", "PEDI", "ROLE"])){
 					$search =  (string) $level . " " . $enumset . " " . $match[2];
                     //For specific role descriptions
                     if ($enumset == "ROLE") {

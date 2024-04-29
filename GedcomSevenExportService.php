@@ -140,7 +140,7 @@ class GedcomSevenExportService
 	private array $language_to_code_table;
 
     //List of schemas which ware used for the export
-    private array $schemas;
+    private array $schema_uris_for_tags;
 
     //List of custom tags, which were found in the GEDCOM data
     private array $custom_tags_found;
@@ -155,7 +155,7 @@ class GedcomSevenExportService
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
         $this->custom_tags_found = [];
-        $this->schemas = [];
+        $this->schema_uris_for_tags = [];
         
 		$iana_language_registry_file_name = __DIR__ . '/vendor/iana/iana_languages.txt';
 
@@ -196,7 +196,7 @@ class GedcomSevenExportService
         $access_level = self::ACCESS_LEVELS[$privacy];
 
         //Create schema list
-        $this->schemas = [];
+        $this->schema_uris_for_tags = [];
         $this->addToSchemas(self::SCHEMAS);
         if($gedcom_l) {
             $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
@@ -275,7 +275,7 @@ class GedcomSevenExportService
         $access_level = self::ACCESS_LEVELS[$privacy];
 
         //Create schema list
-        $this->schemas = [];
+        $this->schema_uris_for_tags = [];
         $this->addToSchemas(self::SCHEMAS);
         if($gedcom_l) {
             $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
@@ -648,7 +648,7 @@ class GedcomSevenExportService
             $gedcom .= "\n1 SCHMA";
 
             foreach($this->custom_tags_found as $tag) {
-                $gedcom .= "\n2 TAG " . $tag . " " . $this->schemas[$tag];
+                $gedcom .= "\n2 TAG " . $tag . " " . $this->schema_uris_for_tags[$tag];
             }
         }
 
@@ -831,7 +831,7 @@ class GedcomSevenExportService
      */
     public function findCustomTags(string $gedcom) : void
     {
-        foreach ($this->schemas as $tag => $uri) {
+        foreach ($this->schema_uris_for_tags as $tag => $uri) {
 
             if(str_contains($gedcom, $tag)) {
 
@@ -857,7 +857,7 @@ class GedcomSevenExportService
             foreach($schema as $uri => $custom_tags) {
 
                 foreach($custom_tags as $tag) {
-                    $this->schemas[$tag] = $uri;
+                    $this->schema_uris_for_tags[$tag] = $uri;
                 }
             }
         }

@@ -88,7 +88,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     private Tree $download_tree;
 
 	//Custom module version
-	public const CUSTOM_VERSION = '3.2.3';
+	public const CUSTOM_VERSION = '3.2.4';
 
 	//Route
 	protected const ROUTE_URL = '/DownloadGedcomWithURL'; 

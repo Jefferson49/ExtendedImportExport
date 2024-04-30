@@ -33,7 +33,7 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 + Optionally, test the download setting with the "Test Download" button in the control panel
 
 ## Webtrees Version
-The module was developed and tested with [webtrees 2.1.16](https://webtrees.net/download), but should also run with any other 2.1 version.
+The module was developed and tested with [webtrees 2.1.20](https://webtrees.net/download), but should also run with any other 2.1 version.
 
 ## Usage and API
 

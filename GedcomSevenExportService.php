@@ -513,6 +513,34 @@ class GedcomSevenExportService
             }			
         }        
 
+		//Enum values for AGE: CHILD, INFANT, STILLBORN
+
+        $AGE_ENUM_VALUES = [
+            'CHILD'     => '< 8y', 
+            'INFANT'    => '< 1y', 
+            'STILLBORN' => '0y',
+        ];
+
+        $preg_pattern = [
+			"/([\d]) AGE (CHILD|INFANT|STILLBORN)\n/",
+        ];
+
+        foreach ($preg_pattern as $pattern) {
+
+            preg_match_all($pattern, $gedcom, $matches, PREG_SET_ORDER);
+
+            foreach ($matches as $match) {
+                $level = (int) $match[1];
+
+                $age_value    = $AGE_ENUM_VALUES[$match[2]];
+                $phrase_value = $match[2];                    
+
+                $search       = (string) $level . " AGE " . $phrase_value;
+                $replace      = (string) $level . " AGE " . $age_value . "\n" .  (string) ($level + 1) . " PHRASE " . strtolower($phrase_value);
+                $gedcom       = str_replace($search, $replace, $gedcom);
+            }			
+        }    
+           
 		//_GODP, _WITN
         $preg_replace_pairs_gedcom_l = [
             "_GODP",

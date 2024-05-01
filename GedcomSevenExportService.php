@@ -36,6 +36,7 @@ use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Header;
 use Fisharebest\Webtrees\Registry;
+use Fisharebest\Webtrees\Submission;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Webtrees;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -736,9 +737,9 @@ class GedcomSevenExportService
         if ($include_sub) {
             // Apply access level of 'none', because the export needs to be consistent if a submitter/submission exists
             // Privacy of the submitter/submission is handled in the submitter/submission object itself
-            // Note: HEAD:SUBN does not exist in GEDCOM 7. It will still be exported, because it is subject to the user to change it
+            // Note: HEAD:SUBN does not exist in GEDCOM 7. Therfore, HEAD:SUBN will not be exported
 
-            foreach ($header->facts(['SUBM', 'SUBN'], false, Auth::PRIV_HIDE) as $fact) {
+            foreach ($header->facts(['SUBM'], false, Auth::PRIV_HIDE) as $fact) {
                 $gedcom .= "\n" . $fact->gedcom();
             }
         }
@@ -883,7 +884,7 @@ class GedcomSevenExportService
     {
         $query = DB::table('other')
             ->where('o_file', '=', $tree->id())
-            ->whereNotIn('o_type', [Header::RECORD_TYPE, 'TRLR'])
+            ->whereNotIn('o_type', [Header::RECORD_TYPE, Submission::RECORD_TYPE, 'TRLR'])
             ->select(['o_gedcom', 'o_id']);
 
         if ($sort_by_xref) {

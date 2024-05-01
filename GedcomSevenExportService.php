@@ -465,6 +465,7 @@ class GedcomSevenExportService
 			"/2 AGE ([\d]{1,3})y ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1y $2m $3d",
 			"/2 AGE ([\d]{1,2})m 00([\d])d/" => "2 AGE $1m $2d",
 			"/2 AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1m $2d",
+			"/([\d]) AGE (<|>)([\d])/" => "$1 AGE $2 $3",
 
 			//RELA, ROLE, ASSO
 			"/([\d]) RELA/" => "$1 ROLE",

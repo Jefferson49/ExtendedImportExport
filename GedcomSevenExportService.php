@@ -466,6 +466,12 @@ class GedcomSevenExportService
 			"/([\d]) AGE ([\d]{1,2})m 00([\d])d/" => "$1 AGE $2m $3d",
 			"/([\d]) AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "$1 AGE $2m $3d",
 			"/([\d]) AGE (<|>)([\d])/" => "$1 AGE $2 $3",
+            "/@#DGREGORIAN@( |)/"  => 'GREGORIAN ',
+            "/@#DJULIAN@( |)/"     => 'JULIAN ',
+            "/@#DHEBREW@( |)/"     => 'HEBREW ',
+            "/@#DFRENCH R@( |)/"   => 'FRENCH_R ',
+            "/@#DROMAN@( |)/"      => 'ROMAN ',
+            "/@#DUNKNOWN@( |)/"    => 'UNKNOWN ',
 
 			//RELA, ROLE, ASSO
 			"/([\d]) RELA/" => "$1 ROLE",
@@ -515,7 +521,6 @@ class GedcomSevenExportService
         }        
 
 		//Enum values for AGE: CHILD, INFANT, STILLBORN
-
         $AGE_ENUM_VALUES = [
             'CHILD'     => '< 8y', 
             'INFANT'    => '< 1y', 

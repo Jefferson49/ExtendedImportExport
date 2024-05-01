@@ -482,7 +482,7 @@ class GedcomSevenExportService
 			"/2 FORM (htm|HTM|html|HTML)(\n3 TYPE .[^\n]+)*/" => "2 FORM text/html",
 
             //Shared notes (SNOTE)
-			"/([\d)]) NOTE @(.[^\n]+)@/" => "$1 SNOTE @$2@",
+			"/([\d]) NOTE @(.[^\n]+)@/" => "$1 SNOTE @$2@",
 			"/0 @(.[^\n]+)@ NOTE (.[^\n]+)/" => "0 @$1@ SNOTE $2",
 
             //External IDs (EXID)
@@ -492,6 +492,26 @@ class GedcomSevenExportService
 		foreach ($preg_replace_pairs as $pattern => $replace) {
 			$gedcom = preg_replace($pattern, $replace, $gedcom);
 		}
+
+		//Specific dates with slashes in years, eg. 1741/42
+        $preg_pattern = [
+			"/([\d]) DATE ([\d]{0,2})([ ]*)(|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)([ ]*)([\d]{1,4})\/([\d]{2})\n/",
+        ];
+
+        foreach ($preg_pattern as $pattern) {
+
+            preg_match_all($pattern, $gedcom, $matches, PREG_SET_ORDER);
+
+            foreach ($matches as $match) {
+                $level = (int) $match[1];
+
+                $date_value   = $match[2] . $match[3] . $match[4] . $match[5]  . $match[6];
+                $phrase_value = $date_value . "/" . $match[7];
+                $search       = (string) $level . " DATE " . $phrase_value;
+                $replace      = (string) $level . " DATE " . $date_value . "\n" .  (string) ($level + 1) . " PHRASE " . $phrase_value;
+                $gedcom       = str_replace($search, $replace, $gedcom);
+            }			
+        }        
 
 		//_GODP, _WITN
         $preg_replace_pairs_gedcom_l = [

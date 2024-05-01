@@ -520,6 +520,26 @@ class GedcomSevenExportService
             }			
         }        
 
+		//DATE INT (date interpretation)
+        $preg_pattern = [
+			"/([\d]) DATE INT ([^\(]+) \(([^)]+)\)\n/",
+        ];
+
+        foreach ($preg_pattern as $pattern) {
+
+            preg_match_all($pattern, $gedcom, $matches, PREG_SET_ORDER);
+
+            foreach ($matches as $match) {
+                $level = (int) $match[1];
+
+                $date_value   = $match[2];
+                $phrase_value = 'interpratation: ' . $match[3];
+                $search       = (string) $level . " DATE INT " . $date_value . ' (' . $match[3] . ')';
+                $replace      = (string) $level . " DATE " . $date_value . "\n" .  (string) ($level + 1) . " PHRASE " . $phrase_value;
+                $gedcom       = str_replace($search, $replace, $gedcom);
+            }			
+        }        
+
 		//Enum values for AGE: CHILD, INFANT, STILLBORN
         $AGE_ENUM_VALUES = [
             'CHILD'     => '< 8y', 

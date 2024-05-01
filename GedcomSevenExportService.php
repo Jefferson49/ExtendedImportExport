@@ -460,11 +460,11 @@ class GedcomSevenExportService
 		$preg_replace_pairs = [
 			//Date and age values
 			"/0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (.[\d]{1,4})/" => "$1 $2 $3",
-			"/2 AGE 0([\d]{1,2})y/" => "2 AGE $1y",
-			"/2 AGE ([\d]{1,3})y 0(.)m/" => "2 AGE $1y $2m",
-			"/2 AGE ([\d]{1,3})y ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1y $2m $3d",
-			"/2 AGE ([\d]{1,2})m 00([\d])d/" => "2 AGE $1m $2d",
-			"/2 AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "2 AGE $1m $2d",
+			"/([\d]) AGE 0([\d]{1,2})y/" => "$1 AGE $2y",
+			"/([\d]) AGE ([\d]{1,3})y 0(.)m/" => "$1 AGE $2y $3m",
+			"/([\d]) AGE ([\d]{1,3})y ([\d]{1,2})m 0([\d]{1,2})d/" => "$1 AGE $2y $3m $4d",
+			"/([\d]) AGE ([\d]{1,2})m 00([\d])d/" => "$1 AGE $2m $3d",
+			"/([\d]) AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "$1 AGE $2m $3d",
 			"/([\d]) AGE (<|>)([\d])/" => "$1 AGE $2 $3",
 
 			//RELA, ROLE, ASSO

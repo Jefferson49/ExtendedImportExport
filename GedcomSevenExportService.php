@@ -715,7 +715,7 @@ class GedcomSevenExportService
         $gedcom .= "\n1 DEST DISKETTE";
         $gedcom .= "\n1 DATE " . strtoupper(date('d M Y'));
         $gedcom .= "\n2 TIME " . date('H:i:s');
-        $gedcom .= "\n1 GEDC\n2 VERS 7.0.11";
+        $gedcom .= "\n1 GEDC\n2 VERS 7.0.14";
 
 		// Add schemas with extension tags
         if (sizeof($this->custom_tags_found) > 0) {

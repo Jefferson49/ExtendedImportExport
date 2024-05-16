@@ -41,5 +41,7 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 require __DIR__ . '/DownloadGedcomWithURL.php';
 require __DIR__ . '/GedcomSevenExportService.php';
 require __DIR__ . '/RemoteGedcomExportService.php';
+require __DIR__ . '/TemporaryGedcomRecord.php';
+require __DIR__ . '/resources/filter/ExportFilter.php';
 
 return new DownloadGedcomWithURL();

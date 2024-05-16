@@ -71,4 +71,115 @@ class RemoteGedcomExportService extends GedcomExportService
 
         return $gedcom;
     }
+
+    /**
+     * Convert Gedcom record
+     *
+     * @param string $gedcom
+     * @param Tree   $tree
+     *
+     * @return string
+     */
+    public function customConvert(string $gedcom, Tree $tree): string
+    {   
+        $white_list = ExportFilter::WHITE_LIST;
+        $converted_gedcom = '';
+
+        //Create temporary record
+        preg_match('/^0 @([^@]*)@ (\w+)/', $gedcom, $match);
+        $xref = $match[1] ?? 'XREFdummy';
+        $record = new TemporaryGedcomRecord($xref, $gedcom, null, $tree);
+
+        //Add Gedcom of record if is in white list
+        if (array_key_exists($record->tag(), $white_list)) {
+
+            if (str_starts_with($gedcom, "0 HEAD")) {
+                $record_gedcom = "0 HEAD\n";
+            }
+            elseif (str_starts_with($gedcom, "0 TRLR")) {
+                $record_gedcom = "0 TRLR\n";
+            }
+            else {
+                $record_gedcom = $record->createPrivateGedcomRecord(Auth::PRIV_NONE) ."\n";
+            }
+
+            $preg_replace_pairs = $white_list[$record->tag()];
+
+            //If regular expressions are provided, run replacements
+            foreach ($preg_replace_pairs as $pattern => $replace) {
+
+                $record_gedcom = preg_replace("/" . $pattern . "/", $replace, $record_gedcom);
+            }
+
+            $converted_gedcom .= $record_gedcom;
+        }
+        else {
+            return '';
+        }
+
+        foreach($record->facts() as $fact) {
+
+            $fact_tag = str_replace($record->tag() . ":", "", $fact->tag());
+
+            if(array_key_exists($record->tag() . ":*", $white_list) OR array_key_exists($fact->tag() . ":*", $white_list)) {
+
+                //Add ALL level Gedcom of fact if is in white list with *
+                $fact_gedcom = $fact->gedcom() . "\n";
+
+                if (array_key_exists($record->tag() . ":*", $white_list)) {
+                    $preg_replace_pairs = $white_list[$record->tag() . ":*"];
+                }
+                elseif (array_key_exists($fact->tag() . ":*", $white_list)) {
+                    $preg_replace_pairs = $white_list[$fact->tag() . ":*"];
+                }
+                else {
+                    $preg_replace_pairs =[];
+                }
+
+                //If regular expressions are provided, run replacements
+                foreach ($preg_replace_pairs as $pattern => $replace) {
+
+                    $fact_gedcom = preg_replace("/" . $pattern . "/", $replace, $fact_gedcom);
+                } 
+
+                $converted_gedcom .= $fact_gedcom;       
+            }
+            elseif(array_key_exists($fact->tag(), $white_list)) {
+
+                $fact_value = $fact->value() !== "" ? " " . $fact->value() : "";
+
+                //Add level 1 Gedcom of fact if is in white list
+                $converted_gedcom .= "1 ". $fact_tag . $fact_value . "\n";
+
+                //Add level 2 Gedcom of fact if is in white list
+                foreach ($white_list as $white_list_tag => $preg_replace_pairs) {
+
+                    if (str_starts_with($white_list_tag, $fact->tag() . ":")) {
+
+                        $level2_tag = str_replace($fact->tag() . ":", "", $white_list_tag);
+
+                        if ($level2_tag !== "") {
+
+                            $level2_fact_value = $fact->attribute($level2_tag);
+
+                            if ($level2_fact_value !== "") {
+
+                                $fact_gedcom = "2 ". $level2_tag . " " . $level2_fact_value . "\n";
+
+                                //If regular expressions are provided, run replacements
+                                foreach ($preg_replace_pairs as $pattern => $replace) {
+
+                                    $fact_gedcom = preg_replace("/" . $pattern . "/", $replace, $fact_gedcom);
+                                }
+
+                                $converted_gedcom .= $fact_gedcom;
+                            }
+                        }    
+                    } 
+                } 
+            }
+        }
+
+        return $converted_gedcom;
+    }
 }

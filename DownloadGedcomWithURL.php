@@ -111,6 +111,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
     public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
     public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
+    public const PREF_DEFAULT_EXPORT_FILTER = 'default_export_filter';
     public const PREF_DEFAULT_PRIVACY_LEVEL = 'default_privacy_level'; 
     public const PREF_DEFAULT_EXPORT_FORMAT = 'default_export_format';
     public const PREF_DEFAULT_ENCODING = 'default_encoding';
@@ -188,6 +189,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return __DIR__ . '/resources/';
     }
 
+    /**
+     * Get the active module name, e.g. the name of the currently running module
+     *
+     * @return string
+     */
+    public static function activeModuleName(): string
+    {
+        return '_' . basename(__DIR__) . '_';
+    }
+    
     /**
      * {@inheritDoc}
      *
@@ -316,17 +327,24 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
         }
 
+        $export_filter_list =[
+            ''              => I18N::translate('None'),
+            'ExportFilter'  => 'ExportFilter',
+        ];
+
         return $this->viewResponse(
             $this->name() . '::settings',
             [
                 'title'                               => $this->title(),
                 'tree_list'                           => $tree_list,
+                'export_filter_list'                  => $export_filter_list,
 				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
 				self::PREF_USE_HASH                   => boolval($this->getPreference(self::PREF_USE_HASH, '1')),
 				self::PREF_ALLOW_DOWNLOAD             => boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1')),
 				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY')),
                 self::PREF_DEFAULT_TREE_NAME          => $this->getPreference(self::PREF_DEFAULT_TREE_NAME, array_key_first($tree_list)),
                 self::PREF_DEFAULT_FiLE_NAME          => $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, array_key_first($tree_list)),
+                self::PREF_DEFAULT_EXPORT_FILTER      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER, array_key_first($export_filter_list)),
                 self::PREF_DEFAULT_PRIVACY_LEVEL      => $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none'),
                 self::PREF_DEFAULT_EXPORT_FORMAT      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
                 self::PREF_DEFAULT_ENCODING           => $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME),
@@ -355,6 +373,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $folder_to_save             = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY'));
         $default_tree_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TREE_NAME, '');
         $default_file_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_FiLE_NAME, 'export');
+        $default_export_filter      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FILTER, '');
         $default_privacy_level      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none');
         $default_export_format      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom');
         $default_encoding           = Validator::parsedBody($request)->string(self::PREF_DEFAULT_ENCODING, UTF8::NAME);
@@ -433,6 +452,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             //Save default settings to preferences
             $this->setPreference(self::PREF_DEFAULT_TREE_NAME, $default_tree_name);           
             $this->setPreference(self::PREF_DEFAULT_FiLE_NAME, $default_file_name);           
+            $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER, $default_export_filter);           
             $this->setPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, $default_privacy_level);           
             $this->setPreference(self::PREF_DEFAULT_EXPORT_FORMAT, $default_export_format);           
             $this->setPreference(self::PREF_DEFAULT_ENCODING, $default_encoding);           
@@ -565,6 +585,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
 		//Load secret key from preferences
         $secret_key = $this->getPreference(self::PREF_SECRET_KEY, ''); 
+        $name_space = 'Jefferson49\Webtrees\Module\DownloadGedcomWithURL\\';
    		
 		$key                 = Validator::queryParams($request)->string('key', '');
 		$tree_name           = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
@@ -577,10 +598,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$gedcom_l            = Validator::queryParams($request)->boolean('gedcom_l', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0')));
 		$action              = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'));
 		$time_stamp          = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'));
+		$export_filter       = Validator::queryParams($request)->string('export_filter', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER, ''));
 		$test_downlaod_token = Validator::queryParams($request)->string('test_downlaod_token', '');
 
         //A test download is allowed if a valid token is submitted
         $allow_test_download =  $test_downlaod_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
+
+        //Add namespace to export filter
+        $export_filter_class_name = $name_space . $export_filter;
 
 		//Check update of module version
         $this->checkModuleVersionUpdate();
@@ -629,9 +654,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
         elseif (!in_array($time_stamp, ['prefix', 'postfix', 'none'])) {
 			$response = $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
+		//Error if export filter is not valid
+        elseif ($export_filter !== '' && (!class_exists($export_filter_class_name) OR !(new $export_filter_class_name() instanceof ExportFilter))) {
+			$response = $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter);
+        }
 
 		//If no errors, start the core activities of the module
 		else {
+
+            //Get instance of export filter
+            if ($export_filter !== '') {
+                $export_filter_instance = new $export_filter_class_name();
+            }
+            else {
+                $export_filter_instance = null;
+            }
 
 			//Add time stamp to file name if requested
 			if($time_stamp === 'prefix'){
@@ -659,7 +696,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//If Gedcom 7, create Gedcom 7 response
 				if ($gedcom7) {
 					try {
-						$resource = $this->gedcom7_export_service->saveGedcomSevenResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $gedcom_l);
+						$resource = $this->gedcom7_export_service->saveGedcomSevenResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_instance, $gedcom_l);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
@@ -673,7 +710,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//Create Gedcom 5.5.1 response
 				else {
 					try {
-						$resource = $this->gedcom_export_service->export($this->download_tree, true, $encoding, $access_level, $line_endings);
+						$resource = $this->gedcom_export_service->remoteExport($this->download_tree, true, $encoding, $access_level, $line_endings, $export_filter_instance);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
@@ -692,11 +729,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				if(boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1'))) {
 					//If Gedcom 7, create Gedcom 7 response
 					if ($gedcom7) {
-						$response = $this->gedcom7_export_service->downloadGedcomSevenresponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_l);
+						$response = $this->gedcom7_export_service->downloadGedcomSevenResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, $gedcom_l);
 					}
 					//Create Gedcom 5.5.1 response
 					else {
-						$response = $this->gedcom_export_service->downloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format);
+						$response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance);
 					}
 				} 
 				else {

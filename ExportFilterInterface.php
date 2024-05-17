@@ -2,15 +2,11 @@
 
 /**
  * webtrees: online genealogy
- * Copyright (C) 2023 webtrees development team
+ * Copyright (C) 2024 webtrees development team
  *                    <http://webtrees.net>
- *
- * Fancy Research Links (webtrees custom module):
- * Copyright (C) 2022 Carmen Just
- *                    <https://justcarmen.nl>
- *
+
  * DownloadGedcomWithURL (webtrees custom module):
- * Copyright (C) 2023 Markus Hemprich
+ * Copyright (C) 2024 Markus Hemprich
  *                    <http://www.familienforschung-hemprich.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,27 +19,32 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * 
- * 
- * DownloadGedcomWithURL
- *
- * A weebtrees(https://webtrees.net) 2.1 custom module to download GEDCOM files on URL requests 
- * with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
- * 
  */
- 
 
 declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
-require __DIR__ . '/DownloadGedcomWithURL.php';
-require __DIR__ . '/ExportFilterInterface.php';
-require __DIR__ . '/ExportFilterTrait.php';
-require __DIR__ . '/GedcomSevenExportService.php';
-require __DIR__ . '/RemoteGedcomExportService.php';
-require __DIR__ . '/TemporaryGedcomRecord.php';
-require __DIR__ . '/resources/filter/ExportFilter.php';
+/**
+ * Interface for export filters
+ */
+interface ExportFilterInterface
+{
+    //An array, which contains the export filter
+    public const EXPORT_FILTER = [
+      
+        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //                             ["search pattern" => "replace pattern"],
+         'HEAD'                     => [],
+         'HEAD*'                    => [],
+         'TRLR'                     => [],
+     ];
 
-return new DownloadGedcomWithURL();
+    /**
+     * Get the export filter
+     *
+     * @return array
+     */
+    public function getExportFilter(): array;
+
+}

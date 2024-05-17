@@ -171,15 +171,16 @@ class GedcomSevenExportService
 	}
 
     /**
-     * @param Tree            $tree         - Export data from this tree
-     * @param bool            $sort_by_xref - Write GEDCOM records in XREF order
-     * @param string          $encoding     - Convert from UTF-8 to other encoding
-     * @param string          $privacy      - Filter records by role
-     * @param string          $line_endings
-     * @param string          $filename     - Name of download file, without an extension
-     * @param string          $format       - One of: gedcom, zip, zipmedia, gedzip
-	 * @param bool            $gedcom_l     - Whether export should consider GEDCOM-L
-     * @param Collection|null $records
+     * @param Tree                   $tree          - Export data from this tree
+     * @param bool                   $sort_by_xref  - Write GEDCOM records in XREF order
+     * @param string                 $encoding      - Convert from UTF-8 to other encoding
+     * @param string                 $privacy       - Filter records by role
+     * @param string                 $line_endings
+     * @param string                 $filename      - Name of download file, without an extension
+     * @param string                 $format        - One of: gedcom, zip, zipmedia, gedzip
+     * @param ExportFilterInterface  $export_filter - A GEDCOM export filter    
+	 * @param bool                   $gedcom_l      - Whether export should consider GEDCOM-L
+     * @param Collection|null        $records
      *
      * @return ResponseInterface
      */
@@ -191,6 +192,7 @@ class GedcomSevenExportService
         string $line_endings,
         string $filename,  //without .ged
         string $format,
+        ExportFilterInterface $export_filter = null,        
 		bool $gedcom_l = false,
         Collection $records = null
     ): ResponseInterface {
@@ -204,10 +206,10 @@ class GedcomSevenExportService
         }
 
         //First, check custom tags only => flag $check_custom_tags = true
-        $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, true, $records);
+        $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_l, true, $records);
 
         if ($format === 'gedcom') {
-            $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, false, $records);
+            $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_l, false, $records);
             $stream   = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()
@@ -231,7 +233,7 @@ class GedcomSevenExportService
             $media_path = null;
         }
 
-        $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, false, $records, $zip_filesystem, $media_path);
+        $resource = $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_l, false, $records, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
@@ -252,14 +254,15 @@ class GedcomSevenExportService
     }
 
     /**
-     * @param Tree            $tree         - Export data from this tree
-     * @param bool            $sort_by_xref - Write GEDCOM records in XREF order
-     * @param string          $encoding     - Convert from UTF-8 to other encoding
-     * @param string          $privacy      - Filter records by role
-     * @param string          $line_endings
-     * @param string          $format       - One of: gedcom, zip, zipmedia, gedzip
-	 * @param bool            $gedcom_l     - Whether export should consider GEDCOM-L
-     * @param Collection|null $records
+     * @param Tree                   $tree          - Export data from this tree
+     * @param bool                   $sort_by_xref  - Write GEDCOM records in XREF order
+     * @param string                 $encoding      - Convert from UTF-8 to other encoding
+     * @param string                 $privacy       - Filter records by role
+     * @param string                 $line_endings
+     * @param ExportFilterInterface  $export_filter - A GEDCOM export filter
+     * @param string                 $format        - One of: gedcom, zip, zipmedia, gedzip
+	 * @param bool                   $gedcom_l      - Whether export should consider GEDCOM-L
+     * @param Collection|null        $records
      *
      * @return ?resource
      */
@@ -270,6 +273,7 @@ class GedcomSevenExportService
         string $privacy,
         string $line_endings,
         string $format,
+        ExportFilterInterface $export_filter = null,
 		bool $gedcom_l = false,
         Collection $records = null
     ) {
@@ -283,9 +287,9 @@ class GedcomSevenExportService
         }
 
         //First, check custom tags only => flag $check_custom_tags = true
-        $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, true, $records);
+        $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_l, true, $records);
 
-        return $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_l, false, $records);
+        return $this->export($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_l, false, $records);
     }
 
 
@@ -297,6 +301,7 @@ class GedcomSevenExportService
      * @param string                      $encoding          - Convert from UTF-8 to other encoding
      * @param int                         $access_level      - Apply privacy filtering
      * @param string                      $line_endings      - CRLF or LF
+     * @param ExportFilterInterface       $export_filter     - A GEDCOM export filter
 	 * @param bool                        $gedcom_l          - Whether export should consider GEDCOM-L
      * @param bool                        $check_custom_tags - Just check custom tags; do not create a stream
      * @param Collection<int,string>|null $records           - Just export these records
@@ -311,6 +316,7 @@ class GedcomSevenExportService
         string $encoding = UTF8::NAME,
         int $access_level = Auth::PRIV_HIDE,
         string $line_endings = 'CRLF',
+        ExportFilterInterface $export_filter = null,
 		bool $gedcom_l = false,
         bool $check_custom_tags = false,
         Collection $records = null,
@@ -394,6 +400,11 @@ class GedcomSevenExportService
 				//Do NOT wrap long lines for Gedcom 7
                 //$gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH) . "\n";
 				$gedcom .= "\n";
+
+                //Apply custom conversions according to export filter
+                if ($export_filter !== null) {
+                    $gedcom = RemoteGedcomExportService::exportFilter($gedcom, $tree, $export_filter);
+                }
 
                 //Convert to Gedcom 7
                 $gedcom = $this->convertToGedcom7($gedcom, $gedcom_l);

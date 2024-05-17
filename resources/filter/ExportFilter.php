@@ -7,9 +7,10 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 /**
  * Tag definitions and regular expressions for export filter
  */
-class ExportFilter
+class ExportFilter implements ExportFilterInterface
 {
-    public const WHITE_LIST = [
+    use ExportFilterTrait; 
+    public const EXPORT_FILTER = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],

@@ -18,12 +18,14 @@ use Fisharebest\Webtrees\View;
 /**
  * @var  string		$title
  * @var  array      $tree_list
+ * @var  array      $export_filter_list
  * @var  bool		$use_hash
  * @var  string		$secret_key
  * @var  bool       $allow_download
  * @var  string		$folder_to_save 
  * @var  string     $default_tree_name
  * @var  string     $default_file_name
+ * @var  string     $default_export_filter
  * @var  string     $default_privacy_level 
  * @var  string     $default_export_format
  * @var  string     $default_encoding
@@ -171,6 +173,18 @@ use Fisharebest\Webtrees\View;
 				<?= I18N::translate('Specifiy the default file name. This file name will be chosen if no specific file name is provided as URL parameter.'); ?>
 			</div>
 		</div>
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Default export filter') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER, 'selected' => $default_export_filter, 
+					'options' => $export_filter_list]) ?>
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+				<?= I18N::translate('Select the default export filter. This  filter will be chosen if no specific filter is provided as URL parameter.'); ?>
+			</div>
+		</div>		
 		<fieldset class="mb-3">
 			<div class="row">
 				<legend class="col-form-label col-sm-3">

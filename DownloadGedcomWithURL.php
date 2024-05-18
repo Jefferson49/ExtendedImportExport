@@ -353,6 +353,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }
         }
 
+        //If currently selected export filter is not available, reset export filter to none
+        $current_export_filter = $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER);
+
+        if (!array_key_exists($current_export_filter, $export_filter_list)) {
+
+            $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER, '');
+            $message = I18N::translate('The preferences for the default export filter were reset to "none", because the selected export filter %s could not be found', $current_export_filter);
+            FlashMessages::addMessage($message, 'danger');
+        }
+
         return $this->viewResponse(
             $this->name() . '::settings',
             [

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-05-17 07:04+0200\n"
-"PO-Revision-Date: 2024-05-17 07:04+0200\n"
+"POT-Creation-Date: 2024-05-18 11:50+0200\n"
+"PO-Revision-Date: 2024-05-18 11:53+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: DownloadGedcomWithURL.php:177
+#: DownloadGedcomWithURL.php:179
 msgid ""
 "A custom module to download GEDCOM files on URL requests with the tree name, "
 "GEDCOM file name, and authorization provided as parameters within the URL."
@@ -24,11 +24,20 @@ msgstr ""
 "von URL Anfragen, welche den Stammbaum-Namen, den GEDCOM Dateinamen und die "
 "Authorisierung als Paramter innerhalb der URL beinhalten."
 
-#: DownloadGedcomWithURL.php:331 resources/views/settings.phtml:196
+#: DownloadGedcomWithURL.php:339 resources/views/settings.phtml:196
 msgid "None"
 msgstr ""
 
-#: DownloadGedcomWithURL.php:407
+#: DownloadGedcomWithURL.php:362
+#, php-format
+msgid ""
+"The preferences for the default export filter were reset to \"none\", "
+"because the selected export filter %s could not be found"
+msgstr ""
+"Die Voreistellung für den Export-Filter wurden auf \"Keine\" zurückgesetzt, "
+"weil der ausgewählte Export-Filter %s nicht gefunden wurde"
+
+#: DownloadGedcomWithURL.php:438
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -36,7 +45,7 @@ msgstr ""
 "Der angegebene Autorisierungs-Schlüssel ist zu kurz. Bitte geben Sie "
 "mindestens eine Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:413
+#: DownloadGedcomWithURL.php:444
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -45,7 +54,7 @@ msgstr ""
 "nicht akzeptiert werden. Bitte geben Sie einen anderen Autorisierungs-"
 "Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:443
+#: DownloadGedcomWithURL.php:474
 #, php-format
 msgid ""
 "The folder settings could not be saved, because the folder “%s” does not "
@@ -54,12 +63,12 @@ msgstr ""
 "Die Einstellungen für den Ordner konnten nicht gespeichert werden, weil der "
 "Ordner \"%s\" nicht existiert."
 
-#: DownloadGedcomWithURL.php:466
+#: DownloadGedcomWithURL.php:497
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:487
+#: DownloadGedcomWithURL.php:518
 #, php-format
 msgid ""
 "The preferences for the custom module \"%s\" were sucessfully updated to the "
@@ -68,7 +77,11 @@ msgstr ""
 "Die Einstellungen für das benutzerdefinierte Modul \"%s\" wurden für die "
 "neue Modul-Version %s aktualisiert."
 
-#: DownloadGedcomWithURL.php:615
+#: DownloadGedcomWithURL.php:631
+msgid "A compilation error was detected in the following export filter"
+msgstr "In folgendem Export-Filter wurde ein Kompilierungs-Fehler erkannt"
+
+#: DownloadGedcomWithURL.php:686
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -77,7 +90,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:619
+#: DownloadGedcomWithURL.php:690
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -86,59 +99,59 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:623
+#: DownloadGedcomWithURL.php:694
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:627
+#: DownloadGedcomWithURL.php:698
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:631
+#: DownloadGedcomWithURL.php:702
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:635
+#: DownloadGedcomWithURL.php:706
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:639
+#: DownloadGedcomWithURL.php:710
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:643
+#: DownloadGedcomWithURL.php:714
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:647
+#: DownloadGedcomWithURL.php:718
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:651
+#: DownloadGedcomWithURL.php:722
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:655
+#: DownloadGedcomWithURL.php:726
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:659
+#: DownloadGedcomWithURL.php:730
 msgid "The export filter was not found"
 msgstr "Der Export-Filter wurde nicht gefunden"
 
-#: DownloadGedcomWithURL.php:703 DownloadGedcomWithURL.php:717
+#: DownloadGedcomWithURL.php:774 DownloadGedcomWithURL.php:788
 #, php-format
 msgid "The family tree \"%s\" has been exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:706 DownloadGedcomWithURL.php:720
+#: DownloadGedcomWithURL.php:777 DownloadGedcomWithURL.php:791
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:740
+#: DownloadGedcomWithURL.php:811
 msgid ""
 "Download is not allowed. Please change the module settings to allow "
 "downloads."

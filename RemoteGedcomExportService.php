@@ -111,7 +111,7 @@ class RemoteGedcomExportService extends GedcomExportService
         $access_level = self::ACCESS_LEVELS[$privacy];
 
         if ($format === 'gedcom') {
-            $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records);
+            $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $records);
             $stream   = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()

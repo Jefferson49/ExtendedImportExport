@@ -69,6 +69,8 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use ErrorException;
+use Throwable;
 
 use function substr;
 
@@ -317,9 +319,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         //Check update of module version
         $this->checkModuleVersionUpdate();
+        
+        $this->layout = 'layouts/administration';       
 
-        $this->layout = 'layouts/administration';
+        $load_filter_result = $this->loadEportFilterClasses();
 
+        if ($load_filter_result !== '') {
+            return $this->showErrorMessage($load_filter_result);
+        }
+        
         $tree_list = [];
         $all_trees = $this->all();
 
@@ -328,9 +336,22 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
 
         $export_filter_list =[
-            ''              => I18N::translate('None'),
-            'ExportFilter'  => 'ExportFilter',
+            ''             => I18N::translate('None'),
         ];
+
+        foreach (get_declared_classes() as $className) {
+
+            $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
+
+            if (str_contains($className, $name_space)) {
+
+                if (in_array($name_space . 'ExportFilterInterface', class_implements($className))) {
+
+                    $className = str_replace($name_space, '', $className);
+                    $export_filter_list[$className] = $className;
+                }
+            }
+        }
 
         return $this->viewResponse(
             $this->name() . '::settings',
@@ -577,6 +598,38 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	}
 
 	 /**
+     * Load classes for export filters
+     *
+     * @return string error message
+     */ 
+
+     private function loadEportFilterClasses(): string {
+
+        $filter_files = scandir(dirname(__FILE__) . "/resources/filter/");
+
+        $onError = function ($level, $message, $file, $line) {
+            throw new ErrorException($message, 0, $level, $file, $line);
+        };
+
+        foreach ($filter_files as $file) {
+            if (str_ends_with($file, '.php')) {
+                try {
+                    set_error_handler($onError);
+                    require __DIR__ . '/resources/filter/' . $file;
+                }
+                catch (Throwable $ex) {
+                    return I18N::translate('A compilation error was detected in the following export filter') . ': ' . __DIR__ . '/resources/filter/' . $file . '. Error message: ' . $ex->getMessage();
+                }
+                finally {
+                    restore_error_handler();
+                }    
+            }
+        };
+
+        return '';
+    }
+
+	 /**
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
@@ -585,7 +638,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
 		//Load secret key from preferences
         $secret_key = $this->getPreference(self::PREF_SECRET_KEY, ''); 
-        $name_space = 'Jefferson49\Webtrees\Module\DownloadGedcomWithURL\\';
    		
 		$key                 = Validator::queryParams($request)->string('key', '');
 		$tree_name           = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
@@ -605,7 +657,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $allow_test_download =  $test_downlaod_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
 
         //Add namespace to export filter
-        $export_filter_class_name = $name_space . $export_filter;
+        $export_filter_class_name = __NAMESPACE__ . '\\' . $export_filter;
+
+        //Load export filter classes
+        if (!$export_filter !== '') {
+            $load_filter_result = $this->loadEportFilterClasses();
+
+            if ($load_filter_result !== '') {
+                return $this->showErrorMessage($load_filter_result);
+            }    
+        }
 
 		//Check update of module version
         $this->checkModuleVersionUpdate();
@@ -655,8 +716,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			$response = $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
 		//Error if export filter is not valid
-        elseif ($export_filter !== '' && (!class_exists($export_filter_class_name) OR !(new $export_filter_class_name() instanceof ExportFilter))) {
-			$response = $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter);
+        elseif ($export_filter !== '' && (!class_exists($export_filter_class_name) OR !(new $export_filter_class_name() instanceof ExportFilterInterface))) {
+            $response = $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter);
         }
 
 		//If no errors, start the core activities of the module

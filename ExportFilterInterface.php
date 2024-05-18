@@ -37,8 +37,10 @@ interface ExportFilterInterface
         //                             ["search pattern" => "replace pattern"],
          'HEAD'                     => [],
          'HEAD*'                    => [],
+         'SUBM'                     => [],
+         'SUBM:NAME'                => [],
          'TRLR'                     => [],
-     ];
+    ];
 
     /**
      * Get the export filter

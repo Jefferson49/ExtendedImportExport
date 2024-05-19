@@ -47,6 +47,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use RuntimeException;
+use Throwable;
 
 use function addcslashes;
 use function fclose;
@@ -434,7 +435,8 @@ class RemoteGedcomExportService extends GedcomExportService
     {   
         if ($export_filter === null) return $gedcom;
 
-        $white_list = $export_filter->getExportFilter();
+        $export_filter_list = $export_filter->getExportFilter();
+        $export_filter_patterns = array_keys($export_filter_list);
         $converted_gedcom = '';
 
         //Create temporary record
@@ -443,7 +445,9 @@ class RemoteGedcomExportService extends GedcomExportService
         $record = new TemporaryGedcomRecord($xref, $gedcom, null, $tree);
 
         //Add Gedcom of record if is in white list
-        if (array_key_exists($record->tag(), $white_list)) {
+        $matched_tag_pattern = self::matchedPattern($record->tag(), $export_filter_patterns);
+
+        if ($matched_tag_pattern !== '') {
 
             if (str_starts_with($gedcom, "0 HEAD")) {
                 $record_gedcom = "0 HEAD\n";
@@ -455,13 +459,8 @@ class RemoteGedcomExportService extends GedcomExportService
                 $record_gedcom = $record->createPrivateGedcomRecord(Auth::PRIV_NONE) ."\n";
             }
 
-            $preg_replace_pairs = $white_list[$record->tag()];
-
             //If regular expressions are provided, run replacements
-            foreach ($preg_replace_pairs as $pattern => $replace) {
-
-                $record_gedcom = preg_replace("/" . $pattern . "/", $replace, $record_gedcom);
-            }
+            $record_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $record_gedcom);
 
             $converted_gedcom .= $record_gedcom;
         }
@@ -472,66 +471,169 @@ class RemoteGedcomExportService extends GedcomExportService
         foreach($record->facts() as $fact) {
 
             $fact_tag = str_replace($record->tag() . ":", "", $fact->tag());
+            $matched_tag_pattern = self::matchedPattern($fact->tag(), $export_filter_patterns);
 
-            if(array_key_exists($record->tag() . ":*", $white_list) OR array_key_exists($fact->tag() . ":*", $white_list)) {
-
-                //Add ALL level Gedcom of fact if is in white list with *
-                $fact_gedcom = $fact->gedcom() . "\n";
-
-                if (array_key_exists($record->tag() . ":*", $white_list)) {
-                    $preg_replace_pairs = $white_list[$record->tag() . ":*"];
-                }
-                elseif (array_key_exists($fact->tag() . ":*", $white_list)) {
-                    $preg_replace_pairs = $white_list[$fact->tag() . ":*"];
-                }
-                else {
-                    $preg_replace_pairs =[];
-                }
-
-                //If regular expressions are provided, run replacements
-                foreach ($preg_replace_pairs as $pattern => $replace) {
-
-                    $fact_gedcom = preg_replace("/" . $pattern . "/", $replace, $fact_gedcom);
-                } 
-
-                $converted_gedcom .= $fact_gedcom;       
-            }
-            elseif(array_key_exists($fact->tag(), $white_list)) {
+            if ($matched_tag_pattern !== '') {
 
                 $fact_value = $fact->value() !== "" ? " " . $fact->value() : "";
 
-                //Add level 1 Gedcom of fact if is in white list
-                $converted_gedcom .= "1 ". $fact_tag . $fact_value . "\n";
+                //Add level 1 Gedcom of fact
+                $fact_gedcom = "1 ". $fact_tag . $fact_value . "\n";
 
-                //Add level 2 Gedcom of fact if is in white list
-                foreach ($white_list as $white_list_tag => $preg_replace_pairs) {
+                //If regular expressions are provided, run replacements
+                $fact_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $fact_gedcom);
 
-                    if (str_starts_with($white_list_tag, $fact->tag() . ":")) {
+                $converted_gedcom .= $fact_gedcom;
 
-                        $level2_tag = str_replace($fact->tag() . ":", "", $white_list_tag);
+                //Get all level 2 tags and values
+                foreach (self::getNextLevelTagValues($fact->tag(), $fact->gedcom(), 1 ) as $level2_tag => $level2_value) {
 
-                        if ($level2_tag !== "") {
+                    $matched_tag_pattern = self::matchedPattern($fact->tag()  . ":" . $level2_tag, $export_filter_patterns);
 
-                            $level2_fact_value = $fact->attribute($level2_tag);
+                    if ($matched_tag_pattern !== '') {
 
-                            if ($level2_fact_value !== "") {
+                        //Add level 2 Gedcom of fact
+                        $level2_gedcom = "2 ". $level2_tag . " " . $level2_value . "\n";
 
-                                $fact_gedcom = "2 ". $level2_tag . " " . $level2_fact_value . "\n";
+                        //If regular expressions are provided, run replacements
+                        $level2_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $level2_gedcom);
 
-                                //If regular expressions are provided, run replacements
-                                foreach ($preg_replace_pairs as $pattern => $replace) {
-
-                                    $fact_gedcom = preg_replace("/" . $pattern . "/", $replace, $fact_gedcom);
-                                }
-
-                                $converted_gedcom .= $fact_gedcom;
-                            }
-                        }    
-                    } 
+                        $converted_gedcom .= $level2_gedcom;
+                    }
                 } 
             }
         }
 
         return $converted_gedcom;
+    }
+
+    /**
+     * Match a given tag (e.g. FAM:MARR:DATE) with a list of tag patterns (e.g. [INDI:BIRT, FAM:*:DATE])
+     *
+     * @param string     $tag                   e.g. FAM:MARR:DATE
+     * @param array      $patterns              e.g. [INDI:BIRT, FAM:*:DATE]
+     *
+     * @return string    Matched pattern; empty if no match
+     */
+    public static function matchedPattern(string $tag, array $patterns): string
+    {  
+        //Match whether is found as black listed
+        $check_as_white_list = false;
+        $i = 0;
+        $match = false;
+
+        while ($i < sizeof($patterns) && !$match) {
+            $match = self::matchTagWithSinglePattern($tag, $patterns[$i], $check_as_white_list);
+            $i++;
+        }
+
+        //If black list match was found return false
+        if ($match) return '';
+
+        //Match whether is found as white listed
+        $check_as_white_list = true;
+        $i = 0;
+        $match = false;
+
+        while ($i < sizeof($patterns) && !$match) {
+            $match = self::matchTagWithSinglePattern($tag, $patterns[$i], $check_as_white_list);
+            $i++;
+        }
+
+        //Return result of white list check
+        if ($match) {
+            return $patterns[$i-1];
+        }
+        
+        return '';
+    }
+
+    /**
+     * Match a given tag (e.g. FAM:MARR:DATE) with a tag pattern (e.g. FAM:*:DATE)
+     *
+     * @param string     $tag                   e.g. FAM:MARR:DATE
+     * @param string     $pattern               e.g. FAM:*:DATE
+     * @param bool       $check_as_white_list   whether patterns are checked as white list; otherwise as black list
+     *
+     * @return bool      Whether the tag could be matched or not      
+     */
+    public static function matchTagWithSinglePattern(string $tag, string $pattern, bool $check_as_white_list = true): bool
+    {   
+        $is_white_list_pattern = true;
+
+        if (str_starts_with($pattern, '!')) {
+
+            if ($check_as_white_list) return false;
+            $is_white_list_pattern = false;
+            $pattern = substr($pattern, 1);
+        }
+
+        if (str_ends_with($pattern, ':*')) $pattern .= ':*:*:*:*:*:*:*:*:*:*';
+
+        preg_match_all('/([^:]+)(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
+        preg_match_all('/([^:]+)(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
+
+        //Return false if nothing was found
+        if ($tag_tokens[0] === '' OR $pattern_tokens[0] === '') return false;
+
+        $i = 1;
+        $passed_last_token = false;
+        $match = true;
+
+        while ($i < sizeof($tag_tokens) && !$passed_last_token && $match) {
+
+            if ($pattern_tokens[$i][0] !== ':*' && $pattern_tokens[$i][0] !== $tag_tokens[$i][0]) $match = false;
+            $passed_last_token = $tag_tokens[$i][0] === "";
+            $i++;
+        }
+
+        return ($is_white_list_pattern && $check_as_white_list && $match) OR (!$is_white_list_pattern && !$check_as_white_list && $match);
+    }
+
+    /**
+     * Get all next level tags and values
+     *
+     * @param string $tag       Tag of the current level
+     * @param string $gedcom    GEDCOM under the current level tag
+     * @param string $level     Current level
+     *
+     * @return array            An array with all next level tags and their values
+     */
+    public static function getNextLevelTagValues(string $tag, string $gedcom, int $level): array
+    {
+        $next_level_tag_values = [];
+        preg_match_all("/\n" . $level + 1 . " ([^\n ]+) [^\n]+\n/", $gedcom, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $next_level_tag = $match[1];
+
+            if (preg_match('/\n' . $level + 1 . ' ' . $next_level_tag . '\b ?(.*(?:(?:\n' . $level + 1 . ' CONT ?.*)*)*)/', $gedcom, $match)) {
+                $value = preg_replace("/\n' . $level + 1 . ' CONT ?/", "\n", $match[1]);
+    
+                $next_level_tag_values[$next_level_tag] = Registry::elementFactory()->make($tag . ':' . $next_level_tag)->canonical($value);
+            }                
+
+        }
+
+        return $next_level_tag_values;
+    }      
+
+    /**
+     * Preg_replace with an array of replace pairs
+     *
+     * @param array $preg_replace_pairs       An array with replace pairs, without '/search/'
+     * @param string $subject                 Text
+     *
+     * @return string                  
+     */
+    public static function preg_replace_for_array_of_pairs(array $preg_replace_pairs, string $subject): string {
+
+        //If regular expressions are provided, run replacements
+        foreach ($preg_replace_pairs as $pattern => $replace) {
+
+            $subject = preg_replace("/" . $pattern . "/", $replace, $subject);
+        }
+
+        return $subject;
     }
 }

@@ -485,27 +485,50 @@ class RemoteGedcomExportService extends GedcomExportService
 
                 $converted_gedcom .= $fact_gedcom;
 
-                //Get all level 2 tags and values
-                foreach (self::getNextLevelTagValues($fact->tag(), $fact->gedcom(), 1 ) as $level2_tag => $level2_value) {
-
-                    $matched_tag_pattern = self::matchedPattern($fact->tag()  . ":" . $level2_tag, $export_filter_patterns);
-
-                    if ($matched_tag_pattern !== '') {
-
-                        //Add level 2 Gedcom of fact
-                        $level2_gedcom = "2 ". $level2_tag . " " . $level2_value . "\n";
-
-                        //If regular expressions are provided, run replacements
-                        $level2_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $level2_gedcom);
-
-                        $converted_gedcom .= $level2_gedcom;
-                    }
-                } 
+                //Apply export filter to level 2+x
+                $converted_gedcom .= self::exportFilterLevelX($fact->tag(), $fact->gedcom() . "\n", 1, $export_filter_list, $export_filter_patterns);
             }
         }
 
         return $converted_gedcom;
     }
+
+    /**
+     * Recursive export filter for level x Gedcom structures
+     *
+     * @param string $tag                   Tag of the current level
+     * @param string $gedcom                GEDCOM under the current level tag
+     * @param int    $level                 Current level
+     * @param array  $export_filter_list    export filter
+     * @param array  $patterns              tag patterns of export filter, e.g. [INDI:BIRT, FAM:*:DATE]
+     *
+     * @return string Converted Gedcom
+     */
+    public static function exportFilterLevelX(string $tag, string $gedcom, int $level, array $export_filter_list, array $patterns): string
+    {     
+        $converted_gedcom = '';
+
+        foreach (self::getNextLevelTagValues($tag, $gedcom, $level) as $levelx_tag => $levelx_value) {
+
+            $matched_tag_pattern = self::matchedPattern($tag . ':' . $levelx_tag, $patterns);
+
+            if ($matched_tag_pattern !== '') {
+
+                //Add level x Gedcom of fact
+                $levelx_gedcom = $level + 1 . " " . $levelx_tag . " " . $levelx_value . "\n";
+
+                //If regular expressions are provided, run replacements
+                $levelx_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $levelx_gedcom);
+
+                $converted_gedcom .= $levelx_gedcom;
+
+                //Recursive call for next level
+                //$converted_gedcom .= self::exportFilterLevelX($levelx_tag, $levelx_gedcom, $level+1, $patterns);
+            }
+        }
+
+        return $converted_gedcom;
+    } 
 
     /**
      * Match a given tag (e.g. FAM:MARR:DATE) with a list of tag patterns (e.g. [INDI:BIRT, FAM:*:DATE])
@@ -570,8 +593,8 @@ class RemoteGedcomExportService extends GedcomExportService
 
         if (str_ends_with($pattern, ':*')) $pattern .= ':*:*:*:*:*:*:*:*:*:*';
 
-        preg_match_all('/([^:]+)(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
-        preg_match_all('/([^:]+)(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*(:[^:]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
+        preg_match_all('/([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
+        preg_match_all('/([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
 
         //Return false if nothing was found
         if ($tag_tokens[0] === '' OR $pattern_tokens[0] === '') return false;
@@ -595,24 +618,23 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @param string $tag       Tag of the current level
      * @param string $gedcom    GEDCOM under the current level tag
-     * @param string $level     Current level
+     * @param int    $level     Current level
      *
      * @return array            An array with all next level tags and their values
      */
     public static function getNextLevelTagValues(string $tag, string $gedcom, int $level): array
     {
         $next_level_tag_values = [];
-        preg_match_all("/\n" . $level + 1 . " ([^\n ]+) [^\n]+\n/", $gedcom, $matches, PREG_SET_ORDER);
+        preg_match_all('/\n' . $level + 1 . ' ([A-Z_]+)\b ?.*/', $gedcom, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
             $next_level_tag = $match[1];
 
-            if (preg_match('/\n' . $level + 1 . ' ' . $next_level_tag . '\b ?(.*(?:(?:\n' . $level + 1 . ' CONT ?.*)*)*)/', $gedcom, $match)) {
+            if (preg_match('/\n' . $level + 1 . ' ' . $next_level_tag . '\b ?(.*(?:(?:\n' . $level + 2 . ' CONT ?.*)*)*)/', $gedcom, $match)) {
                 $value = preg_replace("/\n' . $level + 1 . ' CONT ?/", "\n", $match[1]);
     
                 $next_level_tag_values[$next_level_tag] = Registry::elementFactory()->make($tag . ':' . $next_level_tag)->canonical($value);
-            }                
-
+            }
         }
 
         return $next_level_tag_values;

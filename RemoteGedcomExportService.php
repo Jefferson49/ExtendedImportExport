@@ -28,10 +28,12 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Factories\AbstractGedcomRecordFactory;
+use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Header;
+use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\GedcomExportService;
 use Fisharebest\Webtrees\Tree;
@@ -79,10 +81,19 @@ class RemoteGedcomExportService extends GedcomExportService
     private ResponseFactoryInterface $response_factory;
     private StreamFactoryInterface $stream_factory;
 
+    // The chosen export filter (if export filtering is used)
+    private array $export_filter_list;
+
+    // The tag patterns of the export filter
+    private array $export_filter_patterns;
+
+
     public function __construct(ResponseFactoryInterface $response_factory, StreamFactoryInterface $stream_factory)
     {
         $this->response_factory = $response_factory;
         $this->stream_factory   = $stream_factory;
+        $this->export_filter_list = [];
+        $this->export_filter_patterns = [];
     }
 
     /**
@@ -258,7 +269,9 @@ class RemoteGedcomExportService extends GedcomExportService
 
                 //Apply custom conversions according to an export filter
                 if ($export_filter !== null) {
-                    $gedcom = self::exportFilter($gedcom, $tree, $export_filter);
+                    $this->export_filter_list = $export_filter->getExportFilter();
+                    $this->export_filter_patterns = array_keys($this->export_filter_list);
+                    $gedcom = self::exportFilter($gedcom, 0, '');
                 }
 
                 if ($line_endings === 'CRLF') {
@@ -425,68 +438,64 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * Convert Gedcom record according to an export filter
      *
-     * @param string                $gedcom
-     * @param Tree                  $tree
-     * @param ExportFilterInterface $export_filter
+     * @param string  $gedcom
+     * @param int     $level             level of Gedcom structure
+     * @param string  $tag_combination   e.g. INDI:BIRT:DATE
      *
-     * @return string
+     * @return string Converted Gedcom
      */
-    public static function exportFilter(string $gedcom, Tree $tree, ExportFilterInterface $export_filter): string
+    private function exportFilter(string $gedcom, int $level, string $tag_combination): string
     {   
-        if ($export_filter === null) return $gedcom;
-
-        $export_filter_list = $export_filter->getExportFilter();
-        $export_filter_patterns = array_keys($export_filter_list);
         $converted_gedcom = '';
 
-        //Create temporary record
-        preg_match('/^0 @([^@]*)@ (\w+)/', $gedcom, $match);
-        $xref = $match[1] ?? 'XREFdummy';
-        $record = new TemporaryGedcomRecord($xref, $gedcom, null, $tree);
+        if ($level === 0) {
+            preg_match('/0( @[^@]*@)* ([A-Z_]+)( .+)*\n/', $gedcom, $match);
 
-        //Add Gedcom of record if is in white list
-        $matched_tag_pattern = self::matchedPattern($record->tag(), $export_filter_patterns);
+            try {
+                $tag = $match[2];
+            }
+            catch (Throwable $th) {
+                $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom;
+                FlashMessages::addMessage($message, 'danger');          
+            }
+        }
+        else {
+            if (!str_contains($gedcom, "\n")) $gedcom .= "\n";
+
+            preg_match('/' . $level . ' ([A-Z_]+)\b ?(.*)\n/', $gedcom, $match);    
+
+            try {
+                $tag = $match[1];
+            }
+            catch (Throwable $th) {
+                $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom;
+                FlashMessages::addMessage($message, 'danger');
+            }
+        }
+
+        if ($tag_combination === '') {
+            $tag_combination = $tag;
+        } 
+        else {
+            $tag_combination .= ':' . $tag;
+        }
+
+        //Check whether is in white list and not in black list
+        $matched_tag_pattern = self::matchedPattern($tag_combination, $this->export_filter_patterns);
 
         if ($matched_tag_pattern !== '') {
 
-            if (str_starts_with($gedcom, "0 HEAD")) {
-                $record_gedcom = "0 HEAD\n";
-            }
-            elseif (str_starts_with($gedcom, "0 TRLR")) {
-                $record_gedcom = "0 TRLR\n";
-            }
-            else {
-                $record_gedcom = $record->createPrivateGedcomRecord(Auth::PRIV_NONE) ."\n";
-            }
+            $converted_gedcom = $match[0];
 
             //If regular expressions are provided, run replacements
-            $record_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $record_gedcom);
+            $converted_gedcom = self::preg_replace_for_array_of_pairs($this->export_filter_list[$matched_tag_pattern], $converted_gedcom);
 
-            $converted_gedcom .= $record_gedcom;
-        }
-        else {
-            return '';
-        }
+            //Get sub-structure of Gedcom and recursively apply export filter to next level
+            $gedcom_substructures = self::parseGedcomSubstructures($gedcom, $level + 1);
 
-        foreach($record->facts() as $fact) {
+            foreach ($gedcom_substructures as $gedcom_substructure) {
 
-            $fact_tag = str_replace($record->tag() . ":", "", $fact->tag());
-            $matched_tag_pattern = self::matchedPattern($fact->tag(), $export_filter_patterns);
-
-            if ($matched_tag_pattern !== '') {
-
-                $fact_value = $fact->value() !== "" ? " " . $fact->value() : "";
-
-                //Add level 1 Gedcom of fact
-                $fact_gedcom = "1 ". $fact_tag . $fact_value . "\n";
-
-                //If regular expressions are provided, run replacements
-                $fact_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $fact_gedcom);
-
-                $converted_gedcom .= $fact_gedcom;
-
-                //Apply export filter to level 2+x
-                $converted_gedcom .= self::exportFilterLevelX($fact->tag(), $fact->gedcom() . "\n", 1, $export_filter_list, $export_filter_patterns);
+                $converted_gedcom .= $this->exportFilter($gedcom_substructure, $level + 1, $tag_combination);
             }
         }
 
@@ -508,15 +517,15 @@ class RemoteGedcomExportService extends GedcomExportService
     {     
         $converted_gedcom = '';
 
-        foreach (self::getNextLevelTagValues($tag, $gedcom, $level) as $levelx_tag => $levelx_value) {
+        foreach (self::getNextLevelTagValues($tag, $gedcom, $level) as $levelx_tag => $levelx_gedcom) {
 
             $matched_tag_pattern = self::matchedPattern($tag . ':' . $levelx_tag, $patterns);
 
             if ($matched_tag_pattern !== '') {
 
                 //Add level x Gedcom of fact
-                $levelx_gedcom = $level + 1 . " " . $levelx_tag . " " . $levelx_value . "\n";
-
+                $levelx_gedcom = $level + 1 . ' ' . $levelx_tag . ' ' . self::getTagValue($levelx_tag, $tag .':' . $levelx_tag , $levelx_gedcom, $level +1) . "\n";
+ 
                 //If regular expressions are provided, run replacements
                 $levelx_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $levelx_gedcom);
 
@@ -540,6 +549,8 @@ class RemoteGedcomExportService extends GedcomExportService
      */
     public static function matchedPattern(string $tag, array $patterns): string
     {  
+        if ($tag === '' OR sizeof($patterns) === 0) return '';
+
         //Match whether is found as black listed
         $check_as_white_list = false;
         $i = 0;
@@ -616,7 +627,7 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * Get all next level tags and values
      *
-     * @param string $tag       Tag of the current level
+     * @param string $tag       Tag of the current level, e.g. INDI:BIRT:DATE
      * @param string $gedcom    GEDCOM under the current level tag
      * @param int    $level     Current level
      *
@@ -641,6 +652,27 @@ class RemoteGedcomExportService extends GedcomExportService
     }      
 
     /**
+     * Get the value for a tag
+     *
+     * @param string $tag       e.g. DATE
+     * @param string $full_tag  e.g. INDI:BIRT:DATE
+     * @param string $gedcom    Gedcom text
+     * @param int    $level     Gedcom level of tag
+     *
+     * @return string           Value of tag
+     */
+    public static function getTagValue(string $tag, string $full_tag, string $gedcom, int $level): string
+    {
+        if (preg_match('/' . $level . ' ' . $tag . '\b ?(.*(?:(?:\n' . $level + 1 . ' CONT ?.*)*)*)/', $gedcom, $match)) {
+            $value = preg_replace("/\n' . $level + 1 . ' CONT ?/", "\n", $match[1]);
+
+            return Registry::elementFactory()->make($tag)->canonical($value);
+        }
+
+        return '';
+    } 
+
+    /**
      * Preg_replace with an array of replace pairs
      *
      * @param array $preg_replace_pairs       An array with replace pairs, without '/search/'
@@ -657,5 +689,29 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         return $subject;
+    }
+
+    /**
+     * Split a Gedcom string into Gedcom sub structures
+     *
+     * @param string $gedcom
+     * 
+     * @return array<string>
+     */
+    public static function parseGedcomSubstructures(string $gedcom, int $level): array
+    {
+        // Split the Gedcom strucuture into sub structures 
+        // See: Fisharebest\Webtrees\GedcomRecord, function parseFacts()
+        if ($gedcom !== '') {
+
+            $gedcom_substructures = preg_split('/\n(?=' . $level . ')/', $gedcom);
+
+            //Delete first structure, which is from one Gedcom level up 
+            array_shift($gedcom_substructures);
+            return $gedcom_substructures;
+
+        } else {
+            return [];
+        }
     }
 }

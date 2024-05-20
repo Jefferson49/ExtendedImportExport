@@ -503,43 +503,6 @@ class RemoteGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Recursive export filter for level x Gedcom structures
-     *
-     * @param string $tag                   Tag of the current level
-     * @param string $gedcom                GEDCOM under the current level tag
-     * @param int    $level                 Current level
-     * @param array  $export_filter_list    export filter
-     * @param array  $patterns              tag patterns of export filter, e.g. [INDI:BIRT, FAM:*:DATE]
-     *
-     * @return string Converted Gedcom
-     */
-    public static function exportFilterLevelX(string $tag, string $gedcom, int $level, array $export_filter_list, array $patterns): string
-    {     
-        $converted_gedcom = '';
-
-        foreach (self::getNextLevelTagValues($tag, $gedcom, $level) as $levelx_tag => $levelx_gedcom) {
-
-            $matched_tag_pattern = self::matchedPattern($tag . ':' . $levelx_tag, $patterns);
-
-            if ($matched_tag_pattern !== '') {
-
-                //Add level x Gedcom of fact
-                $levelx_gedcom = $level + 1 . ' ' . $levelx_tag . ' ' . self::getTagValue($levelx_tag, $tag .':' . $levelx_tag , $levelx_gedcom, $level +1) . "\n";
- 
-                //If regular expressions are provided, run replacements
-                $levelx_gedcom = self::preg_replace_for_array_of_pairs($export_filter_list[$matched_tag_pattern], $levelx_gedcom);
-
-                $converted_gedcom .= $levelx_gedcom;
-
-                //Recursive call for next level
-                //$converted_gedcom .= self::exportFilterLevelX($levelx_tag, $levelx_gedcom, $level+1, $patterns);
-            }
-        }
-
-        return $converted_gedcom;
-    } 
-
-    /**
      * Match a given tag (e.g. FAM:MARR:DATE) with a list of tag patterns (e.g. [INDI:BIRT, FAM:*:DATE])
      *
      * @param string     $tag                   e.g. FAM:MARR:DATE
@@ -623,54 +586,6 @@ class RemoteGedcomExportService extends GedcomExportService
 
         return ($is_white_list_pattern && $check_as_white_list && $match) OR (!$is_white_list_pattern && !$check_as_white_list && $match);
     }
-
-    /**
-     * Get all next level tags and values
-     *
-     * @param string $tag       Tag of the current level, e.g. INDI:BIRT:DATE
-     * @param string $gedcom    GEDCOM under the current level tag
-     * @param int    $level     Current level
-     *
-     * @return array            An array with all next level tags and their values
-     */
-    public static function getNextLevelTagValues(string $tag, string $gedcom, int $level): array
-    {
-        $next_level_tag_values = [];
-        preg_match_all('/\n' . $level + 1 . ' ([A-Z_]+)\b ?.*/', $gedcom, $matches, PREG_SET_ORDER);
-
-        foreach ($matches as $match) {
-            $next_level_tag = $match[1];
-
-            if (preg_match('/\n' . $level + 1 . ' ' . $next_level_tag . '\b ?(.*(?:(?:\n' . $level + 2 . ' CONT ?.*)*)*)/', $gedcom, $match)) {
-                $value = preg_replace("/\n' . $level + 1 . ' CONT ?/", "\n", $match[1]);
-    
-                $next_level_tag_values[$next_level_tag] = Registry::elementFactory()->make($tag . ':' . $next_level_tag)->canonical($value);
-            }
-        }
-
-        return $next_level_tag_values;
-    }      
-
-    /**
-     * Get the value for a tag
-     *
-     * @param string $tag       e.g. DATE
-     * @param string $full_tag  e.g. INDI:BIRT:DATE
-     * @param string $gedcom    Gedcom text
-     * @param int    $level     Gedcom level of tag
-     *
-     * @return string           Value of tag
-     */
-    public static function getTagValue(string $tag, string $full_tag, string $gedcom, int $level): string
-    {
-        if (preg_match('/' . $level . ' ' . $tag . '\b ?(.*(?:(?:\n' . $level + 1 . ' CONT ?.*)*)*)/', $gedcom, $match)) {
-            $value = preg_replace("/\n' . $level + 1 . ' CONT ?/", "\n", $match[1]);
-
-            return Registry::elementFactory()->make($tag)->canonical($value);
-        }
-
-        return '';
-    } 
 
     /**
      * Preg_replace with an array of replace pairs

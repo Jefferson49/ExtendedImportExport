@@ -138,6 +138,12 @@ class GedcomSevenExportService
 
     private StreamFactoryInterface $stream_factory;
 
+    // The chosen export filter (if export filtering is used)
+    private array $export_filter_list;
+
+    // The tag patterns of the export filter
+    private array $export_filter_patterns;
+
 	private array $language_to_code_table;
 
     //List of schemas which ware used for the export
@@ -155,6 +161,8 @@ class GedcomSevenExportService
 	{
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
+        $this->export_filter_list = [];
+        $this->export_filter_patterns = [];        
         $this->custom_tags_found = [];
         $this->schema_uris_for_tags = [];
         
@@ -403,7 +411,9 @@ class GedcomSevenExportService
 
                 //Apply custom conversions according to export filter
                 if ($export_filter !== null) {
-                    $gedcom = RemoteGedcomExportService::exportFilter($gedcom, $tree, $export_filter);
+                    $this->export_filter_list = $export_filter->getExportFilter($tree);
+                    $this->export_filter_patterns = array_keys($this->export_filter_list);
+                    $gedcom = RemoteGedcomExportService::exportFilter($gedcom, 0, '');
                 }
 
                 //Convert to Gedcom 7

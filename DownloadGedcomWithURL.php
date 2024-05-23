@@ -322,10 +322,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
         
         $this->layout = 'layouts/administration';       
 
-        $load_filter_result = $this->loadEportFilterClasses();
-
-        if ($load_filter_result !== '') {
-            return $this->showErrorMessage($load_filter_result);
+        //Load export filters
+        $error = $this->loadEportFilterClasses();
+        if ($error !== '') {
+            FlashMessages::addMessage($error, 'danger');
         }
         
         $tree_list = [];
@@ -335,23 +335,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
         }
 
-        $export_filter_list =[
-            ''             => I18N::translate('None'),
-        ];
-
-        foreach (get_declared_classes() as $className) {
-
-            $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
-
-            if (str_contains($className, $name_space)) {
-
-                if (in_array($name_space . 'ExportFilterInterface', class_implements($className))) {
-
-                    $className = str_replace($name_space, '', $className);
-                    $export_filter_list[$className] = $className;
-                }
-            }
-        }
+        $export_filter_list = $this->getExportFilterList();
 
         //If currently selected export filter is not available, reset export filter to none
         $current_export_filter = $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER);
@@ -361,6 +345,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER, '');
             $message = I18N::translate('The preferences for the default export filter were reset to "none", because the selected export filter %s could not be found', $current_export_filter);
             FlashMessages::addMessage($message, 'danger');
+        }
+
+        //Validate selected export filter
+        if ($current_export_filter !== '' && ($error = $this->validateExportFilter($current_export_filter)) !== '') {
+    
+            FlashMessages::addMessage($error, 'danger');
         }
 
         return $this->viewResponse(
@@ -623,12 +613,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         foreach ($filter_files as $file) {
             if (str_ends_with($file, '.php')) {
+
                 try {
                     set_error_handler($onError);
                     require __DIR__ . '/resources/filter/' . $file;
                 }
-                catch (Throwable $ex) {
-                    return I18N::translate('A compilation error was detected in the following export filter') . ': ' . __DIR__ . '/resources/filter/' . $file . '. Error message: ' . $ex->getMessage();
+                catch (Throwable $th) {
+                    return I18N::translate('A compilation error was detected in the following export filter') . ': ' . 
+                    __DIR__ . '/resources/filter/' . $file . ', ' . I18N::translate('line') . ': ' . $th-> getLine() . ', ' . I18N::translate('error message') . ': ' . $th->getMessage();
                 }
                 finally {
                     restore_error_handler();
@@ -640,6 +632,63 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
 	 /**
+     * Get all available export filters
+     *
+     * @return array
+     */ 
+
+     private function getExportFilterList(): array {
+
+        $export_filter_list =[
+            ''             => I18N::translate('None'),
+        ];
+
+        foreach (get_declared_classes() as $className) {
+
+            $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
+
+            if (str_contains($className, $name_space)) {
+
+                if (in_array($name_space . 'ExportFilterInterface', class_implements($className))) {
+
+                    $className = str_replace($name_space, '', $className);
+                    $export_filter_list[$className] = $className;
+                }
+            }
+        }
+
+        return $export_filter_list;
+    }
+
+	/**
+     * Validate export filter
+     *
+     * @return string error message
+     */ 
+
+    private function validateExportFilter($export_filter_name): string {
+
+        //Check if export filter class is validate
+        $export_filter_class_name = __NAMESPACE__ . '\\' . $export_filter_name;
+
+        if (!class_exists($export_filter_class_name) OR !(new $export_filter_class_name() instanceof ExportFilterInterface)) {
+
+            return I18N::translate('The export filter was not found') . ': ' . $export_filter_name;
+        }
+
+        $export_filter_instance = new $export_filter_class_name();
+
+        //Validate the content of the export filter
+        $error = $export_filter_instance->validate();
+
+        if ($error !== '') {
+            return $error;
+        }
+
+        return '';
+    }
+
+	/**
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
@@ -725,9 +774,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
         elseif (!in_array($time_stamp, ['prefix', 'postfix', 'none'])) {
 			$response = $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
-		//Error if export filter is not valid
+		//Error if export filter is not found
         elseif ($export_filter !== '' && (!class_exists($export_filter_class_name) OR !(new $export_filter_class_name() instanceof ExportFilterInterface))) {
             $response = $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter);
+        }
+		//Error if export filter validation fails
+        elseif ($export_filter !== '' && ($error = $this->validateExportFilter($export_filter)) !== '') {
+            $response = $this->showErrorMessage($error);
         }
 
 		//If no errors, start the core activities of the module

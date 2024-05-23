@@ -269,7 +269,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
                 //Apply custom conversions according to an export filter
                 if ($export_filter !== null) {
-                    $this->export_filter_list = $export_filter->getExportFilter();
+                    $this->export_filter_list = $export_filter->getExportFilter($tree);
                     $this->export_filter_patterns = array_keys($this->export_filter_list);
                     $gedcom = self::exportFilter($gedcom, 0, '');
                 }
@@ -444,7 +444,7 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @return string Converted Gedcom
      */
-    private function exportFilter(string $gedcom, int $level, string $tag_combination): string
+    public function exportFilter(string $gedcom, int $level, string $tag_combination): string
     {   
         $converted_gedcom = '';
 

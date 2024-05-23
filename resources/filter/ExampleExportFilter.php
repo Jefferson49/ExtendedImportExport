@@ -36,7 +36,7 @@ class ExampleExportFilter implements ExportFilterInterface
       'FAM:HUSB'                 => [],
       'FAM:WIFE'                 => [],
       'FAM:CHIL'                 => [],
-      'FAM:MARR:'                => [],
+      'FAM:MARR'                 => [],
       'FAM:MARR:*'               => ["DATE [^\n]*([\d]{4})\n" => "DATE $1\n"],
 
       'OBJE'                     => [],

@@ -25,6 +25,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\Tree;
+
 /**
  * Interface for export filters
  */
@@ -47,6 +49,13 @@ interface ExportFilterInterface
      *
      * @return array
      */
-    public function getExportFilter(): array;
+    public function getExportFilter(Tree $tree): array;
+
+    /**
+     * Validate the export filter
+     *
+     * @return bool   Validation error; empty, if successful validation
+     */
+    public function validate(): string;    
 
 }

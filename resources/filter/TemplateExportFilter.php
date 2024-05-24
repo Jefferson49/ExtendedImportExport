@@ -16,7 +16,10 @@ class TemplateExportFilter implements ExportFilterInterface
       //                             ["search pattern" => "replace pattern"],
       'HEAD'                     => [],
       'HEAD:*'                   => [],
-      
+
+      'SUBM'                     => [],      
+      'SUBM:*'                   => [],      
+
       'TRLR'                     => [],
    ];
 }

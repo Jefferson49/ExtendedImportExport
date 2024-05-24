@@ -343,6 +343,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         if (!array_key_exists($current_export_filter, $export_filter_list)) {
 
             $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER, '');
+            $current_export_filter = '';
             $message = I18N::translate('The preferences for the default export filter were reset to "none", because the selected export filter %s could not be found', $current_export_filter);
             FlashMessages::addMessage($message, 'danger');
         }
@@ -365,7 +366,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY')),
                 self::PREF_DEFAULT_TREE_NAME          => $this->getPreference(self::PREF_DEFAULT_TREE_NAME, array_key_first($tree_list)),
                 self::PREF_DEFAULT_FiLE_NAME          => $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, array_key_first($tree_list)),
-                self::PREF_DEFAULT_EXPORT_FILTER      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER, array_key_first($export_filter_list)),
+                self::PREF_DEFAULT_EXPORT_FILTER      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER, ''),
                 self::PREF_DEFAULT_PRIVACY_LEVEL      => $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none'),
                 self::PREF_DEFAULT_EXPORT_FORMAT      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
                 self::PREF_DEFAULT_ENCODING           => $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME),

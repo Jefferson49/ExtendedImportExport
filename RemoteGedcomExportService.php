@@ -271,7 +271,7 @@ class RemoteGedcomExportService extends GedcomExportService
                 if ($export_filter !== null) {
                     $this->export_filter_list = $export_filter->getExportFilter($tree);
                     $this->export_filter_patterns = array_keys($this->export_filter_list);
-                    $gedcom = self::exportFilter($gedcom, 0, '');
+                    $gedcom = $this->exportFilter($gedcom, 0, '');
                 }
 
                 if ($line_endings === 'CRLF') {

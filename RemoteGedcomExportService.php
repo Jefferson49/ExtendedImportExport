@@ -564,23 +564,35 @@ class RemoteGedcomExportService extends GedcomExportService
             $is_white_list_pattern = false;
             $pattern = substr($pattern, 1);
         }
-
-        if (str_ends_with($pattern, ':*')) $pattern .= ':*:*:*:*:*:*:*:*:*:*';
-
-        preg_match_all('/([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
-        preg_match_all('/([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
+       
+        preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
+        preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
 
         //Return false if nothing was found
-        if ($tag_tokens[0] === '' OR $pattern_tokens[0] === '') return false;
+        if (sizeof($tag_tokens) === 0 OR sizeof($pattern_tokens) === 0 OR sizeof($tag_tokens[0]) === 0 OR sizeof($pattern_tokens[0]) === 0) return false;
 
-        $i = 1;
-        $passed_last_token = false;
+        //If patterns ends with *, fill up pattern with additional * until same length as tag
+        if (str_ends_with($pattern, ':*')) {
+
+            while (sizeof($pattern_tokens[0]) < sizeof($tag_tokens[0])) {
+
+                array_push($pattern_tokens[0], '*');
+            }    
+        }
+
+        //If tag now contains more or less tokens than pattern, return false
+        if (sizeof($tag_tokens[0]) !== sizeof($pattern_tokens[0])) {
+
+            return false;
+        } 
+
+        //Compare tag and pattern
+        $i = 0;
         $match = true;
 
-        while ($i < sizeof($tag_tokens) && !$passed_last_token && $match) {
+        while ($i < sizeof($tag_tokens[0]) && $match) {
 
-            if ($pattern_tokens[$i][0] !== ':*' && $pattern_tokens[$i][0] !== $tag_tokens[$i][0]) $match = false;
-            $passed_last_token = $tag_tokens[$i][0] === "";
+            if ($pattern_tokens[0][$i] !== '*' && $pattern_tokens[0][$i] !== $tag_tokens[0][$i]) $match = false;    
             $i++;
         }
 

@@ -148,7 +148,7 @@ class RemoteGedcomExportService extends GedcomExportService
     // The tag patterns of the export filter
     private array $export_filter_patterns;
 
-    //ToDo
+    //Mapping table of languages to IANA language tags
     private array $language_to_code_table;
 
     //List of schemas which ware used for the export

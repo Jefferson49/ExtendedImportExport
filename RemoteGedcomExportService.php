@@ -54,7 +54,6 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use RuntimeException;
-//ToDo Check if Throwable is necessary
 use Throwable;
 
 use function addcslashes;
@@ -1003,7 +1002,7 @@ class RemoteGedcomExportService extends GedcomExportService
                 $tag = $match[2];
             }
             catch (Throwable $th) {
-                $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom;
+                $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom . '. Tag: ' . $tag_combination;
                 FlashMessages::addMessage($message, 'danger');          
             }
         }
@@ -1016,7 +1015,7 @@ class RemoteGedcomExportService extends GedcomExportService
                 $tag = $match[1];
             }
             catch (Throwable $th) {
-                $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom;
+                $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom . '. Tag: ' . $tag_combination;
                 FlashMessages::addMessage($message, 'danger');
             }
         }

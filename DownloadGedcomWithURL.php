@@ -85,8 +85,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
  
     private RemoteGedcomExportService $gedcom_export_service;
 
-    private GedcomSevenExportService $gedcom7_export_service;
-
     private Tree $download_tree;
 
 	//Custom module version
@@ -136,7 +134,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $stream_factory = new Psr17Factory();
 
         $this->gedcom_export_service = new RemoteGedcomExportService($response_factory, $stream_factory);
-        $this->gedcom7_export_service = new GedcomSevenExportService($response_factory, $stream_factory);
     }
 
     /**
@@ -821,7 +818,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//If Gedcom 7, create Gedcom 7 response
 				if ($gedcom7) {
 					try {
-						$resource = $this->gedcom7_export_service->saveGedcomSevenResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_instance, $gedcom_l);
+						$resource = $this->gedcom_export_service->saveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_instance, true, $gedcom_l);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
@@ -835,7 +832,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//Create Gedcom 5.5.1 response
 				else {
 					try {
-						$resource = $this->gedcom_export_service->remoteExport($this->download_tree, true, $encoding, $access_level, $line_endings, $export_filter_instance);
+						$resource = $this->gedcom_export_service->remoteExport($this->download_tree, true, $encoding, $access_level, $line_endings, $export_filter_instance, false);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
@@ -854,11 +851,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				if(boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1'))) {
 					//If Gedcom 7, create Gedcom 7 response
 					if ($gedcom7) {
-						$response = $this->gedcom7_export_service->downloadGedcomSevenResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, $gedcom_l);
+						$response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, true, $gedcom_l);
 					}
 					//Create Gedcom 5.5.1 response
 					else {
-						$response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance);
+						$response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, false);
 					}
 				} 
 				else {

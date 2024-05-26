@@ -349,8 +349,8 @@ use Fisharebest\Webtrees\View;
 </form>	
 
 <form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-					'key'                 => 'test_downlaod',
-					'test_downlaod_token' => md5($secret_key . Session::getCsrfToken()),
+					'key'                 => 'test_download',
+					'test_download_token' => md5($secret_key . Session::getCsrfToken()),
 					])) ?>">
 	<?= csrf_field() ?>
 	<div class="row mb-3 justify-content-between m-0">

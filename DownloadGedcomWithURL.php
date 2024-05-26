@@ -708,10 +708,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$action              = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'));
 		$time_stamp          = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'));
 		$export_filter       = Validator::queryParams($request)->string('export_filter', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER, ''));
-		$test_downlaod_token = Validator::queryParams($request)->string('test_downlaod_token', '');
+		$test_download_token = Validator::queryParams($request)->string('test_download_token', '');
 
         //A test download is allowed if a valid token is submitted
-        $allow_test_download =  $test_downlaod_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
+        $allow_test_download =  $test_download_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
 
         //Add namespace to export filter
         $export_filter_class_name = __NAMESPACE__ . '\\' . $export_filter;

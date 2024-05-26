@@ -191,7 +191,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param string                      $line_endings
      * @param string                      $filename     Name of download file, without an extension
      * @param string                      $format       One of: gedcom, zip, zipmedia, gedzip
-     * @param ExportFilterInterface       $export_filterA   GEDCOM export filter    
+     * @param ExportFilterInterface       $export_filter   A GEDCOM export filter    
 	 * @param bool                        $gedcom_7     Whether export is GEDCOM 7
 	 * @param bool                        $gedcom_l     Whether export should consider GEDCOM-L
      * @param Collection<int,string|object|GedcomRecord>|null $records
@@ -274,7 +274,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param string                 $encoding     Convert from UTF-8 to other encoding
      * @param string                 $privacy      Filter records by role
      * @param string                 $line_endings
-     * @param ExportFilterInterface  $export_filterA   GEDCOM export filter
+     * @param ExportFilterInterface  $export_filter   A GEDCOM export filter
      * @param string                 $format       One of: gedcom, zip, zipmedia, gedzip
 	 * @param bool                   $gedcom_7     Whether export is GEDCOM 7
 	 * @param bool                   $gedcom_l     Whether export should consider GEDCOM-L

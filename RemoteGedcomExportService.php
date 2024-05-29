@@ -750,7 +750,7 @@ class RemoteGedcomExportService extends GedcomExportService
                 foreach ($header->facts(['SUBM', 'SUBN'], false, Auth::PRIV_HIDE) as $fact) {
 
                     //Add submitter/submission if the parent method did not find it, because of access rights
-                    if (!str_contains($gedcom, "\n1 " . substr($fact->tag(), -4, 4))) {
+                    if (strpos($gedcom, "\n1 " . substr($fact->tag(), -4, 4)) === false) {
                         $gedcom .= "\n" . $fact->gedcom();
                     }
                 }
@@ -952,7 +952,7 @@ class RemoteGedcomExportService extends GedcomExportService
     {
         foreach ($this->schema_uris_for_tags as $tag => $uri) {
 
-            if(str_contains($gedcom, $tag)) {
+            if(strpos($gedcom, $tag) !== false) {
 
                 if(!in_array($tag, $this->custom_tags_found)) {
 
@@ -995,29 +995,21 @@ class RemoteGedcomExportService extends GedcomExportService
     {   
         $converted_gedcom = '';
 
-        if ($level === 0) {
-            preg_match('/0( @[^@]*@)* ([A-Z_]+)( .+)*\n/', $gedcom, $match);
+        try {
 
-            try {
+            if ($level === 0) {
+                preg_match('/0( @[^@]*@)* ([A-Z_]+)( .+)*\n/', $gedcom, $match);
                 $tag = $match[2];
             }
-            catch (Throwable $th) {
-                $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom . '. Tag: ' . $tag_combination;
-                FlashMessages::addMessage($message, 'danger');          
-            }
-        }
-        else {
-            if (!str_contains($gedcom, "\n")) $gedcom .= "\n";
-
-            preg_match('/' . $level . ' ([A-Z_]+)\b ?(.*)\n/', $gedcom, $match);    
-
-            try {
+            else {
+                if (substr_compare($gedcom, "\n", -1, 1) !== 0) $gedcom .= "\n";
+                preg_match('/' . $level . ' ([A-Z_]+)\b ?(.*)\n/', $gedcom, $match);    
                 $tag = $match[1];
             }
-            catch (Throwable $th) {
-                $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom . '. Tag: ' . $tag_combination;
-                FlashMessages::addMessage($message, 'danger');
-            }
+        }
+        catch (Throwable $th) {
+            $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom . '. Tag: ' . $tag_combination;
+            FlashMessages::addMessage($message, 'danger');
         }
 
         if ($tag_combination === '') {
@@ -1048,7 +1040,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
         return $converted_gedcom;
     }
-
+    
     /**
      * Match a given tag (e.g. FAM:MARR:DATE) with a list of tag patterns (e.g. [INDI:BIRT, FAM:*:DATE])
      *
@@ -1058,16 +1050,14 @@ class RemoteGedcomExportService extends GedcomExportService
      * @return string    Matched pattern; empty if no match
      */
     public static function matchedPattern(string $tag, array $patterns): string
-    {  
-        if ($tag === '' OR sizeof($patterns) === 0) return '';
-
-        //Match whether is found as black listed
-        $check_as_white_list = false;
+    {
+        ///Match whether is found as black listed
         $i = 0;
+        $size = sizeof($patterns);
         $match = false;
 
-        while ($i < sizeof($patterns) && !$match) {
-            $match = self::matchTagWithSinglePattern($tag, $patterns[$i], $check_as_white_list);
+        while ($i < $size && !$match) {
+            $match = self::matchTagWithSinglePattern($tag, $patterns[$i], false);
             $i++;
         }
 
@@ -1075,19 +1065,17 @@ class RemoteGedcomExportService extends GedcomExportService
         if ($match) return '';
 
         //Match whether is found as white listed
-        $check_as_white_list = true;
         $i = 0;
+        $size = sizeof($patterns);
         $match = false;
 
-        while ($i < sizeof($patterns) && !$match) {
-            $match = self::matchTagWithSinglePattern($tag, $patterns[$i], $check_as_white_list);
+        while ($i < $size && !$match) {
+            $match = self::matchTagWithSinglePattern($tag, $patterns[$i], true);
             $i++;
         }
 
         //Return result of white list check
-        if ($match) {
-            return $patterns[$i-1];
-        }
+        if ($match) return $patterns[$i-1];
         
         return '';
     }
@@ -1103,41 +1091,47 @@ class RemoteGedcomExportService extends GedcomExportService
      */
     public static function matchTagWithSinglePattern(string $tag, string $pattern, bool $check_as_white_list = true): bool
     {   
-        $is_white_list_pattern = true;
-
-        if (str_starts_with($pattern, '!')) {
+        if (strpos($pattern, '!') === 0) {
 
             if ($check_as_white_list) return false;
             $is_white_list_pattern = false;
             $pattern = substr($pattern, 1);
         }
+        else {
+            $is_white_list_pattern = true;
+        }
        
-        preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
-        preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
+        $tag_matches =     preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
+        $pattern_matches = preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
 
         //Return false if nothing was found
-        if (sizeof($tag_tokens) === 0 OR sizeof($pattern_tokens) === 0 OR sizeof($tag_tokens[0]) === 0 OR sizeof($pattern_tokens[0]) === 0) return false;
+        if ($tag_matches === 0 OR $pattern_matches === 0) return false;
 
-        //If patterns ends with *, fill up pattern with additional * until same length as tag
-        if (str_ends_with($pattern, ':*')) {
+        $tag_token_size =     sizeof($tag_tokens[0]);
+        $pattern_token_size = sizeof($pattern_tokens[0]);
 
-            while (sizeof($pattern_tokens[0]) < sizeof($tag_tokens[0])) {
+    	if ($tag_token_size !== $pattern_token_size) {
 
-                array_push($pattern_tokens[0], '*');
-            }    
-        }
+            //If tag contains more or less tokens than pattern and does not end with *, return false
+            if (substr_compare($pattern, ':*', -2) !== 0) {
+                return false;
+            } 
+            //If patterns ends with *, fill up pattern with additional * until same length as tag
+            else {
+                while ($pattern_token_size < $tag_token_size) {
 
-        //If tag now contains more or less tokens than pattern, return false
-        if (sizeof($tag_tokens[0]) !== sizeof($pattern_tokens[0])) {
-
-            return false;
+                    $pattern_tokens[0][] = '*';
+                    $pattern_token_size ++;
+                }    
+            }
         } 
 
         //Compare tag and pattern
         $i = 0;
+        $size = sizeof($tag_tokens[0]);
         $match = true;
 
-        while ($i < sizeof($tag_tokens[0]) && $match) {
+        while ($i < $size && $match) {
 
             if ($pattern_tokens[0][$i] !== '*' && $pattern_tokens[0][$i] !== $tag_tokens[0][$i]) $match = false;    
             $i++;

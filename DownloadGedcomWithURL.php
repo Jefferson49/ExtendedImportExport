@@ -444,11 +444,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			}
 
 			//Check and set folder to save
-			if (!str_ends_with($folder_to_save, '/')) {
+			if (substr_compare($folder_to_save, '/', -1, 1) !== 0) {
 				$folder_to_save .= '/';
 			}
             
-			if (str_starts_with($folder_to_save, '/')) {
+			if (substr_compare($folder_to_save, '/', 0, 1) === 0) {
 				$folder_to_save = substr($folder_to_save, 1,null);
 			}
 
@@ -610,7 +610,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         };
 
         foreach ($filter_files as $file) {
-            if (str_ends_with($file, '.php')) {
+            if (substr_compare($file, '.php', -4, 4) === 0) {
 
                 try {
                     set_error_handler($onError);
@@ -645,7 +645,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
 
-            if (str_contains($className, $name_space)) {
+            if (strpos($className, $name_space) !==  false) {
 
                 if (in_array($name_space . 'ExportFilterInterface', class_implements($className))) {
 
@@ -804,7 +804,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			if (($action === 'save') or ($action === 'both')) {
 
 				$root_filesystem = Registry::filesystem()->root();
-				$access_level = GedcomSevenExportService::ACCESS_LEVELS[$privacy];
+				$access_level = RemoteGedcomExportService::ACCESS_LEVELS[$privacy];
 				$export_file_name = $file_name;
 
 				// Force a ".ged" suffix

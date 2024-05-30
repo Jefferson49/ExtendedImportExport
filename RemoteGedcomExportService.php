@@ -1051,32 +1051,31 @@ class RemoteGedcomExportService extends GedcomExportService
      */
     public static function matchedPattern(string $tag, array $patterns): string
     {
-        ///Match whether is found as black listed
         $i = 0;
         $size = sizeof($patterns);
         $match = false;
+        $is_white_list_pattern = true;
 
         while ($i < $size && !$match) {
-            $match = self::matchTagWithSinglePattern($tag, $patterns[$i], false);
+ 
+            $pattern = $patterns[$i];
+
+            //If is black list pattern
+            if (strpos($pattern, '!') === 0) {
+                
+                //Remove '!' from pattern 
+                $pattern = substr($pattern, 1);
+                $is_white_list_pattern = false;
+            }
+    
+            $match = self::matchTagWithSinglePattern($tag, $pattern);
             $i++;
         }
 
-        //If black list match was found return false
-        if ($match) return '';
+        //If white list match return matched pattern
+        if ($is_white_list_pattern && $match) return $patterns[$i-1];
 
-        //Match whether is found as white listed
-        $i = 0;
-        $size = sizeof($patterns);
-        $match = false;
-
-        while ($i < $size && !$match) {
-            $match = self::matchTagWithSinglePattern($tag, $patterns[$i], true);
-            $i++;
-        }
-
-        //Return result of white list check
-        if ($match) return $patterns[$i-1];
-        
+        //If black list match or nothing found, return empty match
         return '';
     }
 
@@ -1085,59 +1084,44 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @param string     $tag                   e.g. FAM:MARR:DATE
      * @param string     $pattern               e.g. FAM:*:DATE
-     * @param bool       $check_as_white_list   whether patterns are checked as white list; otherwise as black list
      *
      * @return bool      Whether the tag could be matched or not      
      */
-    public static function matchTagWithSinglePattern(string $tag, string $pattern, bool $check_as_white_list = true): bool
-    {   
-        if (strpos($pattern, '!') === 0) {
-
-            if ($check_as_white_list) return false;
-            $is_white_list_pattern = false;
-            $pattern = substr($pattern, 1);
-        }
-        else {
-            $is_white_list_pattern = true;
-        }
-       
-        $tag_matches =     preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
-        $pattern_matches = preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
+    public static function matchTagWithSinglePattern(string $tag, string $pattern): bool
+    {          
+        $tag_token_size =     preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
+        $pattern_token_size = preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
 
         //Return false if nothing was found
-        if ($tag_matches === 0 OR $pattern_matches === 0) return false;
+        if ($tag_token_size === 0 OR $pattern_token_size === 0) return false;
 
-        $tag_token_size =     sizeof($tag_tokens[0]);
-        $pattern_token_size = sizeof($pattern_tokens[0]);
+    	if ($tag_token_size < $pattern_token_size) {
 
-    	if ($tag_token_size !== $pattern_token_size) {
+            return false;
+        }
+    	elseif ($tag_token_size > $pattern_token_size) {
 
-            //If tag contains more or less tokens than pattern and does not end with *, return false
-            if (substr_compare($pattern, ':*', -2) !== 0) {
+            //If tag contains more tokens than pattern and pattern does not end with *, return false
+            if ($pattern_tokens[0][$pattern_token_size - 1] !== '*') {
                 return false;
-            } 
-            //If patterns ends with *, fill up pattern with additional * until same length as tag
-            else {
-                while ($pattern_token_size < $tag_token_size) {
-
-                    $pattern_tokens[0][] = '*';
-                    $pattern_token_size ++;
-                }    
             }
-        } 
+            //If pattern ends with *, only tag tokens until the length of the pattern need to be checked
+            else {
+                $tag_token_size = $pattern_token_size -1;
+            }        
+        }
 
         //Compare tag and pattern
         $i = 0;
-        $size = sizeof($tag_tokens[0]);
         $match = true;
 
-        while ($i < $size && $match) {
+        while ($i < $tag_token_size && $match) {
 
             if ($pattern_tokens[0][$i] !== '*' && $pattern_tokens[0][$i] !== $tag_tokens[0][$i]) $match = false;    
             $i++;
         }
 
-        return ($is_white_list_pattern && $check_as_white_list && $match) OR (!$is_white_list_pattern && !$check_as_white_list && $match);
+        return $match;
     }
 
     /**

@@ -17,17 +17,17 @@ class ExampleExportFilter implements ExportFilterInterface
       'HEAD'                     => [],
       'HEAD:*'                   => [],
 
-      'INDI:BIRT:DATE'           => ["DATE [^\n]*([\d]{4})\n" => "DATE $1\n"],
-      'INDI:DEAT:DATE'           => ["DATE [^\n]*([\d]{4})\n" => "DATE $1\n"],
-      'INDI'                     => [],
-      'INDI:*'                   => [],
+      'INDI:BIRT:DATE'           => ["DATE .*([\d]{4})\n" => "DATE $1\n"],
+      'INDI:DEAT:DATE'           => ["DATE .*([\d]{4})\n" => "DATE $1\n"],
       '!INDI:BAPM'               => [],
       '!INDI:BAPM:*'             => [],
+      'INDI'                     => [],
+      'INDI:*'                   => [],
 
-      'FAM'                      => [],
-      'FAM:*'                    => [],
       '!FAM:MARR:PLAC'           => [],
       '!FAM:MARR:PLAC:*'         => [],
+      'FAM'                      => [],
+      'FAM:*'                    => [],
 
       'OBJE'                     => [],
       'OBJE:*'                   => ["2 FORM pdf" => "2 FORM PDF",

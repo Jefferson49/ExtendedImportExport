@@ -1054,7 +1054,6 @@ class RemoteGedcomExportService extends GedcomExportService
         $i = 0;
         $size = sizeof($patterns);
         $match = false;
-        $is_white_list_pattern = true;
 
         while ($i < $size && !$match) {
  
@@ -1066,6 +1065,9 @@ class RemoteGedcomExportService extends GedcomExportService
                 //Remove '!' from pattern 
                 $pattern = substr($pattern, 1);
                 $is_white_list_pattern = false;
+            }
+            else {
+                $is_white_list_pattern = true;
             }
     
             $match = self::matchTagWithSinglePattern($tag, $pattern);

@@ -80,6 +80,17 @@ trait ExportFilterTrait
                     return I18N::translate('The selected export filter (%s) contains an invalid regular expression', $class_name) . ': ' . $replace . '. ' . $th->getMessage();
                 }
             }
+
+            //Check if black list filter rules have reg exps
+            if (strpos($tag, '!') === 0) {
+
+                foreach($regexps as $search => $replace) {
+
+                    if ($search !== '' OR $replace !== '') {
+                        return I18N::translate('The selected export filter (%s) contains a black list filter rule (%s) with a regular expression, which will never be executed, because the black list filter rule will delete the related GEDCOM line.', $class_name, $tag);
+                    } 
+                }
+            }
         }
 
         return '';

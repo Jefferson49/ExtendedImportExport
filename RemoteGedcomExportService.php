@@ -998,12 +998,11 @@ class RemoteGedcomExportService extends GedcomExportService
         try {
 
             if ($level === 0) {
-                preg_match('/0( @[^@]*@)* ([A-Z_]+)( .+)*\n/', $gedcom, $match);
+                preg_match('/0( @[^@]*@)* ([A-Z_]+)( .+)*/', $gedcom, $match);
                 $tag = $match[2];
             }
             else {
-                if (substr_compare($gedcom, "\n", -1, 1) !== 0) $gedcom .= "\n";
-                preg_match('/' . $level . ' ([A-Z_]+)\b ?(.*)\n/', $gedcom, $match);    
+                preg_match('/' . $level . ' ([A-Z_]+)\b ?(.*)/', $gedcom, $match);    
                 $tag = $match[1];
             }
         }
@@ -1024,7 +1023,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
         if ($matched_tag_pattern !== '') {
 
-            $converted_gedcom = $match[0];
+            $converted_gedcom = $match[0] ."\n";
 
             //If regular expressions are provided, run replacements
             $converted_gedcom = self::preg_replace_for_array_of_pairs($this->export_filter_list[$matched_tag_pattern], $converted_gedcom);

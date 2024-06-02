@@ -7,19 +7,19 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 /**
  * Tag definitions and regular expressions for export filter
  */
-class TemplateExportFilter implements ExportFilterInterface
+class NoRecordsExportFilter implements ExportFilterInterface
 {
     use ExportFilterTrait;
     public const EXPORT_FILTER = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],
-      'HEAD'                     => [],
-      'HEAD:*'                   => [],
+      'HEAD'                      => [],
+      'HEAD:*'                    => [],
 
-      'SUBM'                     => [],      
-      'SUBM:*'                   => [],      
+      'SUBM'                      => [],      
+      'SUBM:*'                    => [],      
 
-      'TRLR'                     => [],
+      'TRLR'                      => [],
    ];
 }

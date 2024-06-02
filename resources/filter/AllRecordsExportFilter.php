@@ -7,7 +7,7 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 /**
  * Tag definitions and regular expressions for export filter
  */
-class ExampleExportFilter implements ExportFilterInterface
+class AllRecordsExportFilter implements ExportFilterInterface
 {
     use ExportFilterTrait;
     public const EXPORT_FILTER = [
@@ -17,27 +17,30 @@ class ExampleExportFilter implements ExportFilterInterface
       'HEAD'                      => [],
       'HEAD:*'                    => [],
 
-      'INDI:BIRT:DATE'            => ["DATE .*([\d]{4})\n" => "DATE $1\n"],
-      '!INDI:BAPM'                => [],
-      '!INDI:BAPM:*'              => [],
       'INDI'                      => [],
       'INDI:*'                    => [],
 
-      '!FAM:MARR:PLAC'            => [],
-      '!FAM:MARR:PLAC:*'          => [],
       'FAM'                       => [],
       'FAM:*'                     => [],
+ 
+      'NOTE'                      => [],
+      'NOTE:*'                    => [],
 
       'OBJE'                      => [],
-      'OBJE:*'                    => ["2 FORM pdf" => "2 FORM PDF",
-                                      "2 FORM jpg" => "2 FORM JPG",],
+      'OBJE:*'                    => [],
+
+      'REPO'                      => [],
+      'REPO:*'                    => [],
 
       'SOUR'                      => [],
       'SOUR:*'                    => [],
 
       'SUBM'                      => [],
-      'SUBM:NAME'                 => [],
+      'SUBM:*'                    => [],
+
+      '_LOC'                      => [],
+      '_LOC:*'                    => [],
 
       'TRLR'                      => [],
-  ];
+   ];
 }

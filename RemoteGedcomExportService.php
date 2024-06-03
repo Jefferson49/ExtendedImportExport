@@ -1098,7 +1098,14 @@ class RemoteGedcomExportService extends GedcomExportService
 
     	if ($tag_token_size < $pattern_token_size) {
 
-            return false;
+            //If tag contains less tokens than pattern and tag does not end with *, return false
+            if ($tag_tokens[0][$tag_token_size - 1] !== '*') {
+                return false;
+            }
+            //If tag ends with *, only pattern tokens until the length of the pattern need to be checked
+            else {
+                $pattern_token_size = $tag_token_size -1;
+            }   
         }
     	elseif ($tag_token_size > $pattern_token_size) {
 

@@ -91,6 +91,20 @@ trait ExportFilterTrait
                     } 
                 }
             }
+
+            //Check if a rule is dominated by another rule, which is higher priority (i.e. earlier entry in the export filter list)
+            $i = 0;
+            $size = sizeof(self::EXPORT_FILTER);
+            $tag_list = array_keys(self::EXPORT_FILTER);
+
+            while($i < $size && $tag !== $tag_list[$i]) {
+
+                if (RemoteGedcomExportService::matchTagWithSinglePattern($tag, $tag_list[$i])) {
+
+                    return I18N::translate('The filter rule "%s" is dominated by the earlier filter rule "%s" and will never be executed. Please remove the rule or change the order of the filter rules.', $tag, $tag_list[$i]);
+                }
+                $i++;
+            }
         }
 
         return '';

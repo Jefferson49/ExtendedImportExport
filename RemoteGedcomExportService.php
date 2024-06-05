@@ -444,7 +444,7 @@ class RemoteGedcomExportService extends GedcomExportService
                         $this->export_filter_rule_has_regexp[$pattern] = $this->export_filter_list[$pattern] !== [];
                     }
             
-                    $gedcom = $this->exportFilter($gedcom, 0, '');
+                    $gedcom = $this->exportFilter($gedcom, 0, '', '');
                 }
 
                 //Convert to Gedcom 7
@@ -997,12 +997,13 @@ class RemoteGedcomExportService extends GedcomExportService
      * Convert Gedcom record according to an export filter
      *
      * @param string  $gedcom
-     * @param int     $level             level of Gedcom structure
-     * @param string  $tag_combination   e.g. INDI:BIRT:DATE
+     * @param int     $level                                level of Gedcom structure
+     * @param string  $higher_level_matched_tag_pattern     pattern, which was matched on higher level of GEDCOM structure (recursion)
+     * @param string  $tag_combination                      e.g. INDI:BIRT:DATE
      *
      * @return string Converted Gedcom
      */
-    public function exportFilter(string $gedcom, int $level, string $tag_combination): string
+    public function exportFilter(string $gedcom, int $level, string  $higher_level_matched_tag_pattern, string $tag_combination): string
     {   
         $converted_gedcom = '';
 
@@ -1036,19 +1037,21 @@ class RemoteGedcomExportService extends GedcomExportService
 
             $converted_gedcom = $match[0] ."\n";
 
-            //If regular expressions are provided for the pattern, run replacements
-            if ($this->export_filter_rule_has_regexp[$matched_tag_pattern]) {
-
-                $converted_gedcom = self::preg_replace_for_array_of_pairs($this->export_filter_list[$matched_tag_pattern], $converted_gedcom);
-            }
-
             //Get sub-structure of Gedcom and recursively apply export filter to next level
             $gedcom_substructures = self::parseGedcomSubstructures($gedcom, $level + 1);
 
             foreach ($gedcom_substructures as $gedcom_substructure) {
 
-                $converted_gedcom .= $this->exportFilter($gedcom_substructure, $level + 1, $tag_combination);
+                $converted_gedcom .= $this->exportFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination);
             }
+
+            //If regular expressions are provided for the pattern, run replacements
+            //Do not replace again if pattern has already been matched on higher level of the Gedcom structure
+            if (   $this->export_filter_rule_has_regexp[$matched_tag_pattern] 
+                && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
+
+                $converted_gedcom = self::preg_replace_for_array_of_pairs($this->export_filter_list[$matched_tag_pattern], $converted_gedcom);
+            }            
         }
 
         return $converted_gedcom;

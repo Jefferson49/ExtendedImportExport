@@ -444,6 +444,7 @@ class RemoteGedcomExportService extends GedcomExportService
                         $this->export_filter_rule_has_regexp[$pattern] = $this->export_filter_list[$pattern] !== [];
                     }
             
+                    //Apply the export filter rules to the Gedcom
                     $gedcom = $this->exportFilter($gedcom, 0, '', '');
                 }
 

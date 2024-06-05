@@ -14,7 +14,7 @@ class IndividualNamesCsvExportFilter implements ExportFilterInterface
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],
-      'HEAD'                      => [".*\n" => "Surname,Given names\n"],
+      'HEAD'                      => [".*\n" => "\"Surname\",\"Given names\"\n"],
 
       'INDI'                      => ["0 @([^@].+)@ INDI\n" => ""],
       'INDI:NAME'                 => ["1 NAME (.*[^ ])? ?\/(.*)\/" => "\"$2\",\"$1\""],

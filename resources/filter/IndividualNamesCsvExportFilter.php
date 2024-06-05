@@ -16,7 +16,7 @@ class IndividualNamesCsvExportFilter implements ExportFilterInterface
       //                             ["search pattern" => "replace pattern"],
       'HEAD'                      => [".*\n" => "Surname,Given names\n"],
 
-      'INDI'                      => [".*\n" => ""],
+      'INDI'                      => ["0 @([^@].+)@ INDI\n" => ""],
       'INDI:NAME'                 => ["1 NAME (.*[^ ])? ?\/(.*)\/" => "\"$2\",\"$1\""],
    ];
 }

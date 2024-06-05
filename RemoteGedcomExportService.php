@@ -1162,7 +1162,7 @@ class RemoteGedcomExportService extends GedcomExportService
         //If regular expressions are provided, run replacements
         foreach ($preg_replace_pairs as $pattern => $replace) {
 
-            $subject = preg_replace("/" . $pattern . "/", $replace, $subject);
+            $subject = preg_replace("/" . $pattern . "/", $replace, $subject) ?? '';
         }
 
         return $subject;

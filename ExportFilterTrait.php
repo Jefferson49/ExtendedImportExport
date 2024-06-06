@@ -68,8 +68,9 @@ trait ExportFilterTrait
 
         $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
         $class_name = str_replace($name_space, '', get_class($this));
+        $export_filter_rules = self::EXPORT_FILTER;
 
-        foreach(self::EXPORT_FILTER as $tag => $regexps) {
+        foreach($export_filter_rules as $tag => $regexps) {
 
             //Validate tags
             preg_match_all('/!?([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $tag, $match, PREG_PATTERN_ORDER);

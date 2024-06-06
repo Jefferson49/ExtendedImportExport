@@ -223,15 +223,18 @@ class RemoteGedcomExportService extends GedcomExportService
     ): ResponseInterface {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
-        //Create schema list
-        $this->schema_uris_for_tags = [];
-        $this->addToSchemas(self::SCHEMAS);
-        if($gedcom_l) {
-            $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
-        }
+        if ($gedcom_7) {
 
-        //First, check custom tags only => flag $check_custom_tags = true
-        $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_7, $gedcom_l, true, $records);
+            //Create schema list
+            $this->schema_uris_for_tags = [];
+            $this->addToSchemas(self::SCHEMAS);
+            if($gedcom_l) {
+                $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
+            }
+
+            //First, check custom tags only => flag $check_custom_tags = true
+            $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_7, $gedcom_l, true, $records);
+        }
 
         if ($format === 'gedcom') {
             $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_7, $gedcom_l, false, $records);
@@ -292,7 +295,7 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @return ?resource
      */
-    public function saveResponse(
+    public function remoteSaveResponse(
         Tree $tree,
         bool $sort_by_xref,
         string $encoding,
@@ -306,16 +309,22 @@ class RemoteGedcomExportService extends GedcomExportService
     ) {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
-        //Create schema list
-        $this->schema_uris_for_tags = [];
-        $this->addToSchemas(self::SCHEMAS);
-        if($gedcom_l) {
-            $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
+        //If Gedcom 7, create schema list and check customs tags
+        if ($gedcom_7) {
+
+            //Create schema list
+            $this->schema_uris_for_tags = [];
+            $this->addToSchemas(self::SCHEMAS);
+
+            if($gedcom_l) {
+                $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
+            }
+
+            //First, check custom tags only => flag $check_custom_tags = true
+            $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_7, $gedcom_l, true, $records);
         }
 
-        //First, check custom tags only => flag $check_custom_tags = true
-        $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_7, $gedcom_l, true, $records);
-
+        //Create export
         return $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $gedcom_7, $gedcom_l, false, $records);
     }
 
@@ -352,6 +361,22 @@ class RemoteGedcomExportService extends GedcomExportService
         ?string $media_path = null
     ) {
         if(!$check_custom_tags) {
+
+            //Initialize export filter if needed
+            if ($export_filter !== null) {
+
+                $this->export_filter = $export_filter;
+                $this->export_filter_list = $export_filter->getExportFilter($tree);
+                $this->export_filter_patterns = array_keys($this->export_filter_list);
+                $this->export_filter_rule_has_regexp = $this->export_filter_patterns;
+
+                //Create lookup table if regexp exists for a pattern
+                foreach($this->export_filter_patterns as $pattern) {
+                    $this->export_filter_rule_has_regexp[$pattern] = $this->export_filter_list[$pattern] !== [];
+                }
+            }
+
+            //Create stream
             $stream = fopen('php://memory', 'wb+');
 
             if ($stream === false) {
@@ -431,7 +456,7 @@ class RemoteGedcomExportService extends GedcomExportService
                     }
                 }
 
-				//Do NOT wrap long lines for Gedcom 7
+				//If not Gedcom 7, wrap long lines 
                 if (!$gedcom_7) {
                     $gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH) . "\n";
                 }
@@ -441,17 +466,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
                 //Apply custom conversions according to an export filter
                 if ($export_filter !== null) {
-                    $this->export_filter = $export_filter;
-                    $this->export_filter_list = $export_filter->getExportFilter($tree);
-                    $this->export_filter_patterns = array_keys($this->export_filter_list);
-                    $this->export_filter_rule_has_regexp = $this->export_filter_patterns;
 
-                    //Create lookup table if regexp exists for a pattern
-                    foreach($this->export_filter_patterns as $pattern) {
-                        $this->export_filter_rule_has_regexp[$pattern] = $this->export_filter_list[$pattern] !== [];
-                    }
-            
-                    //Apply the export filter rules to the Gedcom
                     $gedcom = $this->exportFilter($gedcom, 0, '', '');
                 }
 
@@ -1077,6 +1092,7 @@ class RemoteGedcomExportService extends GedcomExportService
     {
         $i = 0;
         $size = sizeof($patterns);
+        $is_white_list_pattern = false;
         $match = false;
 
         while ($i < $size && !$match) {
@@ -1099,7 +1115,7 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         //If white list match return matched pattern
-        if ($is_white_list_pattern && $match) return $patterns[$i-1];
+        if ($is_white_list_pattern && $match) return $patterns[$i-1] ?? '';
 
         //If black list match or nothing found, return empty match
         return '';
@@ -1177,7 +1193,15 @@ class RemoteGedcomExportService extends GedcomExportService
             if ($search === self::CUSTOM_CONVERT) $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom);
 
             //Else apply RegExp replacement
-            else $gedcom = preg_replace("/" . $search . "/", $replace, $gedcom) ?? '';
+            else { 
+                try {
+                     $gedcom = preg_replace("/" . $search . "/", $replace, $gedcom) ?? '';
+                }
+                catch (Throwable $th) {
+                    $message = I18N::translate('Error during a regular expression replacement.') . "\nGedcom:\n" . $gedcom . "\nSearch:\n" . $search  . "\nReplace:\n" . $replace . "\nError message:\n" . $th->getMessage();
+                    throw new DownloadGedcomWithUrlException($message);
+                }
+            }
         }
 
         return $gedcom;

@@ -818,28 +818,32 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//If Gedcom 7, create Gedcom 7 response
 				if ($gedcom7) {
 					try {
-						$resource = $this->gedcom_export_service->saveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_instance, true, $gedcom_l);
+						$resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_instance, true, $gedcom_l);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
 						$response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
 
-					} catch (FilesystemException | UnableToWriteFile $ex) {
-						$response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
+					} catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
+
+                        if ($ex instanceof DownloadGedcomWithUrlException) $response = $this->showErrorMessage($ex->getMessage());
+                        else $response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
 					}
 
 				}
 				//Create Gedcom 5.5.1 response
 				else {
 					try {
-						$resource = $this->gedcom_export_service->remoteExport($this->download_tree, true, $encoding, $access_level, $line_endings, $export_filter_instance, false);
+						$resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $access_level, $line_endings, $format, $export_filter_instance, false);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 
 						$response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
 
-					} catch (FilesystemException | UnableToWriteFile $ex) {
-						$response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
+					} catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
+
+                        if ($ex instanceof DownloadGedcomWithUrlException) $response = $this->showErrorMessage($ex->getMessage());
+						else $response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
 					}
 				}
 			}

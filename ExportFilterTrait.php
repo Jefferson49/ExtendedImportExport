@@ -46,6 +46,20 @@ trait ExportFilterTrait
     }
 
     /**
+     * Custom conversion of a Gedcom string
+     *
+     * @param  string $pattern  The pattern of the filter rule, e. g. INDI:BIRT:DATE
+     * @param  string $gedcom   The Gedcom to convert
+     * 
+     * @return string           The converted Gedcom
+     */
+    public function customConvert(string $pattern, string $gedcom): string {
+
+        //As a default, return the un-converted Gedcom
+        return $gedcom;
+    }
+    
+    /**
      * Validate the export filter
      *
      * @return string   Validation error; empty, if successful validation

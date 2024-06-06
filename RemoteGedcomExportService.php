@@ -138,11 +138,17 @@ class RemoteGedcomExportService extends GedcomExportService
         'none'     => Auth::PRIV_HIDE,
     ];
 
+    //
+    public const CUSTOM_CONVERT = '->customConvert';
+
     private ResponseFactoryInterface $response_factory;
 
     private StreamFactoryInterface $stream_factory;
 
     // The chosen export filter (if export filtering is used)
+    private ExportFilterInterface $export_filter;
+
+    // The export filter list
     private array $export_filter_list;
 
     // The tag patterns of the export filter
@@ -435,6 +441,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
                 //Apply custom conversions according to an export filter
                 if ($export_filter !== null) {
+                    $this->export_filter = $export_filter;
                     $this->export_filter_list = $export_filter->getExportFilter($tree);
                     $this->export_filter_patterns = array_keys($this->export_filter_list);
                     $this->export_filter_rule_has_regexp = $this->export_filter_patterns;
@@ -1051,7 +1058,7 @@ class RemoteGedcomExportService extends GedcomExportService
             if (   $this->export_filter_rule_has_regexp[$matched_tag_pattern] 
                 && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
 
-                $converted_gedcom = self::preg_replace_for_array_of_pairs($this->export_filter_list[$matched_tag_pattern], $converted_gedcom);
+                $converted_gedcom = $this->replaceInGedcom($matched_tag_pattern, $converted_gedcom);
             }            
         }
 
@@ -1151,22 +1158,29 @@ class RemoteGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Preg_replace with an array of replace pairs
+     * Convert Gedcom based on the matched pattern of a filter rule, 
+     * which points to an array of RegExp replace pairs or cutom conversions
      *
-     * @param array $preg_replace_pairs       An array with replace pairs, without '/search/'
-     * @param string $subject                 Text
+     * @param string $matched_pattern   The matched pattern (i.e. INDI:NAME) of the filter rule, whose replacements shall be applied
+     * @param string $gedcom            Gedcom to convert
      *
-     * @return string                  
+     * @return string                   Converted Gedcom
      */
-    public static function preg_replace_for_array_of_pairs(array $preg_replace_pairs, string $subject): string {
+    private function replaceInGedcom(string $matched_pattern, string $gedcom): string {
 
-        //If regular expressions are provided, run replacements
-        foreach ($preg_replace_pairs as $pattern => $replace) {
+        $replace_pairs=$this->export_filter_list[$matched_pattern];
 
-            $subject = preg_replace("/" . $pattern . "/", $replace, $subject) ?? '';
+        //For each replacement, which is provided
+        foreach ($replace_pairs as $search => $replace) {
+
+            //If according string, apply custom conversion
+            if ($search === self::CUSTOM_CONVERT) $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom);
+
+            //Else apply RegExp replacement
+            else $gedcom = preg_replace("/" . $search . "/", $replace, $gedcom) ?? '';
         }
 
-        return $subject;
+        return $gedcom;
     }
 
     /**

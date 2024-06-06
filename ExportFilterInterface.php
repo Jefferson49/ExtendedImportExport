@@ -46,16 +46,28 @@ interface ExportFilterInterface
 
     /**
      * Get the export filter
+     * 
+     * @param  Tree $tree
      *
      * @return array
      */
     public function getExportFilter(Tree $tree): array;
 
     /**
+     * Custom conversion of a Gedcom string
+     *
+     * @param  string $pattern  The pattern of the filter rule, e. g. INDI:BIRT:DATE
+     * @param  string $gedcom   The Gedcom to convert
+     * 
+     * @return string           The converted Gedcom
+     */
+    public function customConvert(string $pattern, string $gedcom): string;
+
+    /**
      * Validate the export filter
      *
      * @return bool   Validation error; empty, if successful validation
      */
-    public function validate(): string;    
+    public function validate(): string;
 
 }

@@ -166,6 +166,8 @@ class RemoteGedcomExportService extends GedcomExportService
     //List of custom tags, which were found in the GEDCOM data
     private array $custom_tags_found;
 
+    //List with xrefs of empty records
+    private array $empty_records_xref_list;
 
     /**
      * @param ResponseFactoryInterface $response_factory
@@ -442,6 +444,18 @@ class RemoteGedcomExportService extends GedcomExportService
                         $datum->s_gedcom ??
                         $datum->m_gedcom ??
                         $datum->o_gedcom;
+                }
+
+                //Check if empty record. If true, add to empty objects list
+                if($export_filter !== null) {
+
+                    $this->empty_records_xref_list = [];
+                    
+                    if (!strpos($gedcom, "\n")) {
+                        preg_match('/0 @([^@]+)@ ([A-Za-z1-9_]+)/', $gedcom, $match);
+                        $xref = $match[1] ?? '';
+                        $this->empty_records_xref_list[] = $xref;
+                    }
                 }
 
                 if (!$check_custom_tags && $media_path !== null && $zip_filesystem !== null && preg_match('/0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
@@ -1031,7 +1045,6 @@ class RemoteGedcomExportService extends GedcomExportService
         $converted_gedcom = '';
 
         try {
-
             if ($level === 0) {
                 preg_match('/0( @[^@]*@)* ([A-Za-z1-9_]+)/', $gedcom, $match);
                 $tag = $match[2];
@@ -1190,7 +1203,7 @@ class RemoteGedcomExportService extends GedcomExportService
         foreach ($replace_pairs as $search => $replace) {
 
             //If according string, apply custom conversion
-            if ($search === self::CUSTOM_CONVERT) $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom);
+            if ($search === self::CUSTOM_CONVERT) $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom, $this->empty_records_xref_list);
 
             //Else apply RegExp replacement
             else { 

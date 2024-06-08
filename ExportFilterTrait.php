@@ -48,12 +48,13 @@ trait ExportFilterTrait
     /**
      * Custom conversion of a Gedcom string
      *
-     * @param  string $pattern  The pattern of the filter rule, e. g. INDI:BIRT:DATE
-     * @param  string $gedcom   The Gedcom to convert
+     * @param  string $pattern                  The pattern of the filter rule, e. g. INDI:BIRT:DATE
+     * @param  string $gedcom                   The Gedcom to convert
+     * @param  array  $empty_records_xref_list  List with all xrefs of empty records
      * 
-     * @return string           The converted Gedcom
+     * @return string                           The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom): string {
+    public function customConvert(string $pattern, string $gedcom, array $empty_records_xref_list): string {
 
         //As a default, return the un-converted Gedcom
         return $gedcom;

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-06-03 06:28+0200\n"
-"PO-Revision-Date: 2024-06-03 06:32+0200\n"
+"POT-Creation-Date: 2024-06-08 06:45+0200\n"
+"PO-Revision-Date: 2024-06-08 06:45+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -149,17 +149,17 @@ msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:825 DownloadGedcomWithURL.php:839
+#: DownloadGedcomWithURL.php:825 DownloadGedcomWithURL.php:841
 #, php-format
 msgid "The family tree \"%s\" has been exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:828 DownloadGedcomWithURL.php:842
+#: DownloadGedcomWithURL.php:830 DownloadGedcomWithURL.php:846
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:862
+#: DownloadGedcomWithURL.php:866
 msgid ""
 "Download is not allowed. Please change the module settings to allow "
 "downloads."
@@ -167,20 +167,20 @@ msgstr ""
 "Das Herunterladen ist nicht erlaubt. Bitte ändern Sie die Modul-"
 "Einstellungen, um Herunterladen zu erlauben."
 
-#: ExportFilterTrait.php:63
+#: ExportFilterTrait.php:78
 #, php-format
 msgid "The selected export filter (%s) contains an invalid tag definition"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Tag-Definition"
 
-#: ExportFilterTrait.php:73 ExportFilterTrait.php:80
+#: ExportFilterTrait.php:88 ExportFilterTrait.php:95
 #, php-format
 msgid "The selected export filter (%s) contains an invalid regular expression"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen ungültigen regulären "
 "Ausdruck"
 
-#: ExportFilterTrait.php:90
+#: ExportFilterTrait.php:105
 #, php-format
 msgid ""
 "The selected export filter (%s) contains a black list filter rule (%s) with "
@@ -191,7 +191,7 @@ msgstr ""
 "mit einem regulären Ausdruck, welcher niemals ausgeführt wird, weil die "
 "Black-List Filter-Regel die zugehörige GEDCOM-Zeile löschen wird."
 
-#: ExportFilterTrait.php:104
+#: ExportFilterTrait.php:119
 #, php-format
 msgid ""
 "The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
@@ -202,9 +202,13 @@ msgstr ""
 "dominiert und wird daher niemals ausgeführt werden. Bitte entfernen Sie die "
 "Filter-Regel oder ändern Sie die Reihenfolge der Filter-Regeln."
 
-#: RemoteGedcomExportService.php:1010
+#: RemoteGedcomExportService.php:1045
 msgid "The following GEDCOM structure could not be matched"
 msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
+
+#: RemoteGedcomExportService.php:1201
+msgid "Error during a regular expression replacement."
+msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
 
 #: resources/views/alert.phtml:22
 msgid "Custom module"

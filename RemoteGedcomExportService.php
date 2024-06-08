@@ -1033,11 +1033,11 @@ class RemoteGedcomExportService extends GedcomExportService
         try {
 
             if ($level === 0) {
-                preg_match('/0( @[^@]*@)* ([A-Z_]+)( .+)*/', $gedcom, $match);
+                preg_match('/0( @[^@]*@)* ([A-Za-z1-9_]+)/', $gedcom, $match);
                 $tag = $match[2];
             }
             else {
-                preg_match('/' . $level . ' ([A-Z_]+)\b ?(.*)/', $gedcom, $match);    
+                preg_match('/' . $level . ' ([A-Za-z1-9_]+)\b ?(.*)/', $gedcom, $match);    
                 $tag = $match[1];
             }
         }

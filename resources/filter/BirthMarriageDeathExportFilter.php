@@ -24,7 +24,7 @@ class BirthMarriageDeathExportFilter implements ExportFilterInterface
       'HEAD:GEDC:FORM'            => [],
       'HEAD:CHAR'                 => [],
 
-      'INDI'                      => ["0 @([^@].+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/individual/$1\n",
+      'INDI'                      => ["0 @([^@]+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/individual/$1\n",
                                       "2 DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*\n" => "2 DATE $1$2$3$4$5\n"],
       'INDI:NAME'                 => [],
       'INDI:NAME:TYPE'            => [],
@@ -46,7 +46,7 @@ class BirthMarriageDeathExportFilter implements ExportFilterInterface
       'INDI:FAMS'                 => [],
       'INDI:FAMS:*'               => [],
 
-      'FAM'                       => ["0 @([^@].+)@ FAM\n" => "0 @$1@ FAM\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/family/$1\n",
+      'FAM'                       => ["0 @([^@]+)@ FAM\n" => "0 @$1@ FAM\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/family/$1\n",
                                       "2 DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*\n" => "2 DATE $1$2$3$4$5\n"],
       'FAM:HUSB'                  => [],
       'FAM:WIFE'                  => [],

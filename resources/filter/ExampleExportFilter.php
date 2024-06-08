@@ -17,14 +17,23 @@ class ExampleExportFilter implements ExportFilterInterface
       'HEAD'                      => [],
       'HEAD:*'                    => [],
 
+      //Only export the year of all birth dates, i.e. 01 JAN 1900 => 1900
       'INDI:BIRT:DATE'            => ["DATE .*([\d]{4})\n" => "DATE $1\n"],
+
+      //Do not export baptism data
       '!INDI:BAPM'                => [],
       '!INDI:BAPM:*'              => [],
-      'INDI'                      => [],
-      'INDI:*'                    => [],
 
+      //Remove RESN tag with value 'none', which is not allowed in the Gedcom 5.5.1 standard
+      'INDI:RESN'                 => ["1 RESN (?i)none\n" => ""],
+
+      'INDI'                      => [],
+      'INDI:*'                    => [],      
+
+      //Do not export marriage place data
       '!FAM:MARR:PLAC'            => [],
       '!FAM:MARR:PLAC:*'          => [],
+
       'FAM'                       => [],
       'FAM:*'                     => [],
 
@@ -32,20 +41,21 @@ class ExampleExportFilter implements ExportFilterInterface
       'NOTE:*'                    => [],
 
       'OBJE'                      => [],
+
+      //Change 'PDF' to 'pdf' in all FORM tags of media objects
       'OBJE:*'                    => ["2 FORM pdf" => "2 FORM PDF",
                                       "2 FORM jpg" => "2 FORM JPG",],
 
       'REPO'                      => [],
       'REPO:*'                    => [],
 
-      'SOUR'                      => ['->customConvert' => ''],
+      'SOUR'                      => [],
       'SOUR:*'                    => [],
 
-      'SUBM'                      => [],
-      'SUBM:NAME'                 => [],
-      
-      '_LOC'                      => [],
-      '_LOC:*'                    => [],
+      //Perform a custom conversion for the SUBM record, 
+      //i.e. call the PHP method $this->customConvert($pattern, $gedcom) to convert the Gedcom
+      'SUBM'                      => ['->customConvert' => ''],
+      'SUBM:*'                    => [],
 
       'TRLR'                      => [],
     ];
@@ -60,18 +70,22 @@ class ExampleExportFilter implements ExportFilterInterface
    */
   public function customConvert(string $pattern, string $gedcom): string {
 
-    //Set all sources to private (i.e. 1 RESN PRIVACY)
-    if ($pattern === 'SOUR') {
+    //Create a specific record ID for submitters
+    if ($pattern === 'SUBM') {
       
-      //If restricion already exists, change it to privacy
-      if (preg_match("/1 RESN .*\n/", $gedcom)) {
+      //Get webtrees user if exists in change record, else use default
+      preg_match_all("/2 _WT_USER (.*)\n/", $gedcom, $matches, PREG_SET_ORDER);
+      $user = $matches[0][1] ?? 'Default';
 
-        $gedcom = preg_replace("/1 RESN (.*)\n/", "1 RESN PRIVACY\n", $gedcom) ?? '';
-      }
-      //Otherwise add privacy restriction
-      else {
-        $gedcom .= "1 RESN PRIVACY\n";
-      }
+      //Get XREF of SUBM
+      preg_match_all("/0 @([^@]+)@ SUBM\n/", $gedcom, $matches, PREG_SET_ORDER);
+      $xref = $matches[0][1] ?? '';
+
+      //Create record ID number (RIN)
+      $rin = "1 RIN " . $user . " (" . $xref . ")\n";
+
+      //Add RIN to Gedcom
+      $gedcom .= $rin;
     }
 
     return $gedcom;

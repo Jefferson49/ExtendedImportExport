@@ -1046,7 +1046,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
         try {
             if ($level === 0) {
-                preg_match('/0( @[^@]*@)* ([A-Za-z1-9_]+)/', $gedcom, $match);
+                preg_match('/0( @[^@]*@)* ([A-Za-z1-9_]+)\b ?(.*)/', $gedcom, $match);
                 $tag = $match[2];
             }
             else {

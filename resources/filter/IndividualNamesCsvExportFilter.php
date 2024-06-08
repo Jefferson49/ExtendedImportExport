@@ -17,6 +17,25 @@ class IndividualNamesCsvExportFilter implements ExportFilterInterface
       'HEAD'                      => [".*\n" => "\"Surname\",\"Given names\"\n"],
 
       'INDI'                      => ["0 @([^@].+)@ INDI\n" => ""],
-      'INDI:NAME'                 => ["1 NAME (.*[^ ])? ?\/(.*)\/" => "\"$2\",\"$1\""],
+      'INDI:NAME'                 => ["->customConvert" => '',
+                                      "1 NAME (.*[^ ])? ?\/([^\/]*)\/(.*)\n" => "\"$2\",\"$1\"\n"],
    ];
+
+  /**
+   * Custom conversion of a Gedcom string
+   *
+   * @param  string $pattern  The pattern of the filter rule, e. g. INDI:BIRT:DATE
+   * @param  string $gedcom   The Gedcom to convert
+   * 
+   * @return string           The converted Gedcom
+   */
+   public function customConvert(string $pattern, string $gedcom): string {
+
+   //Remove all * " , characters from INDI:NAME
+   if ($pattern === 'INDI:NAME') {
+      $gedcom = str_replace(['*', '"', ','] , ['', '', ''], $gedcom);
+   }
+
+   return $gedcom;
+ }
 }

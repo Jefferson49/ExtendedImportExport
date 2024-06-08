@@ -1042,7 +1042,7 @@ class RemoteGedcomExportService extends GedcomExportService
             }
         }
         catch (Throwable $th) {
-            $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom . '. Tag: ' . $tag_combination;
+            $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom;
             throw new DownloadGedcomWithUrlException($message);
         }
 
@@ -1198,7 +1198,7 @@ class RemoteGedcomExportService extends GedcomExportService
                      $gedcom = preg_replace("/" . $search . "/", $replace, $gedcom) ?? '';
                 }
                 catch (Throwable $th) {
-                    $message = I18N::translate('Error during a regular expression replacement.') . "\nGedcom:\n" . $gedcom . "\nSearch:\n" . $search  . "\nReplace:\n" . $replace . "\nError message:\n" . $th->getMessage();
+                    $message = I18N::translate('Error during a regular expression replacement.') . ' Gedcom: ' . $gedcom . ' Search: ' . $search  . ' Replace: ' . $replace . "\nError message:\n" . $th->getMessage();
                     throw new DownloadGedcomWithUrlException($message);
                 }
             }

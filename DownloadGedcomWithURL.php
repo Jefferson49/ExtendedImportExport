@@ -853,15 +853,22 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				
 				//if download is allowed
 				if(boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1'))) {
-					//If Gedcom 7, create Gedcom 7 response
-					if ($gedcom7) {
-						$response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, true, $gedcom_l);
-					}
-					//Create Gedcom 5.5.1 response
-					else {
-						$response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, false);
-					}
-				} 
+
+                    try {
+                        //If Gedcom 7, create Gedcom 7 response
+                        if ($gedcom7) {
+                            $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, true, $gedcom_l);
+                        }
+                        //Create Gedcom 5.5.1 response
+                        else {
+                            $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, false);
+                        }
+                    }
+                    catch (DownloadGedcomWithUrlException $ex) {
+
+                        $response = $this->showErrorMessage($ex->getMessage());
+                    }
+            }
 				else {
 					$response = $this->showErrorMessage(I18N::translate('Download is not allowed. Please change the module settings to allow downloads.'));
 				}

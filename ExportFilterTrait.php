@@ -71,12 +71,12 @@ trait ExportFilterTrait
         $class_name = str_replace($name_space, '', get_class($this));
         $export_filter_rules = self::EXPORT_FILTER;
 
-        foreach($export_filter_rules as $tag => $regexps) {
+        foreach($export_filter_rules as $pattern => $regexps) {
 
             //Validate tags
-            preg_match_all('/!?([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $tag, $match, PREG_PATTERN_ORDER);
-            if ($match[0][0] !== $tag) {
-                return I18N::translate('The selected export filter (%s) contains an invalid tag definition', $class_name) . ': ' . $tag;
+            preg_match_all('/!?([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $pattern, $match, PREG_PATTERN_ORDER);
+            if ($match[0][0] !== $pattern) {
+                return I18N::translate('The selected export filter (%s) contains an invalid tag definition', $class_name) . ': ' . $pattern;
             }
 
             //Validate regular expressions in export filter
@@ -98,12 +98,12 @@ trait ExportFilterTrait
             }
 
             //Check if black list filter rules have reg exps
-            if (strpos($tag, '!') === 0) {
+            if (strpos($pattern, '!') === 0) {
 
                 foreach($regexps as $search => $replace) {
 
                     if ($search !== '' OR $replace !== '') {
-                        return I18N::translate('The selected export filter (%s) contains a black list filter rule (%s) with a regular expression, which will never be executed, because the black list filter rule will delete the related GEDCOM line.', $class_name, $tag);
+                        return I18N::translate('The selected export filter (%s) contains a black list filter rule (%s) with a regular expression, which will never be executed, because the black list filter rule will delete the related GEDCOM line.', $class_name, $pattern);
                     } 
                 }
             }
@@ -111,13 +111,20 @@ trait ExportFilterTrait
             //Check if a rule is dominated by another rule, which is higher priority (i.e. earlier entry in the export filter list)
             $i = 0;
             $size = sizeof(self::EXPORT_FILTER);
-            $tag_list = array_keys(self::EXPORT_FILTER);
+            $pattern_list = array_keys(self::EXPORT_FILTER);
 
-            while($i < $size && $tag !== $tag_list[$i]) {
+            while($i < $size && $pattern !== $pattern_list[$i]) {
 
-                if (RemoteGedcomExportService::matchTagWithSinglePattern($tag, $tag_list[$i])) {
+                //If tag ends with :* and ist shorter than pattern from list, extend with further :*
+                $extended_pattern = $pattern;
+                if (substr_count($pattern, ':') < substr_count($pattern_list[$i], ':') && strpos($pattern, '*' , -1)) {
 
-                    return I18N::translate('The filter rule "%s" is dominated by the earlier filter rule "%s" and will never be executed. Please remove the rule or change the order of the filter rules.', $tag, $tag_list[$i]);
+                    while (substr_count($extended_pattern, ':') < substr_count($pattern_list[$i], ':')) $extended_pattern .=':*';
+                }
+
+                if (RemoteGedcomExportService::matchTagWithSinglePattern($extended_pattern, $pattern_list[$i])) {
+
+                    return I18N::translate('The filter rule "%s" is dominated by the earlier filter rule "%s" and will never be executed. Please remove the rule or change the order of the filter rules.', $pattern, $pattern_list[$i]);
                 }
                 $i++;
             }

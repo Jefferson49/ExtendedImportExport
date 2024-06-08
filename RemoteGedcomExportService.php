@@ -1043,7 +1043,7 @@ class RemoteGedcomExportService extends GedcomExportService
         }
         catch (Throwable $th) {
             $message = I18N::translate('The following GEDCOM structure could not be matched') . ': ' . $gedcom . '. Tag: ' . $tag_combination;
-            FlashMessages::addMessage($message, 'danger');
+            throw new DownloadGedcomWithUrlException($message);
         }
 
         if ($tag_combination === '') {

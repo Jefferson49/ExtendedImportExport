@@ -54,7 +54,7 @@ class ExampleExportFilter implements ExportFilterInterface
 
       //Perform a custom conversion for the SUBM record, 
       //i.e. call the PHP method $this->customConvert($pattern, $gedcom) to convert the Gedcom
-      'SUBM'                      => ['->customConvert' => ''],
+      'SUBM'                      => ["->customConvert" => ""],
       'SUBM:*'                    => [],
 
       'TRLR'                      => [],

@@ -804,7 +804,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			if (($action === 'save') or ($action === 'both')) {
 
 				$root_filesystem = Registry::filesystem()->root();
-				$access_level = RemoteGedcomExportService::ACCESS_LEVELS[$privacy];
 				$export_file_name = $file_name;
 
 				// Force a ".ged" suffix
@@ -834,7 +833,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//Create Gedcom 5.5.1 response
 				else {
 					try {
-						$resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $access_level, $line_endings, $format, $export_filter_instance, false);
+						$resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_instance, false);
 						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
 						fclose($resource);
 

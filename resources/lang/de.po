@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-06-08 06:45+0200\n"
-"PO-Revision-Date: 2024-06-08 06:45+0200\n"
+"POT-Creation-Date: 2024-06-08 10:25+0200\n"
+"PO-Revision-Date: 2024-06-08 10:26+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -149,17 +149,17 @@ msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:825 DownloadGedcomWithURL.php:841
+#: DownloadGedcomWithURL.php:824 DownloadGedcomWithURL.php:840
 #, php-format
 msgid "The family tree \"%s\" has been exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:830 DownloadGedcomWithURL.php:846
+#: DownloadGedcomWithURL.php:829 DownloadGedcomWithURL.php:845
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:866
+#: DownloadGedcomWithURL.php:872
 msgid ""
 "Download is not allowed. Please change the module settings to allow "
 "downloads."
@@ -565,11 +565,11 @@ msgstr ""
 
 #: resources/views/settings.phtml:363
 msgid ""
-"In order to use changed settings for a test download, the settings need to "
-"be saved first."
+"In order to use changed settings for a download, the settings need to be "
+"saved first."
 msgstr ""
-"Um geänderte Einstellungen für \"Herunterladen testen\" zu nutzen, müssen "
-"die Einstellungen zunächst gespeichert werden."
+"Um geänderte Einstellungen beim \"Herunterladen\" zu nutzen, müssen die "
+"Einstellungen zunächst gespeichert werden."
 
 #~ msgid "Test Download"
 #~ msgstr "Herunterladen testen"

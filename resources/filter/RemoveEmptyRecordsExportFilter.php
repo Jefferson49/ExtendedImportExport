@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * Tag definitions and regular expressions for export filter
+ * An export filter to remove empty records (FAM, NOTE, OBJE, REPO, SOUR)
  */
 class RemoveEmptyRecordsExportFilter implements ExportFilterInterface
 {
@@ -17,24 +17,40 @@ class RemoveEmptyRecordsExportFilter implements ExportFilterInterface
       'HEAD'                      => [],
       'HEAD:*'                    => [],
       
+      //Remove references to empty records
+      '*:NOTE'                    => ["->customConvert" => ""],
+      '*:*:NOTE'                  => ["->customConvert" => ""],
+      '*:*:*:NOTE'                => ["->customConvert" => ""],
+
+      '*:OBJE'                    => ["->customConvert" => ""],
+      '*:*:OBJE'                  => ["->customConvert" => ""],
+      '*:*:*:OBJE'                => ["->customConvert" => ""],
+      '*:*:*:*:OBJE'              => ["->customConvert" => ""],
+
+      'SOUR:REPO'                 => ["->customConvert" => ""],
+
+      '*:SOUR'                    => ["->customConvert" => ""],
+      '*:*:SOUR'                  => ["->customConvert" => ""],
+      '*:*:*:SOUR'                => ["->customConvert" => ""],
+
+      //Remove empty records
+      'FAM'                       => ["->customConvert" => ""],
+      'NOTE'                      => ["->customConvert" => ""],
+      'OBJE'                      => ["->customConvert" => ""],
+      'REPO'                      => ["->customConvert" => ""],
+      'SOUR'                      => ["->customConvert" => ""],
+
       'INDI'                      => [],
-      'INDI:SOUR'                 => ["->customConvert" => ""],
-      'INDI:PROP:SOUR'            => ["->customConvert" => ""],
       'INDI:*'                    => [],
 
-      'FAM'                       => [],
       'FAM:*'                     => [],
- 
-      'NOTE'                      => ["->customConvert" => ""],
+
       'NOTE:*'                    => [],
 
-      'OBJE'                      => ["->customConvert" => ""],
       'OBJE:*'                    => [],
 
-      'REPO'                      => ["->customConvert" => ""],
       'REPO:*'                    => [],
 
-      'SOUR'                      => ["->customConvert" => ""],
       'SOUR:*'                    => [],
 
       'SUBM'                      => [],
@@ -57,7 +73,8 @@ class RemoveEmptyRecordsExportFilter implements ExportFilterInterface
     */
    public function customConvert(string $pattern, string $gedcom, array $empty_records_xref_list): string {
 
-      if (in_array($pattern, ['NOTE', 'OBJE', 'REPO', 'SOUR',])) {
+      //Remove empty records
+      if (in_array($pattern, ['FAM', 'NOTE', 'OBJE', 'REPO', 'SOUR',])) {
 
          preg_match('/0 @([^@]+)@ ([A-Za-z1-9_]+)/', $gedcom, $match);
          $xref = $match[1] ?? '';
@@ -67,13 +84,29 @@ class RemoveEmptyRecordsExportFilter implements ExportFilterInterface
             $gedcom = '';
          }
       }
-      elseif (in_array($pattern, ['*:SOUR', '*:*:SOUR',])) {
 
-         preg_match('/[\d] SOUR @([^@]+)@/', $gedcom, $match);
+      //Remove references to empty records
+      elseif (in_array($pattern, [
+         '*:NOTE',
+         '*:*:NOTE',
+         '*:*:*NOTE',
+   
+         '*:OBJE',
+         '*:*:OBJE',
+         '*:*:*:OBJE',
+         '*:*:*:*:OBJE',
+   
+         '*:REPO',         
+
+         '*:SOUR',
+         '*:*:SOUR',
+         '*:*:*:SOUR',         
+         ])) {
+
+         preg_match('/[\d] [\w]{4} @([^@]+)@/', $gedcom, $match);
          $xref = $match[1] ?? '';
 
-         //If xref is in empty records list, remove Gedcom
-         if (in_array($xref, $empty_records_xref_list)) {
+         if ($xref !== '' && in_array($xref, $empty_records_xref_list)) {
             $gedcom = '';
          }
       }

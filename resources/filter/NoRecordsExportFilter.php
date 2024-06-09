@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * Tag definitions and regular expressions for export filter
+ * An export filter, which exports no records; only HEAD, SUBM, TRLR
  */
 class NoRecordsExportFilter implements ExportFilterInterface
 {

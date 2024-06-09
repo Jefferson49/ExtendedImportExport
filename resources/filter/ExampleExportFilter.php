@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * Tag definitions and regular expressions for export filter
+ * An example export filter, which demonstrates the different options, which can be used in export filters
  */
 class ExampleExportFilter implements ExportFilterInterface
 {
@@ -42,7 +42,8 @@ class ExampleExportFilter implements ExportFilterInterface
 
       'OBJE'                      => [],
 
-      //Change 'PDF' to 'pdf' in all FORM tags of media objects
+      //Apply several regular expressikon replacements to one tag pattern. In this case, 2 replacements are used 
+      //Change 'pdf'/'jpg' to 'PDF'/'JPG' in all FORM tags of media objects
       'OBJE:*'                    => ["2 FORM pdf" => "2 FORM PDF",
                                       "2 FORM jpg" => "2 FORM JPG",],
 
@@ -53,7 +54,8 @@ class ExampleExportFilter implements ExportFilterInterface
       'SOUR:*'                    => [],
 
       //Perform a custom conversion for the SUBM record, 
-      //i.e. call the PHP method $this->customConvert($pattern, $gedcom) to convert the Gedcom
+      //i.e. call the method $this->customConvert(...) to convert the Gedcom. 
+      //The methd is implemented in the code below
       'SUBM'                      => ["->customConvert" => ""],
       'SUBM:*'                    => [],
 

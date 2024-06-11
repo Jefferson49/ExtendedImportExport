@@ -52,6 +52,8 @@ use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+
+use ReflectionClass;
 use RuntimeException;
 use Throwable;
 
@@ -237,7 +239,7 @@ class RemoteGedcomExportService extends GedcomExportService
             }
         }
 
-        $create_empty_records_list = $export_filter !== null;
+        $create_empty_records_list = $this->useEmptyRecordsList($export_filter);
 
         //If empty records or customs tags list shall be created, run preliminary export to collect the data
         if ($gedcom_7 OR $create_empty_records_list) {
@@ -333,7 +335,7 @@ class RemoteGedcomExportService extends GedcomExportService
             }
         }
 
-        $create_empty_records_list = $export_filter !== null;
+        $create_empty_records_list = $this->useEmptyRecordsList($export_filter);
 
         //If empty records or customs tags list shall be created, run preliminary export to collect the data
         if ($gedcom_7 OR $create_empty_records_list) {
@@ -1266,5 +1268,28 @@ class RemoteGedcomExportService extends GedcomExportService
         } else {
             return [];
         }
+    }
+
+    /**
+     * Evaluate whether to use an empty records list
+     *
+     * @param ExportFilterInterface   An export filter
+     * 
+     * @return bool                   True if empty records list shall be used
+     */
+    private function useEmptyRecordsList(ExportFilterInterface $export_filter = null) : bool {
+
+        if ($export_filter !== null) {
+
+            $refl = new ReflectionClass($export_filter);
+    
+            //If the export filter contains the customConvert method and method is not inherited
+            if ($refl->getMethod('customConvert')->class === get_class($export_filter)) {
+                
+                return true;
+            }
+        }
+
+        return false;
     }
 }

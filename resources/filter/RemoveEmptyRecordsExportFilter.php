@@ -7,10 +7,9 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 /**
  * An export filter to remove empty records (FAM, NOTE, OBJE, REPO, SOUR)
  */
-class RemoveEmptyRecordsExportFilter implements ExportFilterInterface
+class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
-    use ExportFilterTrait;
-    public const EXPORT_FILTER = [
+   protected const EXPORT_FILTER = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],

@@ -32,18 +32,6 @@ use Fisharebest\Webtrees\Tree;
  */
 interface ExportFilterInterface
 {
-    //An array, which contains the export filter
-    public const EXPORT_FILTER = [
-      
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
-        //                             ["search pattern" => "replace pattern"],
-         'HEAD'                     => [],
-         'HEAD*'                    => [],
-         'SUBM'                     => [],
-         'SUBM:NAME'                => [],
-         'TRLR'                     => [],
-    ];
-
     /**
      * Get the export filter
      * 

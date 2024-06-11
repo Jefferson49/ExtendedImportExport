@@ -12,10 +12,9 @@ use Fisharebest\Webtrees\Tree;
  * All exported dates are shortened to include the year only (i.e. 01 JAN 1900 => 1900).
  * The export also generates links to the related individuals and families in webtrees.
  */
-class BirthMarriageDeathExportFilter implements ExportFilterInterface
+class BirthMarriageDeathExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
-    use ExportFilterTrait;
-    public const EXPORT_FILTER = [
+    protected const EXPORT_FILTER = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],

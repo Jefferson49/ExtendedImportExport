@@ -1,26 +1,5 @@
 <?php
 
-/**
- * webtrees: online genealogy
- * Copyright (C) 2024 webtrees development team
- *                    <http://webtrees.net>
-
- * DownloadGedcomWithURL (webtrees custom module):
- * Copyright (C) 2024 Markus Hemprich
- *                    <http://www.familienforschung-hemprich.de>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
@@ -31,10 +10,23 @@ use Fisharebest\Webtrees\Tree;
 use Throwable;
 
 /**
- * Trait ModuleCustomTrait - default implementation of ModuleCustomInterface
+ * Abstract export filter, which contains basic export filter rules for the mandatory HEAD, SUBM, TRLR structures only
  */
-trait ExportFilterTrait
+class AbstractExportFilter implements ExportFilterInterface
 {
+   protected const EXPORT_FILTER = [
+      
+      //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+      //                             ["search pattern" => "replace pattern"],
+      'HEAD'                      => [],
+      'HEAD:*'                    => [],
+
+      'SUBM'                      => [],      
+      'SUBM:*'                    => [],      
+
+      'TRLR'                      => [],
+   ];
+
     /**
      * Get the export filter
      *
@@ -42,7 +34,7 @@ trait ExportFilterTrait
      */
     public function getExportFilter(Tree $tree): array {
 
-        return self::EXPORT_FILTER;
+      return static::EXPORT_FILTER;
     }
 
     /**
@@ -69,7 +61,7 @@ trait ExportFilterTrait
 
         $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
         $class_name = str_replace($name_space, '', get_class($this));
-        $export_filter_rules = self::EXPORT_FILTER;
+        $export_filter_rules = static::EXPORT_FILTER;
 
         foreach($export_filter_rules as $pattern => $regexps) {
 
@@ -110,8 +102,8 @@ trait ExportFilterTrait
 
             //Check if a rule is dominated by another rule, which is higher priority (i.e. earlier entry in the export filter list)
             $i = 0;
-            $size = sizeof(self::EXPORT_FILTER);
-            $pattern_list = array_keys(self::EXPORT_FILTER);
+            $size = sizeof(static::EXPORT_FILTER);
+            $pattern_list = array_keys(static::EXPORT_FILTER);
 
             while($i < $size && $pattern !== $pattern_list[$i]) {
 
@@ -132,4 +124,5 @@ trait ExportFilterTrait
 
         return '';
     }       
+ 
 }

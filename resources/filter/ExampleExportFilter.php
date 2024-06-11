@@ -7,10 +7,9 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 /**
  * An example export filter, which demonstrates the different options, which can be used in export filters
  */
-class ExampleExportFilter implements ExportFilterInterface
+class ExampleExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
-    use ExportFilterTrait;
-    public const EXPORT_FILTER = [
+    protected const EXPORT_FILTER = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],

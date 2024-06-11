@@ -650,7 +650,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 if (in_array($name_space . 'ExportFilterInterface', class_implements($className))) {
 
                     $className = str_replace($name_space, '', $className);
-                    $export_filter_list[$className] = $className;
+
+                    if ($className !== 'AbstractExportFilter') $export_filter_list[$className] = $className;
                 }
             }
         }

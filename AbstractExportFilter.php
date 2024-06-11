@@ -7,6 +7,7 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Tree;
 
+use ReflectionClass;
 use Throwable;
 
 /**
@@ -14,18 +15,7 @@ use Throwable;
  */
 class AbstractExportFilter implements ExportFilterInterface
 {
-   protected const EXPORT_FILTER = [
-      
-      //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
-      //                             ["search pattern" => "replace pattern"],
-      'HEAD'                      => [],
-      'HEAD:*'                    => [],
-
-      'SUBM'                      => [],      
-      'SUBM:*'                    => [],      
-
-      'TRLR'                      => [],
-   ];
+   protected const EXPORT_FILTER = [];
 
     /**
      * Get the export filter
@@ -34,7 +24,7 @@ class AbstractExportFilter implements ExportFilterInterface
      */
     public function getExportFilter(Tree $tree): array {
 
-      return static::EXPORT_FILTER;
+        return static::EXPORT_FILTER;
     }
 
     /**
@@ -61,9 +51,30 @@ class AbstractExportFilter implements ExportFilterInterface
 
         $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
         $class_name = str_replace($name_space, '', get_class($this));
-        $export_filter_rules = static::EXPORT_FILTER;
 
-        foreach($export_filter_rules as $pattern => $regexps) {
+        $refl         = new ReflectionClass($this);
+        $refl_parent  = new ReflectionClass(get_parent_class($this));
+        $const        = $refl->getConstant('EXPORT_FILTER');
+        $const_parent = $refl_parent->getConstant('EXPORT_FILTER');
+
+        //Validate if const EXPORT_FILTER exists and is not empty
+        if ($const === $const_parent) {
+            
+            return I18N::translate('The selected export filter (%s) does not contain a filter definition (%s) or contains an empty export filter.', $class_name, 'const EXPORT_FILTER');
+        }
+
+        //Validate if EXPORT_FILTER contains an array
+        if (!is_array(static::EXPORT_FILTER)) {
+            return I18N::translate('The selected export filter (%s) contains an invalid filter definition (%s).', $class_name, 'const EXPORT_FILTER');
+        }
+        
+        foreach(static::EXPORT_FILTER as $pattern => $regexps) {
+
+            //Validate filter rule
+            if (!is_array($regexps)) {
+                return I18N::translate('The selected export filter (%s) contains an invalid filter definition for tag pattern %s.', $class_name, $pattern) . ' ' .
+                       I18N::translate('Invalid definition') . ': ' . (string) $regexps;
+            }
 
             //Validate tags
             preg_match_all('/!?([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $pattern, $match, PREG_PATTERN_ORDER);
@@ -78,7 +89,7 @@ class AbstractExportFilter implements ExportFilterInterface
                     preg_match('/' . $search . '/', "Lorem ipsum");
                 }
                 catch (Throwable $th) {
-                    return I18N::translate('The selected export filter (%s) contains an invalid regular expression', $class_name) . ': ' . $search . '. '. $th->getMessage();
+                    return I18N::translate('The selected export filter (%s) contains an invalid regular expression', $class_name) . ': ' . $search . '. ' . I18N::translate('Error message'). ': ' . $th->getMessage();
                 }
 
                 try {

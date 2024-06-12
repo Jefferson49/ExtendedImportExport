@@ -1095,26 +1095,28 @@ class RemoteGedcomExportService extends GedcomExportService
         //Check whether is in white list and not in black list
         $matched_tag_pattern = self::matchedPattern($tag_combination, $this->export_filter_patterns);
 
+        //If tag pattern was found, add the related Gedcom
         if ($matched_tag_pattern !== '') {
 
             $converted_gedcom = $match[0] ."\n";
-
-            //Get sub-structure of Gedcom and recursively apply export filter to next level
-            $gedcom_substructures = self::parseGedcomSubstructures($gedcom, $level + 1);
-
-            foreach ($gedcom_substructures as $gedcom_substructure) {
-
-                $converted_gedcom .= $this->exportFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination);
-            }
-
-            //If regular expressions are provided for the pattern, run replacements
-            //Do not replace again if pattern has already been matched on higher level of the Gedcom structure
-            if (   $this->export_filter_rule_has_regexp[$matched_tag_pattern] 
-                && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
-
-                $converted_gedcom = $this->replaceInGedcom($matched_tag_pattern, $converted_gedcom);
-            }            
         }
+
+        //Get sub-structure of Gedcom and recursively apply export filter to next level
+        $gedcom_substructures = self::parseGedcomSubstructures($gedcom, $level + 1);
+
+        foreach ($gedcom_substructures as $gedcom_substructure) {
+
+            $converted_gedcom .= $this->exportFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination);
+        }
+
+        //If regular expressions are provided for the pattern, run replacements
+        //Do not replace again if pattern has already been matched on higher level of the Gedcom structure
+        if (   $matched_tag_pattern !== ''   
+            && $this->export_filter_rule_has_regexp[$matched_tag_pattern] 
+            && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
+
+            $converted_gedcom = $this->replaceInGedcom($matched_tag_pattern, $converted_gedcom);
+        }            
 
         return $converted_gedcom;
     }

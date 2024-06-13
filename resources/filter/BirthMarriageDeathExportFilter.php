@@ -34,12 +34,14 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
       'INDI:NAME'                 => [],
       'INDI:NAME:TYPE'            => [],
       'INDI:SEX'                  => [],
-      'INDI:BIRT'                 => [],
+
+      //Add "Y" to birth for the case that substructures might be empty
+      'INDI:BIRT'                 => ["1 BIRT\n$" => "1 BIRT Y\n"],
       'INDI:BIRT:DATE'            => [],
       'INDI:BIRT:PLAC'            => [],
 
       //Add "Y" to christening for the case that substructures might be empty
-      'INDI:CHR'                  => ["1 CHR.*\n" => "1 CHR Y\n"],
+      'INDI:CHR'                  => ["1 CHR\n$" => "1 CHR Y\n"],
       'INDI:CHR:DATE'             => [],
       'INDI:CHR:PLAC'             => [],
       'INDI:BAPM'                 => [],
@@ -47,7 +49,7 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
       'INDI:BAPM:PLAC'            => [],
 
       //Add "Y" to death for the case that substructures might be empty
-      'INDI:DEAT'                 => ["1 DEAT.*\n" => "1 DEAT Y\n"],
+      'INDI:DEAT'                 => ["1 DEAT\n$" => "1 DEAT Y\n"],
       'INDI:DEAT:DATE'            => [],
       'INDI:DEAT:PLAC'            => [],
       'INDI:FAMC'                 => [],
@@ -65,8 +67,7 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
       'FAM:CHIL'                  => [],
 
       //Add "Y" to marriage for the case that substructures might be empty      
-      'FAM:MARR'                  => ["1 MARR.*\n" => "1 MARR Y\n"],
-
+      'FAM:MARR'                  => ["1 MARR\n$" => "1 MARR Y\n"],
       'FAM:MARR:DATE'             => [],
       'FAM:MARR:PLAC'             => [],
       'FAM:MARR:TYPE'             => [],

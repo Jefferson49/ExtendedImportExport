@@ -47,14 +47,17 @@ use Throwable;
  */
 class AbstractExportFilter implements ExportFilterInterface
 {
-   protected const EXPORT_FILTER = [];
+    //The definition of the export filter rules
+    protected const EXPORT_FILTER = [];
 
     /**
      * Get the export filter
+     * 
+     * @param Tree $tree
      *
      * @return array
      */
-    public function getExportFilter(Tree $tree): array {
+    public function getExportFilter(Tree $tree = null): array {
 
         return static::EXPORT_FILTER;
     }
@@ -84,23 +87,17 @@ class AbstractExportFilter implements ExportFilterInterface
         $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
         $class_name = str_replace($name_space, '', get_class($this));
 
-        $refl         = new ReflectionClass($this);
-        $refl_parent  = new ReflectionClass(get_parent_class($this));
-        $const        = $refl->getConstant('EXPORT_FILTER');
-        $const_parent = $refl_parent->getConstant('EXPORT_FILTER');
-
-        //Validate if const EXPORT_FILTER exists and is not empty
-        if ($const === $const_parent) {
-            
-            return I18N::translate('The selected export filter (%s) does not contain a filter definition (%s) or contains an empty export filter.', $class_name, 'const EXPORT_FILTER');
-        }
-
         //Validate if EXPORT_FILTER contains an array
         if (!is_array(static::EXPORT_FILTER)) {
             return I18N::translate('The selected export filter (%s) contains an invalid filter definition (%s).', $class_name, 'const EXPORT_FILTER');
         }
-        
-        foreach(static::EXPORT_FILTER as $pattern => $regexps) {
+
+        //Validate if getExportFilter returns an array
+        if (!is_array($this->getExportFilter())) {
+            return I18N::translate('The getExportFilter() method of the export filter (%s) returns an invalid filter definition.', $class_name,);
+        }
+
+        foreach($this->getExportFilter() as $pattern => $regexps) {
 
             //Validate filter rule
             if (!is_array($regexps)) {
@@ -116,7 +113,23 @@ class AbstractExportFilter implements ExportFilterInterface
 
             //Validate regular expressions in export filter
             foreach($regexps as $search => $replace) {
+                
+                //If filter contains 'customConvert' command, check if the filter class has the required method
+                if ($search === RemoteGedcomExportService::CUSTOM_CONVERT) {
 
+                    try {
+                        $reflection = new ReflectionClass($this);
+                        $used_class = $reflection->getMethod('customConvert')->class;
+                        if ($used_class !== get_class($this)) {
+                            throw new DownloadGedcomWithUrlException();
+                        };
+                    }
+                    catch (Throwable $th) {
+                        return I18N::translate('The used export filter (%s) contains a %s command, but the filter class does not contain a %s method.', (new ReflectionClass($this))->getShortName(), RemoteGedcomExportService::CUSTOM_CONVERT, RemoteGedcomExportService::CUSTOM_CONVERT);
+                    }
+                }
+
+                //Validate regular expressions
                 try {
                     preg_match('/' . $search . '/', "Lorem ipsum");
                 }
@@ -132,7 +145,7 @@ class AbstractExportFilter implements ExportFilterInterface
                 }
             }
 
-            //Check if black list filter rules have reg exps
+            //Check if black list filter rules has reg exps
             if (strpos($pattern, '!') === 0) {
 
                 foreach($regexps as $search => $replace) {
@@ -145,8 +158,8 @@ class AbstractExportFilter implements ExportFilterInterface
 
             //Check if a rule is dominated by another rule, which is higher priority (i.e. earlier entry in the export filter list)
             $i = 0;
-            $size = sizeof(static::EXPORT_FILTER);
-            $pattern_list = array_keys(static::EXPORT_FILTER);
+            $size = sizeof($this->getExportFilter());
+            $pattern_list = array_keys($this->getExportFilter());
 
             while($i < $size && $pattern !== $pattern_list[$i]) {
 
@@ -166,6 +179,39 @@ class AbstractExportFilter implements ExportFilterInterface
         }
 
         return '';
-    }       
- 
+    }     
+
+    /**
+     * Merge two sets of filter rules
+     * 
+     * @param array $filter_rules1
+     * @param array $filter_rules2
+     *
+     * @return array                 Merged filter rules
+     */
+    public function mergeFilterRules(array $filter_rules1, array $filter_rules2): array {
+
+        //Add filter rules 1
+        $merged_filter_rules = $filter_rules1;
+
+        foreach  ($filter_rules2 as $tag2 => $regexp2) {
+
+            //If tag is not already included, simple add filter rule
+            if (!key_exists($tag2, $merged_filter_rules)) {
+
+                $merged_filter_rules[$tag2] = $regexp2;
+            }
+            //If tag already exists, merge regexps first and afterwards add combined filter rule
+            else {
+                $regexp1 = $filter_rules1[$tag2];
+
+                //If regexp are different, create merged array of regexps and add to merged filter rules
+                if ($regexp1 !== $regexp2) {
+
+                    $merged_filter_rules[$tag2] = array_merge($regexp1, $regexp2);
+                }
+            }
+        }
+        return $merged_filter_rules;
+    }
 }

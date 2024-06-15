@@ -86,9 +86,11 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
    * In this specific case, the export filter rules are modified to replace 
    * %TREE% in the filter rule by the actual tree name in webtrees
    *
+   * @param Tree $tree
+   *
    * @return array
    */
-  public function getExportFilter(Tree $tree): array {
+  public function getExportFilter(Tree $tree = null): array {
 
     $export_filter = [];
 
@@ -100,7 +102,7 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
 
         //Replace %TREE% in the filter rule by the actual tree name in webtrees
         //This is needed to generated an URL to the records in webtrees
-        $replace = str_replace('%TREE%' , $tree->name(), $replace);
+        $replace = str_replace('%TREE%' , $tree !== null ? $tree->name() : '', $replace);
         $replaced_regexps[$search] = $replace;
       }
 

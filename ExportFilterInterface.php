@@ -35,11 +35,11 @@ interface ExportFilterInterface
     /**
      * Get the export filter
      * 
-     * @param  Tree $tree
+     * @param Tree $tree
      *
      * @return array
      */
-    public function getExportFilter(Tree $tree): array;
+    public function getExportFilter(Tree $tree = null): array;
 
     /**
      * Custom conversion of a Gedcom string

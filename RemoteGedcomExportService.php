@@ -398,6 +398,8 @@ class RemoteGedcomExportService extends GedcomExportService
 
                 //Create lookup table if regexp exists for a pattern
                 foreach($this->export_filter_patterns as $pattern) {
+                    
+                    //TodDo: Does filter always contain an array??
                     $this->export_filter_rule_has_regexp[$pattern] = $this->export_filter_list[$pattern] !== [];
                 }
             }
@@ -1234,8 +1236,18 @@ class RemoteGedcomExportService extends GedcomExportService
         //For each replacement, which is provided
         foreach ($replace_pairs as $search => $replace) {
 
-            //If according string, apply custom conversion
-            if ($search === self::CUSTOM_CONVERT) $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom, $this->records_list);
+            //If according string is found, apply custom conversion
+            if ($search === self::CUSTOM_CONVERT) {
+
+                try {
+                    $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom, $this->records_list);
+                }
+                catch (Throwable $th) {
+                    $message = I18N::translate('The used export filter (%s) contains a %s command, but the filter class does not contain a %s method.', 
+                                    (new ReflectionClass($this->export_filter))->getShortName(), self::CUSTOM_CONVERT, self::CUSTOM_CONVERT);
+                    throw new DownloadGedcomWithUrlException($message);
+                }
+            }
 
             //Else apply RegExp replacement
             else { 
@@ -1290,9 +1302,12 @@ class RemoteGedcomExportService extends GedcomExportService
             $refl = new ReflectionClass($export_filter);
     
             //If the export filter contains the customConvert method and method is not inherited
-            if ($refl->getMethod('customConvert')->class === get_class($export_filter)) {
-                
-                return true;
+            try {
+                if ($refl->getMethod('customConvert')->class === get_class($export_filter)) return true;
+            }
+            catch (Throwable $th) {
+                $message = I18N::translate('The used export filter (%s) contains a %s command, but the filter class does not contain a %s method.', (new ReflectionClass($export_filter))->getShortName(), self::CUSTOM_CONVERT, self::CUSTOM_CONVERT);
+                throw new DownloadGedcomWithUrlException($message);
             }
         }
 

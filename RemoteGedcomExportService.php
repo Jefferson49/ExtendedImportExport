@@ -611,8 +611,8 @@ class RemoteGedcomExportService extends GedcomExportService
 			"/2 FORM (htm|HTM|html|HTML)(\n3 TYPE .[^\n]+)*/" => "2 FORM text/html",
 
             //Shared notes (SNOTE)
-			"/([\d]) NOTE @(.[^\n]+)@/" => "$1 SNOTE @$2@",
-			"/0 @(.[^\n]+)@ NOTE (.[^\n]+)/" => "0 @$1@ SNOTE $2",
+			"/([\d]) NOTE @(" . Gedcom::REGEX_XREF . ")@/" => "$1 SNOTE @$2@",
+			"/0 @(" . Gedcom::REGEX_XREF . ")@ NOTE (.[^\n]+)/" => "0 @$1@ SNOTE $2",
 
             //External IDs (EXID)
 			"/1 (AFN|RFN|RIN) (.[^\n]+)/" => "1 EXID $2\n2 TYPE https://gedcom.io/terms/v7/$1",
@@ -1076,11 +1076,11 @@ class RemoteGedcomExportService extends GedcomExportService
 
         try {
             if ($level === 0) {
-                preg_match('/0( @[^@]*@)* ([A-Za-z1-9_]+)\b ?(.*)/', $gedcom, $match);
+                preg_match('/0( @' . Gedcom::REGEX_XREF . '@)* (' . Gedcom::REGEX_TAG . ')\b ?(.*)/', $gedcom, $match);
                 $tag = $match[2];
             }
             else {
-                preg_match('/' . $level . ' ([A-Za-z1-9_]+)\b ?(.*)/', $gedcom, $match);    
+                preg_match('/' . $level . ' (' . Gedcom::REGEX_TAG . ')\b ?(.*)/', $gedcom, $match);    
                 $tag = $match[1];
             }
         }
@@ -1176,8 +1176,8 @@ class RemoteGedcomExportService extends GedcomExportService
      */
     public static function matchTagWithSinglePattern(string $tag, string $pattern): bool
     {          
-        $tag_token_size =     preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
-        $pattern_token_size = preg_match_all('/([A-Z_\*]+)((?!\:)[A-Z_\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
+        $tag_token_size =     preg_match_all('/([_A-Z0-9\*]+)((?!\:)[_A-Z0-9\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
+        $pattern_token_size = preg_match_all('/([_A-Z0-9\*]+)((?!\:)[_A-Z0-9\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
 
         //Return false if nothing was found
         if ($tag_token_size === 0 OR $pattern_token_size === 0) return false;
@@ -1309,7 +1309,7 @@ class RemoteGedcomExportService extends GedcomExportService
     private function analyzeRecordsAndReferences(string $gedcom) : void {
 
         //Match xref
-        preg_match('/0 @([^@]+)@ ([A-Za-z1-9_]+)/', $gedcom, $match);
+        preg_match('/0 @(' . Gedcom::REGEX_XREF . ')@ (' . Gedcom::REGEX_TAG . ')/', $gedcom, $match);
         $xref = $match[1] ?? '';
         $record_type = $match[2] ?? '';
 
@@ -1343,7 +1343,7 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         //Match <XREF:*> references
-        preg_match_all('/[\d] (?:FAMC|FAMS|ALIA|ASSO|_ASSO|HUSB|WIFE|CHIL|NOTE|SOUR|OBJE|REPO|UBM|ANCI|DECI|SUBM|_LOC) @([^@]+)@/', $gedcom, $matches);
+        preg_match_all('/[\d] '. Gedcom::REGEX_TAG . ' @(' . Gedcom::REGEX_XREF . ')@/', $gedcom, $matches);
 
         foreach ($matches[1] as $match) {
 

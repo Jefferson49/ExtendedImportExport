@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\Gedcom;
+
 /**
  * An export filter to remove empty records (FAM, NOTE, OBJE, REPO, SOUR)
  */
@@ -75,8 +77,7 @@ class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements Exp
       //Empty records and records without a reference
       if (in_array($pattern, ['FAM', 'NOTE', 'OBJE', 'REPO', 'SOUR', '_LOC'])) {
 
-         //ToDo webtrees::REGEX
-         preg_match('/0 @([^@]+)@ ([A-Za-z1-9_]+)/', $gedcom, $match);
+         preg_match('/0 @(' . Gedcom::REGEX_XREF  . ')@ (' . Gedcom::REGEX_TAG  . ')/', $gedcom, $match);
          $xref = $match[1] ?? '';
 
          if ($xref !== '') {
@@ -108,8 +109,7 @@ class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements Exp
          '*:*:*:SOUR',         
          ])) {
 
-         //ToDo webtrees::REGEX   
-         preg_match('/[\d] [\w]{4} @([^@]+)@/', $gedcom, $match);
+         preg_match('/[\d] [\w]{4} @(' . Gedcom::REGEX_XREF . ')@/', $gedcom, $match);
          $xref = $match[1] ?? '';
 
          if ($xref !== '') {

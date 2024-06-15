@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\Gedcom;
+
 /**
  * An example export filter, which demonstrates the different options, which can be used in export filters
  */
@@ -80,7 +82,7 @@ class ExampleExportFilter extends AbstractExportFilter implements ExportFilterIn
       $user = $matches[0][1] ?? 'Default';
 
       //Get XREF of SUBM
-      preg_match_all("/0 @([^@]+)@ SUBM\n/", $gedcom, $matches, PREG_SET_ORDER);
+      preg_match_all("/0 @(" . Gedcom::REGEX_XREF . ")@ SUBM\n/", $gedcom, $matches, PREG_SET_ORDER);
       $xref = $matches[0][1] ?? '';
 
       //Create record ID number (RIN)

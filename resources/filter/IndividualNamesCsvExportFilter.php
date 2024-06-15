@@ -29,13 +29,13 @@ class IndividualNamesCsvExportFilter extends AbstractExportFilter implements Exp
     /**
      * Custom conversion of a Gedcom string
      *
-     * @param  string $pattern                  The pattern of the filter rule, e. g. INDI:BIRT:DATE
-     * @param  string $gedcom                   The Gedcom to convert
-     * @param  array  $empty_records_xref_list  List with all xrefs of empty records
+     * @param string $pattern       The pattern of the filter rule, e. g. INDI:BIRT:DATE
+     * @param string $gedcom        The Gedcom to convert
+     * @param array  $records_list  A list with all xrefs and the related records: array <string xref => Record record>
      * 
-     * @return string                           The converted Gedcom
+     * @return string               The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array $empty_records_xref_list): string {
+    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
 
     //Remove all * " , characters from INDI:NAME
     if ($pattern === 'INDI:NAME') {

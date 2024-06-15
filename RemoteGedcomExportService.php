@@ -167,8 +167,10 @@ class RemoteGedcomExportService extends GedcomExportService
     //List of custom tags, which were found in the GEDCOM data
     private array $custom_tags_found;
 
-    //List with xrefs of empty records
-    private array $empty_records_xref_list;
+    //List of all records found
+    //array <string xref => Record record>
+    private array $records_list;
+
 
     /**
      * @param ResponseFactoryInterface $response_factory
@@ -179,9 +181,11 @@ class RemoteGedcomExportService extends GedcomExportService
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
         $this->export_filter_list = [];
-        $this->export_filter_patterns = [];        
-        $this->export_filter_rule_has_regexp = [];    
-        $this->empty_records_xref_list = [];    
+        $this->export_filter_patterns = []; 
+        $this->export_filter_rule_has_regexp = [];
+        $this->records_xref_list = [];
+        $this->empty_records_xref_list = [];
+        $this->references_list = [];
         $this->custom_tags_found = [];
         $this->schema_uris_for_tags = [];
         
@@ -239,13 +243,13 @@ class RemoteGedcomExportService extends GedcomExportService
             }
         }
 
-        $create_empty_records_list = $this->useEmptyRecordsList($export_filter);
+        $records_reference_analysis = $this->useRecordsList($export_filter);
 
         //If empty records or customs tags list shall be created, run preliminary export to collect the data
-        if ($gedcom_7 OR $create_empty_records_list) {
+        if ($gedcom_7 OR $records_reference_analysis) {
 
             //Preliminary export
-            $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $create_empty_records_list, $gedcom_7, $gedcom_l, true, $records);
+            $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $records_reference_analysis, $gedcom_7, $gedcom_l, true, $records);
         }
 
         if ($format === 'gedcom') {
@@ -335,13 +339,13 @@ class RemoteGedcomExportService extends GedcomExportService
             }
         }
 
-        $create_empty_records_list = $this->useEmptyRecordsList($export_filter);
+        $records_reference_analysis = $this->useRecordsList($export_filter);
 
         //If empty records or customs tags list shall be created, run preliminary export to collect the data
-        if ($gedcom_7 OR $create_empty_records_list) {
+        if ($gedcom_7 OR $records_reference_analysis) {
 
             //Preliminary export           
-            $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $create_empty_records_list, $gedcom_7, $gedcom_l, true, $records);
+            $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $records_reference_analysis, $gedcom_7, $gedcom_l, true, $records);
         }
 
         //Create export
@@ -360,7 +364,7 @@ class RemoteGedcomExportService extends GedcomExportService
 	 * @param bool                                            $gedcom_7           Whether export is GEDCOM 7
 	 * @param bool                                            $gedcom_l           Whether export should consider GEDCOM-L
      * @param bool                                            $check_custom_tags  Just check custom tags; do not create a stream
-     * @param bool                                            $empty_records_list Just create an empty record list
+     * @param bool                                            $records_reference_analysis   Just analyze records and references
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
      * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
@@ -374,7 +378,7 @@ class RemoteGedcomExportService extends GedcomExportService
         int $access_level = Auth::PRIV_HIDE,
         string $line_endings = 'CRLF',
         ExportFilterInterface $export_filter = null,
-		bool $empty_records_list = false,
+		bool $records_reference_analysis = false,
 		bool $gedcom_7 = false,
 		bool $gedcom_l = false,
         bool $check_custom_tags = false,
@@ -382,7 +386,7 @@ class RemoteGedcomExportService extends GedcomExportService
         ?FilesystemOperator $zip_filesystem = null,
         ?string $media_path = null
     ) {
-        if($export_filter !== null && !$empty_records_list) {
+        if($export_filter !== null && !$records_reference_analysis) {
 
             //Initialize export filter if needed
             if ($export_filter !== null) {
@@ -399,7 +403,7 @@ class RemoteGedcomExportService extends GedcomExportService
             }
         }
 
-        if(!$check_custom_tags && !$empty_records_list) {
+        if(!$check_custom_tags && !$records_reference_analysis) {
 
             //Create stream
             $stream = fopen('php://memory', 'wb+');
@@ -454,7 +458,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
         $media_filesystem = $tree->mediaFilesystem();
 
-        $apply_filter = $export_filter !== null && !$check_custom_tags && !$empty_records_list;
+        $apply_filter = $export_filter !== null && !$check_custom_tags && !$records_reference_analysis;
 
         foreach ($data as $rows) {
             foreach ($rows as $datum) {
@@ -471,16 +475,12 @@ class RemoteGedcomExportService extends GedcomExportService
                         $datum->o_gedcom;
                 }
 
-                //Check if empty record. If true, add to empty objects list
-                if($empty_records_list) {
+                //Analysis of records and references
+                if($records_reference_analysis) {
 
-                    if (!strpos($gedcom, "\n")) {
-                        preg_match('/0 @([^@]+)@ ([A-Za-z1-9_]+)/', $gedcom, $match);
-                        $xref = $match[1] ?? '';
-                        $this->empty_records_xref_list[] = $xref;
-                    }
+                    $this->analyzeRecordsAndReferences($gedcom);
 
-                    //Performanc eoptimization: Cancel further processing if no checking of custom tags is needed
+                    //Performance eoptimization: Cancel further processing if no checking of custom tags is needed
                     if (!$check_custom_tags) break;
                 }
 
@@ -531,6 +531,10 @@ class RemoteGedcomExportService extends GedcomExportService
                     }
                 }
 			}
+        }
+
+        if ($records_reference_analysis) {
+            $this->removeEmptyAndUnlinkedRecords();
         }
 
         if(!$check_custom_tags) {        
@@ -1231,7 +1235,7 @@ class RemoteGedcomExportService extends GedcomExportService
         foreach ($replace_pairs as $search => $replace) {
 
             //If according string, apply custom conversion
-            if ($search === self::CUSTOM_CONVERT) $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom, $this->empty_records_xref_list);
+            if ($search === self::CUSTOM_CONVERT) $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom, $this->records_list);
 
             //Else apply RegExp replacement
             else { 
@@ -1279,7 +1283,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * 
      * @return bool                   True if empty records list shall be used
      */
-    private function useEmptyRecordsList(ExportFilterInterface $export_filter = null) : bool {
+    private function useRecordsList(ExportFilterInterface $export_filter = null) : bool {
 
         if ($export_filter !== null) {
 
@@ -1293,5 +1297,141 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         return false;
+    }
+
+    /**
+     * Perform an analysis of records their references and create a record list and links between the records
+     *
+     * @param string $gedcom
+     * 
+     * @return void
+     */
+    private function analyzeRecordsAndReferences(string $gedcom) : void {
+
+        //Match xref
+        preg_match('/0 @([^@]+)@ ([A-Za-z1-9_]+)/', $gedcom, $match);
+        $xref = $match[1] ?? '';
+        $record_type = $match[2] ?? '';
+
+        //Specific treatment of HEAD and TRLR
+        if ($xref === '') {
+            preg_match('/0 (HEAD|TRLR)/', $gedcom, $match);
+            $xref = $match[1] ?? '';
+            $record_type = $xref;
+        }
+
+        //If not exists, create record and add to records list
+        if (!isset($this->records_list[$xref])) {
+
+            $record = new Record($xref, $record_type);
+            $this->records_list[$xref] = $record;
+        }
+        else {
+            $record = $this->records_list[$xref];
+
+            //Add type if is not set already, i.e. a reference has been found earlier and type could not be identified
+            if ($record->type() === '') {
+
+                $record->setTpye($record_type);
+            }
+        }
+
+        //If no sub-structure exists, set record to empty 
+        if (!strpos($gedcom, "\n")) {
+
+            $record->setEmpty();
+        }
+
+        //Match <XREF:*> references
+        preg_match_all('/[\d] (?:FAMC|FAMS|ALIA|ASSO|_ASSO|HUSB|WIFE|CHIL|NOTE|SOUR|OBJE|REPO|UBM|ANCI|DECI|SUBM|_LOC) @([^@]+)@/', $gedcom, $matches);
+
+        foreach ($matches[1] as $match) {
+
+            //If not exists, create record for reference and add to records list
+            if (!isset($this->records_list[$match])) {
+
+                $referenced = new Record($match, '');  //Unfortunatelly, we do not know the type. Therefore, set type to ''
+                $this->records_list[$match] = $referenced;
+            }
+            else {
+                $referenced = $this->records_list[$match];
+            }
+
+            //Link record to referenced record
+            $record->addReferencedRecord($referenced);
+
+            //Link back referenced to record
+            $referenced->addReferencingRecord($record);
+        }
+
+        return;
+    }
+
+    /**
+     * Find empty and unlinked records in the record list and update references of related records
+     * 
+     * @return void
+     */
+    private function removeEmptyAndUnlinkedRecords() : void {
+        
+        $modified_references = true;
+        $iteration = 0;
+
+        while ($modified_references) {
+
+            $modified_references = false;
+            $iteration++;
+
+            //Iterate over all records in the record list
+            foreach ($this->records_list as $xref => $record) {
+
+                $propagate_result = $this->propagateReferences($record);
+                $modified_references = $modified_references || $propagate_result;
+            }
+
+            if ($iteration > 100) throw new DownloadGedcomWithUrlException(I18N::translate('Fatal error: Too many iterations while removing empty and unlinked records.'));
+        }
+
+        return;
+    }
+
+    /**
+     * Propagate references from empty and unlined records to linked records
+     * 
+     * @param Record $record
+     * 
+     * @return bool             True if references of record (or sub structure) were modified, i.e. empty or unlinked record identified
+     */
+    private function propagateReferences(Record $record) : bool {
+
+        $modified_references = false;
+
+        //If record is empty or has no references and record is not HEAD|TRLR|INDI
+        if ((   $record->isEmpty() OR !$record->isReferenced())
+                && !in_array($record->type(), ['HEAD', 'TRLR', 'INDI'])) {
+
+            //Iterate over all records referencing the record
+            foreach($record->getReferencingRecords() as $referencing_record) {
+
+                //Remove links between record and referencing record
+                $record->removeReferencingRecord($referencing_record);
+                $referencing_record->removeReferencedRecord($record);
+                $modified_references = true;
+            }
+
+            //Iterate over all records referenced by the record
+            foreach($record->getReferencedRecords() as $record_referenced) {
+
+                //Remove links between record and referenced record
+                $record->removeReferencedRecord($record_referenced);
+                $record_referenced->removeReferencingRecord($record);
+                $modified_references = true;
+
+                //Run recursion on referenced record
+                $this->propagateReferences($record_referenced);
+            }
+        }
+
+        return $modified_references;
     }
 }

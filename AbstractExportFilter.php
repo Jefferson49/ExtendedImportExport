@@ -1,5 +1,37 @@
 <?php
 
+/**
+ * webtrees: online genealogy
+ * Copyright (C) 2023 webtrees development team
+ *                    <http://webtrees.net>
+ *
+ * Fancy Research Links (webtrees custom module):
+ * Copyright (C) 2022 Carmen Just
+ *                    <https://justcarmen.nl>
+ *
+ * DownloadGedcomWithURL (webtrees custom module):
+ * Copyright (C) 2023 Markus Hemprich
+ *                    <http://www.familienforschung-hemprich.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * 
+ * DownloadGedcomWithURL
+ *
+ * A weebtrees(https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests 
+ * with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
+ * 
+ */
+
 declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
@@ -30,13 +62,13 @@ class AbstractExportFilter implements ExportFilterInterface
     /**
      * Custom conversion of a Gedcom string
      *
-     * @param  string $pattern                  The pattern of the filter rule, e. g. INDI:BIRT:DATE
-     * @param  string $gedcom                   The Gedcom to convert
-     * @param  array  $empty_records_xref_list  List with all xrefs of empty records
+     * @param string $pattern       The pattern of the filter rule, e. g. INDI:BIRT:DATE
+     * @param string $gedcom        The Gedcom to convert
+     * @param array  $records_list  A list with all xrefs and the related records: array <string xref => Record record>
      * 
-     * @return string                           The converted Gedcom
+     * @return string               The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array $empty_records_xref_list): string {
+    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
 
         //As a default, return the un-converted Gedcom
         return $gedcom;

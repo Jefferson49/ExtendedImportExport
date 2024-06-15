@@ -42,6 +42,7 @@ require __DIR__ . '/DownloadGedcomWithURL.php';
 require __DIR__ . '/DownloadGedcomWithUrlException.php';
 require __DIR__ . '/ExportFilterInterface.php';
 require __DIR__ . '/AbstractExportFilter.php';
+require __DIR__ . '/Record.php';
 require __DIR__ . '/RemoteGedcomExportService.php';
 
 return new DownloadGedcomWithURL();

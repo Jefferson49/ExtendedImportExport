@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-06-11 22:32+0200\n"
-"PO-Revision-Date: 2024-06-11 22:33+0200\n"
+"POT-Creation-Date: 2024-06-15 10:02+0200\n"
+"PO-Revision-Date: 2024-06-15 10:04+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -15,16 +15,16 @@ msgstr ""
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: AbstractExportFilter.php:63
+#: AbstractExportFilter.php:95
 #, php-format
 msgid ""
 "The selected export filter (%s) does not contain a filter definition (%s) or "
 "contains an empty export filter."
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält keine Filter-Definition (%s) oder "
-"enthält einen leeren"
+"enthält einen leeren Export-Filter."
 
-#: AbstractExportFilter.php:68
+#: AbstractExportFilter.php:100
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid filter definition (%s)."
@@ -32,7 +32,7 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
 "(%s)."
 
-#: AbstractExportFilter.php:75
+#: AbstractExportFilter.php:107
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid filter definition for "
@@ -41,28 +41,28 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
 "für das Tag-Muster %s."
 
-#: AbstractExportFilter.php:76
+#: AbstractExportFilter.php:108
 msgid "Invalid definition"
 msgstr "Ungültige Definition"
 
-#: AbstractExportFilter.php:82
+#: AbstractExportFilter.php:114
 #, php-format
 msgid "The selected export filter (%s) contains an invalid tag definition"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Tag-Definition"
 
-#: AbstractExportFilter.php:92 AbstractExportFilter.php:99
+#: AbstractExportFilter.php:124 AbstractExportFilter.php:131
 #, php-format
 msgid "The selected export filter (%s) contains an invalid regular expression"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen ungültigen regulären "
 "Ausdruck"
 
-#: AbstractExportFilter.php:92
+#: AbstractExportFilter.php:124
 msgid "Error message"
 msgstr "Fehlermeldung"
 
-#: AbstractExportFilter.php:109
+#: AbstractExportFilter.php:141
 #, php-format
 msgid ""
 "The selected export filter (%s) contains a black list filter rule (%s) with "
@@ -73,7 +73,7 @@ msgstr ""
 "mit einem regulären Ausdruck, welcher niemals ausgeführt wird, weil die "
 "Black-List Filter-Regel die zugehörige GEDCOM-Zeile löschen wird."
 
-#: AbstractExportFilter.php:130
+#: AbstractExportFilter.php:162
 #, php-format
 msgid ""
 "The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
@@ -236,13 +236,20 @@ msgstr ""
 "Das Herunterladen ist nicht erlaubt. Bitte ändern Sie die Modul-"
 "Einstellungen, um Herunterladen zu erlauben."
 
-#: RemoteGedcomExportService.php:1084
+#: RemoteGedcomExportService.php:1088
 msgid "The following GEDCOM structure could not be matched"
 msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
 
-#: RemoteGedcomExportService.php:1240
+#: RemoteGedcomExportService.php:1246
 msgid "Error during a regular expression replacement."
 msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
+
+#: RemoteGedcomExportService.php:1392
+msgid ""
+"Fatal error: Too many iterations while removing empty and unlinked records."
+msgstr ""
+"Schwerwiegender Fehler: Zu viele Iterationen beim Entfernen von leeren oder "
+"unverknüpften Datensätzen."
 
 #: resources/views/alert.phtml:22
 msgid "Custom module"

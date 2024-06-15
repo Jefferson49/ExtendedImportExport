@@ -32,12 +32,13 @@ class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements Exp
       '*:*:SOUR'                  => ["->customConvert" => ""],
       '*:*:*:SOUR'                => ["->customConvert" => ""],
 
-      //Remove empty records
+      //Remove empty records or records without references
       'FAM'                       => ["->customConvert" => ""],
       'NOTE'                      => ["->customConvert" => ""],
       'OBJE'                      => ["->customConvert" => ""],
       'REPO'                      => ["->customConvert" => ""],
       'SOUR'                      => ["->customConvert" => ""],
+      '_LOC'                      => ["->customConvert" => ""],
 
       'INDI'                      => [],
       'INDI:*'                    => [],
@@ -55,36 +56,41 @@ class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements Exp
       'SUBM'                      => [],
       'SUBM:*'                    => [],
 
-      '_LOC'                      => [],
       '_LOC:*'                    => [],
 
       'TRLR'                      => [],
    ];
 
-   /**
-    * Custom conversion of a Gedcom string
-    *
-    * @param  string $pattern                  The pattern of the filter rule, e. g. INDI:BIRT:DATE
-    * @param  string $gedcom                   The Gedcom to convert
-    * @param  array  $empty_records_xref_list  List with all xrefs of empty records
-    * 
-    * @return string                           The converted Gedcom
-    */
-   public function customConvert(string $pattern, string $gedcom, array $empty_records_xref_list): string {
+    /**
+     * Custom conversion of a Gedcom string
+     *
+     * @param string $pattern       The pattern of the filter rule, e. g. INDI:BIRT:DATE
+     * @param string $gedcom        The Gedcom to convert
+     * @param array  $records_list  A list with all xrefs and the related records: array <string xref => Record record>
+     * 
+     * @return string               The converted Gedcom
+     */
+    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
 
-      //Remove empty records
-      if (in_array($pattern, ['FAM', 'NOTE', 'OBJE', 'REPO', 'SOUR',])) {
+      //Empty records and records without a reference
+      if (in_array($pattern, ['FAM', 'NOTE', 'OBJE', 'REPO', 'SOUR', '_LOC'])) {
 
+         //ToDo webtrees::REGEX
          preg_match('/0 @([^@]+)@ ([A-Za-z1-9_]+)/', $gedcom, $match);
          $xref = $match[1] ?? '';
 
-         //If xref is in empty records list, remove Gedcom
-         if (in_array($xref, $empty_records_xref_list)) {
-            $gedcom = '';
+         if ($xref !== '') {
+
+            $record = $records_list[$xref];
+
+            //If record is empty or not referenced by other records, remove Gedcom
+            if ($record->isEmpty() OR !$record->isReferenced()) {
+               $gedcom = '';
+            }   
          }
       }
 
-      //Remove references to empty records
+      //Remove references, which do not point to records
       elseif (in_array($pattern, [
          '*:NOTE',
          '*:*:NOTE',
@@ -102,11 +108,14 @@ class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements Exp
          '*:*:*:SOUR',         
          ])) {
 
+         //ToDo webtrees::REGEX   
          preg_match('/[\d] [\w]{4} @([^@]+)@/', $gedcom, $match);
          $xref = $match[1] ?? '';
 
-         if ($xref !== '' && in_array($xref, $empty_records_xref_list)) {
-            $gedcom = '';
+         if ($xref !== '') {
+            if (!$records_list[$xref]->isReferencing()) {
+               $gedcom = '';
+            }
          }
       }
 

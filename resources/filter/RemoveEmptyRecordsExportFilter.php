@@ -11,6 +11,7 @@ use Fisharebest\Webtrees\Gedcom;
  */
 class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
+   protected const USES_REFERENCES_ANALYSIS = true;
    protected const EXPORT_FILTER = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
@@ -121,4 +122,14 @@ class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements Exp
 
       return $gedcom;
    }   
+
+    /**
+     * Wether the filter uses a references analysis between the records
+     *
+     * @return bool   true if reference analysis is used
+     */
+    public function usesReferencesAnalysis(): bool {
+
+      return true;
+  }      
 }

@@ -815,37 +815,19 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				//Get folder from settings
 				$folder_to_save = $this->getPreference(self::PREF_FOLDER_TO_SAVE, '');
 
-				//If Gedcom 7, create Gedcom 7 response
-				if ($gedcom7) {
-					try {
-						$resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_instance, true, $gedcom_l);
-						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
-						fclose($resource);
+				//Create response
+                try {
+                    $resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, [$export_filter_instance]);
+                    $root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
+                    fclose($resource);
 
-						$response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
+                    $response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
 
-					} catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
+                } catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
 
-                        if ($ex instanceof DownloadGedcomWithUrlException) $response = $this->showErrorMessage($ex->getMessage());
-                        else $response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
-					}
-
-				}
-				//Create Gedcom 5.5.1 response
-				else {
-					try {
-						$resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_instance, false);
-						$root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
-						fclose($resource);
-
-						$response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
-
-					} catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
-
-                        if ($ex instanceof DownloadGedcomWithUrlException) $response = $this->showErrorMessage($ex->getMessage());
-						else $response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
-					}
-				}
+                    if ($ex instanceof DownloadGedcomWithUrlException) $response = $this->showErrorMessage($ex->getMessage());
+                    else $response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
+                }
 			}
 
 			//If download or both
@@ -855,14 +837,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				if(boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1'))) {
 
                     try {
-                        //If Gedcom 7, create Gedcom 7 response
-                        if ($gedcom7) {
-                            $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, true, $gedcom_l);
-                        }
-                        //Create Gedcom 5.5.1 response
-                        else {
-                            $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_instance, false);
-                        }
+                        //Create response
+                        $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, [$export_filter_instance]);
                     }
                     catch (DownloadGedcomWithUrlException $ex) {
 

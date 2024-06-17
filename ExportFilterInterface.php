@@ -39,7 +39,7 @@ interface ExportFilterInterface
      *
      * @return array
      */
-    public function getExportFilter(Tree $tree = null): array;
+    public function getExportFilterRules(Tree $tree = null): array;
 
     /**
      * Custom conversion of a Gedcom string
@@ -59,4 +59,10 @@ interface ExportFilterInterface
      */
     public function validate(): string;
 
+    /**
+     * Wether the filter uses a references analysis between the records
+     *
+     * @return bool   true if reference analysis is used
+     */
+    public function usesReferencesAnalysis(): bool;    
 }

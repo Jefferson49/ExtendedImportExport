@@ -149,8 +149,8 @@ class RemoteGedcomExportService extends GedcomExportService
     // The chosen export filter (if export filtering is used)
     private ExportFilterInterface $export_filter;
 
-    // The export filter list
-    private array $export_filter_list;
+    // The export filter rules
+    private array $export_filter_rules;
 
     // The tag patterns of the export filter
     private array $export_filter_patterns;
@@ -167,9 +167,13 @@ class RemoteGedcomExportService extends GedcomExportService
     //List of custom tags, which were found in the GEDCOM data
     private array $custom_tags_found;
 
-    //List of all records found
+    //List of records as <Record> objects, which contain the references between the records
     //array <string xref => Record record>
-    private array $records_list;
+    private array $records_references;
+
+    //An array, which contains the Gedcom data for all the records
+    //Each element in the array contains the Gedcom of the HEAD, TRLR, or a record (i.e. FAM, INDI, ...)
+    private array $gedcom_records;
 
 
     /**
@@ -180,7 +184,8 @@ class RemoteGedcomExportService extends GedcomExportService
 	{
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
-        $this->export_filter_list = [];
+        $this->gedcom_records = [];
+        $this->export_filter_rules = [];
         $this->export_filter_patterns = []; 
         $this->export_filter_rule_has_regexp = [];
         $this->records_xref_list = [];
@@ -188,12 +193,13 @@ class RemoteGedcomExportService extends GedcomExportService
         $this->references_list = [];
         $this->custom_tags_found = [];
         $this->schema_uris_for_tags = [];
+        $this->records_references = [];
         
 		$iana_language_registry_file_name = __DIR__ . '/vendor/iana/iana_languages.txt';
-
 		$iana_language_registry = file_get_contents($iana_language_registry_file_name);
 
 		//Create language table
+        //ToDo: Create for Gedcom 7 only
 		preg_match_all("/Type: language\nSubtag: ([^\n]+)\nDescription: ([^\n]+)\n/", $iana_language_registry, $matches, PREG_SET_ORDER);
 
 		foreach ($matches as $match) {
@@ -209,9 +215,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param string                      $line_endings
      * @param string                      $filename     Name of download file, without an extension
      * @param string                      $format       One of: gedcom, zip, zipmedia, gedzip
-     * @param ExportFilterInterface       $export_filter       A GEDCOM export filter
-	 * @param bool                        $gedcom_7     Whether export is GEDCOM 7
-	 * @param bool                        $gedcom_l     Whether export should consider GEDCOM-L
+     * @param array<ExportFilterInterface>       $export_filters       An array, which contains GEDCOM export filters
      * @param Collection<int,string|object|GedcomRecord>|null $records
      *
      * @return ResponseInterface
@@ -224,37 +228,14 @@ class RemoteGedcomExportService extends GedcomExportService
         string $line_endings,
         string $filename,
         string $format,
-        ExportFilterInterface $export_filter = null,
-		bool $gedcom_7 = false,
-		bool $gedcom_l = false,
+        array $export_filters = null,
         Collection $records = null
     ): ResponseInterface {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
-        //If Gedcom 7, create schema list
-        if ($gedcom_7) {
-
-            //Create schema list
-            $this->schema_uris_for_tags = [];
-            $this->addToSchemas(self::SCHEMAS);
-
-            if($gedcom_l) {
-                $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
-            }
-        }
-
-        $records_reference_analysis = $this->useRecordsList($export_filter);
-
-        //If empty records or customs tags list shall be created, run preliminary export to collect the data
-        if ($gedcom_7 OR $records_reference_analysis) {
-
-            //Preliminary export
-            $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $records_reference_analysis, $gedcom_7, $gedcom_l, true, $records);
-        }
-
         if ($format === 'gedcom') {
             //Create export
-            $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, false, $gedcom_7, $gedcom_l, false, $records);
+            $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
             $stream   = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()
@@ -279,7 +260,7 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         //Create export
-        $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, false, $gedcom_7, $gedcom_l, false, $records, $zip_filesystem, $media_path);
+        $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
@@ -306,9 +287,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param string                 $privacy      Filter records by role
      * @param string                 $line_endings
      * @param string                 $format       One of: gedcom, zip, zipmedia, gedzip
-     * @param ExportFilterInterface  $export_filter  A GEDCOM export filter
-     * @param bool                   $gedcom_7     Whether export is GEDCOM 7
-	 * @param bool                   $gedcom_l     Whether export should consider GEDCOM-L
+     * @param array<ExportFilterInterface>       $export_filters       An array, which contains GEDCOM export filters
      * @param Collection|null        $records
      *
      * @return ?resource
@@ -320,36 +299,13 @@ class RemoteGedcomExportService extends GedcomExportService
         string $privacy,
         string $line_endings,
         string $format,
-        ExportFilterInterface $export_filter = null,
-		bool $gedcom_7 = false,
-		bool $gedcom_l = false,
+        array $export_filters = null,
         Collection $records = null
     ) {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
-        //If Gedcom 7, create schema list
-        if ($gedcom_7) {
-
-            //Create schema list
-            $this->schema_uris_for_tags = [];
-            $this->addToSchemas(self::SCHEMAS);
-
-            if($gedcom_l) {
-                $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
-            }
-        }
-
-        $records_reference_analysis = $this->useRecordsList($export_filter);
-
-        //If empty records or customs tags list shall be created, run preliminary export to collect the data
-        if ($gedcom_7 OR $records_reference_analysis) {
-
-            //Preliminary export           
-            $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, $records_reference_analysis, $gedcom_7, $gedcom_l, true, $records);
-        }
-
         //Create export
-        return $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filter, false, $gedcom_7, $gedcom_l, false, $records);
+        return $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records);
     }
 
     /**
@@ -360,14 +316,11 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param string                                          $encoding       Convert from UTF-8 to other encoding
      * @param int                                             $access_level   Apply privacy filtering
      * @param string                                          $line_endings   CRLF or LF
-     * @param ExportFilterInterface                           $export_filter      A GEDCOM export filter
-	 * @param bool                                            $gedcom_7           Whether export is GEDCOM 7
-	 * @param bool                                            $gedcom_l           Whether export should consider GEDCOM-L
-     * @param bool                                            $check_custom_tags  Just check custom tags; do not create a stream
-     * @param bool                                            $records_reference_analysis   Just analyze records and references
+     * @param array<ExportFilterInterface>                    $export_filters       An array, which contains GEDCOM export filters
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
      * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
+     * @param Collection|null                                 $records
      *
      * @return ?resource
      */
@@ -377,51 +330,25 @@ class RemoteGedcomExportService extends GedcomExportService
         string $encoding = UTF8::NAME,
         int $access_level = Auth::PRIV_HIDE,
         string $line_endings = 'CRLF',
-        ExportFilterInterface $export_filter = null,
-		bool $records_reference_analysis = false,
-		bool $gedcom_7 = false,
-		bool $gedcom_l = false,
-        bool $check_custom_tags = false,
+        array $export_filters = [],
         ?Collection $records = null,
         ?FilesystemOperator $zip_filesystem = null,
         ?string $media_path = null
     ) {
-        if($export_filter !== null && !$records_reference_analysis) {
+        //Create stream and initialize array with Gedcom export
+        $stream = fopen('php://memory', 'wb+');
 
-            //Initialize export filter if needed
-            if ($export_filter !== null) {
+        //Initialize gedcom export array
+        $gedcom_export = [];
 
-                $this->export_filter = $export_filter;
-                $this->export_filter_list = $export_filter->getExportFilter($tree);
-                $this->export_filter_patterns = array_keys($this->export_filter_list);
-                $this->export_filter_rule_has_regexp = $this->export_filter_patterns;
-
-                //Create lookup table if regexp exists for a pattern
-                foreach($this->export_filter_patterns as $pattern) {
-                    
-                    //TodDo: Does filter always contain an array??
-                    $this->export_filter_rule_has_regexp[$pattern] = $this->export_filter_list[$pattern] !== [];
-                }
-            }
+        if ($stream === false) {
+            throw new RuntimeException('Failed to create temporary stream');
         }
 
-        if(!$check_custom_tags && !$records_reference_analysis) {
+        stream_filter_append($stream, GedcomEncodingFilter::class, STREAM_FILTER_WRITE, ['src_encoding' => UTF8::NAME, 'dst_encoding' => $encoding]);
 
-            //Create stream
-            $stream = fopen('php://memory', 'wb+');
-
-            if ($stream === false) {
-                throw new RuntimeException('Failed to create temporary stream');
-            }
-
-            stream_filter_append($stream, GedcomEncodingFilter::class, STREAM_FILTER_WRITE, ['src_encoding' => UTF8::NAME, 'dst_encoding' => $encoding]);
-        }
-
-        if ($gedcom_7) {
-            $header_collection = new Collection([$this->createGedcom7Header($tree, $encoding, false)]);
-        } else {
-            $header_collection = new Collection([$this->createHeader($tree, $encoding, true)]);
-        }
+        //Create a Gedcom 5.5.1 header
+        $header_collection = new Collection([$this->createHeader($tree, $encoding, true)]);
 
         if ($records instanceof Collection) {
             // Export just these records - e.g. from clippings cart.
@@ -437,7 +364,7 @@ class RemoteGedcomExportService extends GedcomExportService
                 $this->individualQuery($tree, $sort_by_xref)->cursor(),
                 $this->familyQuery($tree, $sort_by_xref)->cursor(),
                 $this->sourceQuery($tree, $sort_by_xref)->cursor(),
-                $this->remoteOtherQuery($tree, $sort_by_xref, $gedcom_7)->cursor(),
+                $this->remoteOtherQuery($tree, $sort_by_xref)->cursor(),
                 $this->mediaQuery($tree, $sort_by_xref)->cursor(),
                 new Collection(['0 TRLR']),
             ];
@@ -452,15 +379,13 @@ class RemoteGedcomExportService extends GedcomExportService
                 $this->individualQuery($tree, $sort_by_xref)->get()->map(Registry::individualFactory()->mapper($tree)),
                 $this->familyQuery($tree, $sort_by_xref)->get()->map(Registry::familyFactory()->mapper($tree)),
                 $this->sourceQuery($tree, $sort_by_xref)->get()->map(Registry::sourceFactory()->mapper($tree)),
-                $this->remoteOtherQuery($tree, $sort_by_xref, $gedcom_7)->get()->map(Registry::gedcomRecordFactory()->mapper($tree)),
+                $this->remoteOtherQuery($tree, $sort_by_xref)->get()->map(Registry::gedcomRecordFactory()->mapper($tree)),
                 $this->mediaQuery($tree, $sort_by_xref)->get()->map(Registry::mediaFactory()->mapper($tree)),
                 new Collection(['0 TRLR']),
             ];
         }
 
         $media_filesystem = $tree->mediaFilesystem();
-
-        $apply_filter = $export_filter !== null && !$check_custom_tags && !$records_reference_analysis;
 
         foreach ($data as $rows) {
             foreach ($rows as $datum) {
@@ -477,16 +402,7 @@ class RemoteGedcomExportService extends GedcomExportService
                         $datum->o_gedcom;
                 }
 
-                //Analysis of records and references
-                if($records_reference_analysis) {
-
-                    $this->analyzeRecordsAndReferences($gedcom);
-
-                    //Performance eoptimization: Cancel further processing if no checking of custom tags is needed
-                    if (!$check_custom_tags) break;
-                }
-
-                if (!$check_custom_tags && $media_path !== null && $zip_filesystem !== null && preg_match('/0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
+                if ($media_path !== null && $zip_filesystem !== null && preg_match('/0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
                     preg_match_all('/\n1 FILE (.+)/', $gedcom, $matches, PREG_SET_ORDER);
 
                     foreach ($matches as $match) {
@@ -498,56 +414,61 @@ class RemoteGedcomExportService extends GedcomExportService
                     }
                 }
 
-				//If not Gedcom 7, wrap long lines 
-                if (!$gedcom_7) {
-                    $gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH) . "\n";
-                }
-                else {
-                    $gedcom .= "\n";
-                }
-
-                //Apply custom conversions according to an export filter
-                if ($apply_filter) {
-
-                    $gedcom = $this->exportFilter($gedcom, 0, '', '');
-                }
-
-                //Convert to Gedcom 7
-                if ($gedcom_7) {
-                    $gedcom = $this->convertToGedcom7($gedcom, $gedcom_l);
-                }
-
-                if($check_custom_tags) {
-                    //Find known custom tags
-                    $this->findCustomTags($gedcom);
-                }
-                else {
-                    if ($line_endings === 'CRLF') {
-                        $gedcom = strtr($gedcom, ["\n" => "\r\n"]);
-                    }
-
-                    $bytes_written = fwrite($stream, $gedcom);
-
-                    if ($bytes_written !== strlen($gedcom)) {
-                        throw new RuntimeException('Unable to write to stream.  Perhaps the disk is full?');
-                    }
-                }
+                //Add Gedcom to the export
+                $gedcom_export[] = $gedcom .= "\n";
 			}
         }
 
-        if ($records_reference_analysis) {
-            $this->removeEmptyAndUnlinkedRecords();
-        }
+        //Apply export filters
+        $gedcom_export = $this->applyExportFilters($gedcom_export, $export_filters, $tree);
 
-        if(!$check_custom_tags) {        
-            if (rewind($stream) === false) {
-                throw new RuntimeException('Cannot rewind temporary stream');
+        //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
+        $gedcom7 = ($this->isGedcom7Header($gedcom_export[0]));
+
+        //If Gedcom 7, create schema list and perform custom tag analysis
+        if ($gedcom7) {
+
+            //Create schema list
+            $this->schema_uris_for_tags = [];
+            $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
+            $this->addToSchemas(self::SCHEMAS);
+
+            //Find custom tags
+            foreach($gedcom_export as $gedcom) {
+
+                $this->findCustomTags($gedcom);
             }
 
-            return $stream;
+            //Create Gedcom 7 header
+            //ToDo
+            $header = $this->createGedcom7Header($tree, $encoding, false);
         }
 
-        return;
+        //Write to stream
+        foreach($gedcom_export as $gedcom) {
+
+            //If not Gedcom 7, wrap long lines
+            if (!$gedcom7) {
+                $gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH);
+            }
+
+            //Convert to the requested line ending
+            if ($line_endings === 'CRLF') {
+                $gedcom = strtr($gedcom, ["\n" => "\r\n"]);
+            }
+
+            $bytes_written = fwrite($stream, $gedcom);
+
+            if ($bytes_written !== strlen($gedcom)) {
+                throw new RuntimeException('Unable to write to stream.  Perhaps the disk is full?');
+            }
+        }
+
+        if (rewind($stream) === false) {
+            throw new RuntimeException('Cannot rewind temporary stream');
+        }
+
+        return $stream;
     }
 
     /**
@@ -907,6 +828,48 @@ class RemoteGedcomExportService extends GedcomExportService
     }
 
     /**
+     * Wrap long lines using concatenation records.
+     *
+     * @param string $gedcom
+     * @param int    $max_line_length
+     *
+     * @return string
+     */
+    public function wrapLongLines(string $gedcom, int $max_line_length): string
+    {
+        $lines = [];
+
+        foreach (explode("\n", $gedcom) as $line) {
+            // Split long lines
+            // The total length of a GEDCOM line, including level number, cross-reference number,
+            // tag, value, delimiters, and terminator, must not exceed 255 (wide) characters.
+            if (mb_strlen($line) > $max_line_length) {
+                [$level, $tag] = explode(' ', $line, 3);
+                if ($tag !== 'CONT') {
+                    $level++;
+                }
+                do {
+                    // Split after $pos chars
+                    $pos = $max_line_length;
+                    // Split on a non-space (standard gedcom behavior)
+                    while (mb_substr($line, $pos - 1, 1) === ' ') {
+                        --$pos;
+                    }
+                    if ($pos === strpos($line, ' ', 3)) {
+                        // No non-spaces in the data! Can’t split it :-(
+                        break;
+                    }
+                    $lines[] = mb_substr($line, 0, $pos);
+                    $line    = $level . ' CONC ' . mb_substr($line, $pos);
+                } while (mb_strlen($line) > $max_line_length);
+            }
+            $lines[] = $line;
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /**
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -993,18 +956,12 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * @param Tree $tree
      * @param bool $sort_by_xref
-     * @param bool $gedcom_7        Whether export is GEDCOM 7
      *
      * @return Builder
      */
-    private function remoteOtherQuery(Tree $tree, bool $sort_by_xref, bool $gedcom_7): Builder
+    private function remoteOtherQuery(Tree $tree, bool $sort_by_xref): Builder
     {
-        if ($gedcom_7) {
-            //Ignore SUBN, because it does not exist in GEDCOM 7
-            $ignored_values = [Header::RECORD_TYPE, Submission::RECORD_TYPE, 'TRLR'];
-        } else {
-            $ignored_values = [Header::RECORD_TYPE, 'TRLR'];
-        }
+        $ignored_values = [Header::RECORD_TYPE, 'TRLR'];
 
         $query = DB::table('other')
             ->where('o_file', '=', $tree->id())
@@ -1063,16 +1020,79 @@ class RemoteGedcomExportService extends GedcomExportService
     }
 
     /**
+     * Apply export filters to a records list
+     *
+     * @param array<string>                 $gedcom_records  An array with the Gedcom structures of the records
+     * @param array<ExportFilterInterface>  $export_filters  An array with export filters
+     * @param Tree                          $tree
+     * 
+     * @return array<string>                                 An array with the records after application of the filter 
+     */
+    public function applyExportFilters(array $gedcom_records, array $export_filters, Tree $tree): array
+    {
+        foreach($export_filters as $export_filter) {
+
+            if ($export_filter === null) break;
+
+            //Initialize export filter
+            //ToDo: Do not use global class variables
+            $this->export_filter = $export_filter;
+            $this->export_filter_rules = $export_filter->getExportFilterRules($tree);
+            $this->export_filter_patterns = array_keys($this->export_filter_rules);
+            $this->export_filter_rule_has_regexp = $this->export_filter_patterns;
+            $records_references_analysis = $export_filter->usesReferencesAnalysis();
+
+            //Create lookup table if regexp exists for a pattern
+            foreach($this->export_filter_patterns as $pattern) {
+                
+                //TodDo: Does filter always contain an array??
+                $this->export_filter_rule_has_regexp[$pattern] = $this->export_filter_rules[$pattern] !== [];
+            }
+
+            //If requested, perform empty and not referenced records analysis
+            if ($records_references_analysis) {
+
+                //Reset list with records and references
+                $this->records_references = [];
+
+                foreach($gedcom_records as $gedcom) {
+
+                    $this->analyzeRecordsAndReferences($gedcom);
+                }
+
+                //Remove empty and unlinked records
+                if ($records_references_analysis) {
+                    $this->removeEmptyAndUnlinkedRecords();
+                }
+            }            
+
+            //Apply filter
+            $filterd_gedcom_records = [];
+            foreach($gedcom_records as $gedcom) {
+
+                $gedcom = $this->executeFilter($gedcom, 0, '', '');
+
+                if ($gedcom !== '') {
+                    $filterd_gedcom_records[] = $gedcom;
+                } 
+            }
+            $gedcom_records = $filterd_gedcom_records;
+        }
+             
+        return $gedcom_records;
+    }
+
+    /**
      * Convert Gedcom record according to an export filter
      *
-     * @param string  $gedcom
-     * @param int     $level                                level of Gedcom structure
-     * @param string  $higher_level_matched_tag_pattern     pattern, which was matched on higher level of GEDCOM structure (recursion)
-     * @param string  $tag_combination                      e.g. INDI:BIRT:DATE
+     * @param string                $gedcom
+     * @param int                   $level                              level of Gedcom structure
+     * @param string                $higher_level_matched_tag_pattern   pattern, which was matched on higher level of GEDCOM structure (recursion)
+     * @param string                $tag_combination                    e.g. INDI:BIRT:DATE
      *
      * @return string Converted Gedcom
      */
-    public function exportFilter(string $gedcom, int $level, string  $higher_level_matched_tag_pattern, string $tag_combination): string
+    public function executeFilter(string $gedcom, int $level, string  $higher_level_matched_tag_pattern, string $tag_combination): string
     {   
         $converted_gedcom = '';
 
@@ -1112,7 +1132,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
         foreach ($gedcom_substructures as $gedcom_substructure) {
 
-            $converted_gedcom .= $this->exportFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination);
+            $converted_gedcom .= $this->executeFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination);
         }
 
         //If regular expressions are provided for the pattern, run replacements
@@ -1231,7 +1251,7 @@ class RemoteGedcomExportService extends GedcomExportService
      */
     private function replaceInGedcom(string $matched_pattern, string $gedcom): string {
 
-        $replace_pairs=$this->export_filter_list[$matched_pattern];
+        $replace_pairs=$this->export_filter_rules[$matched_pattern];
 
         //For each replacement, which is provided
         foreach ($replace_pairs as $search => $replace) {
@@ -1239,14 +1259,7 @@ class RemoteGedcomExportService extends GedcomExportService
             //If according string is found, apply custom conversion
             if ($search === self::CUSTOM_CONVERT) {
 
-                try {
-                    $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom, $this->records_list);
-                }
-                catch (Throwable $th) {
-                    $message = I18N::translate('The used export filter (%s) contains a %s command, but the filter class does not contain a %s method.', 
-                                    (new ReflectionClass($this->export_filter))->getShortName(), self::CUSTOM_CONVERT, self::CUSTOM_CONVERT);
-                    throw new DownloadGedcomWithUrlException($message);
-                }
+                $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom, $this->records_references);
             }
 
             //Else apply RegExp replacement
@@ -1289,32 +1302,6 @@ class RemoteGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Evaluate whether to use an empty records list
-     *
-     * @param ExportFilterInterface   An export filter
-     * 
-     * @return bool                   True if empty records list shall be used
-     */
-    private function useRecordsList(ExportFilterInterface $export_filter = null) : bool {
-
-        if ($export_filter !== null) {
-
-            $refl = new ReflectionClass($export_filter);
-    
-            //If the export filter contains the customConvert method and method is not inherited
-            try {
-                if ($refl->getMethod('customConvert')->class === get_class($export_filter)) return true;
-            }
-            catch (Throwable $th) {
-                $message = I18N::translate('The used export filter (%s) contains a %s command, but the filter class does not contain a %s method.', (new ReflectionClass($export_filter))->getShortName(), self::CUSTOM_CONVERT, self::CUSTOM_CONVERT);
-                throw new DownloadGedcomWithUrlException($message);
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Perform an analysis of records their references and create a record list and links between the records
      *
      * @param string $gedcom
@@ -1336,13 +1323,13 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         //If not exists, create record and add to records list
-        if (!isset($this->records_list[$xref])) {
+        if (!isset($this->records_references[$xref])) {
 
             $record = new Record($xref, $record_type);
-            $this->records_list[$xref] = $record;
+            $this->records_references[$xref] = $record;
         }
         else {
-            $record = $this->records_list[$xref];
+            $record = $this->records_references[$xref];
 
             //Add type if is not set already, i.e. a reference has been found earlier and type could not be identified
             if ($record->type() === '') {
@@ -1363,13 +1350,13 @@ class RemoteGedcomExportService extends GedcomExportService
         foreach ($matches[1] as $match) {
 
             //If not exists, create record for reference and add to records list
-            if (!isset($this->records_list[$match])) {
+            if (!isset($this->records_references[$match])) {
 
                 $referenced = new Record($match, '');  //Unfortunatelly, we do not know the type. Therefore, set type to ''
-                $this->records_list[$match] = $referenced;
+                $this->records_references[$match] = $referenced;
             }
             else {
-                $referenced = $this->records_list[$match];
+                $referenced = $this->records_references[$match];
             }
 
             //Link record to referenced record
@@ -1398,7 +1385,7 @@ class RemoteGedcomExportService extends GedcomExportService
             $iteration++;
 
             //Iterate over all records in the record list
-            foreach ($this->records_list as $xref => $record) {
+            foreach ($this->records_references as $xref => $record) {
 
                 $propagate_result = $this->propagateReferences($record);
                 $modified_references = $modified_references || $propagate_result;
@@ -1448,5 +1435,22 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         return $modified_references;
+    }
+
+    /**
+     * Assess whether a Gedcom structure contains a Gedcom 7 header
+     * 
+     * @param string $gedcom    Gedcom structure
+     * 
+     * @return bool             True if is a Gedcom 7 header, otherwise false
+     */
+    private function isGedcom7Header(string $gedcom) : bool {
+
+        preg_match('/0 (HEAD|TRLR)/', $gedcom, $match);
+        $record_type= $match[1] ?? '';
+
+        if ($record_type !== 'HEAD') return false;
+    
+        return preg_match("/1 GEDC\n2 VERS 7/", $gedcom, $match) === 0;
     }
 }

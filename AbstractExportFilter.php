@@ -47,6 +47,9 @@ use Throwable;
  */
 class AbstractExportFilter implements ExportFilterInterface
 {
+    //A switch, whether the filter uses a references analysis between the records
+    protected const USES_REFERENCES_ANALYSIS = false;
+
     //The definition of the export filter rules
     protected const EXPORT_FILTER = [];
 
@@ -57,7 +60,7 @@ class AbstractExportFilter implements ExportFilterInterface
      *
      * @return array
      */
-    public function getExportFilter(Tree $tree = null): array {
+    public function getExportFilterRules(Tree $tree = null): array {
 
         return static::EXPORT_FILTER;
     }
@@ -92,12 +95,21 @@ class AbstractExportFilter implements ExportFilterInterface
             return I18N::translate('The selected export filter (%s) contains an invalid filter definition (%s).', $class_name, 'const EXPORT_FILTER');
         }
 
-        //Validate if getExportFilter returns an array
-        if (!is_array($this->getExportFilter())) {
-            return I18N::translate('The getExportFilter() method of the export filter (%s) returns an invalid filter definition.', $class_name,);
+        //Validate, if getExportFilterRules() creates a PHP error
+        try {
+            $test = $this->getExportFilterRules();
+        }
+        catch (Throwable $th) {
+            return I18N::translate('The %s method of the used export filter (%s) throws a PHP error', 'getExportFilterRules', (new ReflectionClass($this))->getShortName()) .
+                                    ': ' . $th->getMessage();
         }
 
-        foreach($this->getExportFilter() as $pattern => $regexps) {
+        //Validate if getExportFilterRules returns an array
+        if (!is_array($this->getExportFilterRules())) {
+            return I18N::translate('The getExportFilterRules() method of the export filter (%s) returns an invalid filter definition.', $class_name,);
+        }
+
+        foreach($this->getExportFilterRules() as $pattern => $regexps) {
 
             //Validate filter rule
             if (!is_array($regexps)) {
@@ -158,8 +170,8 @@ class AbstractExportFilter implements ExportFilterInterface
 
             //Check if a rule is dominated by another rule, which is higher priority (i.e. earlier entry in the export filter list)
             $i = 0;
-            $size = sizeof($this->getExportFilter());
-            $pattern_list = array_keys($this->getExportFilter());
+            $size = sizeof($this->getExportFilterRules());
+            $pattern_list = array_keys($this->getExportFilterRules());
 
             while($i < $size && $pattern !== $pattern_list[$i]) {
 
@@ -214,4 +226,14 @@ class AbstractExportFilter implements ExportFilterInterface
         }
         return $merged_filter_rules;
     }
+
+    /**
+     * Wether the filter uses a references analysis between the records
+     *
+     * @return bool   true if reference analysis is used
+     */
+    public function usesReferencesAnalysis(): bool {
+
+        return static::USES_REFERENCES_ANALYSIS;
+    }    
 }

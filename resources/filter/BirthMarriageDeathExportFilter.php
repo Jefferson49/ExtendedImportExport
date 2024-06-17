@@ -90,7 +90,7 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
    *
    * @return array
    */
-  public function getExportFilter(Tree $tree = null): array {
+  public function getExportFilterRules(Tree $tree = null): array {
 
     $export_filter = [];
 

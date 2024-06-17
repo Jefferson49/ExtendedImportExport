@@ -18,12 +18,12 @@ class CombinedExportFilter extends AbstractExportFilter implements ExportFilterI
      *
      * @return array
      */
-    public function getExportFilter(Tree $tree = null): array {
+    public function getExportFilterRules(Tree $tree = null): array {
 
       $filter1 = new NoRecordsExportFilter();
       $filter2 = new ExampleExportFilter();
 
-      return $this->mergeFilterRules($filter1->getExportFilter($tree), $filter2->getExportFilter($tree));
+      return $this->mergeFilterRules($filter1->getExportFilterRules($tree), $filter2->getExportFilterRules($tree));
     }   
 
     /**

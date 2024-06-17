@@ -64,5 +64,12 @@ interface ExportFilterInterface
      *
      * @return bool   true if reference analysis is used
      */
-    public function usesReferencesAnalysis(): bool;    
+    public function usesReferencesAnalysis(): bool;
+
+    /**
+     * Whether custom tags shall be analyzed and SCHMA structures shall be added to GEDCOM 7
+     *
+     * @return bool   true if SCHMA analysis is used
+     */
+    public function usesSchemaTagAnalysis(): bool; 
 }

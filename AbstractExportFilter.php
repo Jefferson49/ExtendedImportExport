@@ -50,6 +50,9 @@ class AbstractExportFilter implements ExportFilterInterface
     //A switch, whether the filter uses a references analysis between the records
     protected const USES_REFERENCES_ANALYSIS = false;
 
+    //A switch, whether custom tags shall be analyzed and SCHMA structures shall be added (only for GEDCOM 7)
+    protected const USES_SCHEMA_TAG_ANALYSIS = true;
+
     //The definition of the export filter rules
     protected const EXPORT_FILTER = [];
 
@@ -236,4 +239,14 @@ class AbstractExportFilter implements ExportFilterInterface
 
         return static::USES_REFERENCES_ANALYSIS;
     }    
+
+    /**
+     * Whether custom tags shall be analyzed and SCHMA structures shall be added to GEDCOM 7
+     *
+     * @return bool   true if SCHMA analysis is used
+     */
+    public function usesSchemaTagAnalysis(): bool {
+
+        return static::USES_SCHEMA_TAG_ANALYSIS;
+    }   
 }

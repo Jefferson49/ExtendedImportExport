@@ -305,7 +305,7 @@ class RemoteGedcomExportService extends GedcomExportService
         $access_level = self::ACCESS_LEVELS[$privacy];
 
         //Create export
-        return $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $records);
+        return $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
     }
 
     /**

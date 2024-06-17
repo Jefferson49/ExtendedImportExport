@@ -112,6 +112,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
     public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
     public const PREF_DEFAULT_EXPORT_FILTER = 'default_export_filter';
+    public const PREF_DEFAULT_EXPORT_FILTER2 = 'default_export_filter2';
     public const PREF_DEFAULT_PRIVACY_LEVEL = 'default_privacy_level'; 
     public const PREF_DEFAULT_EXPORT_FORMAT = 'default_export_format';
     public const PREF_DEFAULT_ENCODING = 'default_encoding';
@@ -334,9 +335,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         $export_filter_list = $this->getExportFilterList();
 
-        //If currently selected export filter is not available, reset export filter to none
         $current_export_filter = $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER);
+        $current_export_filter2 = $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2);
 
+        //If currently selected export filter is not available, reset export filter to none
         if (!array_key_exists($current_export_filter, $export_filter_list)) {
 
             $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER, '');
@@ -345,8 +347,23 @@ class DownloadGedcomWithURL extends AbstractModule implements
             FlashMessages::addMessage($message, 'danger');
         }
 
+        //If currently selected export filter 2 is not available, reset export filter to none
+        if (!array_key_exists($current_export_filter2, $export_filter_list)) {
+
+            $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER2, '');
+            $current_export_filter2 = '';
+            $message = I18N::translate('The preferences for the default export filter were reset to "none", because the selected export filter %s could not be found', $current_export_filter2);
+            FlashMessages::addMessage($message, 'danger');
+        }
+
         //Validate selected export filter
         if ($current_export_filter !== '' && ($error = $this->validateExportFilter($current_export_filter)) !== '') {
+    
+            FlashMessages::addMessage($error, 'danger');
+        }
+
+        //Validate selected export filter2
+        if ($current_export_filter2 !== '' && ($error = $this->validateExportFilter($current_export_filter2)) !== '') {
     
             FlashMessages::addMessage($error, 'danger');
         }
@@ -364,6 +381,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 self::PREF_DEFAULT_TREE_NAME          => $this->getPreference(self::PREF_DEFAULT_TREE_NAME, array_key_first($tree_list)),
                 self::PREF_DEFAULT_FiLE_NAME          => $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, array_key_first($tree_list)),
                 self::PREF_DEFAULT_EXPORT_FILTER      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER, ''),
+                self::PREF_DEFAULT_EXPORT_FILTER2     => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2, ''),
                 self::PREF_DEFAULT_PRIVACY_LEVEL      => $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none'),
                 self::PREF_DEFAULT_EXPORT_FORMAT      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
                 self::PREF_DEFAULT_ENCODING           => $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME),
@@ -393,6 +411,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $default_tree_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TREE_NAME, '');
         $default_file_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_FiLE_NAME, 'export');
         $default_export_filter      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FILTER, '');
+        $default_export_filter2     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FILTER2, '');
         $default_privacy_level      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none');
         $default_export_format      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom');
         $default_encoding           = Validator::parsedBody($request)->string(self::PREF_DEFAULT_ENCODING, UTF8::NAME);
@@ -472,6 +491,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $this->setPreference(self::PREF_DEFAULT_TREE_NAME, $default_tree_name);           
             $this->setPreference(self::PREF_DEFAULT_FiLE_NAME, $default_file_name);           
             $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER, $default_export_filter);           
+            $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER2, $default_export_filter2);           
             $this->setPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, $default_privacy_level);           
             $this->setPreference(self::PREF_DEFAULT_EXPORT_FORMAT, $default_export_format);           
             $this->setPreference(self::PREF_DEFAULT_ENCODING, $default_encoding);           
@@ -709,6 +729,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$action              = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'));
 		$time_stamp          = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'));
 		$export_filter       = Validator::queryParams($request)->string('export_filter', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER, ''));
+		$export_filter2      = Validator::queryParams($request)->string('export_filter', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2, ''));
 		$test_download_token = Validator::queryParams($request)->string('test_download_token', '');
 
         //A test download is allowed if a valid token is submitted
@@ -716,6 +737,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         //Add namespace to export filter
         $export_filter_class_name = __NAMESPACE__ . '\\' . $export_filter;
+        $export_filter_class_name2 = __NAMESPACE__ . '\\' . $export_filter2;
 
         //Load export filter classes
         if (!$export_filter !== '') {
@@ -781,6 +803,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
         elseif ($export_filter !== '' && ($error = $this->validateExportFilter($export_filter)) !== '') {
             $response = $this->showErrorMessage($error);
         }
+		//Error if export filter 2 validation fails
+        elseif ($export_filter2 !== '' && ($error = $this->validateExportFilter($export_filter2)) !== '') {
+            $response = $this->showErrorMessage($error);
+        }
 
 		//If no errors, start the core activities of the module
 		else {
@@ -791,6 +817,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }
             else {
                 $export_filter_instance = null;
+            }
+
+            //Get instance of export filter 2
+            if ($export_filter2 !== '') {
+                $export_filter_instance2 = new $export_filter_class_name2();
+            }
+            else {
+                $export_filter_instance2 = null;
             }
 
 			//Add time stamp to file name if requested
@@ -817,7 +851,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 				//Create response
                 try {
-                    $resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, [$export_filter_instance]);
+                    $resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, [$export_filter_instance, $export_filter_instance2]);
                     $root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
                     fclose($resource);
 
@@ -838,7 +872,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     try {
                         //Create response
-                        $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, [$export_filter_instance]);
+                        $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, [$export_filter_instance, $export_filter_instance2]);
                     }
                     catch (DownloadGedcomWithUrlException $ex) {
 

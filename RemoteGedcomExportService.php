@@ -390,9 +390,6 @@ class RemoteGedcomExportService extends GedcomExportService
                 }
 
                 //Add Gedcom to the export
-                if ($gedcom === '') {
-                    $gedcom = 'debug';
-                }
                 $gedcom_export[] = $gedcom .= "\n";
 			}
         }
@@ -1024,15 +1021,22 @@ class RemoteGedcomExportService extends GedcomExportService
     private function analyzeRecordsAndReferences(string $gedcom) : void {
 
         //Match xref
-        preg_match('/0 @(' . Gedcom::REGEX_XREF . ')@ (' . Gedcom::REGEX_TAG . ')/', $gedcom, $match);
+        preg_match('/0 @(' . Gedcom::REGEX_XREF . ')@ (' . Gedcom::REGEX_TAG . ')(.*)\n(.*)/', $gedcom, $match);
         $xref = $match[1] ?? '';
         $record_type = $match[2] ?? '';
+        $text = $match[3] ?? '';
+        $record_content = $match[4] ?? '';
+
+        if ($xref === 'S10701') {
+            $record_type = 'SOUR';
+        }
 
         //Specific treatment of HEAD and TRLR
         if ($xref === '') {
             preg_match('/0 (HEAD|TRLR)/', $gedcom, $match);
             $xref = $match[1] ?? '';
             $record_type = $xref;
+            $text = $xref;
         }
 
         //If not exists, create record and add to records list
@@ -1051,8 +1055,8 @@ class RemoteGedcomExportService extends GedcomExportService
             }
         }
 
-        //If no sub-structure exists, set record to empty 
-        if (!strpos($gedcom, "\n")) {
+        //If no sub-structure exists, set record to empty
+        if ($text === '' && $record_content === '') {
 
             $record->setEmpty();
         }

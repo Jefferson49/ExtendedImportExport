@@ -112,9 +112,12 @@ class RemoveEmptyRecordsExportFilter extends AbstractExportFilter implements Exp
 
          preg_match('/[\d] [\w]{4} @(' . Gedcom::REGEX_XREF . ')@/', $gedcom, $match);
          $xref = $match[1] ?? '';
-
+      
          if ($xref !== '') {
-            if (!$records_list[$xref]->isReferencing()) {
+
+            //If referenced record is empty, remove Gedcom
+            if ($records_list[$xref]->isEmpty()) {
+
                $gedcom = '';
             }
          }

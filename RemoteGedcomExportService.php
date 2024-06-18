@@ -667,15 +667,15 @@ class RemoteGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Apply export filters to a records list
+     * Apply export filters to a set of Gedcom structures
      *
-     * @param array<string>                 $gedcom_records  An array with the Gedcom structures of the records
-     * @param array<ExportFilterInterface>  $export_filters  An array with export filters
+     * @param array<string>                 $gedcom_structures  An array with Gedcom structures
+     * @param array<ExportFilterInterface>  $export_filters     An array with export filters
      * @param Tree                          $tree
      * 
-     * @return array<string>                                 An array with the records after application of the filter 
+     * @return array<string>                                    An array with Gedcom structures after filter application
      */
-    public function applyExportFilters(array $gedcom_records, array $export_filters, Tree $tree): array
+    public function applyExportFilters(array $gedcom_structures, array $export_filters, Tree $tree): array
     {
         foreach($export_filters as $export_filter) {
 
@@ -702,31 +702,38 @@ class RemoteGedcomExportService extends GedcomExportService
                 //Reset list with records and references
                 $this->records_references = [];
 
-                foreach($gedcom_records as $gedcom) {
+                foreach($gedcom_structures as $gedcom) {
 
                     $this->analyzeRecordsAndReferences($gedcom);
                 }
 
-                //Remove empty and unlinked records
+                //Identify empty and unlinked records
                 if ($records_references_analysis) {
-                    $this->removeEmptyAndUnlinkedRecords();
+                    $this->identifyEmptyAndUnlinkedRecords();
                 }
             }            
 
             //Apply filter
-            $filterd_gedcom_records = [];
-            foreach($gedcom_records as $gedcom) {
+            $filtered_gedcom_records = [];
 
-                $gedcom = $this->executeFilter($gedcom, 0, '', '');
+            foreach($gedcom_structures as $gedcom_structure) {
 
-                if ($gedcom !== '') {
-                    $filterd_gedcom_records[] = $gedcom;
-                } 
+                //Parse if Gedcom contains several level 0 structures, e.g. created by an earlier filter
+                $gedcom_records = $this->parseTopLevelStructures($gedcom_structure);
+
+                foreach($gedcom_records as $gedcom) {
+
+                    $gedcom = $this->executeFilter($gedcom, 0, '', '');
+
+                    if ($gedcom !== '') {
+                        $filtered_gedcom_records[] = $gedcom;
+                    }    
+                }
             }
-            $gedcom_records = $filterd_gedcom_records;
+            $gedcom_structures = $filtered_gedcom_records;
 
             //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
-            $gedcom7 = ($this->isGedcom7Header($gedcom_records[0]));
+            $gedcom7 = ($this->isGedcom7Header($gedcom_structures[0]));
 
             //If Gedcom 7, create schema list and perform custom tag analysis
             if ($gedcom7) {
@@ -737,7 +744,7 @@ class RemoteGedcomExportService extends GedcomExportService
                 $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
 
                 //Find custom tags
-                foreach($gedcom_records as $gedcom) {
+                foreach($gedcom_structures as $gedcom) {
 
                     $this->findCustomTags($gedcom);
                 }
@@ -746,7 +753,7 @@ class RemoteGedcomExportService extends GedcomExportService
                 if ($export_filter->usesSchemaTagAnalysis()) {
 
                     //Get Gedcom of HEAD
-                    $head_gedcom = $gedcom_records[0]; 
+                    $head_gedcom = $gedcom_structures[0]; 
 
                     if (sizeof($this->custom_tags_found) > 0) {
     
@@ -757,12 +764,12 @@ class RemoteGedcomExportService extends GedcomExportService
                         }
                     }
                     //Set new Gedcom for HEAD
-                    $gedcom_records[0] = $head_gedcom;
+                    $gedcom_structures[0] = $head_gedcom;
                 }
             }            
         }
              
-        return $gedcom_records;
+        return $gedcom_structures;
     }
 
     /**
@@ -773,7 +780,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param string                $higher_level_matched_tag_pattern   pattern, which was matched on higher level of GEDCOM structure (recursion)
      * @param string                $tag_combination                    e.g. INDI:BIRT:DATE
      *
-     * @return string Converted Gedcom
+     * @return string                                                   Converted Gedcom
      */
     public function executeFilter(string $gedcom, int $level, string  $higher_level_matched_tag_pattern, string $tag_combination): string
     {   
@@ -964,6 +971,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * Split a Gedcom string into Gedcom sub structures
      *
      * @param string $gedcom
+     * @param int $level          The level, at which the Gedcom structure shall be splitted
      * 
      * @return array<string>
      */
@@ -984,6 +992,28 @@ class RemoteGedcomExportService extends GedcomExportService
         }
     }
 
+    /**
+     * Split a Gedcom string into level 0 Gedcom structures, i.e. records or HEAD/TRLR
+     * Due to performance reasons, a separate method is used for this specific case
+     *
+     * @param string $gedcom
+     * 
+     * @return array<string>
+     */
+    public static function parseTopLevelStructures(string $gedcom): array
+    {
+        // Split the Gedcom strucuture into level 0 structures 
+        // See: Fisharebest\Webtrees\GedcomRecord, function parseFacts()
+        if ($gedcom !== '') {
+
+            $gedcom_records = preg_split("/\n(?=0)/", $gedcom, -1, PREG_SPLIT_DELIM_CAPTURE);
+            return $gedcom_records;
+        } 
+        else {
+            return [];
+        }
+    }
+    
     /**
      * Perform an analysis of records their references and create a record list and links between the records
      *
@@ -1053,11 +1083,11 @@ class RemoteGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Find empty and unlinked records in the record list and update references of related records
+     * Identify empty and unlinked records in the record list and update references of related records
      * 
      * @return void
      */
-    private function removeEmptyAndUnlinkedRecords() : void {
+    private function identifyEmptyAndUnlinkedRecords() : void {
         
         $modified_references = true;
         $iteration = 0;

@@ -71,5 +71,19 @@ interface ExportFilterInterface
      *
      * @return bool   true if SCHMA analysis is used
      */
-    public function usesSchemaTagAnalysis(): bool; 
+    public function usesSchemaTagAnalysis(): bool;
+
+    /**
+     * Include a set of other filters, which shall be executed before the current filter
+     *
+     * @return array<ExportFilterInterface>    A set of included export filters
+     */
+    public function getIncludedFiltersBefore(): array;
+
+    /**
+     * Include a set of other filters, which shall be executed after the current filter
+     *
+     * @return array<ExportFilterInterface>    A set of included export filters
+     */
+    public function getIncludedFiltersAfter(): array;
 }

@@ -111,7 +111,7 @@ class AbstractExportFilter implements ExportFilterInterface
 
         //Validate if getExportFilterRules returns an array
         if (!is_array($this->getExportFilterRules())) {
-            return I18N::translate('The getExportFilterRules() method of the export filter (%s) returns an invalid filter definition.', $class_name,);
+            return I18N::translate('The %s method of the export filter (%s) returns an invalid filter definition.', 'getExportFilterRules()', $class_name,);
         }
 
         foreach($this->getExportFilterRules() as $pattern => $regexps) {

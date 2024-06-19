@@ -52,9 +52,11 @@ class AbstractExportFilter implements ExportFilterInterface
 
     //A switch, whether custom tags shall be analyzed and SCHMA structures shall be added (only for GEDCOM 7)
     protected const USES_SCHEMA_TAG_ANALYSIS = true;
-
-    //The definition of the export filter rules
-    protected const EXPORT_FILTER = [];
+    
+    //The definition of the export filter rules. As a default, export all (i.e. '*')
+    protected const EXPORT_FILTER = [
+        '*'                      => [],
+    ];
 
     /**
      * Get the export filter
@@ -190,9 +192,26 @@ class AbstractExportFilter implements ExportFilterInterface
                     return I18N::translate('The filter rule "%s" is dominated by the earlier filter rule "%s" and will never be executed. Please remove the rule or change the order of the filter rules.', $pattern, $pattern_list[$i]);
                 }
                 $i++;
-            }
+            }            
         }
 
+        //Validate, if getIncludedFiltersBefore creates a PHP error
+        try {
+            $test = $this->getIncludedFiltersBefore();
+        }
+        catch (Throwable $th) {
+            return I18N::translate('The %s method of the used export filter (%s) throws a PHP error', 'getIncludedFiltersBefore', (new ReflectionClass($this))->getShortName()) .
+                                    ': ' . $th->getMessage();
+        }                
+        //Validate, if getIncludedFiltersAfter creates a PHP error
+        try {
+            $test = $this->getIncludedFiltersAfter();
+        }
+        catch (Throwable $th) {
+            return I18N::translate('The %s method of the used export filter (%s) throws a PHP error', 'getIncludedFiltersAfter', (new ReflectionClass($this))->getShortName()) .
+                                    ': ' . $th->getMessage();
+        }
+        
         return '';
     }     
 
@@ -248,5 +267,25 @@ class AbstractExportFilter implements ExportFilterInterface
     public function usesSchemaTagAnalysis(): bool {
 
         return static::USES_SCHEMA_TAG_ANALYSIS;
+    }   
+
+    /**
+     * Include a set of other filters, which shall be executed before the current filter
+     *
+     * @return array<ExportFilterInterface>    A set of included export filters
+     */
+    public function getIncludedFiltersBefore(): array {
+
+        return [];
+    }
+
+    /**
+     * Include a set of other filters, which shall be executed after the current filter
+     *
+     * @return array<ExportFilterInterface>    A set of included export filters
+     */
+    public function getIncludedFiltersAfter(): array {
+
+        return [];
     }   
 }

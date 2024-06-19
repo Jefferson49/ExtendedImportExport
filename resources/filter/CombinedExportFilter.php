@@ -4,46 +4,22 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
-use Fisharebest\Webtrees\Tree;
-
 /**
- * An export filter, which combines two export filters
+ * An export filter, which combines two other export filters
  */
 class CombinedExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
-    /**
-     * Return a combined filter
-     * 
-     * @param Tree $tree
-     *
-     * @return array
-     */
-    public function getExportFilterRules(Tree $tree = null): array {
+  /**
+   * Include a set of other filters, which shall be executed before the current filter
+   *
+   * @return array<ExportFilterInterface>    A set of included export filters
+   */
+  public function getIncludedFiltersBefore(): array {
 
-      $filter1 = new NoRecordsExportFilter();
-      $filter2 = new ExampleExportFilter();
-
-      return $this->mergeFilterRules($filter1->getExportFilterRules($tree), $filter2->getExportFilterRules($tree));
-    }   
-
-    /**
-     * Custom conversion of a Gedcom string
-     *
-     * @param string $pattern       The pattern of the filter rule, e. g. INDI:BIRT:DATE
-     * @param string $gedcom        The Gedcom to convert
-     * @param array  $records_list  A list with all xrefs and the related records: array <string xref => Record record>
-     * 
-     * @return string               The converted Gedcom
-     */
-    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
-
-      $filter1 = new NoRecordsExportFilter();
-      $filter2 = new BirthMarriageDeathExportFilter();
-      
-      $gedcom = $filter1->customConvert($pattern, $gedcom, $records_list);
-      $gedcom = $filter2->customConvert($pattern, $gedcom, $records_list);
-
-      return $gedcom;
-    }
-
+    return [
+      new BirthMarriageDeathExportFilter(),
+      new Gedcom7ExportFilter(),
+      new RemoveEmptyRecordsExportFilter(),      
+    ];
+  }
 }

@@ -398,8 +398,7 @@ class RemoteGedcomExportService extends GedcomExportService
         $gedcom_export = $this->applyExportFilters($gedcom_export, $export_filters, $tree);
 
         //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
-        $gedcom7 = ($this->isGedcom7Header($gedcom_export[0]));        
-
+        $gedcom7 = ($this->isGedcom7Header($gedcom_export[0] ?? ''));
 
         //Start writing to stream
 
@@ -730,7 +729,7 @@ class RemoteGedcomExportService extends GedcomExportService
             $gedcom_structures = $filtered_gedcom_records;
 
             //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
-            $gedcom7 = ($this->isGedcom7Header($gedcom_structures[0]));
+            $gedcom7 = $this->isGedcom7Header($gedcom_structures[0] ?? '');
 
             //If Gedcom 7, create schema list and perform custom tag analysis
             if ($gedcom7) {

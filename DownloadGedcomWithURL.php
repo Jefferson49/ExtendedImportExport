@@ -72,6 +72,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use ErrorException;
 use Throwable;
 
+use ReflectionClass;
+
 use function substr;
 
 
@@ -125,6 +127,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	//Alert tpyes
 	public const ALERT_DANGER = 'alert_danger';
 	public const ALERT_SUCCESS = 'alert_success';
+
+    //Maximum level of includes for export filters
+    private const MAXIMUM_FILTER_INCLUDE_LEVELS = 10;
+
 
    /**
      * DownloadGedcomWithURL constructor.
@@ -321,7 +327,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $this->layout = 'layouts/administration';       
 
         //Load export filters
-        $error = $this->loadEportFilterClasses();
+        $error = self::loadEportFilterClasses();
         if ($error !== '') {
             FlashMessages::addMessage($error, 'danger');
         }
@@ -621,7 +627,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @return string error message
      */ 
 
-     private function loadEportFilterClasses(): string {
+     public static function loadEportFilterClasses(): string {
 
         $filter_files = scandir(dirname(__FILE__) . "/resources/filter/");
 
@@ -687,7 +693,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
     private function validateExportFilter($export_filter_name): string {
 
-        //Check if export filter class is validate
+        //Check if export filter class is valid
         $export_filter_class_name = __NAMESPACE__ . '\\' . $export_filter_name;
 
         if (!class_exists($export_filter_class_name) OR !(new $export_filter_class_name() instanceof ExportFilterInterface)) {
@@ -705,6 +711,56 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
 
         return '';
+    }
+
+    /**
+     * Check whether further filters are included in a list of export filters and add to export filter list accordingly
+     *
+     * @param array $export_filter_set   A set of (already inlcuded) export filters
+     * @param array $additional_filters  A set of export filters to be checked and included
+     * @param array $include_structure   A hierarchical list of included export filters to check loops etc.
+     * 
+     * @return array 
+     */ 
+
+    private function addIncludedExportFilters(array $export_filter_set, array $additional_filters, array $include_structure): array {
+
+        while (sizeof($additional_filters) > 0) {
+
+            //Get first item of export filter set and remove it from additional filter list
+            $export_filter = array_shift($additional_filters);
+
+            //Add export filter to include structure
+            $include_structure[] = $export_filter;
+
+            //Error if size of include structure exceeds maximum level
+            if (sizeof($include_structure) > self::MAXIMUM_FILTER_INCLUDE_LEVELS) {
+
+                $error = I18N::translate('The include hierarchy for export filters exceeds the maximum level of %s includes.', (string) self::MAXIMUM_FILTER_INCLUDE_LEVELS);
+
+                if (in_array($export_filter, $include_structure)) {
+
+                    $error .= ' ' . I18N::translate('The following export filter might cause a loop in the include structure, because it was detected more than once in the include hierarchy') . ': ' . (new ReflectionClass($export_filter))->getShortName();
+                }
+                else {
+                    $error .= ' ' . I18N::translate('Please check the include structure of the selected export filters.');
+                }
+
+                throw new DownloadGedcomWithUrlException($error);
+            }
+            
+            if ($export_filter !== null) {
+
+                //Add include filters before
+                $export_filter_set = array_merge($export_filter_set, $this->addIncludedExportFilters([], $export_filter->getIncludedFiltersBefore(), $include_structure));
+                //Add filter
+                array_push($export_filter_set, $export_filter);
+                //Add include filters after
+                $export_filter_set = array_merge($export_filter_set, $this->addIncludedExportFilters([], $export_filter->getIncludedFiltersAfter(), $include_structure));
+            }
+        }    
+
+        return $export_filter_set;
     }
 
 	/**
@@ -735,13 +791,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //A test download is allowed if a valid token is submitted
         $allow_test_download =  $test_download_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
 
-        //Add namespace to export filter
+        //Add namespace to export filters
         $export_filter_class_name = __NAMESPACE__ . '\\' . $export_filter;
         $export_filter_class_name2 = __NAMESPACE__ . '\\' . $export_filter2;
 
         //Load export filter classes
-        if (!$export_filter !== '') {
-            $load_filter_result = $this->loadEportFilterClasses();
+        if ($export_filter !== '' OR $export_filter2 !== '') {
+            $load_filter_result = self::loadEportFilterClasses();
 
             if ($load_filter_result !== '') {
                 return $this->showErrorMessage($load_filter_result);
@@ -827,6 +883,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $export_filter_instance2 = null;
             }
 
+            //Create set of export filters
+            $filters_to_add = [
+                $export_filter_instance, 
+                $export_filter_instance2,
+            ];
+
+            //Add included export filters
+            try{
+                $export_filter_set = $this->addIncludedExportFilters([], $filters_to_add, []);
+            }
+            catch (DownloadGedcomWithUrlException $ex) {
+
+                return $this->showErrorMessage($ex->getMessage());
+            }
+
 			//Add time stamp to file name if requested
 			if($time_stamp === 'prefix'){
 				$file_name = date('Y-m-d_H-i-s_') . $file_name;
@@ -851,7 +922,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 				//Create response
                 try {
-                    $resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, [$export_filter_instance, $export_filter_instance2]);
+                    $resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_set);
                     $root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
                     fclose($resource);
 
@@ -872,7 +943,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     try {
                         //Create response
-                        $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, [$export_filter_instance, $export_filter_instance2]);
+                        $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_set);
                     }
                     catch (DownloadGedcomWithUrlException $ex) {
 

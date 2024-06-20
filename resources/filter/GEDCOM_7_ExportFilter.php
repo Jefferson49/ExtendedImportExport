@@ -14,7 +14,7 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
    //Mapping table of languages to IANA language tags
    private array $language_to_code_table;
    
-   protected const EXPORT_FILTER = [
+   protected const EXPORT_FILTER_RULES = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],

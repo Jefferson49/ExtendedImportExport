@@ -14,7 +14,7 @@ use Fisharebest\Webtrees\Tree;
  */
 class BirthMarriageDeathExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
-    protected const EXPORT_FILTER = [
+    protected const EXPORT_FILTER_RULES = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],
@@ -94,7 +94,7 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
 
     $export_filter = [];
 
-    foreach(self::EXPORT_FILTER as $tag => $regexps) {
+    foreach(self::EXPORT_FILTER_RULES as $tag => $regexps) {
 
       $replaced_regexps = [];
 

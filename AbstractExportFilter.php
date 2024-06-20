@@ -54,7 +54,7 @@ class AbstractExportFilter implements ExportFilterInterface
     protected const USES_SCHEMA_TAG_ANALYSIS = true;
     
     //The definition of the export filter rules. As a default, export all (i.e. '*')
-    protected const EXPORT_FILTER = [
+    protected const EXPORT_FILTER_RULES = [
         '*'                      => [],
     ];
 
@@ -67,7 +67,7 @@ class AbstractExportFilter implements ExportFilterInterface
      */
     public function getExportFilterRules(Tree $tree = null): array {
 
-        return static::EXPORT_FILTER;
+        return static::EXPORT_FILTER_RULES;
     }
 
     /**
@@ -96,12 +96,12 @@ class AbstractExportFilter implements ExportFilterInterface
         $class_name = str_replace($name_space, '', get_class($this));
 
         //Validate if EXPORT_FILTER contains an array
-        if (!is_array(static::EXPORT_FILTER)) {
-            return I18N::translate('The selected export filter (%s) contains an invalid filter definition (%s).', $class_name, 'const EXPORT_FILTER');
+        if (!is_array(static::EXPORT_FILTER_RULES)) {
+            return I18N::translate('The selected export filter (%s) contains an invalid filter definition (%s).', $class_name, 'const EXPORT_FILTER_RULES');
         }
 
         //Validate if EXPORT_FILTER is empty
-        if (sizeof(static::EXPORT_FILTER) === 0) {
+        if (sizeof(static::EXPORT_FILTER_RULES) === 0) {
             return I18N::translate('The selected export filter (%s) does not contain any filter rules.', $class_name);
         }
 

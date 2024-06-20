@@ -9,7 +9,7 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
  */
 class GEDCOM_L_for_GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
-   protected const EXPORT_FILTER = [
+   protected const EXPORT_FILTER_RULES = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],

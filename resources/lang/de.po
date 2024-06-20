@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-06-19 22:32+0200\n"
-"PO-Revision-Date: 2024-06-19 22:32+0200\n"
+"POT-Creation-Date: 2024-06-20 06:26+0200\n"
+"PO-Revision-Date: 2024-06-20 06:26+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -23,14 +23,19 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
 "(%s)."
 
-#: AbstractExportFilter.php:108 AbstractExportFilter.php:203
-#: AbstractExportFilter.php:211
+#: AbstractExportFilter.php:105
+#, php-format
+msgid "The selected export filter (%s) does not contain any filter rules."
+msgstr "Der ausgewählte Export-Filter (%s) enthält keine Filter Regeln."
+
+#: AbstractExportFilter.php:113 AbstractExportFilter.php:208
+#: AbstractExportFilter.php:216
 #, php-format
 msgid "The %s method of the used export filter (%s) throws a PHP error"
 msgstr ""
 "Die %s Methode des genutzten Export-Filters (%s) erzeugt einen PHP-Fehler"
 
-#: AbstractExportFilter.php:114
+#: AbstractExportFilter.php:119
 #, php-format
 msgid ""
 "The %s method of the export filter (%s) returns an invalid filter definition."
@@ -38,7 +43,7 @@ msgstr ""
 "Die %s Methode des Export-Filters (%s) gibt einen ungültigen Wert für die "
 "Filter-Definition zurück."
 
-#: AbstractExportFilter.php:121
+#: AbstractExportFilter.php:126
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid filter definition for "
@@ -47,17 +52,17 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
 "für das Tag-Muster %s."
 
-#: AbstractExportFilter.php:122
+#: AbstractExportFilter.php:127
 msgid "Invalid definition"
 msgstr "Ungültige Definition"
 
-#: AbstractExportFilter.php:128
+#: AbstractExportFilter.php:133
 #, php-format
 msgid "The selected export filter (%s) contains an invalid tag definition"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Tag-Definition"
 
-#: AbstractExportFilter.php:145
+#: AbstractExportFilter.php:150
 #, php-format
 msgid ""
 "The used export filter (%s) contains a %s command, but the filter class does "
@@ -66,18 +71,18 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen %s Befehl, aber die Filter-"
 "Klasse enthält keine %s Methode."
 
-#: AbstractExportFilter.php:154 AbstractExportFilter.php:161
+#: AbstractExportFilter.php:159 AbstractExportFilter.php:166
 #, php-format
 msgid "The selected export filter (%s) contains an invalid regular expression"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen ungültigen regulären "
 "Ausdruck"
 
-#: AbstractExportFilter.php:154
+#: AbstractExportFilter.php:159
 msgid "Error message"
 msgstr "Fehlermeldung"
 
-#: AbstractExportFilter.php:171
+#: AbstractExportFilter.php:176
 #, php-format
 msgid ""
 "The selected export filter (%s) contains a black list filter rule (%s) with "
@@ -88,7 +93,7 @@ msgstr ""
 "mit einem regulären Ausdruck, welcher niemals ausgeführt wird, weil die "
 "Black-List Filter-Regel die zugehörige GEDCOM-Zeile löschen wird."
 
-#: AbstractExportFilter.php:192
+#: AbstractExportFilter.php:197
 #, php-format
 msgid ""
 "The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
@@ -173,8 +178,8 @@ msgstr "Fehlermeldung"
 msgid "None"
 msgstr ""
 
-#: DownloadGedcomWithURL.php:712 DownloadGedcomWithURL.php:869
-#: DownloadGedcomWithURL.php:873 DownloadGedcomWithURL.php:877
+#: DownloadGedcomWithURL.php:712 DownloadGedcomWithURL.php:867
+#: DownloadGedcomWithURL.php:871 DownloadGedcomWithURL.php:875
 msgid "The export filter was not found"
 msgstr "Der Export-Filter wurde nicht gefunden"
 
@@ -201,7 +206,7 @@ msgid "Please check the include structure of the selected export filters."
 msgstr ""
 "Bitte überprüfen Sie die Include-Struktur des ausgewählten Export-Filters."
 
-#: DownloadGedcomWithURL.php:825
+#: DownloadGedcomWithURL.php:823
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -210,7 +215,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:829
+#: DownloadGedcomWithURL.php:827
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -219,55 +224,55 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:833
+#: DownloadGedcomWithURL.php:831
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:837
+#: DownloadGedcomWithURL.php:835
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:841
+#: DownloadGedcomWithURL.php:839
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:845
+#: DownloadGedcomWithURL.php:843
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:849
+#: DownloadGedcomWithURL.php:847
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:853
+#: DownloadGedcomWithURL.php:851
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:857
+#: DownloadGedcomWithURL.php:855
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:861
+#: DownloadGedcomWithURL.php:859
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:865
+#: DownloadGedcomWithURL.php:863
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:963
+#: DownloadGedcomWithURL.php:961
 #, php-format
 msgid "The family tree \"%s\" has been exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:968
+#: DownloadGedcomWithURL.php:966
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:988
+#: DownloadGedcomWithURL.php:986
 msgid ""
 "Download is not allowed. Please change the module settings to allow "
 "downloads."
@@ -275,15 +280,15 @@ msgstr ""
 "Das Herunterladen ist nicht erlaubt. Bitte ändern Sie die Modul-"
 "Einstellungen, um Herunterladen zu erlauben."
 
-#: RemoteGedcomExportService.php:796
+#: RemoteGedcomExportService.php:772
 msgid "The following GEDCOM structure could not be matched"
 msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
 
-#: RemoteGedcomExportService.php:957
+#: RemoteGedcomExportService.php:933
 msgid "Error during a regular expression replacement."
 msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
 
-#: RemoteGedcomExportService.php:1110
+#: RemoteGedcomExportService.php:1086
 msgid ""
 "Fatal error: Too many iterations while removing empty and unlinked records."
 msgstr ""
@@ -568,11 +573,11 @@ msgstr ""
 msgid "Default action"
 msgstr "Voreinstellung Aktion"
 
-#: resources/views/settings.phtml:301 resources/views/settings.phtml:386
+#: resources/views/settings.phtml:301 resources/views/settings.phtml:350
 msgid "Download"
 msgstr ""
 
-#: resources/views/settings.phtml:302 resources/views/settings.phtml:371
+#: resources/views/settings.phtml:302 resources/views/settings.phtml:335
 msgid "Save"
 msgstr ""
 
@@ -614,46 +619,46 @@ msgstr ""
 "Geben Sie die Voreinstellung für den Zeitstempel an. Diese Einstellung wird "
 "genutzt, wenn keine spezifische Einstellung in der URL angegeben wird."
 
-#: resources/views/settings.phtml:334
-msgid "Default GEDCOM 7 flag"
-msgstr "Voreinstellung GEDCOM 7 Flag"
-
-#: resources/views/settings.phtml:344
-msgid ""
-"Select the default GEDCOM version. This GEDCOM version will be chosen if no "
-"specific GEDCOM version is provided as URL parameter."
-msgstr ""
-"Geben Sie die Voreinstellung für das GEDCOM 7 Flag an. Dieser Wert wird "
-"genutzt, wenn kein spezifischer Wert in der URL angegeben wird."
-
-#: resources/views/settings.phtml:352
-msgid "Default GEDCOM-L flag"
-msgstr "Voreinstellung GEDCOM-L Flag"
-
-#: resources/views/settings.phtml:357
-msgid "Do not use GEDCOM-L"
-msgstr "GEDCOM-L nicht nutzen"
-
-#: resources/views/settings.phtml:358
-msgid "Use GEDCOM-L"
-msgstr "GEDCOM-L nutzen"
-
-#: resources/views/settings.phtml:362
-msgid ""
-"Select the default for GEDCOM-L usage. This GEDCOM-L setting will be chosen "
-"for GEDCOM 7.0 exports if no specific GEDCOM-L setting is provided as URL "
-"parameter."
-msgstr ""
-"Geben Sie die Voreinstellung für das GEDCOM-L Flag an. Dieser Wert wird "
-"genutzt, wenn kein spezifischer Wert in der URL angegeben wird."
-
-#: resources/views/settings.phtml:389
+#: resources/views/settings.phtml:353
 msgid ""
 "In order to use changed settings for a download, the settings need to be "
 "saved first."
 msgstr ""
 "Um geänderte Einstellungen beim \"Herunterladen\" zu nutzen, müssen die "
 "Einstellungen zunächst gespeichert werden."
+
+#, php-format
+#~ msgid "The selected export filter (%s) is empty."
+#~ msgstr ""
+#~ "Der ausgewählte Export-Filter (%s) ist leer bzw. enthält keine Filter-"
+#~ "Regeln."
+
+#~ msgid "Default GEDCOM 7 flag"
+#~ msgstr "Voreinstellung GEDCOM 7 Flag"
+
+#~ msgid ""
+#~ "Select the default GEDCOM version. This GEDCOM version will be chosen if "
+#~ "no specific GEDCOM version is provided as URL parameter."
+#~ msgstr ""
+#~ "Geben Sie die Voreinstellung für das GEDCOM 7 Flag an. Dieser Wert wird "
+#~ "genutzt, wenn kein spezifischer Wert in der URL angegeben wird."
+
+#~ msgid "Default GEDCOM-L flag"
+#~ msgstr "Voreinstellung GEDCOM-L Flag"
+
+#~ msgid "Do not use GEDCOM-L"
+#~ msgstr "GEDCOM-L nicht nutzen"
+
+#~ msgid "Use GEDCOM-L"
+#~ msgstr "GEDCOM-L nutzen"
+
+#~ msgid ""
+#~ "Select the default for GEDCOM-L usage. This GEDCOM-L setting will be "
+#~ "chosen for GEDCOM 7.0 exports if no specific GEDCOM-L setting is provided "
+#~ "as URL parameter."
+#~ msgstr ""
+#~ "Geben Sie die Voreinstellung für das GEDCOM-L Flag an. Dieser Wert wird "
+#~ "genutzt, wenn kein spezifischer Wert in der URL angegeben wird."
 
 #, php-format
 #~ msgid ""

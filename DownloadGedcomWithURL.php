@@ -791,8 +791,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $privacy             = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
         $encoding            = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
         $line_endings        = Validator::queryParams($request)->string('line_endings',  $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'));
-		$gedcom7             = Validator::queryParams($request)->boolean('gedcom7', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_VERSION, '0')));
-		$gedcom_l            = Validator::queryParams($request)->boolean('gedcom_l', boolval($this->getPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0')));
 		$action              = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'));
 		$time_stamp          = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'));
 		$export_filter1      = Validator::queryParams($request)->string('export_filter', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER1, ''));

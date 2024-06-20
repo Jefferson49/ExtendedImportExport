@@ -161,6 +161,9 @@ class RemoteGedcomExportService extends GedcomExportService
     //Each element in the array contains the Gedcom of the HEAD, TRLR, or a record (i.e. FAM, INDI, ...)
     private array $gedcom_records;
 
+    //A flag indicating whether to apply Gedcom 7 SCHMA tag analysis to the final export
+    private bool $use_schema_tag_analysis;
+
 
     /**
      * @param ResponseFactoryInterface $response_factory
@@ -180,6 +183,7 @@ class RemoteGedcomExportService extends GedcomExportService
         $this->custom_tags_found = [];
         $this->schema_uris_for_tags = [];
         $this->records_references = [];
+        $this->use_schema_tag_analysis = false;        
 	}
 
     /**
@@ -398,7 +402,13 @@ class RemoteGedcomExportService extends GedcomExportService
         $gedcom_export = $this->applyExportFilters($gedcom_export, $export_filters, $tree);
 
         //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
-        $gedcom7 = ($this->isGedcom7Header($gedcom_export[0] ?? ''));
+        $gedcom7 = ($this->isGedcom7Header($gedcom_export[0] ?? false));
+
+        // If requested, add SCHMA for extension tags found
+        if ($gedcom7 && $this->use_schema_tag_analysis) {
+
+            $gedcom_export = $this->addSchema($gedcom_export);
+        }
 
         //Start writing to stream
 
@@ -685,6 +695,9 @@ class RemoteGedcomExportService extends GedcomExportService
             $this->export_filter_rule_has_regexp = $this->export_filter_patterns;
             $records_references_analysis = $export_filter->usesReferencesAnalysis();
 
+            //Globally remember, whether to apply SCHMA tag analysis to the final export
+            $this->use_schema_tag_analysis = $this->use_schema_tag_analysis || $export_filter->usesSchemaTagAnalysis();
+
             //Create lookup table if regexp exists for a pattern
             foreach($this->export_filter_patterns as $pattern) {
                 
@@ -727,42 +740,6 @@ class RemoteGedcomExportService extends GedcomExportService
                 }
             }
             $gedcom_structures = $filtered_gedcom_records;
-
-            //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
-            $gedcom7 = $this->isGedcom7Header($gedcom_structures[0] ?? '');
-
-            //If Gedcom 7, create schema list and perform custom tag analysis
-            if ($gedcom7) {
-
-                //Create schema list
-                $this->schema_uris_for_tags = [];
-                $this->addToSchemas(self::SCHEMAS);
-                $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
-
-                //Find custom tags
-                foreach($gedcom_structures as $gedcom) {
-
-                    $this->findCustomTags($gedcom);
-                }
-
-                // If requested, add SCHMAs for extension tags found
-                if ($export_filter->usesSchemaTagAnalysis()) {
-
-                    //Get Gedcom of HEAD
-                    $head_gedcom = $gedcom_structures[0]; 
-
-                    if (sizeof($this->custom_tags_found) > 0) {
-    
-                        $head_gedcom .= "1 SCHMA\n";
-    
-                        foreach($this->custom_tags_found as $tag) {
-                            $head_gedcom .= "2 TAG " . $tag . " " . $this->schema_uris_for_tags[$tag] . "\n";
-                        }
-                    }
-                    //Set new Gedcom for HEAD
-                    $gedcom_structures[0] = $head_gedcom;
-                }
-            }            
         }
              
         return $gedcom_structures;
@@ -1168,5 +1145,46 @@ class RemoteGedcomExportService extends GedcomExportService
         if ($record_type !== 'HEAD') return false;
     
         return preg_match("/1 GEDC\n2 VERS 7/", $gedcom, $match) === 1;
+    }
+
+    /**
+     * Add SCHMA structure to a Gedcom 7 header
+     * 
+     * @param array<string> $gedcom_structures   An array with the Gedcom structures, i.e.HEAD, all records, TRLRL
+     * 
+     * @return array<string>                     Gedcom structures with added SCHMA in the header 
+     */
+    private function addSchema(array $gedcom_structures) : array {
+
+        //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
+        if ($this->isGedcom7Header($gedcom_structures[0] ?? false)) {
+
+            //Create schema list
+            $this->schema_uris_for_tags = [];
+            $this->addToSchemas(self::SCHEMAS);
+            $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
+
+            //Find custom tags
+            foreach($gedcom_structures as $gedcom) {
+
+                $this->findCustomTags($gedcom);
+            }
+
+            //Get Gedcom of HEAD
+            $head_gedcom = $gedcom_structures[0]; 
+
+            if (sizeof($this->custom_tags_found) > 0) {
+
+                $head_gedcom .= "1 SCHMA\n";
+
+                foreach($this->custom_tags_found as $tag) {
+                    $head_gedcom .= "2 TAG " . $tag . " " . $this->schema_uris_for_tags[$tag] . "\n";
+                }
+            }
+            //Set new Gedcom for HEAD
+            $gedcom_structures[0] = $head_gedcom;
+        }    
+
+        return $gedcom_structures;
     }
 }

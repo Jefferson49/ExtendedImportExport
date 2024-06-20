@@ -50,7 +50,7 @@ class AbstractExportFilter implements ExportFilterInterface
     //A switch, whether the filter uses a references analysis between the records
     protected const USES_REFERENCES_ANALYSIS = false;
 
-    //A switch, whether custom tags shall be analyzed and SCHMA structures shall be added (only for GEDCOM 7)
+    //A switch, whether custom tags shall be analyzed and SCHMA structures shall be added (only relevant for GEDCOM 7)
     protected const USES_SCHEMA_TAG_ANALYSIS = true;
     
     //The definition of the export filter rules. As a default, export all (i.e. '*')
@@ -98,6 +98,11 @@ class AbstractExportFilter implements ExportFilterInterface
         //Validate if EXPORT_FILTER contains an array
         if (!is_array(static::EXPORT_FILTER)) {
             return I18N::translate('The selected export filter (%s) contains an invalid filter definition (%s).', $class_name, 'const EXPORT_FILTER');
+        }
+
+        //Validate if EXPORT_FILTER is empty
+        if (sizeof(static::EXPORT_FILTER) === 0) {
+            return I18N::translate('The selected export filter (%s) does not contain any filter rules.', $class_name);
         }
 
         //Validate, if getExportFilterRules() creates a PHP error

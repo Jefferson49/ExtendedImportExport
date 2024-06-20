@@ -9,11 +9,11 @@ use Fisharebest\Webtrees\Gedcom;
 /**
  * An export filter, which converts GEDCOM 5.5.1 to GEDCOM 7.0
  */
-class Gedcom7ExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
    //Mapping table of languages to IANA language tags
    private array $language_to_code_table;
-
+   
    protected const EXPORT_FILTER = [
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
@@ -96,12 +96,6 @@ class Gedcom7ExportFilter extends AbstractExportFilter implements ExportFilterIn
 			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
 			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below
 		];
-
-		if($gedcom_l) {
-			$replace_pairs = array_merge($replace_pairs, [
-				"2 TYPE RELIGIOUS\n" => "2 TYPE RELI\n",		//Convert webtrees value to GEDCOM-L standard value
-			]);
-        }
         
 		foreach ($replace_pairs as $search => $replace) {
 			$gedcom = str_replace($search, $replace, $gedcom);
@@ -217,26 +211,6 @@ class Gedcom7ExportFilter extends AbstractExportFilter implements ExportFilterIn
             }			
         }    
            
-		//_GODP, _WITN
-        $preg_replace_pairs_gedcom_l = [
-            "_GODP",
-            "_WITN",
-        ];
-
-        foreach ($preg_replace_pairs_gedcom_l as $pattern) {
-
-            preg_match_all("/([\d]) " . $pattern . " (.[^\n]+)/", $gedcom, $matches, PREG_SET_ORDER);
-
-            foreach ($matches as $match) {
-                $level = (int) $match[1];
-                $role = str_replace("_", "", $pattern);
-
-                $search =  (string) $level . " " . $pattern . " " . $match[2];
-                $replace = (string) $level . " " . "ASSO @VOID@\n" . (string) ($level + 1) . " PHRASE " . $match[2] . "\n" .  (string) ($level + 1) . " ROLE " . $role;
-                $gedcom = str_replace($search, $replace, $gedcom);
-            }			
-        }
-
 		//Languages
 		//Allowed GEDCOM 7 language tags: https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
 

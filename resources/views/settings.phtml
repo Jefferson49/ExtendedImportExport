@@ -328,42 +328,6 @@ use Fisharebest\Webtrees\View;
 				</div>
 			</div>
 		</fieldset>	
-		<fieldset class="mb-3">
-			<div class="row">
-				<legend class="col-form-label col-sm-3">
-					<?= I18N::translate('Default GEDCOM 7 flag') ?>
-				</legend>
-				<div class="col-sm-9">
-					<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_VERSION, 'selected' => (int) $default_gedcom_version,
-						'options' => [
-							'0 (GEDCOM 5.5.1)', 
-							'1 (GEDCOM 7.0)',
-						]
-					]) ?>
-					<div class="form-text">
-						<?= I18N::translate('Select the default GEDCOM version. This GEDCOM version will be chosen if no specific GEDCOM version is provided as URL parameter.')?>
-					</div>
-				</div>
-			</div>
-		</fieldset>									
-		<fieldset class="mb-3">
-			<div class="row">
-				<legend class="col-form-label col-sm-3">
-					<?= I18N::translate('Default GEDCOM-L flag') ?>
-				</legend>
-				<div class="col-sm-9">
-					<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_L_SELECTION, 'selected' => (int) $default_gedcom_l_selection,
-						'options' => [
-							'0'  => '0 (' . I18N::translate('Do not use GEDCOM-L') . ')',
-							'1'  => '1 (' . I18N::translate('Use GEDCOM-L') . ')',
-						] 
-					]) ?>
-					<div class="form-text">
-						<?= I18N::translate('Select the default for GEDCOM-L usage. This GEDCOM-L setting will be chosen for GEDCOM 7.0 exports if no specific GEDCOM-L setting is provided as URL parameter.')?>
-					</div>
-				</div>
-			</div>
-		</fieldset>	
 		<div class="col">
 			<p></p>
 			<button type="submit" class="btn btn-primary">

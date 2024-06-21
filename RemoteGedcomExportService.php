@@ -135,31 +135,8 @@ class RemoteGedcomExportService extends GedcomExportService
 
     private StreamFactoryInterface $stream_factory;
 
-    // The chosen export filter (if export filtering is used)
-    private ExportFilterInterface $export_filter;
-
-    // The export filter rules
-    private array $export_filter_rules;
-
-    // The tag patterns of the export filter
-    private array $export_filter_patterns;
-
-    // A lookup table for export filter patterns, which contains true if a regular expression exists for the pattern
-    private array $export_filter_rule_has_regexp;
-
-    //List of schemas which ware used for the export
-    private array $schema_uris_for_tags;
-
     //List of custom tags, which were found in the GEDCOM data
     private array $custom_tags_found;
-
-    //List of records as <Record> objects, which contain the references between the records
-    //array <string xref => Record record>
-    private array $records_references;
-
-    //An array, which contains the Gedcom data for all the records
-    //Each element in the array contains the Gedcom of the HEAD, TRLR, or a record (i.e. FAM, INDI, ...)
-    private array $gedcom_records;
 
     //A flag indicating whether to apply Gedcom 7 SCHMA tag analysis to the final export
     private bool $use_schema_tag_analysis;
@@ -173,16 +150,10 @@ class RemoteGedcomExportService extends GedcomExportService
 	{
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
-        $this->gedcom_records = [];
-        $this->export_filter_rules = [];
-        $this->export_filter_patterns = []; 
-        $this->export_filter_rule_has_regexp = [];
         $this->records_xref_list = [];
         $this->empty_records_xref_list = [];
         $this->references_list = [];
         $this->custom_tags_found = [];
-        $this->schema_uris_for_tags = [];
-        $this->records_references = [];
         $this->use_schema_tag_analysis = false;        
 	}
 
@@ -634,42 +605,49 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * Find custom tags.
      * 
-     * @param string $gedcom
+     * @param string         $gedcom
+     * @param array<string>  $schema_uris_for_tags   The schemas, which are used for the export
+     * @param array<string>  $custom_tags_found      A list with all the custom tags found before
      * 
-     * @return void 
+     * @return array                                 A list with the custom tags found added
      */
-    public function findCustomTags(string $gedcom) : void
+    public function addCustomTagsFound(string $gedcom, array $schema_uris_for_tags, array $custom_tags_found) : array
     {
-        foreach ($this->schema_uris_for_tags as $tag => $uri) {
+        foreach ($schema_uris_for_tags as $tag => $uri) {
 
             if(strpos($gedcom, $tag) !== false) {
 
-                if(!in_array($tag, $this->custom_tags_found)) {
+                if(!in_array($tag, $custom_tags_found)) {
 
-                    $this->custom_tags_found[] = $tag;
+                    $custom_tags_found[] = $tag;
                 }
             } 
         }
+
+        return $custom_tags_found;
     }
 
     /**
      * Add to schemas
      * 
-     * @param array $schemas     //An array with schemas to add
+     * @param array $schemas               An array with schemas to add
+     * @param array $schema_uris_for_tags  A list of schemas, which are used for the export
      * 
-     * @return void
+     * @return array                       List with added schemas
      */
-    public function addToSchemas(array $schemas) : void
+    public function addToSchemas(array $schemas, array $schema_uris_for_tags) : array
     {
         foreach ($schemas as $schema) {
         
             foreach($schema as $uri => $custom_tags) {
 
                 foreach($custom_tags as $tag) {
-                    $this->schema_uris_for_tags[$tag] = $uri;
+                    $schema_uris_for_tags[$tag] = $uri;
                 }
             }
         }
+
+        return $schema_uris_for_tags;
     }
 
     /**
@@ -688,37 +666,37 @@ class RemoteGedcomExportService extends GedcomExportService
             if ($export_filter === null) break;
 
             //Initialize export filter
-            //ToDo: Do not use global class variables
-            $this->export_filter = $export_filter;
-            $this->export_filter_rules = $export_filter->getExportFilterRules($tree);
-            $this->export_filter_patterns = array_keys($this->export_filter_rules);
-            $this->export_filter_rule_has_regexp = $this->export_filter_patterns;
+            $export_filter_rules = $export_filter->getExportFilterRules($tree);
+            $export_filter_patterns = array_keys($export_filter_rules);
+            $export_filter_rule_has_regexp = $export_filter_patterns;
             $records_references_analysis = $export_filter->usesReferencesAnalysis();
+            $records_references = [];
 
             //Globally remember, whether to apply SCHMA tag analysis to the final export
             $this->use_schema_tag_analysis = $this->use_schema_tag_analysis || $export_filter->usesSchemaTagAnalysis();
 
             //Create lookup table if regexp exists for a pattern
-            foreach($this->export_filter_patterns as $pattern) {
+            foreach($export_filter_patterns as $pattern) {
                 
                 //TodDo: Does filter always contain an array??
-                $this->export_filter_rule_has_regexp[$pattern] = $this->export_filter_rules[$pattern] !== [];
+                $export_filter_rule_has_regexp[$pattern] = $export_filter_rules[$pattern] !== [];
             }
 
             //If requested, perform empty and not referenced records analysis
             if ($records_references_analysis) {
 
-                //Reset list with records and references
-                $this->records_references = [];
+                //Initialize a list of records as <Record> objects, which contain the references between the records
+                //array <string xref => Record record>
+                $records_references = [];
 
                 foreach($gedcom_structures as $gedcom) {
 
-                    $this->analyzeRecordsAndReferences($gedcom);
+                    $this->analyzeRecordsAndReferences($gedcom, $records_references);
                 }
 
                 //Identify empty and unlinked records
                 if ($records_references_analysis) {
-                    $this->identifyEmptyAndUnlinkedRecords();
+                    $this->identifyEmptyAndUnlinkedRecords($records_references);
                 }
             }            
 
@@ -732,7 +710,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
                 foreach($gedcom_records as $gedcom) {
 
-                    $gedcom = $this->executeFilter($gedcom, 0, '', '');
+                    $gedcom = $this->executeFilter($gedcom, 0, '', '', $export_filter, $export_filter_patterns, $export_filter_rules, $export_filter_rule_has_regexp, $records_references);
 
                     if ($gedcom !== '') {
                         $filtered_gedcom_records[] = $gedcom;
@@ -748,14 +726,30 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * Convert Gedcom record according to an export filter
      *
-     * @param string                $gedcom
-     * @param int                   $level                              level of Gedcom structure
-     * @param string                $higher_level_matched_tag_pattern   pattern, which was matched on higher level of GEDCOM structure (recursion)
-     * @param string                $tag_combination                    e.g. INDI:BIRT:DATE
+     * @param string $gedcom
+     * @param int    $level                              Level of Gedcom structure
+     * @param string $higher_level_matched_tag_pattern   Pattern, which was matched on higher level of GEDCOM structure (recursion)
+     * @param string $tag_combination                    e.g. INDI:BIRT:DATE
+     * @param ExportFilterInterface $export_filter       The export filter used
+     * @param array  $export_filter_patterns             The patterns of the export filter
+     * @param array  $export_filter_rules                The filter rules of the export filter
+     * @param array  $export_filter_rule_has_regexp      A lookup table whether a filter rules uses a regular expression
+     * @param array  $records_references                 A list of records as <Record> objects, which contain the references between the records
+     *                                                   array <string xref => Record record>
      *
-     * @return string                                                   Converted Gedcom
+     * @return string                                    Converted Gedcom
      */
-    public function executeFilter(string $gedcom, int $level, string  $higher_level_matched_tag_pattern, string $tag_combination): string
+    public function executeFilter(
+        string $gedcom,
+        int    $level,
+        string $higher_level_matched_tag_pattern,
+        string $tag_combination,
+        ExportFilterInterface $export_filter,
+        array  $export_filter_patterns,
+        array  $export_filter_rules,
+        array  $export_filter_rule_has_regexp,
+        array  $records_references
+        ): string
     {   
         $converted_gedcom = '';
 
@@ -782,7 +776,7 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         //Check whether is in white list and not in black list
-        $matched_tag_pattern = self::matchedPattern($tag_combination, $this->export_filter_patterns);
+        $matched_tag_pattern = self::matchedPattern($tag_combination, $export_filter_patterns);
 
         //If tag pattern was found, add the related Gedcom
         if ($matched_tag_pattern !== '') {
@@ -795,16 +789,16 @@ class RemoteGedcomExportService extends GedcomExportService
 
         foreach ($gedcom_substructures as $gedcom_substructure) {
 
-            $converted_gedcom .= $this->executeFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination);
+            $converted_gedcom .= $this->executeFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination, $export_filter, $export_filter_patterns, $export_filter_rules, $export_filter_rule_has_regexp, $records_references);
         }
 
         //If regular expressions are provided for the pattern, run replacements
         //Do not replace again if pattern has already been matched on higher level of the Gedcom structure
         if (   $matched_tag_pattern !== ''   
-            && $this->export_filter_rule_has_regexp[$matched_tag_pattern] 
+            && $export_filter_rule_has_regexp[$matched_tag_pattern] 
             && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
 
-            $converted_gedcom = $this->replaceInGedcom($matched_tag_pattern, $converted_gedcom);
+            $converted_gedcom = $this->replaceInGedcom($matched_tag_pattern, $converted_gedcom, $export_filter, $export_filter_rules, $records_references);
         }            
 
         return $converted_gedcom;
@@ -907,14 +901,24 @@ class RemoteGedcomExportService extends GedcomExportService
      * Convert Gedcom based on the matched pattern of a filter rule, 
      * which points to an array of RegExp replace pairs or cutom conversions
      *
-     * @param string $matched_pattern   The matched pattern (i.e. INDI:NAME) of the filter rule, whose replacements shall be applied
-     * @param string $gedcom            Gedcom to convert
+     * @param string                $matched_pattern      The matched pattern (i.e. INDI:NAME) of the filter rule, whose replacements shall be applied
+     * @param string                $gedcom               Gedcom to convert
+     * @param ExportFilterInterface $export_filter        The export filter used
+     * @param array                 $export_filter_rules  The filter rules of the export filter
+     * @param array                 $records_references   A list of records as <Record> objects, which contain the references between the records
+     *                                                    array <string xref => Record record>
      *
-     * @return string                   Converted Gedcom
+     * @return string                                     Converted Gedcom
      */
-    private function replaceInGedcom(string $matched_pattern, string $gedcom): string {
+    private function replaceInGedcom(
+        string $matched_pattern,
+        string $gedcom,
+        ExportFilterInterface $export_filter,
+        array $export_filter_rules,
+        array $records_references
+        ): string {
 
-        $replace_pairs=$this->export_filter_rules[$matched_pattern];
+        $replace_pairs=$export_filter_rules[$matched_pattern];
 
         //For each replacement, which is provided
         foreach ($replace_pairs as $search => $replace) {
@@ -922,7 +926,7 @@ class RemoteGedcomExportService extends GedcomExportService
             //If according string is found, apply custom conversion
             if ($search === self::CUSTOM_CONVERT) {
 
-                $gedcom = $this->export_filter->customConvert($matched_pattern, $gedcom, $this->records_references);
+                $gedcom = $export_filter->customConvert($matched_pattern, $gedcom, $records_references);
             }
 
             //Else apply RegExp replacement
@@ -991,10 +995,12 @@ class RemoteGedcomExportService extends GedcomExportService
      * Perform an analysis of records their references and create a record list and links between the records
      *
      * @param string $gedcom
+     * @param array  $records_references  A list of records as <Record> objects, which contain the references between the records
+     *                                    array <string xref => Record record>
      * 
      * @return void
      */
-    private function analyzeRecordsAndReferences(string $gedcom) : void {
+    private function analyzeRecordsAndReferences(string $gedcom, array $records_references) : void {
 
         //Match xref
         preg_match('/0 @(' . Gedcom::REGEX_XREF . ')@ (' . Gedcom::REGEX_TAG . ')(.*)\n(.*)/', $gedcom, $match);
@@ -1016,13 +1022,13 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         //If not exists, create record and add to records list
-        if (!isset($this->records_references[$xref])) {
+        if (!isset($records_references[$xref])) {
 
             $record = new Record($xref, $record_type);
-            $this->records_references[$xref] = $record;
+            $records_references[$xref] = $record;
         }
         else {
-            $record = $this->records_references[$xref];
+            $record = $records_references[$xref];
 
             //Add type if is not set already, i.e. a reference has been found earlier and type could not be identified
             if ($record->type() === '') {
@@ -1043,13 +1049,13 @@ class RemoteGedcomExportService extends GedcomExportService
         foreach ($matches[1] as $match) {
 
             //If not exists, create record for reference and add to records list
-            if (!isset($this->records_references[$match])) {
+            if (!isset($records_references[$match])) {
 
                 $referenced = new Record($match, '');  //Unfortunatelly, we do not know the type. Therefore, set type to ''
-                $this->records_references[$match] = $referenced;
+                $records_references[$match] = $referenced;
             }
             else {
-                $referenced = $this->records_references[$match];
+                $referenced = $records_references[$match];
             }
 
             //Link record to referenced record
@@ -1065,9 +1071,12 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * Identify empty and unlinked records in the record list and update references of related records
      * 
+     * @param array  $records_references  A list of records as <Record> objects, which contain the references between the records
+     *                                    array <string xref => Record record>
+     * 
      * @return void
      */
-    private function identifyEmptyAndUnlinkedRecords() : void {
+    private function identifyEmptyAndUnlinkedRecords(array $records_references) : void {
         
         $modified_references = true;
         $iteration = 0;
@@ -1078,7 +1087,7 @@ class RemoteGedcomExportService extends GedcomExportService
             $iteration++;
 
             //Iterate over all records in the record list
-            foreach ($this->records_references as $xref => $record) {
+            foreach ($records_references as $xref => $record) {
 
                 $propagate_result = $this->propagateReferences($record);
                 $modified_references = $modified_references || $propagate_result;
@@ -1159,26 +1168,26 @@ class RemoteGedcomExportService extends GedcomExportService
         //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
         if ($this->isGedcom7Header($gedcom_structures[0] ?? false)) {
 
-            //Create schema list
-            $this->schema_uris_for_tags = [];
-            $this->addToSchemas(self::SCHEMAS);
-            $this->addToSchemas(self::GEDCOM_L_SCHEMAS);
+            //Create a list of schemas, which are used for the export
+            $schema_uris_for_tags = $this->addToSchemas(self::SCHEMAS, []);
+            $schema_uris_for_tags = $this->addToSchemas(self::GEDCOM_L_SCHEMAS, $schema_uris_for_tags);
 
             //Find custom tags
+            $custom_tags_found = [];
             foreach($gedcom_structures as $gedcom) {
 
-                $this->findCustomTags($gedcom);
+                $custom_tags_found = $this->addCustomTagsFound($gedcom, $schema_uris_for_tags, $custom_tags_found);
             }
 
             //Get Gedcom of HEAD
             $head_gedcom = $gedcom_structures[0]; 
 
-            if (sizeof($this->custom_tags_found) > 0) {
+            if (sizeof($custom_tags_found) > 0) {
 
                 $head_gedcom .= "1 SCHMA\n";
 
-                foreach($this->custom_tags_found as $tag) {
-                    $head_gedcom .= "2 TAG " . $tag . " " . $this->schema_uris_for_tags[$tag] . "\n";
+                foreach($custom_tags_found as $tag) {
+                    $head_gedcom .= "2 TAG " . $tag . " " . $schema_uris_for_tags[$tag] . "\n";
                 }
             }
             //Set new Gedcom for HEAD

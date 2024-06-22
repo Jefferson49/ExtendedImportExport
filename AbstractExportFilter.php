@@ -90,7 +90,7 @@ class AbstractExportFilter implements ExportFilterInterface
 
             foreach($conversion_rules as $search => $replace) {
 
-                if ($search === self::REGEXP_MACROS_STRING ) {
+                if ($search === self::REGEXP_MACROS_STRING) {
 
                     //Add all the conversion rules found in the macro
                     $modfied_conversion_rules = array_merge($modfied_conversion_rules, static::REGEXP_MACROS[$replace]);        
@@ -156,21 +156,13 @@ class AbstractExportFilter implements ExportFilterInterface
             }
         }
 
-        //Validate, if getExportFilterRules() creates a PHP error
-        try {
-            $test = $this->getExportFilterRules();
-        }
-        catch (Throwable $th) {
-            return I18N::translate('The %s method of the used export filter (%s) throws a PHP error', 'getExportFilterRules', (new ReflectionClass($this))->getShortName()) .
-                                    ': ' . $th->getMessage();
+        //Validate if EXPORT_FILTER_RULES is an array
+        if (!is_array(static::EXPORT_FILTER_RULES)) {
+            return I18N::translate('The filter rules definition (%s) of the export filter (%s) does not have the type array.', 'const EXPORT_FILTER_RULES', $class_name,);
         }
 
-        //Validate if getExportFilterRules returns an array
-        if (!is_array($this->getExportFilterRules())) {
-            return I18N::translate('The %s method of the export filter (%s) returns an invalid filter definition.', 'getExportFilterRules()', $class_name,);
-        }
-
-        foreach($this->getExportFilterRules() as $pattern => $regexps) {
+        //Validate EXPORT_FILTER_RULES
+        foreach(static::EXPORT_FILTER_RULES as $pattern => $regexps) {
 
             //Validate filter rule
             if (!is_array($regexps)) {
@@ -212,6 +204,16 @@ class AbstractExportFilter implements ExportFilterInterface
                         return I18N::translate('The used export filter (%s) contains a %s command with a method (%s), but the filter class does not contain a "%s" method.', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, self::CUSTOM_CONVERT, self::CUSTOM_CONVERT);
                     }
                 }
+                //If the filter contains a RegExp macro command, check if the macro exists
+                elseif ($search === self::REGEXP_MACROS_STRING) {
+
+                    try {
+                        $macro = static::REGEXP_MACROS[$replace];
+                    }
+                    catch (Throwable $th) {
+                        return I18N::translate('The used export filter (%s) contains a macro command (%s) for a regular expression, but the macro is not defined in the filter.', (new ReflectionClass($this))->getShortName(), $replace);
+                    }
+                }
 
                 //Validate regular expressions
                 try {
@@ -242,8 +244,8 @@ class AbstractExportFilter implements ExportFilterInterface
 
             //Check if a rule is dominated by another rule, which is higher priority (i.e. earlier entry in the export filter list)
             $i = 0;
-            $size = sizeof($this->getExportFilterRules());
-            $pattern_list = array_keys($this->getExportFilterRules());
+            $size = sizeof(static::EXPORT_FILTER_RULES);
+            $pattern_list = array_keys(static::EXPORT_FILTER_RULES);
 
             while($i < $size && $pattern !== $pattern_list[$i]) {
 
@@ -261,6 +263,15 @@ class AbstractExportFilter implements ExportFilterInterface
                 $i++;
             }            
         }
+
+        //Validate, if getExportFilterRules() creates a PHP error
+        try {
+            $test = $this->getExportFilterRules();
+        }
+        catch (Throwable $th) {
+            return I18N::translate('The %s method of the used export filter (%s) throws a PHP error', 'getExportFilterRules', (new ReflectionClass($this))->getShortName()) .
+                                    ': ' . $th->getMessage();
+        }        
 
         //Validate, if getIncludedFiltersBefore creates a PHP error
         try {

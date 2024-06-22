@@ -58,13 +58,13 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 		//Media types
 		//Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
 		//GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
-		'OBJE:FILE:FORM'            => ["2 FORM (bmp|BMP)(\n3 TYPE .[^\n]+)*" => "2 FORM image/bmp",
-										"2 FORM (gif|GIF)(\n3 TYPE .[^\n]+)*" => "2 FORM image/gif",
-										"2 FORM (jpg|JPG|jpeg|JPEG)(\n3 TYPE .[^\n]+)*" => "2 FORM image/jpeg",
-										"2 FORM (tif|TIF|tiff|TIFF)(\n3 TYPE .[^\n]+)*" => "2 FORM image/tiff",
-										"2 FORM (pdf|PDF)(\n3 TYPE .[^\n]+)*" => "2 FORM application/pdf",
-										"2 FORM (emf|EMF)(\n3 TYPE .[^\n]+)*" => "2 FORM image/emf",
-										"2 FORM (htm|HTM|html|HTML)(\n3 TYPE .[^\n]+)*" => "2 FORM text/html",],
+		'OBJE:FILE:FORM'            => ["2 FORM (?i)BMP(\n3 TYPE .[^\n]+)*" => "2 FORM image/bmp",
+										"2 FORM (?i)GIF(\n3 TYPE .[^\n]+)*" => "2 FORM image/gif",
+										"2 FORM (?i)(JPG|JPEG)(\n3 TYPE .[^\n]+)*" => "2 FORM image/jpeg",
+										"2 FORM (?i)(TIF|TIFF)(\n3 TYPE .[^\n]+)*" => "2 FORM image/tiff",
+										"2 FORM (?i)PDF(\n3 TYPE .[^\n]+)*" => "2 FORM application/pdf",
+										"2 FORM (?i)EMF(\n3 TYPE .[^\n]+)*" => "2 FORM image/emf",
+										"2 FORM (?i)(HTM|HTML)(\n3 TYPE .[^\n]+)*" => "2 FORM text/html",],
 
 		//Shared notes (SNOTE)
 		'*:NOTE'					=> ["RegExp_macro" => "SharedNotes"],
@@ -73,9 +73,9 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 		'NOTE'  					=> ["0 @([^@)]+)@ NOTE( ?)(.+)" => "0 @$1@ SNOTE$2$3"],
 
 		//Specific language issues
-		'*:*:LANG'     	   			=> ["2 LANG SERB" => "2 LANG Serbian",
-										"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",
-										"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",],		
+		'*:*:LANG'     	   			=> ["2 LANG (?i)SERB" => "2 LANG Serbian",
+										"2 LANG (?i)SERBO_CROA" => "2 LANG Serbo-Croatian",
+										"2 LANG (?i)BELORUSIAN" => "2 LANG Belarusian",],		
 
 		//GEDCOM-L
 		'INDI:*:_GODP'             	=> ["RegExp_macro" => "_GODP_WITN"],
@@ -83,9 +83,9 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 		'FAM:*:_WITN'              	=> ["RegExp_macro" => "_GODP_WITN"],
 		'INDI:*:_WITN'             	=> ["RegExp_macro" => "_GODP_WITN"],
 	
-		'FAM:STAT'                 	=> ["1 _STAT (NOT|NEVER) MARRIED\n" => "1 NO MARR\n"],
+		'FAM:STAT'                 	=> ["1 _STAT (?i)(NOT|NEVER) MARRIED\n" => "1 NO MARR\n"],
 										
-		'FAM:MARR:TYPE'            	=> ["2 TYPE RELIGIOUS" => "2 TYPE RELI"],								  							
+		'FAM:MARR:TYPE'            	=> ["2 TYPE (?i)RELIGIOUS" => "2 TYPE RELI"],
 
 		//Remove submissions, because they do not exist in GEDCOM 7
 		'!SUBN'                     => [],
@@ -113,26 +113,27 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 										"([\d]) AGE ([\d]{1,3})y ([\d]{1,2})m 0([\d]{1,2})d" => "$1 AGE $2y $3m $4d",
 										"([\d]) AGE ([\d]{1,2})m 00([\d])d" => "$1 AGE $2m $3d",
 										"([\d]) AGE ([\d]{1,2})m 0([\d]{1,2})d" => "$1 AGE $2m $3d",
-										"([\d]) AGE (<|>)([\d])" => "$1 AGE $2 $3",],
+										"([\d]) AGE (<|>)([\d])" => "$1 AGE $2 $3",
+										"([\d]) AGE (?i)INFANT" => "$1 AGE CHILD"],
 
 		"ASSO_RELA"					=> ["([\d]) (_?)ASSO (.*)\n([\d]) RELA" => "$1 $2ASSO $3\n$4 ROLE"],
 
-		"RELA_GodparentWitness"		=> ["([\d]) RELA godparent" => "$1 ROLE GODP",
-										"([\d]) RELA witness" => "$1 ROLE WITN",],
+		"RELA_GodparentWitness"		=> ["([\d]) RELA (?i)GODPARENT" => "$1 ROLE GODP",
+										"([\d]) RELA (?i)WITNESS" => "$1 ROLE WITN",],
 
-		"ROLE_GodparentWitness"		=> ["3 ROLE (Godparent)" => "3 ROLE GODP",
-										"3 ROLE godparent" => "3 ROLE GODP",
-										"3 ROLE witness" => "3 ROLE WITN",],
+		"ROLE_GodparentWitness"		=> ["3 ROLE \((?i)GODPARENT\)" => "3 ROLE GODP",
+										"3 ROLE (?i)GODPARENT" => "3 ROLE GODP",
+										"3 ROLE (?i)WITNESS" => "3 ROLE WITN",],
 
 		"SharedNotes"				=> ["([\d]) NOTE @([^@)]+)@" => "$1 SNOTE @$2@"],
 
 		"_GODP_WITN"			      => ["2 _(_GODP|_WITN) (.*)" => "2 ASSO @VOID@\n3 PHRASE $2\n3 ROLE $1"],
 	];
 
-   /**
-    * Constructor
-    *
-    */      
+	/**
+	 * Constructor
+	 *
+	 */      
 	public function __construct() {
 
       $iana_language_registry_file_name = __DIR__ . '/../../vendor/iana/iana_languages.txt';
@@ -196,33 +197,6 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
                 $gedcom       = str_replace($search, $replace, $gedcom);
             }			
         }        
-
-		//Enum values for AGE: CHILD, INFANT, STILLBORN
-        $AGE_ENUM_VALUES = [
-            'CHILD'     => '< 8y', 
-            'INFANT'    => '< 1y', 
-            'STILLBORN' => '0y',
-        ];
-
-        $preg_pattern = [
-			"/([\d]) AGE (CHILD|INFANT|STILLBORN)\n/",
-        ];
-
-        foreach ($preg_pattern as $pattern) {
-
-            preg_match_all($pattern, $gedcom, $matches, PREG_SET_ORDER);
-
-            foreach ($matches as $match) {
-                $level = (int) $match[1];
-
-                $age_value    = $AGE_ENUM_VALUES[$match[2]];
-                $phrase_value = $match[2];                    
-
-                $search       = (string) $level . " AGE " . $phrase_value;
-                $replace      = (string) $level . " AGE " . $age_value . "\n" .  (string) ($level + 1) . " PHRASE " . strtolower($phrase_value);
-                $gedcom       = str_replace($search, $replace, $gedcom);
-            }			
-        }    
            
 		//Languages
 		//Allowed GEDCOM 7 language tags: https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry

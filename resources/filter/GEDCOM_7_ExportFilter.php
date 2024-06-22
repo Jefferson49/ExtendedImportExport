@@ -15,30 +15,84 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
    private array $language_to_code_table;
    
    protected const EXPORT_FILTER_RULES = [
-      
-      //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
-      //                             ["search pattern" => "replace pattern"],
+		
+		//GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+		//                             ["search pattern" => "replace pattern"],
 
-      //Modify header
-      'HEAD'                      => [],
-      '!HEAD:GEDC:FORM'           => [],
-      '!HEAD:FILE'                => [],
-      '!HEAD:CHAR'                => [],
-      '!HEAD:SUBN'                => [],
-      'HEAD:GEDC:VERS'            => ["2 VERS 5.5.1" => "2 VERS 7.0.14"],
-      'HEAD:DATE'                 => ["0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) ([\d]{1,4})" => "$1 $2 $3"],
-      'HEAD:LANG'                 => ["PHP_function" => "customConvert"],
-      'HEAD:*'                    => [],
+		//Modify header
+		'HEAD'                      => [],
+		'!HEAD:GEDC:FORM'           => [],
+		'!HEAD:FILE'                => [],
+		'!HEAD:CHAR'                => [],
+		'!HEAD:SUBN'                => [],
+		'HEAD:GEDC:VERS'            => ["2 VERS 5.5.1" => "2 VERS 7.0.14"],
+		'HEAD:DATE'                 => ["RegExp_macro" => "DateConversion"],
+		'HEAD:LANG'                 => ["PHP_function" => "customConvert"],
+		'HEAD:*'                    => [],
 
-      //Remove submissions, because they do not exist in GEDCOM 7
-      '!SUBN'                     => [],
-      '!SUBN:*'                   => [],
+		//External IDs (EXID)
+		'INDI:AFN'                  => ["1 AFN (.[^\n]+)" => "1 EXID $1\n2 TYPE https://gedcom.io/terms/v7/$1",],
+		'*:RFN'                     => ["1 RFN (.[^\n]+)" => "1 EXID $1\n2 TYPE https://gedcom.io/terms/v7/$1",],
+		'*:RIN'                     => ["1 RIN (.[^\n]+)" => "1 EXID $1\n2 TYPE https://gedcom.io/terms/v7/$1",],
 
-      'TRLR'                      => [],
+		//RELA, ROLE, _ASSO	
+		'INDI:ASSO:RELA'	    	=> ["RegExp_macro" => "RELA_GodparentWitness"],
+		'INDI:ASSO'		            => ["RegExp_macro" => "ASSO_RELA"],
+		'FAM:*:_ASSO:RELA'	        => ["RegExp_macro" => "RELA_GodparentWitness"],
+		'FAM:*:_ASSO'	            => ["RegExp_macro" => "ASSO_RELA"],
+		'INDI:*:_ASSO:RELA'	 	    => ["RegExp_macro" => "RELA_GodparentWitness"],
+		'INDI:*:_ASSO'	 	        => ["RegExp_macro" => "ASSO_RELA"],
 
-      //Apply custom conversion to all other records
-      '*'                         => ["PHP_function" => "customConvert"],
+		'*:SOUR:EVEN:ROLE'          => ["RegExp_macro" => "ROLE_GodparentWitness"],
+		'*:*:SOUR:EVEN:ROLE'        => ["RegExp_macro" => "ROLE_GodparentWitness"],
+		
+		//Media types
+		//Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
+		//GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
+		'OBJE:FILE:FORM'            => ["2 FORM (bmp|BMP)(\n3 TYPE .[^\n]+)*" => "2 FORM image/bmp",
+										"2 FORM (gif|GIF)(\n3 TYPE .[^\n]+)*" => "2 FORM image/gif",
+										"2 FORM (jpg|JPG|jpeg|JPEG)(\n3 TYPE .[^\n]+)*" => "2 FORM image/jpeg",
+										"2 FORM (tif|TIF|tiff|TIFF)(\n3 TYPE .[^\n]+)*" => "2 FORM image/tiff",
+										"2 FORM (pdf|PDF)(\n3 TYPE .[^\n]+)*" => "2 FORM application/pdf",
+										"2 FORM (emf|EMF)(\n3 TYPE .[^\n]+)*" => "2 FORM image/emf",
+										"2 FORM (htm|HTM|html|HTML)(\n3 TYPE .[^\n]+)*" => "2 FORM text/html",],
+
+		//Shared notes (SNOTE)
+		'*:NOTE'					=> ["RegExp_macro" => "SharedNotes"],
+		'*:*:NOTE'					=> ["RegExp_macro" => "SharedNotes"],
+		'*:*:*:NOTE'				=> ["RegExp_macro" => "SharedNotes"],
+		'NOTE'  					=> ["0 @([^@)]+)@ NOTE( ?)(.+)" => "0 @$1@ SNOTE$2$3"],
+
+		//Specific language issues
+		'*:*:LANG'     	   			=> ["2 LANG SERB" => "2 LANG Serbian",
+										"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",
+										"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",],		
+
+		//Remove submissions, because they do not exist in GEDCOM 7
+		'!SUBN'                     => [],
+		'!SUBN:*'                   => [],
+
+		'TRLR'                      => [],
+
+      	//Apply custom conversion to all other records
+     	 '*'                        => ["PHP_function" => "customConvert"],
    ];
+   protected const REGEXP_MACROS = [
+		//Name                      => Regular expression to be applied for the chosen GEDCOM tag
+		//                                 ["search pattern" => "replace pattern"],
+		"DateConversion"			=> ["0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) ([\d]{1,4})" => "$1 $2 $3"],
+
+		"ASSO_RELA"					=> ["([\d]) (_?)ASSO (.*)\n([\d]) RELA" => "$1 $2ASSO $3\n$4 ROLE"],
+
+		"RELA_GodparentWitness"		=> ["([\d]) RELA godparent" => "$1 ROLE GODP",
+										"([\d]) RELA witness" => "$1 ROLE WITN",],
+
+		"ROLE_GodparentWitness"		=> ["3 ROLE (Godparent)" => "3 ROLE GODP",
+										"3 ROLE godparent" => "3 ROLE GODP",
+										"3 ROLE witness" => "3 ROLE WITN",],
+
+		"SharedNotes"				=> ["([\d]) NOTE @([^@)]+)@" => "$1 SNOTE @$2@"],
+	];
 
    /**
     * Constructor
@@ -68,39 +122,6 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
     */
    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
 
-      //Ignore SUBN, because it does not exist in GEDCOM 7
-
-      //ToDo: How to handle GEDCOM_L?
-      $gedcom = $this->convertToGedcom7($gedcom, true);
-   
-      return $gedcom;
-   }
-
-    /**
-     * Convert to Gedcom 7
-     *
-     * @param string $gedcom
-	 * @param bool $gedcom_l
-     *
-     * @return string
-     */
-    public function convertToGedcom7(string $gedcom, bool $gedcom_l= false): string
-    {
-		$replace_pairs = [
-			"ROLE (Godparent)\n" => "ROLE GODP\n",
-			"RELA godparent\n" => "RELA GODP\n",
-			"RELA witness\n" => "RELA WITN\n",
-            "1 _STAT NOT MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
-            "1 _STAT NEVER MARRIED\n" => "1 NO MARR\n",			//Convert former GEDCOM-L structure to new GEDCOM 7 structure
-			"2 LANG SERB\n" => "2 LANG Serbian\n",				//Otherwise not found by language replacement below
-			"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",	//Otherwise not found by language replacement below
-			"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",		//Otherwise not found by language replacement below
-		];
-        
-		foreach ($replace_pairs as $search => $replace) {
-			$gedcom = str_replace($search, $replace, $gedcom);
-		}
-
 		$preg_replace_pairs = [
 			//Date and age values
 			"/0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) ([\d]{1,4})/" => "$1 $2 $3",
@@ -116,28 +137,6 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
             "/@#DFRENCH R@( |)/"   => 'FRENCH_R ',
             "/@#DROMAN@( |)/"      => 'ROMAN ',
             "/@#DUNKNOWN@( |)/"    => 'UNKNOWN ',
-
-			//RELA, ROLE, ASSO
-			"/([\d]) RELA/" => "$1 ROLE",
-			"/([\d]) _ASSO/" => "$1 ASSO",
-
-			//Media types
-			//Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
-			//GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
-			"/2 FORM (bmp|BMP)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/bmp",
-			"/2 FORM (gif|GIF)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/gif",
-			"/2 FORM (jpg|JPG|jpeg|JPEG)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/jpeg",
-			"/2 FORM (tif|TIF|tiff|TIFF)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/tiff",
-			"/2 FORM (pdf|PDF)(\n3 TYPE .[^\n]+)*/" => "2 FORM application/pdf",
-			"/2 FORM (emf|EMF)(\n3 TYPE .[^\n]+)*/" => "2 FORM image/emf",
-			"/2 FORM (htm|HTM|html|HTML)(\n3 TYPE .[^\n]+)*/" => "2 FORM text/html",
-
-            //Shared notes (SNOTE)
-			"/([\d]) NOTE @(" . Gedcom::REGEX_XREF . ")@/" => "$1 SNOTE @$2@",
-			"/0 @(" . Gedcom::REGEX_XREF . ")@ NOTE (.[^\n]+)/" => "0 @$1@ SNOTE $2",
-
-            //External IDs (EXID)
-			"/1 (AFN|RFN|RIN) (.[^\n]+)/" => "1 EXID $2\n2 TYPE https://gedcom.io/terms/v7/$1",
 		];
 
 		foreach ($preg_replace_pairs as $pattern => $replace) {
@@ -226,7 +225,7 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 			}
 		}
 
-		//enumsets
+		//Enumsets
 
 		$enumsets = [
 			"ADOP" => ["HUSB", "WIFE", "BOTH",],

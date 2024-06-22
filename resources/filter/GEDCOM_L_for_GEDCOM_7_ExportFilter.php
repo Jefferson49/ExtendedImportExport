@@ -14,13 +14,21 @@ class GEDCOM_L_for_GEDCOM_7_ExportFilter extends AbstractExportFilter implements
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],
 
-      'INDI:*:_GODP'              => ["2 _GODP (.*)" => "2 ASSO @VOID@\n3 PHRASE $1\n3 ROLE GODP"],
+      'INDI:*:_GODP'             => ["RegExp_macro" => "_GODP_WITN"],
 
-      'FAM:*:_WITN'               => ["2 _WITN (.*)" => "2 ASSO @VOID@\n3 PHRASE $1\n3 ROLE WITN"],
-      'INDI:*:_WITN'              => ["2 _WITN (.*)" => "2 ASSO @VOID@\n3 PHRASE $1\n3 ROLE WITN"],
+      'FAM:*:_WITN'              => ["RegExp_macro" => "_GODP_WITN"],
+      'INDI:*:_WITN'             => ["RegExp_macro" => "_GODP_WITN"],
 
-      'FAM:MARR:TYPE'             => ["2 TYPE RELIGIOUS" => "2 TYPE RELI"],
+      'FAM:STAT'                 => ["1 _STAT (NOT|NEVER) MARRIED\n" => "1 NO MARR\n"],
+                                      
+      'FAM:MARR:TYPE'            => ["2 TYPE RELIGIOUS" => "2 TYPE RELI"],
 
-      '*'                         => [],
+      '*'                        => [],
    ];
+
+   protected const REGEXP_MACROS = [
+		//Name                     => Regular expression to be applied for the chosen GEDCOM tag
+		//                                 ["search pattern" => "replace pattern"],
+		"_GODP_WITN"			      => ["2 _(GODP|WITN) (.*)" => "2 ASSO @VOID@\n3 PHRASE $2\n3 ROLE $1"],
+	];   
 }

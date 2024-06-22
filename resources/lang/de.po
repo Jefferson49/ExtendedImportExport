@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-06-20 06:26+0200\n"
-"PO-Revision-Date: 2024-06-20 06:26+0200\n"
+"POT-Creation-Date: 2024-06-22 06:25+0200\n"
+"PO-Revision-Date: 2024-06-22 06:30+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: AbstractExportFilter.php:100
+#: AbstractExportFilter.php:128
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid filter definition (%s)."
@@ -23,19 +23,41 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
 "(%s)."
 
-#: AbstractExportFilter.php:105
+#: AbstractExportFilter.php:133
 #, php-format
 msgid "The selected export filter (%s) does not contain any filter rules."
 msgstr "Der ausgewählte Export-Filter (%s) enthält keine Filter Regeln."
 
-#: AbstractExportFilter.php:113 AbstractExportFilter.php:208
-#: AbstractExportFilter.php:216
+#: AbstractExportFilter.php:138
+#, php-format
+msgid ""
+"The selected export filter (%s) contains an invalid definition for regular "
+"expression macros (%s)."
+msgstr ""
+"Der ausgewählte Export-Filter (%s) enthält eine ungültige Definition für "
+"Macros von regulären Ausdrücken (%s)."
+
+#: AbstractExportFilter.php:145
+#, php-format
+msgid ""
+"The selected export filter (%s) contains an invalid definition for the "
+"regular expression macro %s."
+msgstr ""
+"Der ausgewählte Export-Filter (%s) enthält eine ungültige Definition für das "
+"Macro %s."
+
+#: AbstractExportFilter.php:146 AbstractExportFilter.php:169
+msgid "Invalid definition"
+msgstr "Ungültige Definition"
+
+#: AbstractExportFilter.php:155 AbstractExportFilter.php:250
+#: AbstractExportFilter.php:258
 #, php-format
 msgid "The %s method of the used export filter (%s) throws a PHP error"
 msgstr ""
 "Die %s Methode des genutzten Export-Filters (%s) erzeugt einen PHP-Fehler"
 
-#: AbstractExportFilter.php:119
+#: AbstractExportFilter.php:161
 #, php-format
 msgid ""
 "The %s method of the export filter (%s) returns an invalid filter definition."
@@ -43,7 +65,7 @@ msgstr ""
 "Die %s Methode des Export-Filters (%s) gibt einen ungültigen Wert für die "
 "Filter-Definition zurück."
 
-#: AbstractExportFilter.php:126
+#: AbstractExportFilter.php:168
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid filter definition for "
@@ -52,17 +74,13 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
 "für das Tag-Muster %s."
 
-#: AbstractExportFilter.php:127
-msgid "Invalid definition"
-msgstr "Ungültige Definition"
-
-#: AbstractExportFilter.php:133
+#: AbstractExportFilter.php:175
 #, php-format
 msgid "The selected export filter (%s) contains an invalid tag definition"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Tag-Definition"
 
-#: AbstractExportFilter.php:150
+#: AbstractExportFilter.php:192
 #, php-format
 msgid ""
 "The used export filter (%s) contains a %s command, but the filter class does "
@@ -71,18 +89,18 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen %s Befehl, aber die Filter-"
 "Klasse enthält keine %s Methode."
 
-#: AbstractExportFilter.php:159 AbstractExportFilter.php:166
+#: AbstractExportFilter.php:201 AbstractExportFilter.php:208
 #, php-format
 msgid "The selected export filter (%s) contains an invalid regular expression"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen ungültigen regulären "
 "Ausdruck"
 
-#: AbstractExportFilter.php:159
+#: AbstractExportFilter.php:201
 msgid "Error message"
 msgstr "Fehlermeldung"
 
-#: AbstractExportFilter.php:176
+#: AbstractExportFilter.php:218
 #, php-format
 msgid ""
 "The selected export filter (%s) contains a black list filter rule (%s) with "
@@ -93,7 +111,7 @@ msgstr ""
 "mit einem regulären Ausdruck, welcher niemals ausgeführt wird, weil die "
 "Black-List Filter-Regel die zugehörige GEDCOM-Zeile löschen wird."
 
-#: AbstractExportFilter.php:197
+#: AbstractExportFilter.php:239
 #, php-format
 msgid ""
 "The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
@@ -280,15 +298,15 @@ msgstr ""
 "Das Herunterladen ist nicht erlaubt. Bitte ändern Sie die Modul-"
 "Einstellungen, um Herunterladen zu erlauben."
 
-#: RemoteGedcomExportService.php:772
+#: RemoteGedcomExportService.php:767
 msgid "The following GEDCOM structure could not be matched"
 msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
 
-#: RemoteGedcomExportService.php:933
+#: RemoteGedcomExportService.php:938
 msgid "Error during a regular expression replacement."
 msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
 
-#: RemoteGedcomExportService.php:1086
+#: RemoteGedcomExportService.php:1096
 msgid ""
 "Fatal error: Too many iterations while removing empty and unlinked records."
 msgstr ""

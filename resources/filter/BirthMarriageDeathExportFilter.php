@@ -29,7 +29,7 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
       //Add a link (as source citation) to the related individual in webtrees
       //Shorten all included dates to years(i.e. 01 JAN 1900 => 1900)
       'INDI'                      => ["0 @([^@]+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/individual/$1\n",
-                                      "2 DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*\n" => "2 DATE $1$2$3$4$5\n"],
+                                      "RegExp_macro" => "DateToYear"],
 
       'INDI:NAME'                 => [],
       'INDI:NAME:TYPE'            => [],
@@ -60,7 +60,7 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
       //Add a link (as source citation) to the related individual in webtrees
       //Shorten all included dates to years(i.e. 01 JAN 1900 => 1900)
       'FAM'                       => ["0 @([^@]+)@ FAM\n" => "0 @$1@ FAM\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/family/$1\n",
-                                      "2 DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*\n" => "2 DATE $1$2$3$4$5\n"],
+                                      "RegExp_macro" => "DateToYear"],
 
       'FAM:HUSB'                  => [],
       'FAM:WIFE'                  => [],
@@ -79,6 +79,12 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
       'TRLR'                      => ["0 TRLR\n" => "0 @S1@ SOUR\n1 TITL https://mysite.info/tree/%TREE%/\n0 TRLR\n"],
   ];
 
+  protected const REGEXP_MACROS = [
+    //Name                        => Regular expression to be applied for the chosen GEDCOM tag
+    //                               ["search pattern" => "replace pattern"],
+
+    "DateToYear"                  => ["2 DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*\n" => "2 DATE $1$2$3$4$5\n"],
+  ];   
 
   /**
    * Get the export filter and replace tree name in URLs
@@ -94,7 +100,7 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
 
     $export_filter = [];
 
-    foreach(self::EXPORT_FILTER_RULES as $tag => $regexps) {
+    foreach(parent::getExportFilterRules($tree) as $tag => $regexps) {
 
       $replaced_regexps = [];
 

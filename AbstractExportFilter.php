@@ -46,16 +46,29 @@ use Throwable;
  * Abstract export filter, which contains basic export filter rules for the mandatory HEAD, SUBM, TRLR structures only
  */
 class AbstractExportFilter implements ExportFilterInterface
-{
+{    
     //A switch, whether the filter uses a references analysis between the records
     protected const USES_REFERENCES_ANALYSIS = false;
 
     //A switch, whether custom tags shall be analyzed and SCHMA structures shall be added (only relevant for GEDCOM 7)
     protected const USES_SCHEMA_TAG_ANALYSIS = true;
-    
+
+    //The strings used to identify RegExp macros and PHP functions
+    private const REGEXP_MACROS_STRING = 'RegExp_macro';
+    private const PHP_FUNCTION_STRING  = 'PHP_function';
+
     //The definition of the export filter rules. As a default, export all (i.e. '*')
     protected const EXPORT_FILTER_RULES = [
-        '*'                      => [],
+
+        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //                             ["search pattern" => "replace pattern"],
+        '*'                         => [],
+    ];
+
+    //Macros for regular expressions, which can be used in export filter rules
+    protected const REGEXP_MACROS = [
+    //Name                          => Regular expression to be applied for the chosen GEDCOM tag
+    //                                 ["search pattern" => "replace pattern"],
     ];
 
     /**
@@ -67,7 +80,26 @@ class AbstractExportFilter implements ExportFilterInterface
      */
     public function getExportFilterRules(Tree $tree = null): array {
 
-        return static::EXPORT_FILTER_RULES;
+        $export_filter_rules = [];
+
+        foreach(static::EXPORT_FILTER_RULES as $tag => $conversion_rule) {
+
+            foreach($conversion_rule as $search => $replace) {
+
+                if ($search === self::REGEXP_MACROS_STRING ) {
+
+                    $regexp  = static::REGEXP_MACROS[$replace];                    
+                    $search  = array_key_first($regexp);
+                    $replace = $regexp[$search];
+                }
+
+                $conversion_rule[$search] = $replace;
+            }
+
+            $export_filter_rules[$tag] = $conversion_rule;
+        }
+
+        return $export_filter_rules;
     }
 
     /**
@@ -103,6 +135,20 @@ class AbstractExportFilter implements ExportFilterInterface
         //Validate if EXPORT_FILTER is empty
         if (sizeof(static::EXPORT_FILTER_RULES) === 0) {
             return I18N::translate('The selected export filter (%s) does not contain any filter rules.', $class_name);
+        }
+
+        //Validate if REGEXP_MACROS contains an array
+        if (!is_array(static::REGEXP_MACROS)) {
+            return I18N::translate('The selected export filter (%s) contains an invalid definition for regular expression macros (%s).', $class_name, 'const REGEXP_MACROS');
+        }
+
+        foreach(static::REGEXP_MACROS as $name => $regexps) {
+
+            //Validate regexp macros
+            if (!is_array($regexps)) {
+                return I18N::translate('The selected export filter (%s) contains an invalid definition for the regular expression macro %s.', $class_name, $name) . ' ' .
+                       I18N::translate('Invalid definition') . ': ' . (string) $regexps;
+            }
         }
 
         //Validate, if getExportFilterRules() creates a PHP error

@@ -244,7 +244,7 @@ class AbstractExportFilter implements ExportFilterInterface
                     while (substr_count($extended_pattern, ':') < substr_count($pattern_list[$i], ':')) $extended_pattern .=':*';
                 }
 
-                if (RemoteGedcomExportService::matchTagWithSinglePattern($extended_pattern, $pattern_list[$i])) {
+                if ($extended_pattern !== '*' && RemoteGedcomExportService::matchTagWithSinglePattern($extended_pattern, $pattern_list[$i])) {
 
                     return I18N::translate('The filter rule "%s" is dominated by the earlier filter rule "%s" and will never be executed. Please remove the rule or change the order of the filter rules.', $pattern, $pattern_list[$i]);
                 }

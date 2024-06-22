@@ -77,6 +77,16 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 										"2 LANG Serbo_Croa\n" => "2 LANG Serbo-Croatian\n",
 										"2 LANG BELORUSIAN\n" => "2 LANG Belarusian\n",],		
 
+		//GEDCOM-L
+		'INDI:*:_GODP'             	=> ["RegExp_macro" => "_GODP_WITN"],
+
+		'FAM:*:_WITN'              	=> ["RegExp_macro" => "_GODP_WITN"],
+		'INDI:*:_WITN'             	=> ["RegExp_macro" => "_GODP_WITN"],
+	
+		'FAM:STAT'                 	=> ["1 _STAT (NOT|NEVER) MARRIED\n" => "1 NO MARR\n"],
+										
+		'FAM:MARR:TYPE'            	=> ["2 TYPE RELIGIOUS" => "2 TYPE RELI"],								  							
+
 		//Remove submissions, because they do not exist in GEDCOM 7
 		'!SUBN'                     => [],
 		'!SUBN:*'                   => [],
@@ -115,6 +125,8 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 										"3 ROLE witness" => "3 ROLE WITN",],
 
 		"SharedNotes"				=> ["([\d]) NOTE @([^@)]+)@" => "$1 SNOTE @$2@"],
+
+		"_GODP_WITN"			      => ["2 _(_GODP|_WITN) (.*)" => "2 ASSO @VOID@\n3 PHRASE $2\n3 ROLE $1"],
 	];
 
    /**

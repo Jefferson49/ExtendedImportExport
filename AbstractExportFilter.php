@@ -36,6 +36,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Tree;
 
@@ -83,21 +84,24 @@ class AbstractExportFilter implements ExportFilterInterface
 
         $export_filter_rules = [];
 
-        foreach(static::EXPORT_FILTER_RULES as $tag => $conversion_rule) {
+        foreach(static::EXPORT_FILTER_RULES as $tag => $conversion_rules) {
 
-            foreach($conversion_rule as $search => $replace) {
+            $modfied_conversion_rules = [];
+
+            foreach($conversion_rules as $search => $replace) {
 
                 if ($search === self::REGEXP_MACROS_STRING ) {
 
-                    $regexp  = static::REGEXP_MACROS[$replace];                    
-                    $search  = array_key_first($regexp);
-                    $replace = $regexp[$search];
+                    //Add all the conversion rules found in the macro
+                    $modfied_conversion_rules = array_merge($modfied_conversion_rules, static::REGEXP_MACROS[$replace]);        
                 }
-
-                $conversion_rule[$search] = $replace;
+                else {
+                    //Otherwise add the conversion rule found
+                    $modfied_conversion_rules[$search] = $replace;
+                }
             }
 
-            $export_filter_rules[$tag] = $conversion_rule;
+            $export_filter_rules[$tag] = $modfied_conversion_rules;
         }
 
         return $export_filter_rules;
@@ -175,6 +179,12 @@ class AbstractExportFilter implements ExportFilterInterface
             }
 
             //Validate tags
+            //ToDo: Try to use Gedcom::REGEX_TAG for tag definition
+            //ToDo: Currently, wrong tag patterns with *TAG are not detected, e.g. *:*DATE (should be *:*:DATE)
+            //$tag_pattern = "(?:" . Gedcom::REGEX_TAG . ")|(?:[\*)])";
+            //$tag_pattern_first = '(' . $tag_pattern . ')';
+            //$tag_pattern_follow = '(:' . $tag_pattern . ')*';
+            //preg_match_all('/!?'. $tag_pattern_first . $tag_pattern_follow . $tag_pattern_follow . $tag_pattern_follow . $tag_pattern_follow . $tag_pattern_follow . $tag_pattern_follow . '/', $pattern, $match, PREG_PATTERN_ORDER);
             preg_match_all('/!?([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $pattern, $match, PREG_PATTERN_ORDER);
             if ($match[0][0] !== $pattern) {
                 return I18N::translate('The selected export filter (%s) contains an invalid tag definition', $class_name) . ': ' . $pattern;

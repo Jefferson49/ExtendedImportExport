@@ -19,6 +19,16 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 		//GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
 		//                             ["search pattern" => "replace pattern"],
 
+		//Date conversion
+		'*:DATE'                 	=> ["RegExp_macro" => "DateConversion"],
+		'*:*:DATE'                 	=> ["RegExp_macro" => "DateConversion"],
+		'*:*:*:DATE'                => ["RegExp_macro" => "DateConversion"],
+		'*:*:*:*:DATE'              => ["RegExp_macro" => "DateConversion"],
+
+		//Age conversion
+		'*:*:AGE'                 	=> ["RegExp_macro" => "AgeConversion"],
+		'*:*:*:AGE'                	=> ["RegExp_macro" => "AgeConversion"],
+
 		//Modify header
 		'HEAD'                      => [],
 		'!HEAD:GEDC:FORM'           => [],
@@ -26,7 +36,6 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 		'!HEAD:CHAR'                => [],
 		'!HEAD:SUBN'                => [],
 		'HEAD:GEDC:VERS'            => ["2 VERS 5.5.1" => "2 VERS 7.0.14"],
-		'HEAD:DATE'                 => ["RegExp_macro" => "DateConversion"],
 		'HEAD:LANG'                 => ["PHP_function" => "customConvert"],
 		'HEAD:*'                    => [],
 
@@ -79,8 +88,22 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
    ];
    protected const REGEXP_MACROS = [
 		//Name                      => Regular expression to be applied for the chosen GEDCOM tag
-		//                                 ["search pattern" => "replace pattern"],
-		"DateConversion"			=> ["0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) ([\d]{1,4})" => "$1 $2 $3"],
+		//                             ["search pattern" => "replace pattern"],
+
+		"DateConversion"			=> ["0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) ([\d]{1,4})" => "$1 $2 $3",
+										"@#DGREGORIAN@( |)"  => 'GREGORIAN ',
+										"@#DJULIAN@( |)"     => 'JULIAN ',
+										"@#DHEBREW@( |)"     => 'HEBREW ',
+										"@#DFRENCH R@( |)"   => 'FRENCH_R ',
+										"@#DROMAN@( |)"      => 'ROMAN ',
+										"@#DUNKNOWN@( |)"    => 'UNKNOWN ',],
+
+		"AgeConversion"				=> ["([\d]) AGE 0([\d]{1,2})y" => "$1 AGE $2y",
+										"([\d]) AGE ([\d]{1,3})y 0(.)m" => "$1 AGE $2y $3m",
+										"([\d]) AGE ([\d]{1,3})y ([\d]{1,2})m 0([\d]{1,2})d" => "$1 AGE $2y $3m $4d",
+										"([\d]) AGE ([\d]{1,2})m 00([\d])d" => "$1 AGE $2m $3d",
+										"([\d]) AGE ([\d]{1,2})m 0([\d]{1,2})d" => "$1 AGE $2m $3d",
+										"([\d]) AGE (<|>)([\d])" => "$1 AGE $2 $3",],
 
 		"ASSO_RELA"					=> ["([\d]) (_?)ASSO (.*)\n([\d]) RELA" => "$1 $2ASSO $3\n$4 ROLE"],
 
@@ -121,27 +144,6 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
     * @return string               The converted Gedcom
     */
    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
-
-		$preg_replace_pairs = [
-			//Date and age values
-			"/0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) ([\d]{1,4})/" => "$1 $2 $3",
-			"/([\d]) AGE 0([\d]{1,2})y/" => "$1 AGE $2y",
-			"/([\d]) AGE ([\d]{1,3})y 0(.)m/" => "$1 AGE $2y $3m",
-			"/([\d]) AGE ([\d]{1,3})y ([\d]{1,2})m 0([\d]{1,2})d/" => "$1 AGE $2y $3m $4d",
-			"/([\d]) AGE ([\d]{1,2})m 00([\d])d/" => "$1 AGE $2m $3d",
-			"/([\d]) AGE ([\d]{1,2})m 0([\d]{1,2})d/" => "$1 AGE $2m $3d",
-			"/([\d]) AGE (<|>)([\d])/" => "$1 AGE $2 $3",
-            "/@#DGREGORIAN@( |)/"  => 'GREGORIAN ',
-            "/@#DJULIAN@( |)/"     => 'JULIAN ',
-            "/@#DHEBREW@( |)/"     => 'HEBREW ',
-            "/@#DFRENCH R@( |)/"   => 'FRENCH_R ',
-            "/@#DROMAN@( |)/"      => 'ROMAN ',
-            "/@#DUNKNOWN@( |)/"    => 'UNKNOWN ',
-		];
-
-		foreach ($preg_replace_pairs as $pattern => $replace) {
-			$gedcom = preg_replace($pattern, $replace, $gedcom);
-		}
 
 		//Specific dates with slashes in years, eg. 1741/42
         $preg_pattern = [

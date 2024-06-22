@@ -22,7 +22,7 @@ class IndividualNamesCsvExportFilter extends AbstractExportFilter implements Exp
 
       //Replace certain characters (*,") by a custom conversion, i.e. call method $this->customConvert(...)
       //Generate CSV data from the individuals name
-      'INDI:NAME'                 => ["->customConvert" => '',
+      'INDI:NAME'                 => ["PHP_function" => "customConvert",
                                       "1 NAME (.*[^ ])? ?\/([^\/]*)\/(.*)\n" => "\"$2\",\"$1\"\n"],
    ];
 

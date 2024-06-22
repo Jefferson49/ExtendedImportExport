@@ -55,7 +55,8 @@ class AbstractExportFilter implements ExportFilterInterface
 
     //The strings used to identify RegExp macros and PHP functions
     private const REGEXP_MACROS_STRING = 'RegExp_macro';
-    private const PHP_FUNCTION_STRING  = 'PHP_function';
+    public const PHP_FUNCTION_STRING   = 'PHP_function';
+    public const CUSTOM_CONVERT        = 'customConvert';
 
     //The definition of the export filter rules. As a default, export all (i.e. '*')
     protected const EXPORT_FILTER_RULES = [
@@ -182,18 +183,23 @@ class AbstractExportFilter implements ExportFilterInterface
             //Validate regular expressions in export filter
             foreach($regexps as $search => $replace) {
                 
-                //If filter contains 'customConvert' command, check if the filter class has the required method
-                if ($search === RemoteGedcomExportService::CUSTOM_CONVERT) {
+                //If the filter contains a PHP function command, check if the filter class has the required method
+                if ($search === self::PHP_FUNCTION_STRING) {
 
+                    //Check if customConvert method is chosen
+                    if ($replace !== self::CUSTOM_CONVERT) {
+
+                        return I18N::translate('The used export filter (%s) contains a %s command with a method (%s), which is not available. Currently, only "%s" is allowed to be used as a method', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, $replace, self::CUSTOM_CONVERT);
+                    }
                     try {
                         $reflection = new ReflectionClass($this);
-                        $used_class = $reflection->getMethod('customConvert')->class;
+                        $used_class = $reflection->getMethod(self::CUSTOM_CONVERT)->class;
                         if ($used_class !== get_class($this)) {
                             throw new DownloadGedcomWithUrlException();
                         };
                     }
                     catch (Throwable $th) {
-                        return I18N::translate('The used export filter (%s) contains a %s command, but the filter class does not contain a %s method.', (new ReflectionClass($this))->getShortName(), RemoteGedcomExportService::CUSTOM_CONVERT, RemoteGedcomExportService::CUSTOM_CONVERT);
+                        return I18N::translate('The used export filter (%s) contains a %s command with a method (%s), but the filter class does not contain a "%s" method.', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, self::CUSTOM_CONVERT, self::CUSTOM_CONVERT);
                     }
                 }
 

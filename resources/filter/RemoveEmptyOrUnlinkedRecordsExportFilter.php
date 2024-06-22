@@ -20,28 +20,28 @@ class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter impl
       'HEAD:*'                    => [],
       
       //Remove references to empty records
-      '*:NOTE'                    => ["->customConvert" => ""],
-      '*:*:NOTE'                  => ["->customConvert" => ""],
-      '*:*:*:NOTE'                => ["->customConvert" => ""],
+      '*:NOTE'                    => ["PHP_function" => "customConvert"],
+      '*:*:NOTE'                  => ["PHP_function" => "customConvert"],
+      '*:*:*:NOTE'                => ["PHP_function" => "customConvert"],
 
-      '*:OBJE'                    => ["->customConvert" => ""],
-      '*:*:OBJE'                  => ["->customConvert" => ""],
-      '*:*:*:OBJE'                => ["->customConvert" => ""],
-      '*:*:*:*:OBJE'              => ["->customConvert" => ""],
+      '*:OBJE'                    => ["PHP_function" => "customConvert"],
+      '*:*:OBJE'                  => ["PHP_function" => "customConvert"],
+      '*:*:*:OBJE'                => ["PHP_function" => "customConvert"],
+      '*:*:*:*:OBJE'              => ["PHP_function" => "customConvert"],
 
-      'SOUR:REPO'                 => ["->customConvert" => ""],
+      'SOUR:REPO'                 => ["PHP_function" => "customConvert"],
 
-      '*:SOUR'                    => ["->customConvert" => ""],
-      '*:*:SOUR'                  => ["->customConvert" => ""],
-      '*:*:*:SOUR'                => ["->customConvert" => ""],
+      '*:SOUR'                    => ["PHP_function" => "customConvert"],
+      '*:*:SOUR'                  => ["PHP_function" => "customConvert"],
+      '*:*:*:SOUR'                => ["PHP_function" => "customConvert"],
 
       //Remove empty records or records without references
-      'FAM'                       => ["->customConvert" => ""],
-      'NOTE'                      => ["->customConvert" => ""],
-      'OBJE'                      => ["->customConvert" => ""],
-      'REPO'                      => ["->customConvert" => ""],
-      'SOUR'                      => ["->customConvert" => ""],
-      '_LOC'                      => ["->customConvert" => ""],
+      'FAM'                       => ["PHP_function" => "customConvert"],
+      'NOTE'                      => ["PHP_function" => "customConvert"],
+      'OBJE'                      => ["PHP_function" => "customConvert"],
+      'REPO'                      => ["PHP_function" => "customConvert"],
+      'SOUR'                      => ["PHP_function" => "customConvert"],
+      '_LOC'                      => ["PHP_function" => "customConvert"],
 
       'INDI'                      => [],
       'INDI:*'                    => [],

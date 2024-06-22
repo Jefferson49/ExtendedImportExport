@@ -27,7 +27,7 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
       '!HEAD:SUBN'                => [],
       'HEAD:GEDC:VERS'            => ["2 VERS 5.5.1" => "2 VERS 7.0.14"],
       'HEAD:DATE'                 => ["0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) ([\d]{1,4})" => "$1 $2 $3"],
-      'HEAD:LANG'                 => ["->customConvert" => ""],
+      'HEAD:LANG'                 => ["PHP_function" => "customConvert"],
       'HEAD:*'                    => [],
 
       //Remove submissions, because they do not exist in GEDCOM 7
@@ -37,7 +37,7 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
       'TRLR'                      => [],
 
       //Apply custom conversion to all other records
-      '*'                         => ["->customConvert" => ""],
+      '*'                         => ["PHP_function" => "customConvert"],
    ];
 
    /**

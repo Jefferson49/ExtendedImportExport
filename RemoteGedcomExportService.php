@@ -128,9 +128,6 @@ class RemoteGedcomExportService extends GedcomExportService
         'none'     => Auth::PRIV_HIDE,
     ];
 
-    //
-    public const CUSTOM_CONVERT = '->customConvert';
-
     private ResponseFactoryInterface $response_factory;
 
     private StreamFactoryInterface $stream_factory;
@@ -924,7 +921,7 @@ class RemoteGedcomExportService extends GedcomExportService
         foreach ($replace_pairs as $search => $replace) {
 
             //If according string is found, apply custom conversion
-            if ($search === self::CUSTOM_CONVERT) {
+            if ($search === AbstractExportFilter::PHP_FUNCTION_STRING) {
 
                 $gedcom = $export_filter->customConvert($matched_pattern, $gedcom, $records_references);
             }

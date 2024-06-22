@@ -56,8 +56,8 @@ class ExampleExportFilter extends AbstractExportFilter implements ExportFilterIn
 
       //Perform a custom conversion for the SUBM record, 
       //i.e. call the method $this->customConvert(...) to convert the Gedcom. 
-      //The methd is implemented in the code below
-      'SUBM'                      => ["->customConvert" => ""],
+      //The methd is implemented in the PHP code below
+      'SUBM'                      => ["PHP_function" => "customConvert"],
       'SUBM:*'                    => [],
 
       'TRLR'                      => [],

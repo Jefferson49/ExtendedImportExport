@@ -627,12 +627,12 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * Add to schemas
      * 
-     * @param array $schemas               An array with schemas to add
      * @param array $schema_uris_for_tags  A list of schemas, which are used for the export
+     * @param array $schemas               An array with schemas to add
      * 
      * @return void
      */
-    public function addToSchemas(array $schemas, array &$schema_uris_for_tags) : void
+    public function addToSchemas(array &$schema_uris_for_tags, array $schemas) : void
     {
         foreach ($schemas as $schema) {
         
@@ -742,10 +742,10 @@ class RemoteGedcomExportService extends GedcomExportService
         string $higher_level_matched_tag_pattern,
         string $tag_combination,
         ExportFilterInterface $export_filter,
-        array  $export_filter_patterns,
-        array  $export_filter_rules,
-        array  $export_filter_rule_has_regexp,
-        array  $records_references
+        array  &$export_filter_patterns,
+        array  &$export_filter_rules,
+        array  &$export_filter_rule_has_regexp,
+        array  &$records_references
         ): string
     {   
         $converted_gedcom = '';
@@ -773,7 +773,7 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         //Check whether is in white list and not in black list
-        $matched_tag_pattern = self::matchedPattern($tag_combination, $export_filter_patterns);
+        $matched_tag_pattern = self::getMatchedPattern($tag_combination, $export_filter_patterns);
 
         //If tag pattern was found, add the related Gedcom
         if ($matched_tag_pattern !== '') {
@@ -795,7 +795,7 @@ class RemoteGedcomExportService extends GedcomExportService
             && $export_filter_rule_has_regexp[$matched_tag_pattern] 
             && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
 
-            $converted_gedcom = $this->replaceInGedcom($matched_tag_pattern, $converted_gedcom, $export_filter, $export_filter_rules, $records_references);
+            $converted_gedcom = $this->replaceInGedcom($converted_gedcom, $matched_tag_pattern, $export_filter, $export_filter_rules, $records_references);
         }            
 
         return $converted_gedcom;
@@ -809,7 +809,7 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @return string    Matched pattern; empty if no match
      */
-    public static function matchedPattern(string $tag, array $patterns): string
+    public static function getMatchedPattern(string $tag, array &$patterns): string
     {
         $i = 0;
         $size = sizeof($patterns);
@@ -908,14 +908,14 @@ class RemoteGedcomExportService extends GedcomExportService
      * @return string                                     Converted Gedcom
      */
     private function replaceInGedcom(
-        string $matched_pattern,
-        string $gedcom,
+        string                $gedcom,
+        string                $matched_pattern,       
         ExportFilterInterface $export_filter,
-        array $export_filter_rules,
-        array $records_references
+        array                 &$export_filter_rules,
+        array                 &$records_references
         ): string {
 
-        $replace_pairs=$export_filter_rules[$matched_pattern];
+        $replace_pairs = $export_filter_rules[$matched_pattern];
 
         //For each replacement, which is provided
         foreach ($replace_pairs as $search => $replace) {
@@ -945,7 +945,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * Split a Gedcom string into Gedcom sub structures
      *
      * @param string $gedcom
-     * @param int $level          The level, at which the Gedcom structure shall be splitted
+     * @param int    $level    The level, at which the Gedcom structure shall be splitted
      * 
      * @return array<string>
      */
@@ -1163,8 +1163,8 @@ class RemoteGedcomExportService extends GedcomExportService
 
             //Create a list of schemas, which are used for the export
             $schema_uris_for_tags = [];
-            $this->addToSchemas(self::SCHEMAS, $schema_uris_for_tags);
-            $this->addToSchemas(self::GEDCOM_L_SCHEMAS, $schema_uris_for_tags);
+            $this->addToSchemas($schema_uris_for_tags, self::SCHEMAS);
+            $this->addToSchemas($schema_uris_for_tags, self::GEDCOM_L_SCHEMAS);
 
             //Find custom tags
             $custom_tags_found = [];

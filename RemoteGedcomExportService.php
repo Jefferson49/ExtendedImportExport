@@ -375,7 +375,7 @@ class RemoteGedcomExportService extends GedcomExportService
         // If requested, add SCHMA for extension tags found
         if ($gedcom7 && $this->use_schema_tag_analysis) {
 
-            $gedcom_export = $this->addSchema($gedcom_export);
+            $this->addSchema($gedcom_export);
         }
 
         //Start writing to stream
@@ -606,9 +606,9 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param array<string>  $schema_uris_for_tags   The schemas, which are used for the export
      * @param array<string>  $custom_tags_found      A list with all the custom tags found before
      * 
-     * @return array                                 A list with the custom tags found added
+     * @return void
      */
-    public function addCustomTagsFound(string $gedcom, array $schema_uris_for_tags, array $custom_tags_found) : array
+    public function addCustomTagsFound(string $gedcom, array $schema_uris_for_tags, array &$custom_tags_found) : void
     {
         foreach ($schema_uris_for_tags as $tag => $uri) {
 
@@ -621,7 +621,7 @@ class RemoteGedcomExportService extends GedcomExportService
             } 
         }
 
-        return $custom_tags_found;
+        return;
     }
 
     /**
@@ -630,9 +630,9 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param array $schemas               An array with schemas to add
      * @param array $schema_uris_for_tags  A list of schemas, which are used for the export
      * 
-     * @return array                       List with added schemas
+     * @return void
      */
-    public function addToSchemas(array $schemas, array $schema_uris_for_tags) : array
+    public function addToSchemas(array $schemas, array &$schema_uris_for_tags) : void
     {
         foreach ($schemas as $schema) {
         
@@ -644,7 +644,7 @@ class RemoteGedcomExportService extends GedcomExportService
             }
         }
 
-        return $schema_uris_for_tags;
+        return;
     }
 
     /**
@@ -1156,20 +1156,21 @@ class RemoteGedcomExportService extends GedcomExportService
      * 
      * @return array<string>                     Gedcom structures with added SCHMA in the header 
      */
-    private function addSchema(array $gedcom_structures) : array {
+    private function addSchema(array &$gedcom_structures) : void {
 
         //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
         if ($this->isGedcom7Header($gedcom_structures[0] ?? false)) {
 
             //Create a list of schemas, which are used for the export
-            $schema_uris_for_tags = $this->addToSchemas(self::SCHEMAS, []);
-            $schema_uris_for_tags = $this->addToSchemas(self::GEDCOM_L_SCHEMAS, $schema_uris_for_tags);
+            $schema_uris_for_tags = [];
+            $this->addToSchemas(self::SCHEMAS, $schema_uris_for_tags);
+            $this->addToSchemas(self::GEDCOM_L_SCHEMAS, $schema_uris_for_tags);
 
             //Find custom tags
             $custom_tags_found = [];
             foreach($gedcom_structures as $gedcom) {
 
-                $custom_tags_found = $this->addCustomTagsFound($gedcom, $schema_uris_for_tags, $custom_tags_found);
+                $this->addCustomTagsFound($gedcom, $schema_uris_for_tags, $custom_tags_found);
             }
 
             //Get Gedcom of HEAD
@@ -1187,6 +1188,6 @@ class RemoteGedcomExportService extends GedcomExportService
             $gedcom_structures[0] = $head_gedcom;
         }    
 
-        return $gedcom_structures;
+        return;
     }
 }

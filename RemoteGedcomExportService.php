@@ -997,7 +997,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * 
      * @return void
      */
-    private function analyzeRecordsAndReferences(string $gedcom, array $records_references) : void {
+    private function analyzeRecordsAndReferences(string $gedcom, array &$records_references) : void {
 
         //Match xref
         preg_match('/0 @(' . Gedcom::REGEX_XREF . ')@ (' . Gedcom::REGEX_TAG . ')(.*)\n(.*)/', $gedcom, $match);
@@ -1005,10 +1005,6 @@ class RemoteGedcomExportService extends GedcomExportService
         $record_type = $match[2] ?? '';
         $text = $match[3] ?? '';
         $record_content = $match[4] ?? '';
-
-        if ($xref === 'S10701') {
-            $record_type = 'SOUR';
-        }
 
         //Specific treatment of HEAD and TRLR
         if ($xref === '') {
@@ -1073,7 +1069,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * 
      * @return void
      */
-    private function identifyEmptyAndUnlinkedRecords(array $records_references) : void {
+    private function identifyEmptyAndUnlinkedRecords(array &$records_references) : void {
         
         $modified_references = true;
         $iteration = 0;
@@ -1103,7 +1099,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * 
      * @return bool             True if references of record (or sub structure) were modified, i.e. empty or unlinked record identified
      */
-    private function propagateReferences(Record $record) : bool {
+    private function propagateReferences(Record &$record) : bool {
 
         $modified_references = false;
 

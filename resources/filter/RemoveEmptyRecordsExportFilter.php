@@ -23,7 +23,7 @@ class RemoveEmptyRecordsExportFilter extends RemoveEmptyOrUnlinkedRecordsExportF
    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
 
       //Call parent method for emtpy records only 
-      $gedcom = parent::removeEmptyAndUnlikedRecords($pattern, $gedcom, $records_list, true, false);
+      $gedcom = parent::removeEmptyOrUnlinkedRecords($pattern, $gedcom, $records_list, true, false);
       return $gedcom;
    }   
 }

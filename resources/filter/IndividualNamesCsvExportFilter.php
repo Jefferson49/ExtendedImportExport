@@ -37,10 +37,10 @@ class IndividualNamesCsvExportFilter extends AbstractExportFilter implements Exp
      */
     public function customConvert(string $pattern, string $gedcom, array $records_list): string {
 
-    //Remove all * " , characters from INDI:NAME
-    if ($pattern === 'INDI:NAME') {
-        $gedcom = str_replace(['*', '"', ','] , ['', '', ''], $gedcom);
-    }
+      //Remove all * " , characters from INDI:NAME
+      if ($pattern === 'INDI:NAME') {
+          $gedcom = str_replace(['*', '"', ','] , ['', '', ''], $gedcom);
+      }
 
     return $gedcom;
   }

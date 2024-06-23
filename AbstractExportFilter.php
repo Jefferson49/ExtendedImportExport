@@ -110,7 +110,7 @@ class AbstractExportFilter implements ExportFilterInterface
     /**
      * Custom conversion of a Gedcom string
      *
-     * @param string $pattern       The pattern of the filter rule, e. g. INDI:BIRT:DATE
+     * @param string $pattern       The pattern of the filter rule, e. g. INDI:*:DATE
      * @param string $gedcom        The Gedcom to convert
      * @param array  $records_list  A list with all xrefs and the related records: array <string xref => Record record>
      * 

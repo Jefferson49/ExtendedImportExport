@@ -69,10 +69,9 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 		'*:*:*:NOTE'				=> ["RegExp_macro" => "SharedNotes"],
 		'NOTE'  					=> ["0 @([^@)]+)@ NOTE( ?)(.+)" => "0 @$1@ SNOTE$2$3"],
 
-		//Specific language issues
-		'*:*:LANG'     	   			=> ["2 LANG (?i)SERB" => "2 LANG Serbian",
-										"2 LANG (?i)SERBO_CROA" => "2 LANG Serbo-Croatian",
-										"2 LANG (?i)BELORUSIAN" => "2 LANG Belarusian",],		
+		//Language conversion
+		'*:LANG' 	           		=> ["RegExp_macro" => "LanguageConversion"],		
+		'*:*:LANG'     	   			=> ["RegExp_macro" => "LanguageConversion"],		
 
 		//GEDCOM-L
 		'INDI:*:_GODP'             	=> ["RegExp_macro" => "_GODP_WITN"],
@@ -127,6 +126,11 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 										"@#DFRENCH R@( |)"   => 'FRENCH_R ',
 										"@#DROMAN@( |)"      => 'ROMAN ',
 										"@#DUNKNOWN@( |)"    => 'UNKNOWN ',
+										"PHP_function" => "customConvert"],
+
+		'LanguageConversion'		=> ["2 LANG (?i)SERB" => "2 LANG Serbian",
+										"2 LANG (?i)SERBO_CROA" => "2 LANG Serbo-Croatian",
+										"2 LANG (?i)BELORUSIAN" => "2 LANG Belarusian",
 										"PHP_function" => "customConvert"],
 
 		"AgeConversion"				=> ["([\d]) AGE 0([\d]{1,2})y" => "$1 AGE $2y",

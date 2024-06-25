@@ -18,7 +18,7 @@ class CombinedExportFilter extends AbstractExportFilter implements ExportFilterI
 
     return [
       new BirthMarriageDeathExportFilter(),
-      new Gedcom7ExportFilter(),
+      new Gedcom_7_ExportFilter(),
       new RemoveEmptyRecordsExportFilter(),      
     ];
   }

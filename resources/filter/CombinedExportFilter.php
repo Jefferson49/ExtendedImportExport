@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * An export filter, which combines two other export filters
+ * An export filter, which combines several other export filters
  */
 class CombinedExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {

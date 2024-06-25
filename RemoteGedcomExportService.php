@@ -366,8 +366,13 @@ class RemoteGedcomExportService extends GedcomExportService
 			}
         }
 
+        //Initialize matched tag combinations. 
+        $matched_tag_combinations = [];
+        //After filter application, the array keys will contain all tag combinations from the final filter run
+        //array: tag combination => matched filter rule
+
         //Apply export filters
-        $gedcom_export = $this->applyExportFilters($gedcom_export, $export_filters, $tree);
+        $gedcom_export = $this->applyExportFilters($gedcom_export, $export_filters, $matched_tag_combinations, $tree);
 
         //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
         $gedcom7 = ($this->isGedcom7Header($gedcom_export[0] ?? false));
@@ -375,7 +380,7 @@ class RemoteGedcomExportService extends GedcomExportService
         // If requested, add SCHMA for extension tags found
         if ($gedcom7 && $this->use_schema_tag_analysis) {
 
-            $this->addSchema($gedcom_export);
+            $this->addSchema($gedcom_export, $matched_tag_combinations);
         }
 
         //Start writing to stream
@@ -600,31 +605,6 @@ class RemoteGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Find custom tags.
-     * 
-     * @param string         $gedcom
-     * @param array<string>  $schema_uris_for_tags   The schemas, which are used for the export
-     * @param array<string>  $custom_tags_found      A list with all the custom tags found before
-     * 
-     * @return void
-     */
-    public function addCustomTagsFound(string $gedcom, array $schema_uris_for_tags, array &$custom_tags_found) : void
-    {
-        foreach ($schema_uris_for_tags as $tag => $uri) {
-
-            if(strpos($gedcom, $tag) !== false) {
-
-                if(!in_array($tag, $custom_tags_found)) {
-
-                    $custom_tags_found[] = $tag;
-                }
-            } 
-        }
-
-        return;
-    }
-
-    /**
      * Add to schemas
      * 
      * @param array $schema_uris_for_tags  A list of schemas, which are used for the export
@@ -650,13 +630,14 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * Apply export filters to a set of Gedcom structures
      *
-     * @param array<string>                 $gedcom_structures  An array with Gedcom structures
-     * @param array<ExportFilterInterface>  $export_filters     An array with export filters
+     * @param array<string>                 $gedcom_structures   An array with Gedcom structures
+     * @param array<ExportFilterInterface>  $export_filters      An array with export filters
+     * @param array>string>                 $matched_pattern_for_tag_combination   An array with matched tag combinations
      * @param Tree                          $tree
      * 
-     * @return array<string>                                    An array with Gedcom structures after filter application
+     * @return array<string>                                     An array with Gedcom structures after filter application
      */
-    public function applyExportFilters(array $gedcom_structures, array $export_filters, Tree $tree): array
+    public function applyExportFilters(array $gedcom_structures, array $export_filters, array &$matched_pattern_for_tag_combination, Tree $tree): array
     {
         foreach($export_filters as $export_filter) {
 
@@ -1164,11 +1145,12 @@ class RemoteGedcomExportService extends GedcomExportService
     /**
      * Add SCHMA structure to a Gedcom 7 header
      * 
-     * @param array<string> $gedcom_structures   An array with the Gedcom structures, i.e.HEAD, all records, TRLRL
+     * @param array<string> $gedcom_structures         An array with the Gedcom structures, i.e.HEAD, all records, TRLRL
+     * @oaram array<string> $matched_tag_combinations  An array with tag combinations in the array keys
      * 
-     * @return array<string>                     Gedcom structures with added SCHMA in the header 
+     * @return array<string>                           Gedcom structures with added SCHMA in the header 
      */
-    private function addSchema(array &$gedcom_structures) : void {
+    private function addSchema(array &$gedcom_structures, &$matched_tag_combinations) : void {
 
         //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
         if ($this->isGedcom7Header($gedcom_structures[0] ?? false)) {
@@ -1180,14 +1162,23 @@ class RemoteGedcomExportService extends GedcomExportService
 
             //Find custom tags
             $custom_tags_found = [];
-            foreach($gedcom_structures as $gedcom) {
+            foreach($matched_tag_combinations as $tag_combination => $matched_filter_rule) {
 
-                $this->addCustomTagsFound($gedcom, $schema_uris_for_tags, $custom_tags_found);
+                preg_match_all('/([_A-Z0-9\*]+)((?!\:)[_A-Z0-9\*]+)*/', $tag_combination, $tags, PREG_PATTERN_ORDER);
+
+                foreach ($tags[0] as $tag) {
+
+                    if (strpos($tag, '_') === 0 && !in_array($tag, $custom_tags_found)) {
+
+                        $custom_tags_found[] = $tag;
+                    }
+                }
             }
 
             //Get Gedcom of HEAD
             $head_gedcom = $gedcom_structures[0]; 
 
+            //Append SCHMA structure to HEAD
             if (sizeof($custom_tags_found) > 0) {
 
                 $head_gedcom .= "1 SCHMA\n";

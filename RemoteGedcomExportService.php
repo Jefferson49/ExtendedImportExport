@@ -668,6 +668,7 @@ class RemoteGedcomExportService extends GedcomExportService
             $export_filter_rule_has_regexp = $export_filter_patterns;
             $records_references_analysis = $export_filter->usesReferencesAnalysis();
             $records_references = [];
+            $matched_pattern_for_tag_combination = [];
 
             //Globally remember, whether to apply SCHMA tag analysis to the final export
             $this->use_schema_tag_analysis = $this->use_schema_tag_analysis || $export_filter->usesSchemaTagAnalysis();
@@ -707,7 +708,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
                 foreach($gedcom_records as $gedcom) {
 
-                    $gedcom = $this->executeFilter($gedcom, 0, '', '', $export_filter, $export_filter_patterns, $export_filter_rules, $export_filter_rule_has_regexp, $records_references);
+                    $gedcom = $this->executeFilter($gedcom, 0, '', '', $export_filter, $export_filter_patterns, $export_filter_rules, $export_filter_rule_has_regexp, $matched_pattern_for_tag_combination, $records_references);
 
                     if ($gedcom !== '') {
                         $filtered_gedcom_records[] = $gedcom;
@@ -724,17 +725,18 @@ class RemoteGedcomExportService extends GedcomExportService
      * Convert Gedcom record according to an export filter
      *
      * @param string $gedcom
-     * @param int    $level                              Level of Gedcom structure
-     * @param string $higher_level_matched_tag_pattern   Pattern, which was matched on higher level of GEDCOM structure (recursion)
-     * @param string $tag_combination                    e.g. INDI:BIRT:DATE
-     * @param ExportFilterInterface $export_filter       The export filter used
-     * @param array  $export_filter_patterns             The patterns of the export filter
-     * @param array  $export_filter_rules                The filter rules of the export filter
-     * @param array  $export_filter_rule_has_regexp      A lookup table whether a filter rules uses a regular expression
-     * @param array  $records_references                 A list of records as <Record> objects, which contain the references between the records
-     *                                                   array <string xref => Record record>
+     * @param int    $level                                Level of Gedcom structure
+     * @param string $higher_level_matched_tag_pattern     Pattern, which was matched on higher level of GEDCOM structure (recursion)
+     * @param string $tag_combination                      e.g. INDI:BIRT:DATE
+     * @param ExportFilterInterface $export_filter         The export filter used
+     * @param array  $export_filter_patterns               The patterns of the export filter
+     * @param array  $export_filter_rules                  The filter rules of the export filter
+     * @param array  $export_filter_rule_has_regexp        A lookup table whether a filter rules uses a regular expression
+     * @param array  $matched_pattern_for_tag_combination  A hash table, which contains patterns, which have already been matched
+     * @param array  $records_references                   A list of records as <Record> objects, which contain the references between the records
+     *                                                     array <string xref => Record record>
      *
-     * @return string                                    Converted Gedcom
+     * @return string                                      Converted Gedcom
      */
     public function executeFilter(
         string $gedcom,
@@ -745,6 +747,7 @@ class RemoteGedcomExportService extends GedcomExportService
         array  &$export_filter_patterns,
         array  &$export_filter_rules,
         array  &$export_filter_rule_has_regexp,
+        array  &$matched_pattern_for_tag_combination,
         array  &$records_references
         ): string
     {   
@@ -772,13 +775,22 @@ class RemoteGedcomExportService extends GedcomExportService
             $tag_combination .= ':' . $tag;
         }
 
-        //Check whether is in white list and not in black list
-        $matched_tag_pattern = self::getMatchedPattern($tag_combination, $export_filter_patterns);
+        //Check if tag combination has alreday been matched
+        $matched_tag_pattern = $matched_pattern_for_tag_combination[$tag_combination] ?? '';
+
+        //Get matched pattern if not already available
+        if ($matched_tag_pattern === '') {
+
+            $matched_tag_pattern = self::getMatchedPattern($tag_combination, $export_filter_patterns);
+        }
 
         //If tag pattern was found, add the related Gedcom
         if ($matched_tag_pattern !== '') {
-
+           
             $converted_gedcom = $match[0] ."\n";
+
+            //Add found tag pattern to the hash table
+            $matched_pattern_for_tag_combination[$tag_combination] = $matched_tag_pattern;
         }
 
         //Get sub-structure of Gedcom and recursively apply export filter to next level
@@ -786,7 +798,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
         foreach ($gedcom_substructures as $gedcom_substructure) {
 
-            $converted_gedcom .= $this->executeFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination, $export_filter, $export_filter_patterns, $export_filter_rules, $export_filter_rule_has_regexp, $records_references);
+            $converted_gedcom .= $this->executeFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination, $export_filter, $export_filter_patterns, $export_filter_rules, $export_filter_rule_has_regexp, $matched_pattern_for_tag_combination, $records_references);
         }
 
         //If regular expressions are provided for the pattern, run replacements

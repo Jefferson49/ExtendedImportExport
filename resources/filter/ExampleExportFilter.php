@@ -15,8 +15,6 @@ class ExampleExportFilter extends AbstractExportFilter implements ExportFilterIn
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],
-      'HEAD'                      => [],
-      'HEAD:*'                    => [],
 
       //Only export the year of all birth dates, i.e. 01 JAN 1900 => 1900
       'INDI:BIRT:DATE'            => ["DATE .*([\d]{4})\n" => "DATE $1\n"],
@@ -28,39 +26,22 @@ class ExampleExportFilter extends AbstractExportFilter implements ExportFilterIn
       //Remove RESN tag with value 'none', which is not allowed in the Gedcom 5.5.1 standard
       'INDI:RESN'                 => ["1 RESN (?i)none\n" => ""],
 
-      'INDI'                      => [],
-      'INDI:*'                    => [],      
-
       //Do not export marriage place data
       '!FAM:MARR:PLAC'            => [],
       '!FAM:MARR:PLAC:*'          => [],
-
-      'FAM'                       => [],
-      'FAM:*'                     => [],
-
-      'NOTE'                      => [],
-      'NOTE:*'                    => [],
-
-      'OBJE'                      => [],
 
       //Apply several regular expressikon replacements to one tag pattern. In this case, 2 replacements are used 
       //Change 'pdf'/'jpg' to 'PDF'/'JPG' in all FORM tags of media objects
       'OBJE:*'                    => ["2 FORM pdf" => "2 FORM PDF",
                                       "2 FORM jpg" => "2 FORM JPG",],
 
-      'REPO'                      => [],
-      'REPO:*'                    => [],
-
-      'SOUR'                      => [],
-      'SOUR:*'                    => [],
-
       //Perform a custom conversion for the SUBM record, 
       //i.e. call the method $this->customConvert(...) to convert the Gedcom. 
       //The methd is implemented in the PHP code below
       'SUBM'                      => ["PHP_function" => "customConvert"],
-      'SUBM:*'                    => [],
 
-      'TRLR'                      => [],
+      //Export other structures      
+      '*'                         => [],
     ];
 
     /**

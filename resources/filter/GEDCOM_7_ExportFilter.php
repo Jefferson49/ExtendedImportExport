@@ -95,7 +95,6 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 
 		'INDI:ADOP:FAMC:ADOP'       => ["PHP_function" => "customConvert"],
 		'INDI:FAMC:PEDI'            => ["PHP_function" => "customConvert"],
-		'INDI:SEX'					=> ["PHP_function" => "customConvert"],
 
 		'OBJE:FILE:FORM:TYPE'       => ["PHP_function" => "customConvert"],
 		'*:OBJE:FILE:FORM:MEDI'     => ["PHP_function" => "customConvert"],
@@ -103,10 +102,8 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 		'*:*:*:OBJE:FILE:FORM:MEDI' => ["PHP_function" => "customConvert"],
 		'SOUR:REPO:CALN:MEDI'     	=> ["PHP_function" => "customConvert"],
 
-		'*:SOUR:QUAY'				=> ["PHP_function" => "customConvert"],
-		//'*:SOUR:EVEN:ROLE'			=> ["PHP_function" => "customConvert"],   	is handled in ROLE_GodparentWitness
-		'*:*:SOUR:QUAY'				=> ["PHP_function" => "customConvert"],
-		//'*:*:SOUR:EVEN:ROLE'		=> ["PHP_function" => "customConvert"],			is handled in ROLE_GodparentWitness
+		//'*:SOUR:EVEN:ROLE'		=> ["PHP_function" => "customConvert"],   	is handled in ROLE_GodparentWitness
+		//'*:*:SOUR:EVEN:ROLE'		=> ["PHP_function" => "customConvert"],		is handled in ROLE_GodparentWitness
 
 		'*:RESN'					=> ["PHP_function" => "customConvert"],
 		'*:*:RESN'					=> ["PHP_function" => "customConvert"],
@@ -160,10 +157,8 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 		"ADOP" => ["HUSB", "WIFE", "BOTH",],
 		"MEDI" => ["AUDIO", "BOOK","CARD", "ELECTRONIC", "FICHE", "FILM", "MAGAZINE", "MANUSCRIPT", "MAP", "NEWSPAPER", "PHOTO", "TOMBSTONE", "VIDEO", "OTHER",],
 		"PEDI" => ["ADOPTED", "BIRTH", "FOSTER", "SEALING", "OTHER",],
-		"QUAY" => ["1", "2", "3",],
 		"RESN" => ["CONFIDENTIAL", "LOCKED", "PRIVACY",],
 		"ROLE" => ["CHIL", "CLERGY", "FATH", "FRIEND", "GODP", "HUSB", "MOTH", "MULTIPLE", "NGHBR", "OFFICIATOR", "PARENT", "SPOU", "WIFE", "WITN", "OTHER",],
-		"SEX" =>  ["M", "F", "X", "U",],
 	];
 
 	private const NESTED_ENUMSETS = [

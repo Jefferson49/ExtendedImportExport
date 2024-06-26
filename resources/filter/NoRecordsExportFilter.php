@@ -13,6 +13,8 @@ class NoRecordsExportFilter extends AbstractExportFilter implements ExportFilter
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],
+
+      //Only export HEAD, SUBM, TRLR; nothing else
       'HEAD'                      => [],
       'HEAD:*'                    => [],
 

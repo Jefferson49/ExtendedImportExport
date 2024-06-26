@@ -17,10 +17,20 @@ class OptimizeWebtreesGEDCOM_7_ExportFilter extends AbstractExportFilter impleme
       //Remove * from names (indicates first name underlined by webtrees)
       'INDI:NAME'                   => ["PHP_function" => "customConvert"],
       
-      //Allow RESN for INDI, FAM
+      //Allow RESN for INDI, FAM, OBJE
       //However, remove RESN none structures, because 'none' is not allowed by the standard
       'INDI:RESN'                   => ["1 RESN (?i)NONE\n" => ""],
+      '!INDI:NOTE:RESN'             => [],
+      '!INDI:OBJE:RESN'             => [],
+      '!INDI:SOUR:RESN'             => [],
+      'INDI:*:RESN'                 => ["1 RESN (?i)NONE\n" => ""],
+ 
       'FAM:RESN'                    => ["1 RESN (?i)NONE\n" => ""],
+      '!FAM:NOTE:RESN'              => [],
+      '!FAM:OBJE:RESN'              => [],
+      '!FAM:SOUR:RESN'              => [],      
+      'FAM:*:RESN'                  => ["1 RESN (?i)NONE\n" => ""],
+
       'OBJE:RESN'                   => ["1 RESN (?i)NONE\n" => ""],
 
       //Remove RESN structures, where not allowed by the standard
@@ -28,7 +38,7 @@ class OptimizeWebtreesGEDCOM_7_ExportFilter extends AbstractExportFilter impleme
       '!*:*:RESN'                   => [],
       '!*:*:*:RESN'                 => [],
 
-      //Remove CHAN and _WT_USER structures
+      //Remove CHAN, _TODO, and _WT_USER structures
       '!*:CHAN'                     => [],
       '!*:CHAN:*'                   => [],
       '!FAM:_TODO:_WT_USER'         => [],

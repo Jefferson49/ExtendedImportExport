@@ -43,25 +43,8 @@ class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter impl
       'SOUR'                      => ["PHP_function" => "customConvert"],
       '_LOC'                      => ["PHP_function" => "customConvert"],
 
-      'INDI'                      => [],
-      'INDI:*'                    => [],
-
-      'FAM:*'                     => [],
-
-      'NOTE:*'                    => [],
-
-      'OBJE:*'                    => [],
-
-      'REPO:*'                    => [],
-
-      'SOUR:*'                    => [],
-
-      'SUBM'                      => [],
-      'SUBM:*'                    => [],
-
-      '_LOC:*'                    => [],
-
-      'TRLR'                      => [],
+		//Export other records
+		'*'							    => [],
    ];
 
    /**

@@ -192,7 +192,7 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
      * 
      * @return string               The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
+    public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
 		if (strpos($pattern, ':DATE') > 0) {
 

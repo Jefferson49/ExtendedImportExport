@@ -35,7 +35,7 @@ class IndividualNamesCsvExportFilter extends AbstractExportFilter implements Exp
      * 
      * @return string               The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
+    public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
       //Remove all * " , characters from INDI:NAME
       if ($pattern === 'INDI:NAME') {

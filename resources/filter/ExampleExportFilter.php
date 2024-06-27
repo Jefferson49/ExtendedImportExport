@@ -53,7 +53,7 @@ class ExampleExportFilter extends AbstractExportFilter implements ExportFilterIn
      * 
      * @return string               The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
+    public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
     //Create a specific record ID for submitters
     if ($pattern === 'SUBM') {

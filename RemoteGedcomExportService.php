@@ -788,7 +788,8 @@ class RemoteGedcomExportService extends GedcomExportService
             && $export_filter_rule_has_regexp[$matched_tag_pattern] 
             && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
 
-            $converted_gedcom = $this->replaceInGedcom($converted_gedcom, $matched_tag_pattern, $export_filter, $export_filter_rules, $records_references);
+            $replace_pairs = $export_filter_rules[$matched_tag_pattern];                
+            $converted_gedcom = $this->replaceInGedcom($converted_gedcom, $matched_tag_pattern, $replace_pairs, $export_filter, $records_references);
         }            
 
         return $converted_gedcom;
@@ -891,10 +892,10 @@ class RemoteGedcomExportService extends GedcomExportService
      * Convert Gedcom based on the matched pattern of a filter rule, 
      * which points to an array of RegExp replace pairs or cutom conversions
      *
-     * @param string                $matched_pattern      The matched pattern (i.e. INDI:NAME) of the filter rule, whose replacements shall be applied
      * @param string                $gedcom               Gedcom to convert
+     * @param string                $matched_pattern      The matched pattern (i.e. INDI:NAME) of the filter rule, whose replacements shall be applied
+     * @param array                 $replace_pairs        An array with replace pairs, i.e. ["search pattern" => "replace pattern"] 
      * @param ExportFilterInterface $export_filter        The export filter used
-     * @param array                 $export_filter_rules  The filter rules of the export filter
      * @param array                 $records_references   A list of records as <Record> objects, which contain the references between the records
      *                                                    array <string xref => Record record>
      *
@@ -903,12 +904,10 @@ class RemoteGedcomExportService extends GedcomExportService
     private function replaceInGedcom(
         string                $gedcom,
         string                $matched_pattern,       
+        array                 $replace_pairs,
         ExportFilterInterface $export_filter,
-        array                 &$export_filter_rules,
         array                 &$records_references
         ): string {
-
-        $replace_pairs = $export_filter_rules[$matched_pattern];
 
         //For each replacement, which is provided
         foreach ($replace_pairs as $search => $replace) {

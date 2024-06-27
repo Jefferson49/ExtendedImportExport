@@ -756,22 +756,16 @@ class RemoteGedcomExportService extends GedcomExportService
             $tag_combination .= ':' . $tag;
         }
 
-        //Check if tag combination has alreday been matched
-        $matched_tag_pattern = $matched_pattern_for_tag_combination[$tag_combination] ?? '';
+        //Get matched pattern from hash table (if already matched before), otherwise evaluate matched pattern 
+        $matched_tag_pattern = $matched_pattern_for_tag_combination[$tag_combination] ?? self::getMatchedPattern($tag_combination, $export_filter_patterns);
 
-        //Get matched pattern if not already available
-        if ($matched_tag_pattern === '') {
-
-            $matched_tag_pattern = self::getMatchedPattern($tag_combination, $export_filter_patterns);
-        }
+        //Add found tag pattern to the hash table; even if empty, i.e ''
+        $matched_pattern_for_tag_combination[$tag_combination] = $matched_tag_pattern;
 
         //If tag pattern was found, add the related Gedcom
         if ($matched_tag_pattern !== '') {
            
             $converted_gedcom = $match[0] ."\n";
-
-            //Add found tag pattern to the hash table
-            $matched_pattern_for_tag_combination[$tag_combination] = $matched_tag_pattern;
         }
 
         //Get sub-structure of Gedcom and recursively apply export filter to next level

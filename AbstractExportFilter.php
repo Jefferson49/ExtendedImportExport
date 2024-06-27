@@ -82,27 +82,8 @@ class AbstractExportFilter implements ExportFilterInterface
      */
     public function getExportFilterRules(Tree $tree = null): array {
 
-        $export_filter_rules = [];
-
-        foreach(static::EXPORT_FILTER_RULES as $tag => $conversion_rules) {
-
-            $modfied_conversion_rules = [];
-
-            foreach($conversion_rules as $search => $replace) {
-
-                if ($search === self::REGEXP_MACROS_STRING) {
-
-                    //Add all the conversion rules found in the macro
-                    $modfied_conversion_rules = array_merge($modfied_conversion_rules, static::REGEXP_MACROS[$replace]);        
-                }
-                else {
-                    //Otherwise add the conversion rule found
-                    $modfied_conversion_rules[$search] = $replace;
-                }
-            }
-
-            $export_filter_rules[$tag] = $modfied_conversion_rules;
-        }
+        $export_filter_rules = $this->replaceMacros(static::EXPORT_FILTER_RULES, static::REGEXP_MACROS);
+        $export_filter_rules = $this->addPregDelimiters($export_filter_rules);
 
         return $export_filter_rules;
     }
@@ -366,4 +347,69 @@ class AbstractExportFilter implements ExportFilterInterface
 
         return [];
     }   
+
+    /**
+     * Replace macros in filter rules
+     *
+     * @param array $filter_rules    A list with filter rules 
+     * @param array $regexp_macros   A list with macro definitions
+     * 
+     * @return array
+     */
+    public function replaceMacros(array $filter_rules, array $regexp_macros): array {
+
+        $export_filter_rules = [];
+
+        foreach($filter_rules as $tag => $conversion_rules) {
+
+            $modfied_conversion_rules = [];
+
+            foreach($conversion_rules as $search => $replace) {
+
+                if ($search === self::REGEXP_MACROS_STRING) {
+
+                    //Add all the conversion rules found in the macro
+                    $modfied_conversion_rules = array_merge($modfied_conversion_rules, $regexp_macros[$replace]);        
+                }
+                else {
+                    //Otherwise add the conversion rule found
+                    $modfied_conversion_rules[$search] = $replace;
+                }
+            }
+
+            $export_filter_rules[$tag] = $modfied_conversion_rules;
+        }
+
+        return $export_filter_rules;
+    }   
+    
+    
+    /**
+     * Add delimiters to regular expression
+     *
+     * @param array $filter_rules  A list with filter rules 
+     * 
+     * @return array               Filter rules with delimiters added
+     */
+    public function addPregDelimiters(array $filter_rules): array {
+
+        $export_filter_rules = [];
+
+        foreach($filter_rules as $tag => $conversion_rules) {
+
+            $modfied_conversion_rules = [];
+
+            foreach($conversion_rules as $search => $replace) {
+
+                //Add delimiters to regular expression
+                $search = '/' . $search .'/'; 
+
+                $modfied_conversion_rules[$search] = $replace;
+            }
+
+            $export_filter_rules[$tag] = $modfied_conversion_rules;
+        }
+
+        return $export_filter_rules;
+    }      
 }

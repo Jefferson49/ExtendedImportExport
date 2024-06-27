@@ -922,7 +922,7 @@ class RemoteGedcomExportService extends GedcomExportService
             //Else apply RegExp replacement
             else { 
                 try {
-                     $gedcom = preg_replace("/" . $search . "/", $replace, $gedcom) ?? '';
+                     $gedcom = preg_replace($search, $replace, $gedcom) ?? '';
                 }
                 catch (Throwable $th) {
                     $message = I18N::translate('Error during a regular expression replacement.') . ' Gedcom: ' . $gedcom . ' Search: ' . $search  . ' Replace: ' . $replace . "\nError message:\n" . $th->getMessage();

@@ -945,17 +945,12 @@ class RemoteGedcomExportService extends GedcomExportService
     {
         // Split the Gedcom strucuture into sub structures 
         // See: Fisharebest\Webtrees\GedcomRecord, function parseFacts()
-        if ($gedcom !== '') {
+        $gedcom_substructures = preg_split('/\n(?=' . $level . ')/', $gedcom);
 
-            $gedcom_substructures = preg_split('/\n(?=' . $level . ')/', $gedcom);
+        //Delete first structure, which is from one Gedcom level up 
+        unset($gedcom_substructures[0]);
 
-            //Delete first structure, which is from one Gedcom level up 
-            array_shift($gedcom_substructures);
-            return $gedcom_substructures;
-
-        } else {
-            return [];
-        }
+        return $gedcom_substructures;
     }
 
     /**

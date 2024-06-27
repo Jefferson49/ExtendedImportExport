@@ -97,7 +97,7 @@ class AbstractExportFilter implements ExportFilterInterface
      * 
      * @return string               The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
+    public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
         //As a default, return the un-converted Gedcom
         return $gedcom;

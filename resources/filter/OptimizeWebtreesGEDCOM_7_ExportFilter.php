@@ -57,7 +57,7 @@ class OptimizeWebtreesGEDCOM_7_ExportFilter extends AbstractExportFilter impleme
      * 
      * @return string               The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array $records_list): string {
+    public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
       if ($pattern === 'INDI:NAME') {
 

@@ -56,7 +56,7 @@ class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter impl
     * 
     * @return string               The converted Gedcom
     */
-   public function customConvert(string $pattern, string $gedcom, array $records_list): string {
+   public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
       $gedcom = $this->removeEmptyOrUnlinkedRecords($pattern, $gedcom, $records_list, true, true);
       return $gedcom;
@@ -73,7 +73,7 @@ class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter impl
     * 
     * @return string                  The converted Gedcom
     */
-    public function removeEmptyOrUnlinkedRecords(string $pattern, string $gedcom, array $records_list, bool $remove_empty, bool $remove_unlinked): string {
+    public function removeEmptyOrUnlinkedRecords(string $pattern, string $gedcom, array &$records_list, bool $remove_empty, bool $remove_unlinked): string {
 
       //Empty records and records without a reference
       if (in_array($pattern, ['FAM', 'NOTE', 'OBJE', 'REPO', 'SOUR', '_LOC'])) {

@@ -340,6 +340,10 @@ class RemoteGedcomExportService extends GedcomExportService
                     $gedcom = $datum;
                 } elseif ($datum instanceof GedcomRecord) {
                     $gedcom = $datum->privatizeGedcom($access_level);
+
+                    if ($gedcom === '') {
+                        continue;
+                    }
                 } else {
                     $gedcom =
                         $datum->i_gedcom ??

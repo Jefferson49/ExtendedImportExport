@@ -401,8 +401,11 @@ class AbstractExportFilter implements ExportFilterInterface
 
             foreach($conversion_rules as $search => $replace) {
 
-                //Add delimiters to regular expression
-                $search = '/' . $search .'/'; 
+                if ($search !== self::PHP_FUNCTION_STRING && $search !== self::REGEXP_MACROS_STRING) {
+
+                    //Add delimiters to regular expression
+                    $search = '/' . $search .'/'; 
+                }
 
                 $modfied_conversion_rules[$search] = $replace;
             }

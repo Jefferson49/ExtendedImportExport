@@ -954,7 +954,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 				//Create response
                 try {
-                    $resource = $this->gedcom_export_service->remoteSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_set);
+                    $resource = $this->gedcom_export_service->filteredSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_set);
                     $root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
                     fclose($resource);
 
@@ -975,7 +975,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     try {
                         //Create response
-                        $response = $this->gedcom_export_service->remoteDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_set);
+                        $response = $this->gedcom_export_service->filteredDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_set);
                     }
                     catch (DownloadGedcomWithUrlException $ex) {
 

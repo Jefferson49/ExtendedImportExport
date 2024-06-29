@@ -167,7 +167,7 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @return ResponseInterface
      */
-    public function remoteDownloadResponse(
+    public function filteredDownloadResponse(
         Tree $tree,
         bool $sort_by_xref,
         string $encoding,
@@ -182,7 +182,7 @@ class RemoteGedcomExportService extends GedcomExportService
 
         if ($format === 'gedcom') {
             //Create export
-            $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
+            $resource = $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
             $stream   = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()
@@ -207,7 +207,7 @@ class RemoteGedcomExportService extends GedcomExportService
         }
 
         //Create export
-        $resource = $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records, $zip_filesystem, $media_path);
+        $resource = $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
@@ -239,7 +239,7 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @return resource
      */
-    public function remoteSaveResponse(
+    public function filteredSaveResponse(
         Tree $tree,
         bool $sort_by_xref,
         string $encoding,
@@ -252,7 +252,7 @@ class RemoteGedcomExportService extends GedcomExportService
         $access_level = self::ACCESS_LEVELS[$privacy];
 
         //Create export
-        return $this->remoteExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
+        return $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
     }
 
     /**
@@ -271,7 +271,7 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @return resource
      */
-    public function remoteExport(
+    public function filteredExport(
         Tree $tree,
         bool $sort_by_xref = false,
         string $encoding = UTF8::NAME,

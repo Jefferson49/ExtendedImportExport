@@ -237,7 +237,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param array<ExportFilterInterface>       $export_filters       An array, which contains GEDCOM export filters
      * @param Collection|null        $records
      *
-     * @return ?resource
+     * @return resource
      */
     public function remoteSaveResponse(
         Tree $tree,
@@ -269,7 +269,7 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param string|null                                     $media_path     Location within the zip filesystem
      * @param Collection|null                                 $records
      *
-     * @return ?resource
+     * @return resource
      */
     public function remoteExport(
         Tree $tree,
@@ -294,24 +294,21 @@ class RemoteGedcomExportService extends GedcomExportService
 
         stream_filter_append($stream, GedcomEncodingFilter::class, STREAM_FILTER_WRITE, ['src_encoding' => UTF8::NAME, 'dst_encoding' => $encoding]);
 
-        //Create a Gedcom 5.5.1 header
-        $header_collection = new Collection([$this->createHeader($tree, $encoding, true)]);
-
         if ($records instanceof Collection) {
             // Export just these records - e.g. from clippings cart.
             $data = [
-                $header_collection,
+                new Collection([$this->createHeader($tree, $encoding, false)]),
                 $records,
                 new Collection(['0 TRLR']),
             ];
         } elseif ($access_level === Auth::PRIV_HIDE) {
             // If we will be applying privacy filters, then we will need the GEDCOM record objects.
             $data = [
-                $header_collection,
+                new Collection([$this->createHeader($tree, $encoding, true)]),
                 $this->individualQuery($tree, $sort_by_xref)->cursor(),
                 $this->familyQuery($tree, $sort_by_xref)->cursor(),
                 $this->sourceQuery($tree, $sort_by_xref)->cursor(),
-                $this->remoteOtherQuery($tree, $sort_by_xref)->cursor(),
+                $this->otherQuery($tree, $sort_by_xref)->cursor(),
                 $this->mediaQuery($tree, $sort_by_xref)->cursor(),
                 new Collection(['0 TRLR']),
             ];
@@ -322,11 +319,11 @@ class RemoteGedcomExportService extends GedcomExportService
             });
 
             $data = [
-                $header_collection,
+                new Collection([$this->createHeader($tree, $encoding, true)]),
                 $this->individualQuery($tree, $sort_by_xref)->get()->map(Registry::individualFactory()->mapper($tree)),
                 $this->familyQuery($tree, $sort_by_xref)->get()->map(Registry::familyFactory()->mapper($tree)),
                 $this->sourceQuery($tree, $sort_by_xref)->get()->map(Registry::sourceFactory()->mapper($tree)),
-                $this->remoteOtherQuery($tree, $sort_by_xref)->get()->map(Registry::gedcomRecordFactory()->mapper($tree)),
+                $this->otherQuery($tree, $sort_by_xref)->get()->map(Registry::gedcomRecordFactory()->mapper($tree)),
                 $this->mediaQuery($tree, $sort_by_xref)->get()->map(Registry::mediaFactory()->mapper($tree)),
                 new Collection(['0 TRLR']),
             ];
@@ -427,11 +424,10 @@ class RemoteGedcomExportService extends GedcomExportService
      * @param Tree   $tree
      * @param string $encoding
      * @param bool   $include_sub
-     * @param int    $access_level
      *
      * @return string
      */
-    public function createHeader(Tree $tree, string $encoding, bool $include_sub, int $access_level = null): string
+    public function createHeader(Tree $tree, string $encoding, bool $include_sub): string
     {
         //Take GEDCOM from parent method as a base
         $gedcom = parent::createHeader($tree, $encoding, $include_sub);
@@ -589,13 +585,11 @@ class RemoteGedcomExportService extends GedcomExportService
      *
      * @return Builder
      */
-    private function remoteOtherQuery(Tree $tree, bool $sort_by_xref): Builder
+    private function otherQuery(Tree $tree, bool $sort_by_xref): Builder
     {
-        $ignored_values = [Header::RECORD_TYPE, 'TRLR'];
-
         $query = DB::table('other')
             ->where('o_file', '=', $tree->id())
-            ->whereNotIn('o_type', $ignored_values)
+            ->whereNotIn('o_type', [Header::RECORD_TYPE, 'TRLR'])
             ->select(['o_gedcom', 'o_id']);
 
         if ($sort_by_xref) {

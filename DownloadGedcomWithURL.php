@@ -85,7 +85,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     use ModuleCustomTrait;
     use ModuleConfigTrait;
  
-    private RemoteGedcomExportService $gedcom_export_service;
+    private GedcomExportFilterService $gedcom_export_service;
 
     private Tree $download_tree;
 
@@ -141,7 +141,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	    $response_factory = app(ResponseFactoryInterface::class);
         $stream_factory = new Psr17Factory();
 
-        $this->gedcom_export_service = new RemoteGedcomExportService($response_factory, $stream_factory);
+        $this->gedcom_export_service = new GedcomExportFilterService($response_factory, $stream_factory);
     }
 
     /**

@@ -13,33 +13,7 @@ class AllRecordsExportFilter extends AbstractExportFilter implements ExportFilte
       
       //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
       //                             ["search pattern" => "replace pattern"],
-      'HEAD'                      => [],
-      'HEAD:*'                    => [],
 
-      'INDI'                      => [],
-      'INDI:*'                    => [],
-
-      'FAM'                       => [],
-      'FAM:*'                     => [],
- 
-      'NOTE'                      => [],
-      'NOTE:*'                    => [],
-
-      'OBJE'                      => [],
-      'OBJE:*'                    => [],
-
-      'REPO'                      => [],
-      'REPO:*'                    => [],
-
-      'SOUR'                      => [],
-      'SOUR:*'                    => [],
-
-      'SUBM'                      => [],
-      'SUBM:*'                    => [],
-
-      '_LOC'                      => [],
-      '_LOC:*'                    => [],
-
-      'TRLR'                      => [],
+      '*'                      => [],
    ];
 }

@@ -10,21 +10,21 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 class IndividualNamesCsvExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
     protected const EXPORT_FILTER_RULES = [
-      
-      //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
-      //                             ["search pattern" => "replace pattern"],
+        
+        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //                             ["search pattern" => "replace pattern"],
 
-      //Create the first line of the CSV file with column names (Surname, Given names)
-      'HEAD'                      => [".*\n" => "\"Surname\",\"Given names\"\n"],
+        //Create the first line of the CSV file with column names (Surname, Given names)
+        'HEAD'                      => [".*\n" => "\"Surname\",\"Given names\"\n"],
 
-      //Remove all INDI records
-      'INDI'                      => ["0 @([^@].+)@ INDI\n" => ""],
+        //Remove all INDI records
+        'INDI'                      => ["0 @([^@].+)@ INDI\n" => ""],
 
-      //Replace certain characters (*,") by a custom conversion, i.e. call method $this->customConvert(...)
-      //Generate CSV data from the individuals name
-      'INDI:NAME'                 => ["PHP_function" => "customConvert",
-                                      "1 NAME (.*[^ ])? ?\/([^\/]*)\/(.*)\n" => "\"$2\",\"$1\"\n"],
-   ];
+        //Replace certain characters (*,") by a custom conversion, i.e. call method $this->customConvert(...)
+        //Generate CSV data from the individuals name
+        'INDI:NAME'                 => ["PHP_function" => "customConvert",
+                                        "1 NAME (.*[^ ])? ?\/([^\/]*)\/(.*)\n" => "\"$2\",\"$1\"\n"],
+    ];
 
     /**
      * Custom conversion of a Gedcom string
@@ -37,11 +37,11 @@ class IndividualNamesCsvExportFilter extends AbstractExportFilter implements Exp
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
-      //Remove all * " , characters from INDI:NAME
-      if ($pattern === 'INDI:NAME') {
-          $gedcom = str_replace(['*', '"', ','] , ['', '', ''], $gedcom);
-      }
+        //Remove all * " , characters from INDI:NAME
+        if ($pattern === 'INDI:NAME') {
+            $gedcom = str_replace(['*', '"', ','] , ['', '', ''], $gedcom);
+        }
 
-    return $gedcom;
-  }
+        return $gedcom;
+    }
 }

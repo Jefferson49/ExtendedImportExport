@@ -9,11 +9,11 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
  */
 class AllRecordsExportFilter extends AbstractExportFilter implements ExportFilterInterface
 {
-   protected const EXPORT_FILTER_RULES = [
+    protected const EXPORT_FILTER_RULES = [
       
-      //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
-      //                             ["search pattern" => "replace pattern"],
+        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //                             ["search pattern" => "replace pattern"],
 
-      '*'                      => [],
-   ];
+        '*'                         => [],
+	];
 }

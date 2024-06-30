@@ -152,13 +152,8 @@ class AbstractExportFilter implements ExportFilterInterface
             }
 
             //Validate tags
-            //ToDo: Try to use Gedcom::REGEX_TAG for tag definition
-            //ToDo: Currently, wrong tag patterns with *TAG are not detected, e.g. *:*DATE (should be *:*:DATE)
-            //$tag_pattern = "(?:" . Gedcom::REGEX_TAG . ")|(?:[\*)])";
-            //$tag_pattern_first = '(' . $tag_pattern . ')';
-            //$tag_pattern_follow = '(:' . $tag_pattern . ')*';
-            //preg_match_all('/!?'. $tag_pattern_first . $tag_pattern_follow . $tag_pattern_follow . $tag_pattern_follow . $tag_pattern_follow . $tag_pattern_follow . $tag_pattern_follow . '/', $pattern, $match, PREG_PATTERN_ORDER);
-            preg_match_all('/!?([A-Z_\*]+)(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*(:[A-Z_\*]+)*/', $pattern, $match, PREG_PATTERN_ORDER);
+            preg_match_all('/!?(' . Gedcom::REGEX_TAG . '|[\*)])(\:(' . Gedcom::REGEX_TAG . '|[\*)]))*/', $pattern, $match, PREG_PATTERN_ORDER);
+
             if ($match[0][0] !== $pattern) {
                 return I18N::translate('The selected export filter (%s) contains an invalid tag definition', $class_name) . ': ' . $pattern;
             }

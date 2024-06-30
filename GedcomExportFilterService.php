@@ -838,8 +838,8 @@ class GedcomExportFilterService extends GedcomExportService
      */
     public static function matchTagWithSinglePattern(string $tag, string $pattern): bool
     {          
-        $tag_token_size =     preg_match_all('/([_A-Z0-9\*]+)((?!\:)[_A-Z0-9\*]+)*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
-        $pattern_token_size = preg_match_all('/([_A-Z0-9\*]+)((?!\:)[_A-Z0-9\*]+)*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
+        $tag_token_size =     preg_match_all('/(' . Gedcom::REGEX_TAG . '|[\*)])((?!\:)(' . Gedcom::REGEX_TAG . '|[\*)]))*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
+        $pattern_token_size = preg_match_all('/(' . Gedcom::REGEX_TAG . '|[\*)])((?!\:)(' . Gedcom::REGEX_TAG . '|[\*)]))*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
 
         //Return false if nothing was found
         if ($tag_token_size === 0 OR $pattern_token_size === 0) return false;

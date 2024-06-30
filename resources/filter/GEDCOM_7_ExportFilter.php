@@ -138,7 +138,9 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
                                         "([\d]) AGE ([\d]{1,2})m 00([\d])d" => "$1 AGE $2m $3d",
                                         "([\d]) AGE ([\d]{1,2})m 0([\d]{1,2})d" => "$1 AGE $2m $3d",
                                         "([\d]) AGE (<|>)([\d])" => "$1 AGE $2 $3",
-                                        "([\d]) AGE (?i)INFANT" => "$1 AGE CHILD"],
+                                        "([\d]) AGE (?i)CHILD" => "$1 AGE < 8y",
+                                        "([\d]) AGE (?i)INFANT" => "$1 AGE < 1y",
+                                        "([\d]) AGE (?i)STILLBORN" => "$1 AGE 0y"],
 
         "ASSO_RELA"					=> ["([\d]) RELA (?i)GODPARENT" => "$1 RELA GODP",
                                         "([\d]) RELA (?i)WITNESS" => "$1 RELA WITN",

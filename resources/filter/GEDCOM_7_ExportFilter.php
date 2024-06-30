@@ -40,9 +40,9 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
         'HEAD:*'                    => [],
 
         //External IDs (EXID)
-        'INDI:AFN'                  => ["1 AFN (.[^\n]+)" => "1 EXID $1\n2 TYPE https://gedcom.io/terms/v7/$1",],
-        '*:RFN'                     => ["1 RFN (.[^\n]+)" => "1 EXID $1\n2 TYPE https://gedcom.io/terms/v7/$1",],
-        '*:RIN'                     => ["1 RIN (.[^\n]+)" => "1 EXID $1\n2 TYPE https://gedcom.io/terms/v7/$1",],
+        'INDI:AFN'                  => ["1 (AFN) (.+)" => "1 EXID $2\n2 TYPE https://gedcom.io/terms/v7/$1",],
+        '*:RFN'                     => ["1 (RFN) (.+)" => "1 EXID $2\n2 TYPE https://gedcom.io/terms/v7/$1",],
+        '*:RIN'                     => ["1 (RIN) (.+)" => "1 EXID $2\n2 TYPE https://gedcom.io/terms/v7/$1",],
 
         //RELA, ROLE, _ASSO	
         'INDI:ASSO'		            => ["RegExp_macro" => "ASSO_RELA"],

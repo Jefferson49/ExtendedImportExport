@@ -1147,16 +1147,20 @@ class GedcomExportFilterService extends GedcomExportService
             $this->addToSchemas($schema_uris_for_tags, self::GEDCOM_L_SCHEMAS);
 
             //Find custom tags
-            $custom_tags_found = [];
+            $custom_tags_with_schema = [];
+
             foreach($matched_tag_combinations as $tag_combination => $matched_filter_rule) {
 
                 preg_match_all('/([_A-Z0-9\*]+)((?!\:)[_A-Z0-9\*]+)*/', $tag_combination, $tags, PREG_PATTERN_ORDER);
 
                 foreach ($tags[0] as $tag) {
 
-                    if (strpos($tag, '_') === 0 && !in_array($tag, $custom_tags_found)) {
+                    if (strpos($tag, '_') === 0 && !in_array($tag, $custom_tags_with_schema)) {
 
-                        $custom_tags_found[] = $tag;
+                        if (isset($schema_uris_for_tags[$tag])) {
+
+                            $custom_tags_with_schema[] = $tag;
+                        }
                     }
                 }
             }
@@ -1165,14 +1169,16 @@ class GedcomExportFilterService extends GedcomExportService
             $head_gedcom = $gedcom_structures[0]; 
 
             //Append SCHMA structure to HEAD
-            if (sizeof($custom_tags_found) > 0) {
+            if (sizeof($custom_tags_with_schema) > 0) {
 
                 $head_gedcom .= "1 SCHMA\n";
 
-                foreach($custom_tags_found as $tag) {
+                foreach($custom_tags_with_schema as $tag) {
+
                     $head_gedcom .= "2 TAG " . $tag . " " . $schema_uris_for_tags[$tag] . "\n";
                 }
             }
+            
             //Set new Gedcom for HEAD
             $gedcom_structures[0] = $head_gedcom;
         }    

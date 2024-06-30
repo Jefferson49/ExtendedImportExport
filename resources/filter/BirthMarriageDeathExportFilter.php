@@ -80,8 +80,8 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
     ];
 
     protected const REGEXP_MACROS = [
-        //Name                      =>  Regular expression to be applied for the chosen GEDCOM tag
-        //                              ["search pattern" => "replace pattern"],
+        //Name                      => Regular expression to be applied for the chosen GEDCOM tag
+        //                             ["search pattern" => "replace pattern"],
 
         "DateToYear"                => ["2 DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*\n" => "2 DATE $1$2$3$4$5\n"],
     ];   

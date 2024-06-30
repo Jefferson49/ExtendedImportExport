@@ -55,13 +55,13 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
         //Media types
         //Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
         //GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
-        'OBJE:FILE:FORM'            => ["2 FORM (?i)BMP(\n3 TYPE .[^\n]+)*" => "2 FORM image/bmp",
-                                        "2 FORM (?i)GIF(\n3 TYPE .[^\n]+)*" => "2 FORM image/gif",
-                                        "2 FORM (?i)(JPG|JPEG)(\n3 TYPE .[^\n]+)*" => "2 FORM image/jpeg",
-                                        "2 FORM (?i)(TIF|TIFF)(\n3 TYPE .[^\n]+)*" => "2 FORM image/tiff",
-                                        "2 FORM (?i)PDF(\n3 TYPE .[^\n]+)*" => "2 FORM application/pdf",
-                                        "2 FORM (?i)EMF(\n3 TYPE .[^\n]+)*" => "2 FORM image/emf",
-                                        "2 FORM (?i)(HTM|HTML)(\n3 TYPE .[^\n]+)*" => "2 FORM text/html",],
+        'OBJE:FILE:FORM'            => ["2 FORM (?i)(BMP)" => "2 FORM image/bmp",
+                                        "2 FORM (?i)(GIF)" => "2 FORM image/gif",
+                                        "2 FORM (?i)(JPG|JPEG)" => "2 FORM image/jpeg",
+                                        "2 FORM (?i)(TIF|TIFF)" => "2 FORM image/tiff",
+                                        "2 FORM (?i)(PDF)" => "2 FORM application/pdf",
+                                        "2 FORM (?i)(EMF)" => "2 FORM image/emf",
+                                        "2 FORM (?i)(HTM|HTML)" => "2 FORM text/html",],
 
         //Shared notes (SNOTE)
         '*:NOTE'					=> ["RegExp_macro" => "SharedNotes"],
@@ -89,14 +89,16 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
 
         'TRLR'                      => [],
 
-        //Apply custom conversion for ENUM sets
+        //Apply custom conversion for ENUM values
         'INDI:NAME:TYPE'            => ["PHP_function" => "customConvert"],
         'INDI:FAMC:STAT'            => ["PHP_function" => "customConvert"],
 
         'INDI:ADOP:FAMC:ADOP'       => ["PHP_function" => "customConvert"],
         'INDI:FAMC:PEDI'            => ["PHP_function" => "customConvert"],
 
-        'OBJE:FILE:FORM:TYPE'       => ["PHP_function" => "customConvert"],
+        'OBJE:FILE:FORM:TYPE'       => ["3 TYPE (.*)" => "3 MEDI $1",
+                                        "PHP_function" => "customConvert"],
+
         '*:OBJE:FILE:FORM:MEDI'     => ["PHP_function" => "customConvert"],
         '*:*:OBJE:FILE:FORM:MEDI'   => ["PHP_function" => "customConvert"],
         '*:*:*:OBJE:FILE:FORM:MEDI' => ["PHP_function" => "customConvert"],

@@ -19,6 +19,10 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
         //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
+        //Remove submissions, because they do not exist in GEDCOM 7
+        '!SUBN'                     => [],
+        '!SUBN:*'                   => [],
+
         //Date conversion
         '*:DATE'                 	=> ["RegExp_macro" => "DateConversion"],
         '*:*:DATE'                 	=> ["RegExp_macro" => "DateConversion"],
@@ -82,10 +86,6 @@ class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilter
         'FAM:_STAT'                 => ["1 _STAT (?i)(NOT|NEVER) MARRIED\n" => "1 NO MARR\n"],
                                         
         'FAM:MARR:TYPE'            	=> ["2 TYPE (?i)RELIGIOUS" => "2 TYPE RELI"],
-
-        //Remove submissions, because they do not exist in GEDCOM 7
-        '!SUBN'                     => [],
-        '!SUBN:*'                   => [],
 
         'TRLR'                      => [],
 

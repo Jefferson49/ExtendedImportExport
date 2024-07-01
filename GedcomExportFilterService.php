@@ -384,14 +384,14 @@ class GedcomExportFilterService extends GedcomExportService
             $this->addSchema($gedcom_export, $matched_tag_combinations);
         }
 
-        //Start writing to stream
+        //Add a byte order mark for UTF8 if Gedcom 7 (required by the standard) 
+        if ($gedcom7 && $encoding === UTF8::NAME) {
 
-        //If encoding is UTF8, write byte order mark
-        if ($encoding === UTF8::NAME) {
-            //ToDo: Write BOM
-            //$bytes_written = fwrite($stream, "BOM");
+            $byte_order_mark = "\xEF\xBB\xBF";
+            $bytes_written = fwrite($stream, $byte_order_mark);
         }
 
+        //Finally, write Gedcom data to stream
         foreach($gedcom_export as $gedcom) {
 
             //If not Gedcom 7, wrap long lines

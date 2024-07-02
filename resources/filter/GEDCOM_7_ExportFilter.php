@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
-use Fisharebest\Webtrees\Gedcom;
-
 /**
  * An export filter, which converts GEDCOM 5.5.1 to GEDCOM 7.0
  */

@@ -793,9 +793,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $line_endings        = Validator::queryParams($request)->string('line_endings',  $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'));
 		$action              = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, 'download'));
 		$time_stamp          = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, 'none'));
-		$export_filter1      = Validator::queryParams($request)->string('export_filter', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER1, ''));
-		$export_filter2      = Validator::queryParams($request)->string('export_filter', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2, ''));
-		$export_filter3      = Validator::queryParams($request)->string('export_filter', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER3, ''));
+		$export_filter1      = Validator::queryParams($request)->string('export_filter1', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER1, ''));
+		$export_filter2      = Validator::queryParams($request)->string('export_filter2', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2, ''));
+		$export_filter3      = Validator::queryParams($request)->string('export_filter3', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER3, ''));
 		$test_download_token = Validator::queryParams($request)->string('test_download_token', '');
 
         //A test download is allowed if a valid token is submitted

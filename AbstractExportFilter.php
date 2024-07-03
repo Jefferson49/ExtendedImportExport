@@ -54,6 +54,9 @@ class AbstractExportFilter implements ExportFilterInterface
     //A switch, whether custom tags shall be analyzed and SCHMA structures shall be added (only relevant for GEDCOM 7)
     protected const USES_SCHEMA_TAG_ANALYSIS = true;
 
+    //A switch, whether Gedcom lines shall be split (i.e. CONC structure) without leading and trailing spaces
+    protected const WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES = false;
+
     //The strings used to identify RegExp macros and PHP functions
     private const REGEXP_MACROS_STRING = 'RegExp_macro';
     public const PHP_FUNCTION_STRING   = 'PHP_function';
@@ -322,6 +325,16 @@ class AbstractExportFilter implements ExportFilterInterface
 
         return static::USES_SCHEMA_TAG_ANALYSIS;
     }   
+
+    /**
+     * Whether Gedcom lines shall be split (i.e. CONC structure) without leading and trailing spaces
+     *
+     * @return bool   true if SCHMA analysis is used
+     */
+    public function wrapLinesWithoutLeadingAndTrailingSpaces(): bool {
+
+        return static::WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES;
+    }     
 
     /**
      * Include a set of other filters, which shall be executed before the current filter

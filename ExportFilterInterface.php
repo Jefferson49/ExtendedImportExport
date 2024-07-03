@@ -74,6 +74,13 @@ interface ExportFilterInterface
     public function usesSchemaTagAnalysis(): bool;
 
     /**
+     * Whether Gedcom lines shall be split (i.e. CONC structure) without leading and trailing spaces
+     *
+     * @return bool   true if SCHMA analysis is used
+     */
+    public function wrapLinesWithoutLeadingAndTrailingSpaces(): bool;
+
+    /**
      * Include a set of other filters, which shall be executed before the current filter
      *
      * @return array<ExportFilterInterface>    A set of included export filters

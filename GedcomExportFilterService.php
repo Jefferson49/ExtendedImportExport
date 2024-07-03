@@ -138,6 +138,9 @@ class GedcomExportFilterService extends GedcomExportService
     //A flag indicating whether to apply Gedcom 7 SCHMA tag analysis to the final export
     private bool $use_schema_tag_analysis;
 
+    //A flag indicating whether CONC structures shall be split without leading and trailing spaces
+    private bool $wrap_lines_without_leading_and_trailing_spaces;
+
 
     /**
      * @param ResponseFactoryInterface $response_factory
@@ -151,7 +154,8 @@ class GedcomExportFilterService extends GedcomExportService
         $this->empty_records_xref_list = [];
         $this->references_list = [];
         $this->custom_tags_found = [];
-        $this->use_schema_tag_analysis = false;        
+        $this->use_schema_tag_analysis = false;      
+        $this->wrap_lines_without_leading_and_trailing_spaces = false;  
 	}
 
     /**
@@ -396,7 +400,13 @@ class GedcomExportFilterService extends GedcomExportService
 
             //If not Gedcom 7, wrap long lines
             if (!$gedcom7) {
-                $gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH);
+
+                if ($this->wrap_lines_without_leading_and_trailing_spaces) {
+                    $gedcom = $this->wrapLongLinesWithoutLeadingAndTrailingSpaces($gedcom, Gedcom::LINE_LENGTH);
+                }
+                else {
+                    $gedcom = $this->wrapLongLines($gedcom, Gedcom::LINE_LENGTH);
+                }
             }
 
             //Convert to the requested line ending
@@ -454,14 +464,14 @@ class GedcomExportFilterService extends GedcomExportService
     }
 
     /**
-     * Wrap long lines using concatenation records.
+     * Wrap long lines using concatenation records. Try to avoid line splits, which create leading/trailing spaces
      *
      * @param string $gedcom
      * @param int    $max_line_length
      *
      * @return string
      */
-    public function wrapLongLines(string $gedcom, int $max_line_length): string
+    public function wrapLongLinesWithoutLeadingAndTrailingSpaces(string $gedcom, int $max_line_length): string
     {
         $lines = [];
 
@@ -476,14 +486,16 @@ class GedcomExportFilterService extends GedcomExportService
                 }
                 do {
                     // Split after $pos chars
-                    $pos = $max_line_length;
-                    // Split on a non-space (standard gedcom behavior)
-                    while (mb_substr($line, $pos - 1, 1) === ' ') {
+                    $pos = $max_line_length + 1;
+
+                    // Split between non-space characters in order to avoid leading/trailing spaces
+                    while (mb_substr($line, $pos - 1, 1) === ' ' OR mb_substr($line, $pos - 2, 1) === ' ') {
                         --$pos;
                     }
-                    if ($pos === strpos($line, ' ', 3)) {
-                        // No non-spaces in the data! Can’t split it :-(
-                        break;
+                    --$pos;
+                    if ($pos < strpos($line, ' ', 3) + 1 ) {
+                        // No double non-space characters in the data! Can’t split it at a better position than max length
+                        $pos = $max_line_length;
                     }
                     $lines[] = mb_substr($line, 0, $pos);
                     $line    = $level . ' CONC ' . mb_substr($line, $pos);
@@ -651,6 +663,9 @@ class GedcomExportFilterService extends GedcomExportService
 
             //Globally remember, whether to apply SCHMA tag analysis to the final export
             $this->use_schema_tag_analysis = $this->use_schema_tag_analysis || $export_filter->usesSchemaTagAnalysis();
+
+            //Globally remember, whether to wrap lines without leading/trailing spaces
+            $this->wrap_lines_without_leading_and_trailing_spaces = $this->wrap_lines_without_leading_and_trailing_spaces || $export_filter->wrapLinesWithoutLeadingAndTrailingSpaces();
 
             //Create lookup table if regexp exists for a pattern
             foreach($export_filter_patterns as $pattern) {

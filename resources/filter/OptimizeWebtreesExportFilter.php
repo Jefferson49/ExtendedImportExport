@@ -61,7 +61,7 @@ class OptimizeWebtreesExportFilter extends AbstractExportFilter implements Expor
         '!*:*:RESN'                 => [],
         '!*:*:*:RESN'               => [],
 
-        //Remove CHAN, _TODO, and _WT_USER structures
+        //Remove CHAN and _WT_USER structures
         '!*:CHAN'                   => [],
         '!*:CHAN:*'                 => [],
         '!FAM:_TODO:_WT_USER'       => [],

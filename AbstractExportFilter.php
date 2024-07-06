@@ -170,7 +170,7 @@ class AbstractExportFilter implements ExportFilterInterface
                     //Check if customConvert method is chosen
                     if ($replace !== self::CUSTOM_CONVERT) {
 
-                        return I18N::translate('The used export filter (%s) contains a %s command with a method (%s), which is not available. Currently, only "%s" is allowed to be used as a method', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, $replace, self::CUSTOM_CONVERT);
+                        return I18N::translate('The used export filter (%s) contains a %s command with a method (%s), which is not available. Currently, only "%s" is allowed to be used as a method.', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, $replace, self::CUSTOM_CONVERT);
                     }
                     try {
                         $reflection = new ReflectionClass($this);

@@ -41,6 +41,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Throwable;
 
 /**
  * Remotely import a GEDCOM file into a tree.
@@ -73,35 +74,54 @@ class RemoteImportGedcomAction implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $tree_name          = Validator::queryParams($request)->string('tree');
-        $file_name          = Validator::queryParams($request)->string('file');
-        $encoding           = 'UTF-8';
+        $download_gedcom_with_URL = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+        $encoding = 'UTF-8';
+
+        try {
+            $tree_name          = Validator::queryParams($request)->string('tree');
+            $file_name          = Validator::queryParams($request)->string('file');    
+        }
+        catch (Throwable $ex) {
+            $message = I18N::translate('The parameter "tree" or the parameter "file" is missing in the called URL.');
+            return $download_gedcom_with_URL->showErrorMessage($message);
+        }           
    
         //Get tree 
-        $tree = $this->tree_service->all()[$tree_name];
-        assert($tree instanceof Tree);
+        try {
+            $tree = $this->tree_service->all()[$tree_name];
+            assert($tree instanceof Tree);
+        }
+        catch (Throwable $ex) {
+            $message = I18N::translate('Could not find tree "%s".', $tree_name);
+            return $download_gedcom_with_URL->showErrorMessage($message);
+        }        
 
-        //Get folder from module settings and create server file name
-        $download_gedcom_with_URL = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
-
+        //Get folder from module settings, create server file name, and read from file
         $folder = $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
         $root_filesystem = Registry::filesystem()->root();
         $server_file = $folder . $file_name . '.ged';
 
-
         try {
             $resource = $root_filesystem->readStream($server_file);
+        }
+        catch (Throwable $ex) {
+            $message = I18N::translate('Unable to read file "%s".', $server_file);
+            return $download_gedcom_with_URL->showErrorMessage($message);
+        }        
+
+        //Import the Gedcom from file
+        try {
             $stream   = $this->stream_factory->createStreamFromResource($resource);
             $this->tree_service->importGedcomFile($tree, $stream, $server_file, $encoding);
 
             $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $file_name . '.ged', $tree->name());
             FlashMessages::addMessage($message, 'success');
         }
-        catch (DownloadGedcomWithUrlException $ex) {
-
-            return $response = $download_gedcom_with_URL->showErrorMessage($ex->getMessage());
+        catch (Throwable $ex) {
+            return $download_gedcom_with_URL->showErrorMessage($ex->getMessage());
         }        
 
+        //Redirect in order to process the Gedcom data of the imported file
         return redirect(route(ManageTrees::class, ['tree' => $tree->name()]));        
     }
 }

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-07-06 08:01+0200\n"
-"PO-Revision-Date: 2024-07-06 08:03+0200\n"
+"POT-Creation-Date: 2024-07-06 10:23+0200\n"
+"PO-Revision-Date: 2024-07-06 10:24+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -78,7 +78,7 @@ msgstr ""
 #, php-format
 msgid ""
 "The used export filter (%s) contains a %s command with a method (%s), which "
-"is not available. Currently, only \"%s\" is allowed to be used as a method"
+"is not available. Currently, only \"%s\" is allowed to be used as a method."
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen %s Befehl mit einer Methode "
 "(%s), die nicht verfügbar ist. Momentan ist es nur erlaubt, \"%s\" als "
@@ -333,7 +333,25 @@ msgstr ""
 "Schwerwiegender Fehler: Zu viele Iterationen beim Entfernen von leeren oder "
 "unverknüpften Datensätzen."
 
-#: RemoteImportGedcomAction.php:97
+#: RemoteImportGedcomAction.php:85
+msgid ""
+"The parameter \"tree\" or the parameter \"file\" is missing in the called "
+"URL."
+msgstr ""
+"Der Parameter \"tree\" oder der Parameter \"file\" fehlt in der aufgerufenen "
+"URL."
+
+#: RemoteImportGedcomAction.php:95
+#, php-format
+msgid "Could not find tree \"%s\"."
+msgstr "Der Stammbaum \"%s\" konnte nicht gefunden werden."
+
+#: RemoteImportGedcomAction.php:108
+#, php-format
+msgid "Unable to read file \"%s\"."
+msgstr "Die Datei \"%s\" konnte nicht eingelesen werden."
+
+#: RemoteImportGedcomAction.php:117
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr ""

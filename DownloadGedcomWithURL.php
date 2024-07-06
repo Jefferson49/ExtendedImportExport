@@ -151,8 +151,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function boot(): void
     {
-        Registry::routeFactory()->routeMap()
+        $router = Registry::routeFactory()->routeMap();            
+
+        //Register a route for downloads
+        $router
             ->get(static::class, self::ROUTE_URL, $this)
+            ->allows(RequestMethodInterface::METHOD_POST);
+
+        //Register a route for for uploads
+        $router 
+            ->get(RemoteImportGedcomAction::class, '/UploadGedcomWithURL', RemoteImportGedcomAction::class)
             ->allows(RequestMethodInterface::METHOD_POST);
 
 		// Register a namespace for the views.
@@ -605,7 +613,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      *
      * @return ResponseInterface
      */ 
-     private function showErrorMessage(string $text): ResponseInterface
+     public function showErrorMessage(string $text): ResponseInterface
 	 {		
 		return $this->viewResponse($this->name() . '::alert', [
             'title'        	=> 'Error',
@@ -621,7 +629,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      *
      * @return ResponseInterface
      */ 
-	private function showSuccessMessage(string $text): ResponseInterface
+	public function showSuccessMessage(string $text): ResponseInterface
 	{		
 	   return $this->viewResponse($this->name() . '::alert', [
 		   'title'        	=> 'Success',

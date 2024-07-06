@@ -94,7 +94,7 @@ class RemoteImportGedcomAction implements RequestHandlerInterface
             $stream   = $this->stream_factory->createStreamFromResource($resource);
             $this->tree_service->importGedcomFile($tree, $stream, $server_file, $encoding);
 
-            $message = I18N::translate('The file "%s" was sucessfully uploaded for tree: %s', $file_name . '.ged', $tree->name());
+            $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $file_name . '.ged', $tree->name());
             FlashMessages::addMessage($message, 'success');
         }
         catch (DownloadGedcomWithUrlException $ex) {

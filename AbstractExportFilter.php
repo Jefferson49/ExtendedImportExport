@@ -142,7 +142,7 @@ class AbstractExportFilter implements ExportFilterInterface
 
         //Validate if EXPORT_FILTER_RULES is an array
         if (!is_array(static::EXPORT_FILTER_RULES)) {
-            return I18N::translate('The filter rules definition (%s) of the export filter (%s) does not have the type array.', 'const EXPORT_FILTER_RULES', $class_name,);
+            return I18N::translate('The variable type of the filter rules definition (%s) of the export filter (%s) does not have the type "array".', 'const EXPORT_FILTER_RULES', $class_name,);
         }
 
         //Validate EXPORT_FILTER_RULES

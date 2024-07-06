@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-06-22 07:14+0200\n"
-"PO-Revision-Date: 2024-06-22 07:15+0200\n"
+"POT-Creation-Date: 2024-07-06 08:01+0200\n"
+"PO-Revision-Date: 2024-07-06 08:03+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: AbstractExportFilter.php:133
+#: AbstractExportFilter.php:121
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid filter definition (%s)."
@@ -23,12 +23,12 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
 "(%s)."
 
-#: AbstractExportFilter.php:138
+#: AbstractExportFilter.php:126
 #, php-format
 msgid "The selected export filter (%s) does not contain any filter rules."
 msgstr "Der ausgewählte Export-Filter (%s) enthält keine Filter Regeln."
 
-#: AbstractExportFilter.php:143
+#: AbstractExportFilter.php:131
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid definition for regular "
@@ -37,7 +37,7 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Definition für "
 "Macros von regulären Ausdrücken (%s)."
 
-#: AbstractExportFilter.php:150
+#: AbstractExportFilter.php:138
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid definition for the "
@@ -46,26 +46,20 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Definition für das "
 "Macro %s."
 
-#: AbstractExportFilter.php:151 AbstractExportFilter.php:174
+#: AbstractExportFilter.php:139 AbstractExportFilter.php:154
 msgid "Invalid definition"
 msgstr "Ungültige Definition"
 
-#: AbstractExportFilter.php:160 AbstractExportFilter.php:260
-#: AbstractExportFilter.php:268
-#, php-format
-msgid "The %s method of the used export filter (%s) throws a PHP error"
-msgstr ""
-"Die %s Methode des genutzten Export-Filters (%s) erzeugt einen PHP-Fehler"
-
-#: AbstractExportFilter.php:166
+#: AbstractExportFilter.php:145
 #, php-format
 msgid ""
-"The %s method of the export filter (%s) returns an invalid filter definition."
+"The variable type of the filter rules definition (%s) of the export filter "
+"(%s) does not have the type \"array\"."
 msgstr ""
-"Die %s Methode des Export-Filters (%s) gibt einen ungültigen Wert für die "
-"Filter-Definition zurück."
+"Der Variablen-Typ der Filterregel-Definition (%s) für den Export-Filter (%s) "
+"hat nicht den erforderliche Typ \"array\"."
 
-#: AbstractExportFilter.php:173
+#: AbstractExportFilter.php:153
 #, php-format
 msgid ""
 "The selected export filter (%s) contains an invalid filter definition for "
@@ -74,13 +68,13 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
 "für das Tag-Muster %s."
 
-#: AbstractExportFilter.php:180
+#: AbstractExportFilter.php:161
 #, php-format
 msgid "The selected export filter (%s) contains an invalid tag definition"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält eine ungültige Tag-Definition"
 
-#: AbstractExportFilter.php:192
+#: AbstractExportFilter.php:173
 #, php-format
 msgid ""
 "The used export filter (%s) contains a %s command with a method (%s), which "
@@ -90,7 +84,7 @@ msgstr ""
 "(%s), die nicht verfügbar ist. Momentan ist es nur erlaubt, \"%s\" als "
 "Methode einzusetzen."
 
-#: AbstractExportFilter.php:202
+#: AbstractExportFilter.php:183
 #, php-format
 msgid ""
 "The used export filter (%s) contains a %s command with a method (%s), but "
@@ -99,18 +93,27 @@ msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen %s Befehl mit einer Methode "
 "(%s), aber die Filter-Klasse enthält keine \"%s\" Methode."
 
-#: AbstractExportFilter.php:211 AbstractExportFilter.php:218
+#: AbstractExportFilter.php:193
+#, php-format
+msgid ""
+"The used export filter (%s) contains a macro command (%s) for a regular "
+"expression, but the macro is not defined in the filter."
+msgstr ""
+"Der ausgewählte Export-Filter (%s) enthält einen Macro-Befehl (%s) für einen "
+"regulären Ausdruck, aber das Macro ist im Filter nicht definiert."
+
+#: AbstractExportFilter.php:202 AbstractExportFilter.php:209
 #, php-format
 msgid "The selected export filter (%s) contains an invalid regular expression"
 msgstr ""
 "Der ausgewählte Export-Filter (%s) enthält einen ungültigen regulären "
 "Ausdruck"
 
-#: AbstractExportFilter.php:211
+#: AbstractExportFilter.php:202
 msgid "Error message"
 msgstr "Fehlermeldung"
 
-#: AbstractExportFilter.php:228
+#: AbstractExportFilter.php:219
 #, php-format
 msgid ""
 "The selected export filter (%s) contains a black list filter rule (%s) with "
@@ -121,7 +124,7 @@ msgstr ""
 "mit einem regulären Ausdruck, welcher niemals ausgeführt wird, weil die "
 "Black-List Filter-Regel die zugehörige GEDCOM-Zeile löschen wird."
 
-#: AbstractExportFilter.php:249
+#: AbstractExportFilter.php:240
 #, php-format
 msgid ""
 "The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
@@ -132,7 +135,14 @@ msgstr ""
 "dominiert und wird daher niemals ausgeführt werden. Bitte entfernen Sie die "
 "Filter-Regel oder ändern Sie die Reihenfolge der Filter-Regeln."
 
-#: DownloadGedcomWithURL.php:184
+#: AbstractExportFilter.php:251 AbstractExportFilter.php:260
+#: AbstractExportFilter.php:268
+#, php-format
+msgid "The %s method of the used export filter (%s) throws a PHP error"
+msgstr ""
+"Die %s Methode des genutzten Export-Filters (%s) erzeugt einen PHP-Fehler"
+
+#: DownloadGedcomWithURL.php:192
 msgid ""
 "A custom module to download GEDCOM files on URL requests with the tree name, "
 "GEDCOM file name, and authorization provided as parameters within the URL."
@@ -141,7 +151,7 @@ msgstr ""
 "von URL Anfragen, welche den Stammbaum-Namen, den GEDCOM Dateinamen und die "
 "Authorisierung als Paramter innerhalb der URL beinhalten."
 
-#: DownloadGedcomWithURL.php:424
+#: DownloadGedcomWithURL.php:432
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -149,7 +159,7 @@ msgstr ""
 "Der angegebene Autorisierungs-Schlüssel ist zu kurz. Bitte geben Sie "
 "mindestens eine Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:430
+#: DownloadGedcomWithURL.php:438
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -158,7 +168,7 @@ msgstr ""
 "nicht akzeptiert werden. Bitte geben Sie einen anderen Autorisierungs-"
 "Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:460
+#: DownloadGedcomWithURL.php:468
 #, php-format
 msgid ""
 "The folder settings could not be saved, because the folder “%s” does not "
@@ -167,12 +177,12 @@ msgstr ""
 "Die Einstellungen für den Ordner konnten nicht gespeichert werden, weil der "
 "Ordner \"%s\" nicht existiert."
 
-#: DownloadGedcomWithURL.php:485
+#: DownloadGedcomWithURL.php:493
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:506
+#: DownloadGedcomWithURL.php:514
 #, php-format
 msgid ""
 "The preferences for the custom module \"%s\" were sucessfully updated to the "
@@ -181,7 +191,7 @@ msgstr ""
 "Die Einstellungen für das benutzerdefinierte Modul \"%s\" wurden für die "
 "neue Modul-Version %s aktualisiert."
 
-#: DownloadGedcomWithURL.php:538
+#: DownloadGedcomWithURL.php:546
 #, php-format
 msgid ""
 "The preferences for the default export filter were reset to \"none\", "
@@ -190,28 +200,28 @@ msgstr ""
 "Die Voreinstellung für den Export-Filter wurden auf \"Keine\" zurückgesetzt, "
 "weil der ausgewählte Export-Filter %s nicht gefunden wurde"
 
-#: DownloadGedcomWithURL.php:657
+#: DownloadGedcomWithURL.php:665
 msgid "A compilation error was detected in the following export filter"
 msgstr "In folgendem Export-Filter wurde ein Kompilierungs-Fehler erkannt"
 
-#: DownloadGedcomWithURL.php:658
+#: DownloadGedcomWithURL.php:666
 msgid "line"
 msgstr "Zeile"
 
-#: DownloadGedcomWithURL.php:658
+#: DownloadGedcomWithURL.php:666
 msgid "error message"
 msgstr "Fehlermeldung"
 
-#: DownloadGedcomWithURL.php:678 resources/views/settings.phtml:222
+#: DownloadGedcomWithURL.php:686 resources/views/settings.phtml:222
 msgid "None"
 msgstr ""
 
-#: DownloadGedcomWithURL.php:712 DownloadGedcomWithURL.php:867
-#: DownloadGedcomWithURL.php:871 DownloadGedcomWithURL.php:875
+#: DownloadGedcomWithURL.php:720 DownloadGedcomWithURL.php:875
+#: DownloadGedcomWithURL.php:879 DownloadGedcomWithURL.php:883
 msgid "The export filter was not found"
 msgstr "Der Export-Filter wurde nicht gefunden"
 
-#: DownloadGedcomWithURL.php:750
+#: DownloadGedcomWithURL.php:758
 #, php-format
 msgid ""
 "The include hierarchy for export filters exceeds the maximum level of %s "
@@ -220,7 +230,7 @@ msgstr ""
 "Die Include-Schachtelung des Export-Filters überschreitet die maximale "
 "Schwelle von %s Includes."
 
-#: DownloadGedcomWithURL.php:754
+#: DownloadGedcomWithURL.php:762
 msgid ""
 "The following export filter might cause a loop in the include structure, "
 "because it was detected more than once in the include hierarchy"
@@ -229,12 +239,12 @@ msgstr ""
 "Include-Struktur, weil der Filter mehr als einmal in der Include-Hierarchie "
 "detektiert wurde"
 
-#: DownloadGedcomWithURL.php:757
+#: DownloadGedcomWithURL.php:765
 msgid "Please check the include structure of the selected export filters."
 msgstr ""
 "Bitte überprüfen Sie die Include-Struktur des ausgewählten Export-Filters."
 
-#: DownloadGedcomWithURL.php:823
+#: DownloadGedcomWithURL.php:831
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -243,7 +253,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:827
+#: DownloadGedcomWithURL.php:835
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -252,55 +262,55 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:831
+#: DownloadGedcomWithURL.php:839
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:835
+#: DownloadGedcomWithURL.php:843
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:839
+#: DownloadGedcomWithURL.php:847
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:843
+#: DownloadGedcomWithURL.php:851
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:847
+#: DownloadGedcomWithURL.php:855
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:851
+#: DownloadGedcomWithURL.php:859
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:855
+#: DownloadGedcomWithURL.php:863
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:859
+#: DownloadGedcomWithURL.php:867
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:863
+#: DownloadGedcomWithURL.php:871
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:961
+#: DownloadGedcomWithURL.php:969
 #, php-format
 msgid "The family tree \"%s\" has been exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:966
+#: DownloadGedcomWithURL.php:974
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:986
+#: DownloadGedcomWithURL.php:994
 msgid ""
 "Download is not allowed. Please change the module settings to allow "
 "downloads."
@@ -308,20 +318,26 @@ msgstr ""
 "Das Herunterladen ist nicht erlaubt. Bitte ändern Sie die Modul-"
 "Einstellungen, um Herunterladen zu erlauben."
 
-#: RemoteGedcomExportService.php:764
+#: GedcomExportFilterService.php:761
 msgid "The following GEDCOM structure could not be matched"
 msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
 
-#: RemoteGedcomExportService.php:935
+#: GedcomExportFilterService.php:934
 msgid "Error during a regular expression replacement."
 msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
 
-#: RemoteGedcomExportService.php:1093
+#: GedcomExportFilterService.php:1083
 msgid ""
 "Fatal error: Too many iterations while removing empty and unlinked records."
 msgstr ""
 "Schwerwiegender Fehler: Zu viele Iterationen beim Entfernen von leeren oder "
 "unverknüpften Datensätzen."
+
+#: RemoteImportGedcomAction.php:97
+#, php-format
+msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
+msgstr ""
+"Die Datei \"%s\" für den Stammbaum \"%s\" wurde erfolgreich hochgeladen."
 
 #: resources/views/alert.phtml:22
 msgid "Custom module"
@@ -654,6 +670,14 @@ msgid ""
 msgstr ""
 "Um geänderte Einstellungen beim \"Herunterladen\" zu nutzen, müssen die "
 "Einstellungen zunächst gespeichert werden."
+
+#, php-format
+#~ msgid ""
+#~ "The %s method of the export filter (%s) returns an invalid filter "
+#~ "definition."
+#~ msgstr ""
+#~ "Die %s Methode des Export-Filters (%s) gibt einen ungültigen Wert für die "
+#~ "Filter-Definition zurück."
 
 #, php-format
 #~ msgid "The selected export filter (%s) is empty."

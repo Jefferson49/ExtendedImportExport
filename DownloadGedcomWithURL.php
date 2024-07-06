@@ -110,6 +110,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const PREF_SECRET_KEY = "secret_key";
 	public const PREF_USE_HASH = "use_hash";
 	public const PREF_ALLOW_DOWNLOAD = "allow_download";
+	public const PREF_ALLOW_UPLOAD = "allow_upload";
 	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
     public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
     public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
@@ -353,6 +354,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $this->checkFilterPreferences(self::PREF_DEFAULT_EXPORT_FILTER2);
         $this->checkFilterPreferences(self::PREF_DEFAULT_EXPORT_FILTER3);
 
+        $data_folder = str_replace('\\', '/', Registry::filesystem()->dataName());
+		$root_folder = str_replace('\\', '/', Registry::filesystem()->rootName());
+		$data_folder_relative = str_replace($root_folder, '', $data_folder);
+
         return $this->viewResponse(
             $this->name() . '::settings',
             [
@@ -362,7 +367,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
 				self::PREF_USE_HASH                   => boolval($this->getPreference(self::PREF_USE_HASH, '1')),
 				self::PREF_ALLOW_DOWNLOAD             => boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1')),
-				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY')),
+				self::PREF_ALLOW_UPLOAD               => boolval($this->getPreference(self::PREF_ALLOW_UPLOAD, '0')),
+				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, $data_folder_relative),
                 self::PREF_DEFAULT_TREE_NAME          => $this->getPreference(self::PREF_DEFAULT_TREE_NAME, array_key_first($tree_list)),
                 self::PREF_DEFAULT_FiLE_NAME          => $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, array_key_first($tree_list)),
                 self::PREF_DEFAULT_EXPORT_FILTER1     => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER1, ''),
@@ -392,6 +398,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $save                       = Validator::parsedBody($request)->string('save', '');
         $use_hash                   = Validator::parsedBody($request)->boolean(self::PREF_USE_HASH, false);
         $allow_download             = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_DOWNLOAD, false);
+        $allow_upload               = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_UPLOAD, false);
         $new_secret_key             = Validator::parsedBody($request)->string('new_secret_key', '');
         $folder_to_save             = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY'));
         $default_tree_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TREE_NAME, '');
@@ -472,7 +479,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
             if(!$new_key_error) {
                 $this->setPreference(self::PREF_USE_HASH, $use_hash ? '1' : '0');
             }
+
+            //Save settings
 			$this->setPreference(self::PREF_ALLOW_DOWNLOAD, $allow_download ? '1' : '0');
+			$this->setPreference(self::PREF_ALLOW_UPLOAD, $allow_upload ? '1' : '0');
 
             //Save default settings to preferences
             $this->setPreference(self::PREF_DEFAULT_TREE_NAME, $default_tree_name);
@@ -794,7 +804,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
    		
 		$key                 = Validator::queryParams($request)->string('key', '');
 		$tree_name           = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
-        $file_name           = Validator::queryParams($request)->string('file',  $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, $tree_name));
+        $file_name           = Validator::queryParams($request)->string('file',  $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, ''));
         $format              = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
         $privacy             = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
         $encoding            = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
@@ -804,10 +814,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$export_filter1      = Validator::queryParams($request)->string('export_filter1', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER1, ''));
 		$export_filter2      = Validator::queryParams($request)->string('export_filter2', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2, ''));
 		$export_filter3      = Validator::queryParams($request)->string('export_filter3', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER3, ''));
-		$test_download_token = Validator::queryParams($request)->string('test_download_token', '');
+		$control_panel_token = Validator::queryParams($request)->string('control_panel_token', '');
 
-        //A test download is allowed if a valid token is submitted
-        $allow_test_download =  $test_download_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
+        if ($file_name === '') {
+            $file_name = $tree_name;
+        }
+
+        //A download from the control panel is allowed if a valid token is submitted
+        $allow_control_panel_download =  $control_panel_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
 
         //Add namespace to export filters
         $export_filter_class_name1 = __NAMESPACE__ . '\\' . $export_filter1;
@@ -835,11 +849,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $this->title());
 		}
 		//Error if no hashing and key is not valid
-        elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_test_download && ($key !== $secret_key)) {
+        elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_control_panel_download && ($key !== $secret_key)) {
 			$response = $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
 		}
 		//Error if hashing and key does not fit to hash
-        elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_test_download && (!password_verify($key, $secret_key))) {
+        elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_control_panel_download && (!password_verify($key, $secret_key))) {
 			$response = $this->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
 		}
         //Error if tree name is not valid

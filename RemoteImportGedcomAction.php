@@ -32,6 +32,7 @@ use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\TreeService;
+use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Validator;
 use League\Flysystem\FilesystemException;
@@ -77,22 +78,63 @@ class RemoteImportGedcomAction implements RequestHandlerInterface
         $download_gedcom_with_URL = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
         $encoding = 'UTF-8';
 
-        try {
-            $tree_name          = Validator::queryParams($request)->string('tree');
-            $file_name          = Validator::queryParams($request)->string('file');    
+        $key                  = Validator::queryParams($request)->string('key', ''); 
+        $control_panel_token  = Validator::queryParams($request)->string('control_panel_token', '');        
+
+        //Check preferences if upload is allowed
+        $allow_upload         = boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_ALLOW_UPLOAD, '0'));
+
+        //An upload from the control panel is allowed if a valid token is submitted
+        $allow_control_panel_upload = $control_panel_token === md5($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
+        
+		//Load secret key from preferences
+        $secret_key           = $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_SECRET_KEY, ''); 
+
+        //If upload from control panel
+        if ($control_panel_token !== '') {
+            $tree_name        = Validator::queryParams($request)->string('tree', $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, ''));
+            $file_name        = Validator::queryParams($request)->string('file',  $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_FiLE_NAME, ''));
         }
-        catch (Throwable $ex) {
-            $message = I18N::translate('The parameter "tree" or the parameter "file" is missing in the called URL.');
-            return $download_gedcom_with_URL->showErrorMessage($message);
-        }           
+        //Otherwise treat as remote upload called with URL
+        else {
+            try {           
+                $tree_name    = Validator::queryParams($request)->string('tree');
+                $file_name    = Validator::queryParams($request)->string('file');
+            }
+            catch (Throwable $ex) {
+                $message = I18N::translate('One of the parameters "file, tree" is missing in the called URL.');
+                return $download_gedcom_with_URL->showErrorMessage($message);
+            }    
+        }
+
+        //Error if upload is not allowed
+        if (!$allow_upload) {
+			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('Upload is not enabled. Please check the module settings in the control panel.'));
+		}
+        //Error if key is empty
+        if ($key === '') {
+			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
+		}
+		//Error if secret key is empty
+        elseif ($secret_key === '') {
+			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $download_gedcom_with_URL->title());
+		}
+		//Error if no hashing and key is not valid
+        elseif (!boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_USE_HASH, '0')) && !$allow_control_panel_upload && ($key !== $secret_key)) {
+			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
+		}
+		//Error if hashing and key does not fit to hash
+        elseif (boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_USE_HASH, '0')) && !$allow_control_panel_upload && (!password_verify($key, $secret_key))) {
+			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
+		}
    
-        //Get tree 
+        //Get tree and error if tree name is not valid
         try {
             $tree = $this->tree_service->all()[$tree_name];
             assert($tree instanceof Tree);
         }
         catch (Throwable $ex) {
-            $message = I18N::translate('Could not find tree "%s".', $tree_name);
+            $message = I18N::translate('Could not find the requested tree "%s".', $tree_name);
             return $download_gedcom_with_URL->showErrorMessage($message);
         }        
 

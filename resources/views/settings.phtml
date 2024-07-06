@@ -22,6 +22,7 @@ use Fisharebest\Webtrees\View;
  * @var  bool		$use_hash
  * @var  string		$secret_key
  * @var  bool       $allow_download
+ * @var  bool       $allow_upload
  * @var  string		$folder_to_save 
  * @var  string     $default_tree_name
  * @var  string     $default_file_name
@@ -49,9 +50,9 @@ use Fisharebest\Webtrees\View;
 	<input type="hidden" name="save" id="save" value="1">
 	<div class="row mb-3 justify-content-between m-0">
 		<div class="row mb-3"><?= view('icons/spacer') ?></div> 
-		<?php if ($allow_download) : ?>
+		<?php if ($allow_download OR $allow_upload) : ?>
 			<div class="alert alert-warning">
-				<p><?= I18N::translate('Currently, the download of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download GEDCOM files from your webtrees installation.') ?></p>
+				<p><?= I18N::translate('Currently, the download or upload of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload GEDCOM files from/to your webtrees installation.') ?></p>
 			</div>
 		<?php endif ?>
 		<?php if (!$use_hash) : ?>
@@ -124,6 +125,19 @@ use Fisharebest\Webtrees\View;
 				</div>
 			</div>
 		</fieldset>		
+		<fieldset class="mb-3">
+			<div class="row">
+				<legend class="col-form-label col-sm-3">
+					<?= I18N::translate('Allow upload of GEDCOM files') ?>
+				</legend>
+				<div class="col-sm-9">
+					<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_UPLOAD, 'checked' => $allow_upload]) ?>
+					<div class="form-text">
+						<?= I18N::translate('By un-selecting this option, it is possible to de-activate uploads.'); ?>
+					</div>
+				</div>
+			</div>
+		</fieldset>		
 		<div class="row mb-3">
 			<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
 				<?= I18N::translate('Folder name') ?>
@@ -148,7 +162,7 @@ use Fisharebest\Webtrees\View;
 			</div>			
 		</div>
 
-		<h3><?= I18N::translate('Default settings for downloads') ?></h3>		
+		<h3><?= I18N::translate('Default settings for downloads/uploads') ?></h3>		
 		<p><?= I18N::translate('These default settings are used if no specific parameter values are provided within the URL. By specifying the default values, the URLs to be called for a download can be simplified. If the default values shall be used for a download, it is sufficient to only provide the "key" parameter (authorization key) in the URL. Please note that the default settings can only be used after saving at least once (i.e. by pressing the "Save" button).') ?></p>	
 		<p><?= I18N::translate('Any parameters provided in the URL have a higher priority and will overrule the default settings.') ?></p>
 
@@ -308,7 +322,7 @@ use Fisharebest\Webtrees\View;
 					</div>
 				</div>
 			</div>
-		</fieldset>		
+		</fieldset>	
 		<fieldset class="mb-3">
 			<div class="row">
 				<legend class="col-form-label col-sm-3">
@@ -334,27 +348,43 @@ use Fisharebest\Webtrees\View;
 				<?= view('icons/save') ?>
 				<?= I18N::translate('Save') ?>
 			</button>
+			<div class="form-text">
+				<?= I18N::translate('In order to use changed settings for a download/upload, the settings need to be saved first.')?>
+			</div>
 		</div>
 	</div>
 </form>	
 
-<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-					'key'                 => 'test_download',
-					'test_download_token' => md5($secret_key . Session::getCsrfToken()),
-					])) ?>">
-	<?= csrf_field() ?>
-	<div class="row mb-3 justify-content-between m-0">
+<div class="row mb-3 justify-content-between m-0">
+	<div class="row mb-3">
 		<div class="col">
-			<button type="submit" class="btn btn-secondary">
-				<?= view('icons/save') ?>
-				<?= I18N::translate('Download') ?>
-			</button>
-			<div class="form-text">
-				<?= I18N::translate('In order to use changed settings for a download, the settings need to be saved first.')?>
-			</div>
+			<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
+					'key'                 => 'control_panel',
+					'control_panel_token' => md5($secret_key . Session::getCsrfToken()),
+					])) ?>">
+				<?= csrf_field() ?>
+				<button type="submit" class="btn btn-secondary">
+					<?= view('icons/save') ?>
+					<?= I18N::translate('Download') ?>
+				</button>
+			</form>
+		</div>
+		<div class="col">
+			<?php if ($allow_upload) : ?>
+				<form method="post" action="<?= e(route(RemoteImportGedcomAction::class, [
+						'key'                 => 'control_panel',
+						'control_panel_token' => md5($secret_key . Session::getCsrfToken()),
+						])) ?>">
+					<?= csrf_field() ?>
+					<button type="submit" class="btn btn-secondary" data-wt-confirm="<?= I18N::translate('Are you absolutely sure you want to upload/import the selected file into the specified tree? Please be aware that uploading/importing the file will delete all existing data in the tree without possibility to recover! Therefore, also consider to backup the webtrees database before uploading new files.') ?>">
+						<?= view('icons/save') ?>
+						<?= I18N::translate('Upload') ?>
+					</button>
+				</form>
+			<?php endif ?>
 		</div>
 	</div>
-</form>
+</div>
 
 <?php View::push('javascript') ?>
 <script>

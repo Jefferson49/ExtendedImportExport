@@ -21,8 +21,10 @@ use Fisharebest\Webtrees\View;
  * @var  array      $export_filter_list
  * @var  bool		$use_hash
  * @var  string		$secret_key
- * @var  bool       $allow_download
- * @var  bool       $allow_upload
+ * @var  string		$control_panel_secret_key
+ * @var  bool       $allow_remote_download
+ * @var  bool       $allow_remote_save
+ * @var  bool       $allow_remote_upload
  * @var  string		$folder_to_save 
  * @var  string     $default_tree_name
  * @var  string     $default_file_name
@@ -50,35 +52,103 @@ use Fisharebest\Webtrees\View;
 	<input type="hidden" name="save" id="save" value="1">
 	<div class="row mb-3 justify-content-between m-0">
 		<div class="row mb-3"><?= view('icons/spacer') ?></div> 
-		<?php if ($allow_download OR $allow_upload) : ?>
+
+
+		<h3><?= I18N::translate('Settings for remote download/upload') ?></h3>			
+		<?php if ($allow_remote_download OR $allow_remote_upload) : ?>
 			<div class="alert alert-warning">
 				<p><?= I18N::translate('Currently, the download or upload of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload GEDCOM files from/to your webtrees installation.') ?></p>
 			</div>
 		<?php endif ?>
-		<?php if (!$use_hash) : ?>
-			<div class="alert alert-warning">
-				<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
-			</div>  
-		<?php endif ?>
-		<?php $data_folder = str_replace('\\', '/', Registry::filesystem()->dataName()) ?>
-		<?php $root_folder = str_replace('\\', '/', Registry::filesystem()->rootName()) ?>
-		<?php $data_folder_relative = str_replace($root_folder, '', $data_folder) ?>
-
-		<?php if (substr_compare($folder_to_save, $data_folder_relative, 0, strlen($data_folder_relative)) !== 0) : ?>
-			<div class="alert alert-warning">
-				<p>
-					<?= I18N::translate('Currently, the folder to save is not a sub-directory of the webtrees data folder. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to this folder. If you choose a folder outside of the webtrees data folder, the saved GEDCOM file might be unprotected against unauthorized access.' ) ?>
-				</p>
-			</div>  
-		<?php endif ?>
-		<?php if ($secret_key === '') : ?>
-			<div class="alert alert-danger">
-				<p><?= I18N::translate('The authorization key is empty or not available') ?></p>
-			</div>  
-		<?php endif ?>
-
-		<h3><?= I18N::translate('Settings for authorization key') ?></h3>			
+		<fieldset class="mb-3">
+			<div class="row">
+				<legend class="col-form-label col-sm-3">
+					<?= I18N::translate('Allow remote download of GEDCOM files via URL') ?>
+				</legend>
+				<div class="col-sm-9">
+					<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_DOWNLOAD, 'checked' => $allow_remote_download]) ?>
+					<div class="form-text">
+						<?= I18N::translate('By selecting this option, it is possible to activate remote downloads via calling an URL.'); ?>
+					</div>
+				</div>
+			</div>
+		</fieldset>		
+		<fieldset class="mb-3">
+			<div class="row">
+				<legend class="col-form-label col-sm-3">
+					<?= I18N::translate('Allow remote requests via URL to save GEDCOM files to the server') ?>
+				</legend>
+				<div class="col-sm-9">
+					<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_SAVE, 'checked' => $allow_remote_save]) ?>
+					<div class="form-text">
+						<?= I18N::translate('By selecting this option, it is possible to activate remote requests to save GEDCOM files to the server via calling an URL.'); ?>
+					</div>
+				</div>
+			</div>
+		</fieldset>				
+		<fieldset class="mb-3">
+			<div class="row">
+				<legend class="col-form-label col-sm-3">
+					<?= I18N::translate('Allow remote upload of GEDCOM files via URL') ?>
+				</legend>
+				<div class="col-sm-9">
+					<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_UPLOAD, 'checked' => $allow_remote_upload]) ?>
+					<div class="form-text">
+						<?= I18N::translate('By selecting this option, it is possible to activate remote uploads via calling an URL.'); ?>
+					</div>
+				</div>
+			</div>
+		</fieldset>		
+		<h3><?= I18N::translate('Settings for the download/upload folder on the webtrees server') ?></h3>			
 		<div class="row mb-3">
+			<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
+				<?= I18N::translate('Folder name') ?>
+			</label>
+			<div class="col-sm-9 wt-page-options-value">
+				<input class="form-control" id="folder_to_save" name="folder_to_save" type="text" value="<?= e($folder_to_save) ?>">
+			</div>
+
+			<?php $data_folder = str_replace('\\', '/', Registry::filesystem()->dataName()) ?>
+			<?php $root_folder = str_replace('\\', '/', Registry::filesystem()->rootName()) ?>
+			<?php $data_folder_relative = str_replace($root_folder, '', $data_folder) ?>
+
+			<?php if (substr_compare($folder_to_save, $data_folder_relative, 0, strlen($data_folder_relative)) !== 0) : ?>
+				<div class="alert alert-warning">
+					<p>
+						<?= I18N::translate('Currently, the folder to save is not a sub-directory of the webtrees data folder. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to this folder. If you choose a folder outside of the webtrees data folder, the saved GEDCOM file might be unprotected against unauthorized access.' ) ?>
+					</p>
+				</div>  
+			<?php endif ?>				
+
+			<div class="form-text col-sm-9 offset-sm-3">
+				<?= I18N::translate('Folder within the webtrees root path, where GEDCOM exports are saved. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to the data folder. The current settings (Control panel / Website preferences) for the webtrees root and data folder are:'); ?> 
+				<br>
+				<b><?= I18N::translate('webtrees root folder') ?>: </b>
+				<?= Registry::filesystem()->rootName() ?>
+				<br>
+				<b><?= I18N::translate('webtrees data folder') ?>: </b>
+				<?= Registry::filesystem()->dataName() ?>
+				<br>
+				<b><?= I18N::translate('webtrees data folder (relative path)') ?>: </b>
+				<?= $data_folder_relative ?>
+				<br>		
+				<b><?= I18N::translate('webtrees data folder (setting in the control panel)') ?>: </b>
+				<?= Site::getPreference('INDEX_DIRECTORY') ?>
+			</div>			
+		</div>
+
+		<h3><?= I18N::translate('Settings for the authorization key') ?></h3>			
+		<div class="row mb-3">
+			<?php if (!$use_hash) : ?>
+				<div class="alert alert-warning">
+					<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
+				</div>  
+			<?php endif ?>
+			<?php if (($allow_remote_download OR $allow_remote_save OR $allow_remote_upload) && $secret_key === '') : ?>
+				<div class="alert alert-danger">
+					<p><?= I18N::translate('One of the options remote download/save/upload is activated and the authorization key is empty or not available') ?></p>
+				</div>  
+			<?php endif ?>		
 			<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
 				<?= I18N::translate('Current authorization key') ?>
 			</label>
@@ -112,55 +182,6 @@ use Fisharebest\Webtrees\View;
 				</div>
 			</div>
 		</fieldset>				
-		<fieldset class="mb-3">
-			<div class="row">
-				<legend class="col-form-label col-sm-3">
-					<?= I18N::translate('Allow download of GEDCOM files') ?>
-				</legend>
-				<div class="col-sm-9">
-					<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_DOWNLOAD, 'checked' => $allow_download]) ?>
-					<div class="form-text">
-						<?= I18N::translate('By un-selecting this option, it is possible to de-activate downloads. This setting might be used if GEDCOM files shall only be saved on the server, but not downloaded.'); ?>
-					</div>
-				</div>
-			</div>
-		</fieldset>		
-		<fieldset class="mb-3">
-			<div class="row">
-				<legend class="col-form-label col-sm-3">
-					<?= I18N::translate('Allow upload of GEDCOM files') ?>
-				</legend>
-				<div class="col-sm-9">
-					<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_UPLOAD, 'checked' => $allow_upload]) ?>
-					<div class="form-text">
-						<?= I18N::translate('By un-selecting this option, it is possible to de-activate uploads.'); ?>
-					</div>
-				</div>
-			</div>
-		</fieldset>		
-		<div class="row mb-3">
-			<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
-				<?= I18N::translate('Folder name') ?>
-			</label>
-			<div class="col-sm-9 wt-page-options-value">
-				<input class="form-control" id="folder_to_save" name="folder_to_save" type="text" value="<?= e($folder_to_save) ?>">
-			</div>
-			<div class="form-text col-sm-9 offset-sm-3">
-				<?= I18N::translate('Folder within the webtrees root path, where GEDCOM exports are saved. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to the data folder. The current settings (Control panel / Website preferences) for the webtrees root and data folder are:'); ?> 
-				<br>
-				<b><?= I18N::translate('webtrees root folder') ?>: </b>
-				<?= Registry::filesystem()->rootName() ?>
-				<br>
-				<b><?= I18N::translate('webtrees data folder') ?>: </b>
-				<?= Registry::filesystem()->dataName() ?>
-				<br>
-				<b><?= I18N::translate('webtrees data folder (relative path)') ?>: </b>
-				<?= $data_folder_relative ?>
-				<br>		
-				<b><?= I18N::translate('webtrees data folder (setting in the control panel)') ?>: </b>
-				<?= Site::getPreference('INDEX_DIRECTORY') ?>
-			</div>			
-		</div>
 
 		<h3><?= I18N::translate('Default settings for downloads/uploads') ?></h3>		
 		<p><?= I18N::translate('These default settings are used if no specific parameter values are provided within the URL. By specifying the default values, the URLs to be called for a download can be simplified. If the default values shall be used for a download, it is sufficient to only provide the "key" parameter (authorization key) in the URL. Please note that the default settings can only be used after saving at least once (i.e. by pressing the "Save" button).') ?></p>	
@@ -359,8 +380,7 @@ use Fisharebest\Webtrees\View;
 	<div class="row mb-3">
 		<div class="col">
 			<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-					'key'                 => 'control_panel',
-					'control_panel_token' => md5($secret_key . Session::getCsrfToken()),
+					'key'                 => $control_panel_secret_key . Session::getCsrfToken(),
 					])) ?>">
 				<?= csrf_field() ?>
 				<button type="submit" class="btn btn-secondary">
@@ -370,18 +390,15 @@ use Fisharebest\Webtrees\View;
 			</form>
 		</div>
 		<div class="col">
-			<?php if ($allow_upload) : ?>
-				<form method="post" action="<?= e(route(RemoteImportGedcomAction::class, [
-						'key'                 => 'control_panel',
-						'control_panel_token' => md5($secret_key . Session::getCsrfToken()),
-						])) ?>">
-					<?= csrf_field() ?>
-					<button type="submit" class="btn btn-secondary" data-wt-confirm="<?= I18N::translate('Are you absolutely sure you want to upload/import the selected file into the specified tree? Please be aware that uploading/importing the file will delete all existing data in the tree without possibility to recover! Therefore, also consider to backup the webtrees database before uploading new files.') ?>">
-						<?= view('icons/save') ?>
-						<?= I18N::translate('Upload') ?>
-					</button>
-				</form>
-			<?php endif ?>
+			<form method="post" action="<?= e(route(RemoteImportGedcomAction::class, [
+					'key'                 => $control_panel_secret_key . Session::getCsrfToken(),
+					])) ?>">
+				<?= csrf_field() ?>
+				<button type="submit" class="btn btn-secondary" data-wt-confirm="<?= I18N::translate('Are you absolutely sure you want to upload/import the selected file into the specified tree? Please be aware that uploading/importing the file will delete all existing data in the tree without possibility to recover! Therefore, also consider to backup the webtrees database before uploading new files.') ?>">
+					<?= view('icons/save') ?>
+					<?= I18N::translate('Upload') ?>
+				</button>
+			</form>
 		</div>
 	</div>
 </div>

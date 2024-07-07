@@ -82,16 +82,13 @@ class RemoteImportGedcomAction implements RequestHandlerInterface
         $control_panel_token  = Validator::queryParams($request)->string('control_panel_token', '');        
 
         //Check preferences if upload is allowed
-        $allow_upload         = boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_ALLOW_UPLOAD, '0'));
+        $allow_remote_upload         = boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_ALLOW_REMOTE_UPLOAD, '0'));
 
-        //An upload from the control panel is allowed if a valid token is submitted
-        $allow_control_panel_upload = $control_panel_token === md5($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
+        //An upload from control panel is recognized if a certain key is received
+        $called_from_control_panel = $key === $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_CONTROL_PANEL_SECRET_KEY, '') . Session::getCsrfToken();
         
-		//Load secret key from preferences
-        $secret_key           = $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_SECRET_KEY, ''); 
-
         //If upload from control panel
-        if ($control_panel_token !== '') {
+        if ($called_from_control_panel) {
             $tree_name        = Validator::queryParams($request)->string('tree', $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, ''));
             $file_name        = Validator::queryParams($request)->string('file',  $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_FiLE_NAME, ''));
         }
@@ -107,27 +104,37 @@ class RemoteImportGedcomAction implements RequestHandlerInterface
             }    
         }
 
-        //Error if upload is not allowed
-        if (!$allow_upload) {
-			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('Upload is not enabled. Please check the module settings in the control panel.'));
-		}
-        //Error if key is empty
-        if ($key === '') {
-			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
-		}
-		//Error if secret key is empty
-        elseif ($secret_key === '') {
-			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $download_gedcom_with_URL->title());
-		}
-		//Error if no hashing and key is not valid
-        elseif (!boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_USE_HASH, '0')) && !$allow_control_panel_upload && ($key !== $secret_key)) {
-			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
-		}
-		//Error if hashing and key does not fit to hash
-        elseif (boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_USE_HASH, '0')) && !$allow_control_panel_upload && (!password_verify($key, $secret_key))) {
-			return $download_gedcom_with_URL->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
-		}
-   
+
+        //If not called from control panel (i.e. called remotely via URL), evaluate key
+        if (!$called_from_control_panel) {
+
+            //Error if upload is not allowed
+            if (!$allow_remote_upload) {
+                return $download_gedcom_with_URL->showErrorMessage( I18N::translate('Remote requests to upload GEDCOM files via URL are not allowed.') .  ' '. 
+                                                                    I18N::translate('Please check the module settings in the control panel.'));
+            }
+
+            //Load secret key from preferences
+            $secret_key = $download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_SECRET_KEY, ''); 
+        
+            //Error if key is empty
+            if ($key === '') {
+                return $download_gedcom_with_URL->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
+            }
+            //Error if secret key is empty
+            elseif ($secret_key === '') {
+                return $download_gedcom_with_URL->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $download_gedcom_with_URL->title());
+            }
+            //Error if no hashing and key is not valid
+            elseif (!boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_USE_HASH, '0')) && ($key !== $secret_key)) {
+                return $download_gedcom_with_URL->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
+            }
+            //Error if hashing and key does not fit to hash
+            elseif (boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_USE_HASH, '0')) && (!password_verify($key, $secret_key))) {
+                return $download_gedcom_with_URL->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
+            }
+        }
+
         //Get tree and error if tree name is not valid
         try {
             $tree = $this->tree_service->all()[$tree_name];

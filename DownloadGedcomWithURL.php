@@ -62,6 +62,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\UnableToWriteFile;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -108,9 +109,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //Prefences, Settings
 	public const PREF_MODULE_VERSION = 'module_version';
 	public const PREF_SECRET_KEY = "secret_key";
+	public const PREF_CONTROL_PANEL_SECRET_KEY = "control_panel_secret_key";
 	public const PREF_USE_HASH = "use_hash";
-	public const PREF_ALLOW_DOWNLOAD = "allow_download";
-	public const PREF_ALLOW_UPLOAD = "allow_upload";
+	public const PREF_ALLOW_REMOTE_DOWNLOAD = "allow_remote_download";
+	public const PREF_ALLOW_REMOTE_UPLOAD = "allow_remote_upload";
+	public const PREF_ALLOW_REMOTE_SAVE = "allow_remote_save";
 	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
     public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
     public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
@@ -152,6 +155,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function boot(): void
     {
+        //Generate random key if control panel key is empty
+        if ($this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '') === '') {
+
+            $this->setPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, Str::random(32));
+        }
+
         $router = Registry::routeFactory()->routeMap();            
 
         //Register a route for downloads
@@ -365,9 +374,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 'tree_list'                           => $tree_list,
                 'export_filter_list'                  => $this->getExportFilterList(),
 				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
+				self::PREF_CONTROL_PANEL_SECRET_KEY   => $this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, ''),
 				self::PREF_USE_HASH                   => boolval($this->getPreference(self::PREF_USE_HASH, '1')),
-				self::PREF_ALLOW_DOWNLOAD             => boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1')),
-				self::PREF_ALLOW_UPLOAD               => boolval($this->getPreference(self::PREF_ALLOW_UPLOAD, '0')),
+				self::PREF_ALLOW_REMOTE_DOWNLOAD      => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, '0')),
+				self::PREF_ALLOW_REMOTE_UPLOAD        => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_UPLOAD, '0')),
+				self::PREF_ALLOW_REMOTE_SAVE          => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_SAVE, '0')),
 				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, $data_folder_relative),
                 self::PREF_DEFAULT_TREE_NAME          => $this->getPreference(self::PREF_DEFAULT_TREE_NAME, array_key_first($tree_list)),
                 self::PREF_DEFAULT_FiLE_NAME          => $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, array_key_first($tree_list)),
@@ -397,8 +408,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         $save                       = Validator::parsedBody($request)->string('save', '');
         $use_hash                   = Validator::parsedBody($request)->boolean(self::PREF_USE_HASH, false);
-        $allow_download             = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_DOWNLOAD, false);
-        $allow_upload               = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_UPLOAD, false);
+        $allow_remote_download      = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_DOWNLOAD, false);
+        $allow_remote_upload        = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_UPLOAD, false);
+        $allow_remote_save          = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_SAVE, false);
         $new_secret_key             = Validator::parsedBody($request)->string('new_secret_key', '');
         $folder_to_save             = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY'));
         $default_tree_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TREE_NAME, '');
@@ -480,9 +492,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $this->setPreference(self::PREF_USE_HASH, $use_hash ? '1' : '0');
             }
 
-            //Save settings
-			$this->setPreference(self::PREF_ALLOW_DOWNLOAD, $allow_download ? '1' : '0');
-			$this->setPreference(self::PREF_ALLOW_UPLOAD, $allow_upload ? '1' : '0');
+            //Save settingss
+			$this->setPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, $allow_remote_download ? '1' : '0');
+			$this->setPreference(self::PREF_ALLOW_REMOTE_UPLOAD, $allow_remote_upload ? '1' : '0');
+			$this->setPreference(self::PREF_ALLOW_REMOTE_SAVE, $allow_remote_save ? '1' : '0');
 
             //Save default settings to preferences
             $this->setPreference(self::PREF_DEFAULT_TREE_NAME, $default_tree_name);
@@ -793,15 +806,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
 	/**
+     * Execute the request (from URL or from control panel) to download or save 
+     * 
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
      */	
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-		//Load secret key from preferences
-        $secret_key = $this->getPreference(self::PREF_SECRET_KEY, ''); 
-   		
 		$key                 = Validator::queryParams($request)->string('key', '');
 		$tree_name           = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
         $file_name           = Validator::queryParams($request)->string('file',  $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, ''));
@@ -814,14 +826,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$export_filter1      = Validator::queryParams($request)->string('export_filter1', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER1, ''));
 		$export_filter2      = Validator::queryParams($request)->string('export_filter2', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2, ''));
 		$export_filter3      = Validator::queryParams($request)->string('export_filter3', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER3, ''));
-		$control_panel_token = Validator::queryParams($request)->string('control_panel_token', '');
 
         if ($file_name === '') {
             $file_name = $tree_name;
         }
 
-        //A download from the control panel is allowed if a valid token is submitted
-        $allow_control_panel_download =  $control_panel_token === md5($this->getPreference(self::PREF_SECRET_KEY, '') . Session::getCsrfToken()) ?? true;
+        //A download from control panel is recognized if a certain key is received
+        $called_from_control_panel = $key === $this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '') . Session::getCsrfToken();
+
+        //Check update of module version
+        $this->checkModuleVersionUpdate();
 
         //Add namespace to export filters
         $export_filter_class_name1 = __NAMESPACE__ . '\\' . $export_filter1;
@@ -837,178 +851,188 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }    
         }
 
-		//Check update of module version
-        $this->checkModuleVersionUpdate();
-		
-        //Error if key is empty
-        if ($key === '') {
-			$response = $this->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
-		}
-		//Error if secret key is empty
-        elseif ($secret_key === '') {
-			$response = $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $this->title());
-		}
-		//Error if no hashing and key is not valid
-        elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_control_panel_download && ($key !== $secret_key)) {
-			$response = $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
-		}
-		//Error if hashing and key does not fit to hash
-        elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) && !$allow_control_panel_download && (!password_verify($key, $secret_key))) {
-			$response = $this->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
-		}
+        //If not called from control panel (i.e. called remotely via URL), evaluate key
+        if (!$called_from_control_panel) {
+
+            //Load secret key from preferences
+            $secret_key = $this->getPreference(self::PREF_SECRET_KEY, '');
+
+            //Error if key is empty
+            if ($key === '') {
+                return $this->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
+            }
+            //Error if secret key is empty
+            elseif ($secret_key === '') {
+                return $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $this->title());
+            }
+            //Error if no hashing and key is not valid
+            elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && ($key !== $secret_key)) {
+                return $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
+            }
+            //Error if hashing and key does not fit to hash
+            elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) && (!password_verify($key, $secret_key))) {
+                return $this->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
+            }     
+        }
+
         //Error if tree name is not valid
-        elseif (!$this->isValidTree($tree_name)) {
-			$response = $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
+        if (!$this->isValidTree($tree_name)) {
+			return $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
 		}
         //Error if privacy level is not valid
 		elseif (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {
-			$response = $this->showErrorMessage(I18N::translate('Privacy level not accepted') . ': ' . $privacy);
+			return $this->showErrorMessage(I18N::translate('Privacy level not accepted') . ': ' . $privacy);
         }
         //Error if export format is not valid
         elseif (!in_array($format, ['gedcom', 'zip', 'zipmedia', 'gedzip'])) {
-			$response = $this->showErrorMessage(I18N::translate('Export format not accepted') . ': ' . $format);
+			return $this->showErrorMessage(I18N::translate('Export format not accepted') . ': ' . $format);
         }       
         //Error if encoding is not valid
 		elseif (!in_array($encoding, [UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
-			$response = $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
+			return $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
         }       
         //Error action is not valid
         elseif (!in_array($action, ['download', 'save', 'both'])) {
-			$response = $this->showErrorMessage(I18N::translate('Action not accepted') . ': ' . $action);
+			return $this->showErrorMessage(I18N::translate('Action not accepted') . ': ' . $action);
         }  
 		//Error if line ending is not valid
         elseif (!in_array($line_endings, ['CRLF', 'LF'])) {
-			$response = $this->showErrorMessage(I18N::translate('Line endings not accepted') . ': ' . $line_endings);
+			return $this->showErrorMessage(I18N::translate('Line endings not accepted') . ': ' . $line_endings);
         } 
 		//Error if time_stamp is not valid
         elseif (!in_array($time_stamp, ['prefix', 'postfix', 'none'])) {
-			$response = $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
+			return $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
 		//Error if export filter 1 is not found
         elseif ($export_filter1 !== '' && (!class_exists($export_filter_class_name1) OR !(new $export_filter_class_name1() instanceof ExportFilterInterface))) {
-            $response = $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter1);
+            return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter1);
         }
 		//Error if export filter 2 is not found
         elseif ($export_filter2 !== '' && (!class_exists($export_filter_class_name2) OR !(new $export_filter_class_name2() instanceof ExportFilterInterface))) {
-            $response = $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter2);
+            return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter2);
         }
 		//Error if export filter 3 is not found
         elseif ($export_filter3 !== '' && (!class_exists($export_filter_class_name3) OR !(new $export_filter_class_name3() instanceof ExportFilterInterface))) {
-            $response = $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter3);
+            return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter3);
         }
 		//Error if export filter 1 validation fails
         elseif ($export_filter1 !== '' && ($error = $this->validateExportFilter($export_filter1)) !== '') {
-            $response = $this->showErrorMessage($error);
+            return $this->showErrorMessage($error);
         }
 		//Error if export filter 2 validation fails
         elseif ($export_filter2 !== '' && ($error = $this->validateExportFilter($export_filter2)) !== '') {
-            $response = $this->showErrorMessage($error);
+            return $this->showErrorMessage($error);
         }
 		//Error if export filter 3 validation fails
         elseif ($export_filter3 !== '' && ($error = $this->validateExportFilter($export_filter3)) !== '') {
-            $response = $this->showErrorMessage($error);
+            return $this->showErrorMessage($error);
         }
 
-		//If no errors, start the core activities of the module
-		else {
+		//If no errors, execute the core activities of the module
+        //Get instance of export filter 1
+        if ($export_filter1 !== '') {
+            $export_filter_instance1 = new $export_filter_class_name1();
+        }
+        else {
+            $export_filter_instance1 = null;
+        }
 
-            //Get instance of export filter 1
-            if ($export_filter1 !== '') {
-                $export_filter_instance1 = new $export_filter_class_name1();
-            }
-            else {
-                $export_filter_instance1 = null;
-            }
+        //Get instance of export filter 2
+        if ($export_filter2 !== '') {
+            $export_filter_instance2 = new $export_filter_class_name2();
+        }
+        else {
+            $export_filter_instance2 = null;
+        }
 
-            //Get instance of export filter 2
-            if ($export_filter2 !== '') {
-                $export_filter_instance2 = new $export_filter_class_name2();
-            }
-            else {
-                $export_filter_instance2 = null;
-            }
+        //Get instance of export filter 3
+        if ($export_filter3 !== '') {
+            $export_filter_instance3 = new $export_filter_class_name3();
+        }
+        else {
+            $export_filter_instance3 = null;
+        }
 
-            //Get instance of export filter 3
-            if ($export_filter3 !== '') {
-                $export_filter_instance3 = new $export_filter_class_name3();
-            }
-            else {
-                $export_filter_instance3 = null;
-            }
+        //Create set of export filters
+        $filters_to_add = [
+            $export_filter_instance1,
+            $export_filter_instance2,
+            $export_filter_instance3,
+        ];
 
-            //Create set of export filters
-            $filters_to_add = [
-                $export_filter_instance1,
-                $export_filter_instance2,
-                $export_filter_instance3,
-            ];
+        //Add export filters, which might also add further exports filters from their include lists
+        try{
+            $export_filter_set = $this->addIncludedExportFilters([], $filters_to_add, []);
+        }
+        catch (DownloadGedcomWithUrlException $ex) {
 
-            //Add export filters, which might also add further exports filters from their include lists
-            try{
-                $export_filter_set = $this->addIncludedExportFilters([], $filters_to_add, []);
-            }
-            catch (DownloadGedcomWithUrlException $ex) {
+            return $this->showErrorMessage($ex->getMessage());
+        }
 
-                return $this->showErrorMessage($ex->getMessage());
-            }
+        //Add time stamp to file name if requested
+        if($time_stamp === 'prefix'){
+            $file_name = date('Y-m-d_H-i-s_') . $file_name;
+        } 
+        elseif($time_stamp === 'postfix'){
+            $file_name .= date('_Y-m-d_H-i-s');
+        }
 
-			//Add time stamp to file name if requested
-			if($time_stamp === 'prefix'){
-				$file_name = date('Y-m-d_H-i-s_') . $file_name;
-			} 
-			elseif($time_stamp === 'postfix'){
-				$file_name .= date('_Y-m-d_H-i-s');
-			}
+        //If saving to server is requested and allowed
+        if ($action === 'save' OR $action === 'both') {
 
-			//If save or both
-			if (($action === 'save') or ($action === 'both')) {
+            if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_SAVE, '1'))) {
 
-				$root_filesystem = Registry::filesystem()->root();
-				$export_file_name = $file_name;
+                $root_filesystem = Registry::filesystem()->root();
+                $export_file_name = $file_name;
 
-				// Force a ".ged" suffix
-				if (strtolower(pathinfo($export_file_name, PATHINFO_EXTENSION)) !== 'ged') {
-					$export_file_name .= '.ged';
-				}
+                // Force a ".ged" suffix
+                if (strtolower(pathinfo($export_file_name, PATHINFO_EXTENSION)) !== 'ged') {
+                    $export_file_name .= '.ged';
+                }
 
-				//Get folder from settings
-				$folder_to_save = $this->getPreference(self::PREF_FOLDER_TO_SAVE, '');
+                //Get folder from settings
+                $folder_to_save = $this->getPreference(self::PREF_FOLDER_TO_SAVE, '');
 
-				//Create response
+                //Create response
                 try {
                     $resource = $this->gedcom_export_service->filteredSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_set);
                     $root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
                     fclose($resource);
-
                     $response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
+                } 
+                catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
 
-                } catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
-
-                    if ($ex instanceof DownloadGedcomWithUrlException) $response = $this->showErrorMessage($ex->getMessage());
-                    else $response = $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
+                    if ($ex instanceof DownloadGedcomWithUrlException) {
+                        return $this->showErrorMessage($ex->getMessage());
+                    }
+                    else {
+                        return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
+                    }
                 }
-			}
-
-			//If download or both
-			if (($action === 'download') OR ($action === 'both')){
-				
-				//if download is allowed
-				if(boolval($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '1'))) {
-
-                    try {
-                        //Create response
-                        $response = $this->gedcom_export_service->filteredDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_set);
-                    }
-                    catch (DownloadGedcomWithUrlException $ex) {
-
-                        $response = $this->showErrorMessage($ex->getMessage());
-                    }
             }
-				else {
-					$response = $this->showErrorMessage(I18N::translate('Download is not allowed. Please change the module settings to allow downloads.'));
-				}
-			}
-		}
-		return $response;		
+            else {
+                return $this->showErrorMessage( I18N::translate('Remote URL requests to save GEDCOM files to the server are not allowed.') . ' ' . 
+                                                I18N::translate('Please check the module settings in the control panel.'));
+            }
+        }
+
+        //If download is requested and allowed
+        if ($action === 'download' OR $action === 'both') {
+            if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, '1'))) {
+                try {
+                    //Create response
+                    $response = $this->gedcom_export_service->filteredDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_set);
+                }
+                catch (DownloadGedcomWithUrlException $ex) {
+                    return $this->showErrorMessage($ex->getMessage());
+                }
+            }
+            else {
+                return $this->showErrorMessage( I18N::translate('Remote URL requests to download GEDCOM files are not allowed.') . ' ' . 
+                                                I18N::translate('Please check the module settings in the control panel.'));
+            }
+        }
+
+        return $response;
     }
 }

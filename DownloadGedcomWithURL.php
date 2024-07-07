@@ -136,6 +136,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //Maximum level of includes for export filters
     private const MAXIMUM_FILTER_INCLUDE_LEVELS = 10;
 
+    //Old preferences    
+	public const PREF_ALLOW_DOWNLOAD = "allow_download";
+
 
    /**
      * DownloadGedcomWithURL constructor.
@@ -527,21 +530,39 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function checkModuleVersionUpdate(): void
     {
- 		//If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1) 
+        $sucessful_update = false;
+
+        //If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1) 
         if($this->getPreference(self::PREF_SECRET_KEY, '') !== '' && $this->getPreference(self::PREF_USE_HASH, '') === '') {
 
 			//Set secret key hashing to false
 			$this->setPreference(self::PREF_USE_HASH, '0');
 
-            //Show flash message for update of preferences
-            $message = I18N::translate('The preferences for the custom module "%s" were sucessfully updated to the new module version %s.', $this->title(), self::CUSTOM_VERSION);
-            FlashMessages::addMessage($message, 'success');	
+            $sucessful_update = true;
 		}
+
+        //Update remote preferences
+        if ($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '') !== '') {
+
+            //Migrate old preference value to new preferences
+            $this->setPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, self::PREF_ALLOW_DOWNLOAD);
+            $this->setPreference(self::PREF_ALLOW_REMOTE_SAVE, self::PREF_ALLOW_DOWNLOAD);
+
+            //Delete old preference value, i.e. set to ''
+            $this->setPreference(self::PREF_ALLOW_DOWNLOAD, '');      
+            $sucessful_update = true;      
+        }
 
         //Update custom module version if changed
         if($this->getPreference(self::PREF_MODULE_VERSION, '') !== self::CUSTOM_VERSION) {
             $this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
         }
+
+        if ($sucessful_update) {
+            //Show flash message for update of preferences
+            $message = I18N::translate('The preferences for the custom module "%s" were sucessfully updated to the new module version %s.', $this->title(), self::CUSTOM_VERSION);
+            FlashMessages::addMessage($message, 'success');	
+        }        
     }
 
     /**

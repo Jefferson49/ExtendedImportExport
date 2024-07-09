@@ -21,7 +21,8 @@ class ReduceMinimalIndividualsExportFilter extends AbstractExportFilter implemen
         //                             ["search pattern" => "replace pattern"],
 
         'INDI'                      => ["0 @([A-Za-z0-9:_.-]{1,20})@ INDI\n1 SEX [\w]\n$" => "0 @$1@ INDI\n",
-                                        "0 @([A-Za-z0-9:_.-]{1,20})@ INDI\n1 (FAMC|FAMS) @[A-Za-z0-9:_.-]{1,20}@\n1 SEX [\w]\n$" => "0 @$1@ INDI\n",],
+                                        "0 @([A-Za-z0-9:_.-]{1,20})@ INDI\n1 (FAMC|FAMS) @[A-Za-z0-9:_.-]{1,20}@\n1 SEX [\w]\n$" => "0 @$1@ INDI\n",
+                                        "0 @([A-Za-z0-9:_.-]{1,20})@ INDI\n1 (FAMC|FAMS) @[A-Za-z0-9:_.-]{1,20}@\n1 (FAMC|FAMS) @[A-Za-z0-9:_.-]{1,20}@\n1 SEX [\w]\n$" => "0 @$1@ INDI\n",],
         
         //Export other structures      
         '*'                         => [],        

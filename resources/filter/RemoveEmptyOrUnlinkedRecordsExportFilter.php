@@ -20,6 +20,15 @@ class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter impl
         'HEAD:*'                    => [],
         
         //Remove references to empty records
+        'FAM:CHIL'                  => ["PHP_function" => "customConvert"],
+        'FAM:HUSB'                  => ["PHP_function" => "customConvert"],
+        'FAM:WIFE'                  => ["PHP_function" => "customConvert"],
+        'FAM:*:_ASSO'               => ["PHP_function" => "customConvert"],        
+
+        'INDI:ALIA'                 => ["PHP_function" => "customConvert"],
+        'INDI:ASSO'                 => ["PHP_function" => "customConvert"],
+        'INDI:*:_ASSO'              => ["PHP_function" => "customConvert"],
+        
         '*:NOTE'                    => ["PHP_function" => "customConvert"],
         '*:*:NOTE'                  => ["PHP_function" => "customConvert"],
         '*:*:*:NOTE'                => ["PHP_function" => "customConvert"],
@@ -37,6 +46,7 @@ class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter impl
 
         //Remove empty records or records without references
         'FAM'                       => ["PHP_function" => "customConvert"],
+        'INDI'                      => ["PHP_function" => "customConvert"],
         'NOTE'                      => ["PHP_function" => "customConvert"],
         'OBJE'                      => ["PHP_function" => "customConvert"],
         'REPO'                      => ["PHP_function" => "customConvert"],
@@ -75,27 +85,35 @@ class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter impl
     */
     public function removeEmptyOrUnlinkedRecords(string $pattern, string $gedcom, array &$records_list, bool $remove_empty, bool $remove_unlinked): string {
 
-        //Empty records and records without a reference
-        if (in_array($pattern, ['FAM', 'NOTE', 'OBJE', 'REPO', 'SOUR', '_LOC'])) {
+        //Remove empty records and records without a reference
+        preg_match('/0 @(' . Gedcom::REGEX_XREF  . ')@ (' . Gedcom::REGEX_TAG  . ')/', $gedcom, $match);
+        $xref = $match[1] ?? '';
 
-            preg_match('/0 @(' . Gedcom::REGEX_XREF  . ')@ (' . Gedcom::REGEX_TAG  . ')/', $gedcom, $match);
-            $xref = $match[1] ?? '';
-
-            if ($xref !== '') {
+        if ($xref !== '') {
 
             $record = $records_list[$xref];
 
             //If record is empty or not referenced by other records, remove Gedcom
-            if (     ($remove_empty    &&  $record->isEmpty()) 
-                OR ($remove_unlinked && !$record->isReferenced())) {
+            //However, we keep INDI records, which are not referenced
+            if (   ($remove_empty && $record->isEmpty()) 
+                OR ($pattern !== 'INDI' && $remove_unlinked && !$record->isReferenced())) {
 
                 $gedcom = '';
             }   
-            }
         }
 
         //Remove references, which point to empty records
         elseif (in_array($pattern, [
+
+            'FAM:CHIL',
+            'FAM:HUSB',
+            'FAM:WIFE',
+            'FAM:*:_ASSO',          
+
+            'INDI:ALIA',
+            'INDI:ASSO',
+            'INDI:*:_ASSO',
+
             '*:NOTE',
             '*:*:NOTE',
             '*:*:*NOTE',
@@ -105,23 +123,23 @@ class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter impl
             '*:*:*:OBJE',
             '*:*:*:*:OBJE',
 
-            '*:REPO',         
+            '*:REPO',     
 
             '*:SOUR',
             '*:*:SOUR',
-            '*:*:*:SOUR',         
+            '*:*:*:SOUR',            
             ])) {
 
-            preg_match('/[\d] [\w]{4} @(' . Gedcom::REGEX_XREF . ')@/', $gedcom, $match);
+            preg_match('/[\d] [\w]{4,5} @(' . Gedcom::REGEX_XREF . ')@/', $gedcom, $match);
             $xref = $match[1] ?? '';
         
             if ($xref !== '') {
 
-            //If referenced record is empty, remove Gedcom
-            if ($records_list[$xref]->isEmpty()) {
+                //If referenced record is empty, remove Gedcom
+                if ($records_list[$xref]->isEmpty()) {
 
-                $gedcom = '';
-            }
+                    $gedcom = '';
+                }
             }
         }
 

@@ -78,8 +78,7 @@ class RemoteImportGedcomAction implements RequestHandlerInterface
         $download_gedcom_with_URL = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
         $encoding = 'UTF-8';
 
-        $key                  = Validator::queryParams($request)->string('key', ''); 
-        $control_panel_token  = Validator::queryParams($request)->string('control_panel_token', '');        
+        $key                  = Validator::queryParams($request)->string('key', '');
 
         //Check preferences if upload is allowed
         $allow_remote_upload         = boolval($download_gedcom_with_URL->getPreference(DownloadGedcomWithURL::PREF_ALLOW_REMOTE_UPLOAD, '0'));

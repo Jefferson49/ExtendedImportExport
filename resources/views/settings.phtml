@@ -212,42 +212,6 @@ use Fisharebest\Webtrees\View;
 				<?= I18N::translate('Specifiy the default file name. This file name will be chosen if no specific file name is provided as URL parameter.'); ?>
 			</div>
 		</div>
-		<div class="row mb-3">
-			<label class="col-form-label col-sm-3">
-			<?= I18N::translate('Default export filter %s', '1') ?>
-			</label>
-			<div class="col-sm-3">
-				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER1, 'selected' => $default_export_filter1, 
-					'options' => $export_filter_list]) ?>
-			</div>
-			<div class="form-text col-sm-9 offset-sm-3">
-				<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '1'); ?>
-			</div>
-		</div>		
-		<div class="row mb-3">
-			<label class="col-form-label col-sm-3">
-				<?= I18N::translate('Default export filter %s', '2') ?>
-			</label>
-			<div class="col-sm-3">
-				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER2, 'selected' => $default_export_filter2, 
-					'options' => $export_filter_list]) ?>
-			</div>
-			<div class="form-text col-sm-9 offset-sm-3">
-			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '2'); ?>
-			</div>
-		</div>		
-		<div class="row mb-3">
-			<label class="col-form-label col-sm-3">
-				<?= I18N::translate('Default export filter %s', '3') ?>
-			</label>
-			<div class="col-sm-3">
-				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER3, 'selected' => $default_export_filter3, 
-					'options' => $export_filter_list]) ?>
-			</div>
-			<div class="form-text col-sm-9 offset-sm-3">
-			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>
-			</div>
-		</div>		
 		<fieldset class="mb-3">
 			<div class="row">
 				<legend class="col-form-label col-sm-3">
@@ -365,6 +329,44 @@ use Fisharebest\Webtrees\View;
 				</div>
 			</div>
 		</fieldset>	
+
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+			<?= I18N::translate('Default export filter %s', '1') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER1, 'selected' => $default_export_filter1, 
+					'options' => $export_filter_list]) ?>
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+				<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '1'); ?>
+			</div>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Default export filter %s', '2') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER2, 'selected' => $default_export_filter2, 
+					'options' => $export_filter_list]) ?>
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '2'); ?>
+			</div>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Default export filter %s', '3') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER3, 'selected' => $default_export_filter3, 
+					'options' => $export_filter_list]) ?>
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>
+			</div>
+		</div>		
+
 		<div class="col">
 			<p></p>
 			<button type="submit" class="btn btn-primary">
@@ -374,7 +376,7 @@ use Fisharebest\Webtrees\View;
 			<div class="form-text">
 				<?= I18N::translate('In order to use changed settings for a download/upload, the settings need to be saved first.')?>
 			</div>
-		</div>
+		</div>		
 	</div>
 </form>	
 

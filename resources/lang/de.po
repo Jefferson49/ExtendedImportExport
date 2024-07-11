@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-07-07 17:26+0200\n"
-"PO-Revision-Date: 2024-07-07 17:27+0200\n"
+"POT-Creation-Date: 2024-07-11 07:09+0200\n"
+"PO-Revision-Date: 2024-07-11 07:10+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -212,7 +212,7 @@ msgstr "Zeile"
 msgid "error message"
 msgstr "Fehlermeldung"
 
-#: DownloadGedcomWithURL.php:730 resources/views/settings.phtml:259
+#: DownloadGedcomWithURL.php:730 resources/views/settings.phtml:267
 msgid "None"
 msgstr ""
 
@@ -244,7 +244,7 @@ msgid "Please check the include structure of the selected export filters."
 msgstr ""
 "Bitte überprüfen Sie die Include-Struktur des ausgewählten Export-Filters."
 
-#: DownloadGedcomWithURL.php:883 RemoteImportGedcomAction.php:122
+#: DownloadGedcomWithURL.php:883 RemoteImportGedcomAction.php:121
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -253,7 +253,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:887 RemoteImportGedcomAction.php:126
+#: DownloadGedcomWithURL.php:887 RemoteImportGedcomAction.php:125
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -262,11 +262,11 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:891 RemoteImportGedcomAction.php:130
+#: DownloadGedcomWithURL.php:891 RemoteImportGedcomAction.php:129
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:895 RemoteImportGedcomAction.php:134
+#: DownloadGedcomWithURL.php:895 RemoteImportGedcomAction.php:133
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
@@ -317,7 +317,7 @@ msgstr ""
 "sind nicht erlaubt."
 
 #: DownloadGedcomWithURL.php:1036 DownloadGedcomWithURL.php:1053
-#: RemoteImportGedcomAction.php:114
+#: RemoteImportGedcomAction.php:113
 msgid "Please check the module settings in the control panel."
 msgstr "Bitte überprüfen Sie die Modul-Einstellungen in der Verwaltung."
 
@@ -340,26 +340,26 @@ msgstr ""
 "Schwerwiegender Fehler: Zu viele Iterationen beim Entfernen von leeren oder "
 "unverknüpften Datensätzen."
 
-#: RemoteImportGedcomAction.php:102
+#: RemoteImportGedcomAction.php:101
 msgid "One of the parameters \"file, tree\" is missing in the called URL."
 msgstr "Einer der Parameter \"file, tree\" fehlt in der aufgerufenen URL."
 
-#: RemoteImportGedcomAction.php:113
+#: RemoteImportGedcomAction.php:112
 msgid "Remote requests to upload GEDCOM files via URL are not allowed."
 msgstr ""
 "Remote-Aufrufe, um GEDCOM-Dateien mittels URL hochzuladen sind nicht erlaubt."
 
-#: RemoteImportGedcomAction.php:144
+#: RemoteImportGedcomAction.php:143
 #, php-format
 msgid "Could not find the requested tree \"%s\"."
 msgstr "Der angeforderte Stammbaum \"%s\" konnte nicht gefunden werden."
 
-#: RemoteImportGedcomAction.php:157
+#: RemoteImportGedcomAction.php:156
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Die Datei \"%s\" konnte nicht eingelesen werden."
 
-#: RemoteImportGedcomAction.php:166
+#: RemoteImportGedcomAction.php:165
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr ""
@@ -373,11 +373,11 @@ msgstr "Benutzerdefiniertes Modul"
 msgid "Control panel"
 msgstr "Verwaltung"
 
-#: resources/views/settings.phtml:57
+#: resources/views/settings.phtml:62
 msgid "Settings for remote download/upload"
 msgstr "Einstellungen für Remote-Download/-Upload"
 
-#: resources/views/settings.phtml:60
+#: resources/views/settings.phtml:68
 msgid ""
 "Currently, remote downloading, uploading or saving of GEDCOM files is "
 "allowed. Please note that everyone with access to the authorization key, can "
@@ -388,16 +388,16 @@ msgstr ""
 "Schlüssel GEDCOM-Dateien von/zu Ihrer webtrees-Installation herunterladen/"
 "hochladen/speichern kann."
 
-#: resources/views/settings.phtml:66
+#: resources/views/settings.phtml:74
 msgid "Allow remote download of GEDCOM files via URL"
 msgstr "Remote-Download von GEDCOM-Dateien mittels URL zulassen"
 
-#: resources/views/settings.phtml:69 resources/views/settings.phtml:82
-#: resources/views/settings.phtml:95
+#: resources/views/settings.phtml:77 resources/views/settings.phtml:90
+#: resources/views/settings.phtml:103
 msgid "Allow"
 msgstr "Erlauben"
 
-#: resources/views/settings.phtml:71
+#: resources/views/settings.phtml:79
 msgid ""
 "By selecting this option, it is possible to activate remote downloads via "
 "calling an URL."
@@ -405,13 +405,13 @@ msgstr ""
 "Durch Auswahl dieser Option, ist es möglich, Remote-Downloads mittels Aufruf "
 "über URL zu aktivieren."
 
-#: resources/views/settings.phtml:79
+#: resources/views/settings.phtml:87
 msgid "Allow remote requests via URL to save GEDCOM files to the server"
 msgstr ""
 "Remote-Anfragen mittels URL zum Speichern von GEDCOM-Dateien auf dem Server "
 "zulassen"
 
-#: resources/views/settings.phtml:84
+#: resources/views/settings.phtml:92
 msgid ""
 "By selecting this option, it is possible to activate remote requests to save "
 "GEDCOM files to the server via calling an URL."
@@ -419,11 +419,11 @@ msgstr ""
 "Durch Auswahl dieser Option, ist es möglich, Remote-Aufrufe mittels URL zum "
 "Speichern von GEDCOM-Dateien auf den Server zu aktivieren."
 
-#: resources/views/settings.phtml:92
+#: resources/views/settings.phtml:100
 msgid "Allow remote upload of GEDCOM files via URL"
 msgstr "Remote-Upload von GEDCOM-Dateien mittels URL zulassen"
 
-#: resources/views/settings.phtml:97
+#: resources/views/settings.phtml:105
 msgid ""
 "By selecting this option, it is possible to activate remote uploads via "
 "calling an URL."
@@ -431,15 +431,15 @@ msgstr ""
 "Durch Auswahl dieser Option, ist es möglich, Remote-Uploads mittels Aufruf "
 "über URL zu aktivieren."
 
-#: resources/views/settings.phtml:102
+#: resources/views/settings.phtml:120
 msgid "Settings for the download/upload folder on the webtrees server"
 msgstr "Einstellungen für den Download-/Upload-Ordner auf dem webtrees-Server"
 
-#: resources/views/settings.phtml:105
+#: resources/views/settings.phtml:126
 msgid "Folder name"
 msgstr "Ordnername"
 
-#: resources/views/settings.phtml:118
+#: resources/views/settings.phtml:139
 msgid ""
 "Currently, the folder to save is not a sub-directory of the webtrees data "
 "folder. It is highly recommended to use the webtrees data folder or a sub-"
@@ -455,7 +455,7 @@ msgstr ""
 "wählen, sind abgespeicherte GEDCOM-Dateien möglicherweise nicht gegen "
 "unauthorisierten Zugriff geschützt."
 
-#: resources/views/settings.phtml:124
+#: resources/views/settings.phtml:145
 msgid ""
 "Folder within the webtrees root path, where GEDCOM exports are saved. It is "
 "highly recommended to use the webtrees data folder or a sub-directory, "
@@ -470,27 +470,27 @@ msgstr ""
 "Einstellungen (Verwaltung / Einstellungen Webseite) für das Webtrees "
 "Installations- und Daten-Verzeichnis sind:"
 
-#: resources/views/settings.phtml:126
+#: resources/views/settings.phtml:147
 msgid "webtrees root folder"
 msgstr "Webtrees Installations-Verzeichnis"
 
-#: resources/views/settings.phtml:129
+#: resources/views/settings.phtml:150
 msgid "webtrees data folder"
 msgstr "Webtrees Daten-Verzeichnis"
 
-#: resources/views/settings.phtml:132
+#: resources/views/settings.phtml:153
 msgid "webtrees data folder (relative path)"
 msgstr "Webtrees Daten-Verzeichnis (relativer Pfad)"
 
-#: resources/views/settings.phtml:135
+#: resources/views/settings.phtml:156
 msgid "webtrees data folder (setting in the control panel)"
 msgstr "Webtrees Daten-Verzeichnis (Einstellung in der Verwaltung)"
 
-#: resources/views/settings.phtml:141
+#: resources/views/settings.phtml:171
 msgid "Settings for the authorization key"
 msgstr "Einstellungen für den Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:145
+#: resources/views/settings.phtml:178
 msgid ""
 "Currently, the authorization key is not encrypted. This option is less "
 "secure and should only be used in local environments with limited users. "
@@ -501,7 +501,7 @@ msgstr ""
 "begrenzten Benutzern verwendet werden. Andernfalls, aktivieren sie bitte die "
 "Verschlüsselung des Autorisierungs-Schlüssels."
 
-#: resources/views/settings.phtml:150
+#: resources/views/settings.phtml:183
 msgid ""
 "One of the options remote download/save/upload is activated and the "
 "authorization key is empty or not available"
@@ -509,11 +509,11 @@ msgstr ""
 "Eine der Optionen Remote-Download/-Save/-Upload ist aktiviert und der "
 "Autorisierungs-Schlüssel ist leer oder nicht verfügbar"
 
-#: resources/views/settings.phtml:154
+#: resources/views/settings.phtml:187
 msgid "Current authorization key"
 msgstr "Aktueller Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:157
+#: resources/views/settings.phtml:190
 msgid ""
 "The authorization key cannot be shown, because encryption is activated. If "
 "you forgot the key, you have to create a new key."
@@ -522,19 +522,19 @@ msgstr ""
 "Verschlüsselung aktiviert ist. Wenn Sie den Schlüssel vergessen haben, "
 "müssen Sie einen neuen erzeugen."
 
-#: resources/views/settings.phtml:167
+#: resources/views/settings.phtml:200
 msgid "New authorization key"
 msgstr "Neuer Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:176
+#: resources/views/settings.phtml:209
 msgid "Activate encryption of the authorization key"
 msgstr "Verschlüsselung des Autorisierungs-Schlüssel aktivieren"
 
-#: resources/views/settings.phtml:179
+#: resources/views/settings.phtml:212
 msgid "Activate"
 msgstr "Aktivieren"
 
-#: resources/views/settings.phtml:181
+#: resources/views/settings.phtml:214
 msgid ""
 "The encryption of the authorization key is more secure, because the "
 "authorization key is not visible to anyone and also encrypted in the "
@@ -547,11 +547,11 @@ msgstr ""
 "Fall nicht mehr lesbar (z.B. für andere Administratoren) und kann auch nicht "
 "mehr wiederhergestellt werden, wenn er vergessen wurde."
 
-#: resources/views/settings.phtml:188
+#: resources/views/settings.phtml:230
 msgid "Default settings for downloads/uploads"
 msgstr "Voreinstellungen zum Herunterladen/Hochladen"
 
-#: resources/views/settings.phtml:189
+#: resources/views/settings.phtml:234
 msgid ""
 "These default settings are used if no specific parameter values are provided "
 "within the URL. By specifying the default values, the URLs to be called for "
@@ -570,7 +570,7 @@ msgstr ""
 "zumindest einmal gespeichert wurden (d.h. durch Drücken des \"Speichern\" "
 "Buttons)."
 
-#: resources/views/settings.phtml:190
+#: resources/views/settings.phtml:235
 msgid ""
 "Any parameters provided in the URL have a higher priority and will overrule "
 "the default settings."
@@ -578,11 +578,11 @@ msgstr ""
 "Parameter, welche über die URL übergeben werden, haben eine höhere Priorität "
 "und überstimmen die Voreinstellungen."
 
-#: resources/views/settings.phtml:194
+#: resources/views/settings.phtml:238
 msgid "Default tree"
 msgstr "Voreinstellung Stammbaum"
 
-#: resources/views/settings.phtml:201
+#: resources/views/settings.phtml:245
 msgid ""
 "Select the default tree. This tree will be chosen if no specific tree is "
 "provided as URL parameter."
@@ -590,11 +590,11 @@ msgstr ""
 "Geben Sie die Voreinstellung für den Stammbaum an. Dieser Stammbaum wird "
 "genutzt, wenn kein spezifischer Stammbaum in der URL angegeben wird."
 
-#: resources/views/settings.phtml:206
+#: resources/views/settings.phtml:250
 msgid "Default file name"
 msgstr "Voreinstellung Dateiname"
 
-#: resources/views/settings.phtml:212
+#: resources/views/settings.phtml:256
 msgid ""
 "Specifiy the default file name. This file name will be chosen if no specific "
 "file name is provided as URL parameter."
@@ -602,39 +602,23 @@ msgstr ""
 "Geben Sie die Voreinstellung für den Dateinamen an. Dieser Dateinamen wird "
 "genutzt, wenn kein spezifischer Dateinamen über die URL bereitgestellt wird."
 
-#: resources/views/settings.phtml:217 resources/views/settings.phtml:229
-#: resources/views/settings.phtml:241
-#, php-format
-msgid "Default export filter %s"
-msgstr "Voreinstellung für Export-Filter %s"
-
-#: resources/views/settings.phtml:224 resources/views/settings.phtml:236
-#: resources/views/settings.phtml:248
-#, php-format
-msgid ""
-"Select a default filter for export filter %s. This filter will be chosen if "
-"no specific filter is provided as URL parameter."
-msgstr ""
-"Geben Sie die Voreinstellung für den Export-Filter %s an. Dieser Filter wird "
-"genutzt, wenn kein spezifischer Filter als URL-Parameter übergeben wird."
-
-#: resources/views/settings.phtml:254
+#: resources/views/settings.phtml:262
 msgid "Default privacy level"
 msgstr "Voreinstellung für Datenschutzeinstellung"
 
-#: resources/views/settings.phtml:260
+#: resources/views/settings.phtml:268
 msgid "Manager"
 msgstr ""
 
-#: resources/views/settings.phtml:261
+#: resources/views/settings.phtml:269
 msgid "Member"
 msgstr ""
 
-#: resources/views/settings.phtml:262
+#: resources/views/settings.phtml:270
 msgid "Visitor"
 msgstr ""
 
-#: resources/views/settings.phtml:266
+#: resources/views/settings.phtml:274
 msgid ""
 "Select the default privacy level. This privacy level will be chosen if no "
 "specific privacy level is provided as URL parameter."
@@ -643,15 +627,15 @@ msgstr ""
 "Einstellung wird genutzt, wenn keine spezifische Einstellung in der URL "
 "angegeben wird."
 
-#: resources/views/settings.phtml:274
+#: resources/views/settings.phtml:282
 msgid "Default export format"
 msgstr "Voreinstellung Exportformat"
 
-#: resources/views/settings.phtml:281 resources/views/settings.phtml:282
+#: resources/views/settings.phtml:289 resources/views/settings.phtml:290
 msgid "includes media files"
 msgstr "enthält Mediendateien"
 
-#: resources/views/settings.phtml:286 resources/views/settings.phtml:307
+#: resources/views/settings.phtml:294 resources/views/settings.phtml:315
 msgid ""
 "Select the default export format. This export format will be chosen if no "
 "specific export format is provided as URL parameter."
@@ -659,15 +643,15 @@ msgstr ""
 "Geben Sie die Voreinstellung für das Exportformat an. Dieses Exportformat "
 "wird genutzt, wenn kein spezifisches Exportformat in der URL angegeben wird."
 
-#: resources/views/settings.phtml:294
+#: resources/views/settings.phtml:302
 msgid "Default encoding"
 msgstr "Voreinstellung Zeichencodierung"
 
-#: resources/views/settings.phtml:315
+#: resources/views/settings.phtml:323
 msgid "Default ending"
 msgstr "Voreinstellung Zeilenenden"
 
-#: resources/views/settings.phtml:325
+#: resources/views/settings.phtml:333
 msgid ""
 "Select the default ending. This ending will be chosen if no specific ending "
 "is provided as URL parameter."
@@ -676,23 +660,23 @@ msgstr ""
 "werden genutzt, wenn keine spezifischen Zeilenenden in der URL angegeben "
 "werden.."
 
-#: resources/views/settings.phtml:333
+#: resources/views/settings.phtml:341
 msgid "Default action"
 msgstr "Voreinstellung Aktion"
 
-#: resources/views/settings.phtml:338 resources/views/settings.phtml:390
+#: resources/views/settings.phtml:346 resources/views/settings.phtml:451
 msgid "Download"
 msgstr ""
 
-#: resources/views/settings.phtml:339 resources/views/settings.phtml:372
+#: resources/views/settings.phtml:347 resources/views/settings.phtml:433
 msgid "Save"
 msgstr ""
 
-#: resources/views/settings.phtml:340
+#: resources/views/settings.phtml:348
 msgid "Both, i.e. download and save in parallel"
 msgstr "Beides, d.h. Herunterladen und gleichzeitig Speichern"
 
-#: resources/views/settings.phtml:344
+#: resources/views/settings.phtml:352
 msgid ""
 "Select the default action. This action will be chosen if no specific action "
 "is provided as URL parameter. If \"both\" is chosen, the file is downloaded "
@@ -701,23 +685,23 @@ msgstr ""
 "Geben Sie die Voreinstellung für die Aktion an. Diese Aktion wird "
 "durchgeführt, wenn keine spezifische Aktion in der URL angegeben wird."
 
-#: resources/views/settings.phtml:352
+#: resources/views/settings.phtml:360
 msgid "Default time stamp"
 msgstr "Voreinstellung für Zeitstempel"
 
-#: resources/views/settings.phtml:357
+#: resources/views/settings.phtml:365
 msgid "No time stamp"
 msgstr "Kein Zeitstempel"
 
-#: resources/views/settings.phtml:358
+#: resources/views/settings.phtml:366
 msgid "Prefix time stamp"
 msgstr "Prefix Zeitstempel"
 
-#: resources/views/settings.phtml:359
+#: resources/views/settings.phtml:367
 msgid "Postfix time stamp"
 msgstr "Postfix Zeitstempel"
 
-#: resources/views/settings.phtml:363
+#: resources/views/settings.phtml:371
 msgid ""
 "Select the default time stamp. This time stamp will be chosen if no specific "
 "time stamp is provided as URL parameter. If \"none\" is chosen, no time "
@@ -726,7 +710,27 @@ msgstr ""
 "Geben Sie die Voreinstellung für den Zeitstempel an. Diese Einstellung wird "
 "genutzt, wenn keine spezifische Einstellung in der URL angegeben wird."
 
-#: resources/views/settings.phtml:375
+#: resources/views/settings.phtml:386
+msgid "Settings for export filters"
+msgstr "Einstellungen für Export-Filter"
+
+#: resources/views/settings.phtml:392 resources/views/settings.phtml:404
+#: resources/views/settings.phtml:416
+#, php-format
+msgid "Default export filter %s"
+msgstr "Voreinstellung für Export-Filter %s"
+
+#: resources/views/settings.phtml:399 resources/views/settings.phtml:411
+#: resources/views/settings.phtml:423
+#, php-format
+msgid ""
+"Select a default filter for export filter %s. This filter will be chosen if "
+"no specific filter is provided as URL parameter."
+msgstr ""
+"Geben Sie die Voreinstellung für den Export-Filter %s an. Dieser Filter wird "
+"genutzt, wenn kein spezifischer Filter als URL-Parameter übergeben wird."
+
+#: resources/views/settings.phtml:436
 msgid ""
 "In order to use changed settings for a download/upload, the settings need to "
 "be saved first."
@@ -734,7 +738,7 @@ msgstr ""
 "Um geänderte Einstellungen beim \"Herunterladen\"/\"Hochladen\" zu nutzen, "
 "müssen die Einstellungen zunächst gespeichert werden."
 
-#: resources/views/settings.phtml:399
+#: resources/views/settings.phtml:460
 msgid ""
 "Are you absolutely sure you want to upload/import the selected file into the "
 "specified tree? Please be aware that uploading/importing the file will "
@@ -749,7 +753,7 @@ msgstr ""
 "können. Daher sollte vor dem Hochladen neuer Dateien auch ein Backup der "
 "webtrees-Datenbank in Betracht gezogen werden."
 
-#: resources/views/settings.phtml:401
+#: resources/views/settings.phtml:462
 msgid "Upload"
 msgstr "Hochladen"
 

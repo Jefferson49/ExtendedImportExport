@@ -51,7 +51,7 @@ use Fisharebest\Webtrees\View;
 <form method="post">
 	<?= csrf_field() ?>
 	<input type="hidden" name="save" id="save" value="1">
-		<div class="h3 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-remote" aria-controls="id-remote" aria-expanded="false">
+		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-common" aria-controls="id-common" aria-expanded="false">
 			<span class="chart-expand">
 				<?= view('icons/expand') ?>
 			</span>
@@ -59,10 +59,10 @@ use Fisharebest\Webtrees\View;
 				<?= view('icons/collapse') ?>
 			</span>
 			<span>
-				<?= I18N::translate('Settings for remote download/upload') ?>	
+				<?= I18N::translate('Settings for Remote Download/Upload') ?>	
 			</span>
 		</div>
-		<div id="id-remote" class="collapse">	
+		<div id="id-common" class="collapse">	
 			<?php if ($allow_remote_download OR $allow_remote_upload) : ?>
 				<div class="alert alert-warning">
 					<p><?= I18N::translate('Currently, remote downloading, uploading or saving of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation.') ?></p>
@@ -109,7 +109,7 @@ use Fisharebest\Webtrees\View;
 			</fieldset>		
 		</div>
 
-		<div class="h3 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-folder" aria-controls="id-folder" aria-expanded="false">
+		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-common" aria-controls="id-common" aria-expanded="false">
 			<span class="chart-expand">
 				<?= view('icons/expand') ?>
 			</span>
@@ -117,10 +117,10 @@ use Fisharebest\Webtrees\View;
 				<?= view('icons/collapse') ?>
 			</span>
 			<span>
-				<?= I18N::translate('Settings for the download/upload folder on the webtrees server') ?>	
+				<?= I18N::translate('Settings for the Download/Upload Folder on the webtrees Server') ?>	
 			</span>
 		</div>
-		<div id="id-folder" class="collapse">	
+		<div id="id-common" class="collapse">	
 			<div class="row mb-3">
 				<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
 					<?= I18N::translate('Folder name') ?>
@@ -160,7 +160,7 @@ use Fisharebest\Webtrees\View;
 		</div>
 
 		<?php if ($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $secret_key !== '') : ?>
-			<div class="h3 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-key" aria-controls="id-key" aria-expanded="false">
+			<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-common" aria-controls="id-common" aria-expanded="false">
 				<span class="chart-expand">
 					<?= view('icons/expand') ?>
 				</span>
@@ -168,10 +168,10 @@ use Fisharebest\Webtrees\View;
 					<?= view('icons/collapse') ?>
 				</span>
 				<span>
-					<?= I18N::translate('Settings for the authorization key') ?>
+					<?= I18N::translate('Settings for the Authorization Key') ?>
 				</span>
 			</div>
-			<div id="id-key" class="collapse">				
+			<div id="id-common" class="collapse">				
 				<div class="row mb-3">
 					<?php if ($secret_key !== '' && !$use_hash) : ?>
 						<div class="alert alert-warning">
@@ -219,7 +219,7 @@ use Fisharebest\Webtrees\View;
 			</div>		
 		<?php endif ?>	
 
-		<div class="h3 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-settings" aria-controls="id-settings" aria-expanded="false">
+		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-common" aria-controls="id-common" aria-expanded="false">
 			<span class="chart-expand">
 				<?= view('icons/expand') ?>
 			</span>
@@ -227,35 +227,12 @@ use Fisharebest\Webtrees\View;
 				<?= view('icons/collapse') ?>
 			</span>
 			<span>
-				<?= I18N::translate('Default settings for downloads/uploads') ?>
+				<?= I18N::translate('Default Settings for Downloads/Uploads') ?>
 			</span>
 		</div>
-		<div id="id-settings" class="collapse">		
-			<p><?= I18N::translate('These default settings are used if no specific parameter values are provided within the URL. By specifying the default values, the URLs to be called for a download can be simplified. If the default values shall be used for a download, it is sufficient to only provide the "key" parameter (authorization key) in the URL. Please note that the default settings can only be used after saving at least once (i.e. by pressing the "Save" button).') ?></p>	
-			<p><?= I18N::translate('Any parameters provided in the URL have a higher priority and will overrule the default settings.') ?></p>
-			<div class="row mb-3">
-				<label class="col-form-label col-sm-3">
-					<?= I18N::translate('Default tree') ?>
-				</label>
-				<div class="col-sm-3">
-					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, 'selected' => $default_tree_name, 
-						'options' => $tree_list]) ?>
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-					<?= I18N::translate('Select the default tree. This tree will be chosen if no specific tree is provided as URL parameter.'); ?>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<label class="col-sm-3 col-form-label wt-page-options-label" for="default_file_name">
-					<?= I18N::translate('Default file name') ?>
-				</label>
-				<div class="col-sm-9 wt-page-options-value">
-					<input class="form-control" id="default_file_name" name="default_file_name" type="text" value="<?= e($default_file_name) ?>">
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-					<?= I18N::translate('Specifiy the default file name. This file name will be chosen if no specific file name is provided as URL parameter.'); ?>
-				</div>
-			</div>
+		<div id="id-common" class="collapse">		
+			<p><?= I18N::translate('These settings are used if the download button is pressed or as default values for remote downloads if certain parameter values are not provided within the URL. By specifying the default values, the URLs can be simplified. In the most extreme case, it is sufficient to provide the authorization key parameter only.') ?></p>	
+			<p><?= I18N::translate('Any parameters provided in the URL of a remote download have a higher priority and will overrule the default settings.') ?></p>
 			<fieldset class="mb-3">
 				<div class="row">
 					<legend class="col-form-label col-sm-3">
@@ -375,55 +352,88 @@ use Fisharebest\Webtrees\View;
 			</fieldset>	
 		</div>
 
-		<div class="h3 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-filters" aria-controls="id-filters" aria-expanded="true">
+		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-tree" aria-controls="id-tree" aria-expanded="false">
 			<span class="chart-expand">
-				<?= view('icons/expand') ?>
+				<?= view('icons/pin') ?>
 			</span>
 			<span class="chart-collapse">
-				<?= view('icons/collapse') ?>
+				<?= view('icons/pin') ?>
 			</span>
 			<span>
-			<?= I18N::translate('Settings for export filters') ?>
+				<?= I18N::translate('Settings for Tree and File Name') ?>
 			</span>
 		</div>
-		<div id="id-filters" class="collapse show">
-			<div class="row mb-3">
-				<label class="col-form-label col-sm-3">
-				<?= I18N::translate('Default export filter %s', '1') ?>
-				</label>
-				<div class="col-sm-3">
-					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER1, 'selected' => $default_export_filter1, 
-						'options' => $export_filter_list]) ?>
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-					<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '1'); ?>
-				</div>
-			</div>		
-			<div class="row mb-3">
-				<label class="col-form-label col-sm-3">
-					<?= I18N::translate('Default export filter %s', '2') ?>
-				</label>
-				<div class="col-sm-3">
-					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER2, 'selected' => $default_export_filter2, 
-						'options' => $export_filter_list]) ?>
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-				<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '2'); ?>
-				</div>
-			</div>		
-			<div class="row mb-3">
-				<label class="col-form-label col-sm-3">
-					<?= I18N::translate('Default export filter %s', '3') ?>
-				</label>
-				<div class="col-sm-3">
-					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER3, 'selected' => $default_export_filter3, 
-						'options' => $export_filter_list]) ?>
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-				<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>
-				</div>
-			</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Default tree') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, 'selected' => $default_tree_name, 
+					'options' => $tree_list]) ?>
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+				<?= I18N::translate('Select the default tree. This tree will be chosen if no specific tree is provided as URL parameter.'); ?>
+			</div>
 		</div>
+		<div class="row mb-3">
+			<label class="col-sm-3 col-form-label wt-page-options-label" for="default_file_name">
+				<?= I18N::translate('Default file name') ?>
+			</label>
+			<div class="col-sm-9 wt-page-options-value">
+				<input class="form-control" id="default_file_name" name="default_file_name" type="text" value="<?= e($default_file_name) ?>">
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+				<?= I18N::translate('Specifiy the default file name. This file name will be chosen if no specific file name is provided as URL parameter.'); ?>
+			</div>
+		</div>
+
+		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-filters" aria-controls="id-filters" aria-expanded="false">
+			<span class="chart-expand">
+				<?= view('icons/pin') ?>
+			</span>
+			<span class="chart-collapse">
+				<?= view('icons/pin') ?>
+			</span>
+			<span>
+				<?= I18N::translate('Settings for Export Filters') ?>
+			</span>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+			<?= I18N::translate('Default export filter %s', '1') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER1, 'selected' => $default_export_filter1, 
+					'options' => $export_filter_list]) ?>
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+				<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '1'); ?>
+			</div>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Default export filter %s', '2') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER2, 'selected' => $default_export_filter2, 
+					'options' => $export_filter_list]) ?>
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '2'); ?>
+			</div>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Default export filter %s', '3') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER3, 'selected' => $default_export_filter3, 
+					'options' => $export_filter_list]) ?>
+			</div>
+			<div class="form-text col-sm-9 offset-sm-3">
+			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>
+			</div>
+		</div>		
 
 		<div class="row mb-3">
 			<div class="col">

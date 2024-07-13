@@ -45,13 +45,18 @@ use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\FlashMessages;
+use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Individual;
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleConfigInterface;
 use Fisharebest\Webtrees\Module\ModuleConfigTrait;
 use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
+use Fisharebest\Webtrees\Module\ModuleDataFixInterface;
+use Fisharebest\Webtrees\Module\ModuleDataFixTrait;
 use Fisharebest\Webtrees\Registry;
+use Fisharebest\Webtrees\Services\DataFixService;
 use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Tree;
@@ -81,12 +86,23 @@ use function substr;
 class DownloadGedcomWithURL extends AbstractModule implements 
 	ModuleCustomInterface, 
 	ModuleConfigInterface,
-	RequestHandlerInterface 
+	RequestHandlerInterface,
+    ModuleDataFixInterface
 {
     use ModuleCustomTrait;
     use ModuleConfigTrait;
+    use ModuleDataFixTrait;
  
     private GedcomExportFilterService $gedcom_export_service;
+
+    //The data fix service
+    private DataFixService $data_fix_service;
+
+    //A set of patterns for tag combinations, which has already been matched in a data fix
+    private array $matched_pattern_for_tag_combination_in_data_fix;
+
+    //A set of Gedcom filters, which is used in the data fix
+    private array $gedcom_filters_in_data_fix;
 
     private Tree $download_tree;
 
@@ -105,6 +121,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	//Author of custom module
 	public const CUSTOM_AUTHOR = 'Markus Hemprich';
+
+    //Strings cooresponding to variable names
+    public const VAR_GEDOCM_FILTER = 'gedcom_filter';
+    public const VAR_GEDCOM_FILTER_LIST = 'gedcom_filter_list';
+    public const VAR_DATA_FIX_TYPES = 'types';
 
     //Prefences, Settings
 	public const PREF_MODULE_VERSION = 'module_version';
@@ -128,12 +149,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const PREF_DEFAULT_TIME_STAMP = 'default_time_stamp';
     public const PREF_DEFAULT_GEDCOM_VERSION = 'default_gedcom_version';
     public const PREF_DEFAULT_GEDCOM_L_SELECTION = 'default_gedcom_l_selection';
-
+    
 	//Alert tpyes
 	public const ALERT_DANGER = 'alert_danger';
 	public const ALERT_SUCCESS = 'alert_success';
 
-    //Maximum level of includes for export filters
+    //Maximum level of includes for Gedcom filters
     private const MAXIMUM_FILTER_INCLUDE_LEVELS = 10;
 
     //Old preferences    
@@ -147,8 +168,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
 	    $response_factory = app(ResponseFactoryInterface::class);
         $stream_factory = new Psr17Factory();
-
         $this->gedcom_export_service = new GedcomExportFilterService($response_factory, $stream_factory);
+        $this->data_fix_service = New DataFixService();
     }
 
     /**
@@ -158,6 +179,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function boot(): void
     {
+        //Initialize variables
+        $this->matched_pattern_for_tag_combination_in_data_fix = [];
+        $this->gedcom_filters_in_data_fix = [];
+        $this->gedcom_filters_loaded_in_data_fix = false;
+
         //Generate random key if control panel key is empty
         if ($this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '') === '') {
 
@@ -348,10 +374,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
         
         $this->layout = 'layouts/administration';       
 
-        //Load export filters
-        $error = self::loadEportFilterClasses();
-        if ($error !== '') {
-            FlashMessages::addMessage($error, 'danger');
+        //Load Gedcom filters
+        try {
+            self::loadGedcomFilterClasses();
+        }
+        catch (DownloadGedcomWithUrlException $ex) {
+            FlashMessages::addMessage($ex->getMessage(), 'danger');
         }
         
         $tree_list = [];
@@ -361,7 +389,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
         }
 
-        //Check the export filters, which are defined in the prefernces
+        //Check the Gedcom filters, which are defined in the prefernces
         $this->checkFilterPreferences(self::PREF_DEFAULT_EXPORT_FILTER1);
         $this->checkFilterPreferences(self::PREF_DEFAULT_EXPORT_FILTER2);
         $this->checkFilterPreferences(self::PREF_DEFAULT_EXPORT_FILTER3);
@@ -375,7 +403,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             [
                 'title'                               => $this->title(),
                 'tree_list'                           => $tree_list,
-                'export_filter_list'                  => $this->getExportFilterList(),
+                self::VAR_GEDCOM_FILTER_LIST          => $this->getGedcomFilterList(),
 				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
 				self::PREF_CONTROL_PANEL_SECRET_KEY   => $this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, ''),
 				self::PREF_USE_HASH                   => boolval($this->getPreference(self::PREF_USE_HASH, '1')),
@@ -566,40 +594,40 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
     /**
-     * Check if an export filter is available. If not, reset export filter to none
+     * Check if an Gedcom filter is available. If not, reset Gedcom filter to none
      *
-     * @param string          $preference_name     The preference name of an export filter
+     * @param string          $preference_name     The preference name of an Gedcom filter
      * 
-     * @return string                              The class name of the export filter
+     * @return string                              The class name of the Gedcom filter
      */
     private function checkFilterPreferences(string $preference_name): string {
 
-        //Get a list with the class names of all available export filters
-        $export_filter_list = $this->getExportFilterList();
+        //Get a list with the class names of all available Gedcom filters
+        $gedcom_filter_list = $this->getGedcomFilterList();
 
         //Filter name from preferences
-        $export_filter_class_name = $this->getPreference($preference_name);
+        $gedcom_filter_class_name = $this->getPreference($preference_name);
 
-        //If currently selected export filter is not in the available filter list, reset export filter to none
-        if (!array_key_exists($export_filter_class_name, $export_filter_list)) {
+        //If currently selected Gedcom filter is not in the available filter list, reset Gedcom filter to none
+        if (!array_key_exists($gedcom_filter_class_name, $gedcom_filter_list)) {
 
             //Reset preference
             $this->setPreference($preference_name, '');
 
             //Create flash message
-            $message = I18N::translate('The preferences for the default export filter were reset to "none", because the selected export filter %s could not be found', $export_filter_class_name);
+            $message = I18N::translate('The preferences for the default export filter were reset to "none", because the selected export filter %s could not be found', $gedcom_filter_class_name);
             FlashMessages::addMessage($message, 'danger');
 
-            $export_filter_class_name = '';
+            $gedcom_filter_class_name = '';
         }
  
-        //Validate the export filter
-        if ($export_filter_class_name !== '' && ($error = $this->validateExportFilter($export_filter_class_name)) !== '') {
+        //Validate the Gedcom filter
+        if ($gedcom_filter_class_name !== '' && ($error = $this->validateGedcomFilter($gedcom_filter_class_name)) !== '') {
     
             FlashMessages::addMessage($error, 'danger');
         }
         
-        return $export_filter_class_name;
+        return $gedcom_filter_class_name;
     }
 
     /**
@@ -685,13 +713,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	}
 
 	 /**
-     * Load classes for export filters
+     * Load classes for Gedcom filters
      *
      * @return string error message
      */ 
 
-     public static function loadEportFilterClasses(): string {
+     public static function loadGedcomFilterClasses(): string {
 
+        $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
         $filter_files = scandir(dirname(__FILE__) . "/resources/filter/");
 
         $onError = function ($level, $message, $file, $line) {
@@ -701,17 +730,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
         foreach ($filter_files as $file) {
             if (substr_compare($file, '.php', -4, 4) === 0) {
 
-                try {
-                    set_error_handler($onError);
-                    require __DIR__ . '/resources/filter/' . $file;
+                $class_name = str_replace('.php', '', $file);
+
+                if (!class_exists($name_space . $class_name)) {
+                    try {
+                        set_error_handler($onError);
+                        require __DIR__ . '/resources/filter/' . $file;
+                    }
+                    catch (Throwable $th) {
+                        throw new DownloadGedcomWithUrlException(I18N::translate('A compilation error was detected in the following export filter') . ': ' . 
+                        __DIR__ . '/resources/filter/' . $file . ', ' . I18N::translate('line') . ': ' . $th-> getLine() . ', ' . I18N::translate('error message') . ': ' . $th->getMessage());
+                    }
+                    finally {
+                        restore_error_handler();
+                    }        
                 }
-                catch (Throwable $th) {
-                    return I18N::translate('A compilation error was detected in the following export filter') . ': ' . 
-                    __DIR__ . '/resources/filter/' . $file . ', ' . I18N::translate('line') . ': ' . $th-> getLine() . ', ' . I18N::translate('error message') . ': ' . $th->getMessage();
-                }
-                finally {
-                    restore_error_handler();
-                }    
             }
         };
 
@@ -719,14 +752,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
 	 /**
-     * Get all available export filters
+     * Get all available Gedcom filters
      *
-     * @return array<string>  An array with the class names all available export filters
+     * @return array<string>  An array with the class names all available Gedcom filters
      */ 
 
-     private function getExportFilterList(): array {
+     private function getGedcomFilterList(): array {
 
-        $export_filter_list =[
+        $gedcom_filter_list =[
             ''             => I18N::translate('None'),
         ];
 
@@ -740,34 +773,36 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     $className = str_replace($name_space, '', $className);
 
-                    if ($className !== 'AbstractExportFilter') $export_filter_list[$className] = $className;
+                    if ($className !== 'AbstractExportFilter') $gedcom_filter_list[$className] = $className;
                 }
             }
         }
 
-        return $export_filter_list;
+        return $gedcom_filter_list;
     }
 
 	/**
-     * Validate export filter
+     * Validate Gedcom filter
      *
+     * @param $gedcom_filter_name
+     * 
      * @return string error message
      */ 
 
-    private function validateExportFilter($export_filter_name): string {
+    private function validateGedcomFilter($gedcom_filter_name): string {
 
-        //Check if export filter class is valid
-        $export_filter_class_name = __NAMESPACE__ . '\\' . $export_filter_name;
+        //Check if Gedcom filter class is valid
+        $gedcom_filter_class_name = __NAMESPACE__ . '\\' . $gedcom_filter_name;
 
-        if (!class_exists($export_filter_class_name) OR !(new $export_filter_class_name() instanceof ExportFilterInterface)) {
+        if (!class_exists($gedcom_filter_class_name) OR !(new $gedcom_filter_class_name() instanceof ExportFilterInterface)) {
 
-            return I18N::translate('The export filter was not found') . ': ' . $export_filter_name;
+            return I18N::translate('The export filter was not found') . ': ' . $gedcom_filter_name;
         }
 
-        $export_filter_instance = new $export_filter_class_name();
+        $gedcom_filter_instance = new $gedcom_filter_class_name();
 
-        //Validate the content of the export filter
-        $error = $export_filter_instance->validate();
+        //Validate the content of the Gedcom filter
+        $error = $gedcom_filter_instance->validate();
 
         if ($error !== '') {
             return $error;
@@ -777,33 +812,33 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
     /**
-     * Check whether further filters are included in a list of export filters and add to export filter list accordingly
+     * Check whether further filters are included in a list of Gedcom filters and add to Gedcom filter list accordingly
      *
-     * @param array $export_filter_set   A set of (already inlcuded) export filters
-     * @param array $additional_filters  A set of export filters to be checked and included
-     * @param array $include_structure   A hierarchical list of included export filters to check loops etc.
+     * @param array $gedcom_filter_set   A set of (already inlcuded) Gedcom filters
+     * @param array $additional_filters  A set of Gedcom filters to be checked and included
+     * @param array $include_structure   A hierarchical list of included Gedcom filters to check loops etc.
      * 
      * @return array 
      */ 
 
-    private function addIncludedExportFilters(array $export_filter_set, array $additional_filters, array $include_structure): array {
+    private function addIncludedGedcomFilters(array $gedcom_filter_set, array $additional_filters, array $include_structure): array {
 
         while (sizeof($additional_filters) > 0) {
 
-            //Get first item of export filter set and remove it from additional filter list
-            $export_filter = array_shift($additional_filters);
+            //Get first item of Gedcom filter set and remove it from additional filter list
+            $gedcom_filter = array_shift($additional_filters);
 
             //Add export filter to include structure
-            $include_structure[] = $export_filter;
+            $include_structure[] = $gedcom_filter;
 
             //Error if size of include structure exceeds maximum level
             if (sizeof($include_structure) > self::MAXIMUM_FILTER_INCLUDE_LEVELS) {
 
                 $error = I18N::translate('The include hierarchy for export filters exceeds the maximum level of %s includes.', (string) self::MAXIMUM_FILTER_INCLUDE_LEVELS);
 
-                if (in_array($export_filter, $include_structure)) {
+                if (in_array($gedcom_filter, $include_structure)) {
 
-                    $error .= ' ' . I18N::translate('The following export filter might cause a loop in the include structure, because it was detected more than once in the include hierarchy') . ': ' . (new ReflectionClass($export_filter))->getShortName();
+                    $error .= ' ' . I18N::translate('The following export filter might cause a loop in the include structure, because it was detected more than once in the include hierarchy') . ': ' . (new ReflectionClass($gedcom_filter))->getShortName();
                 }
                 else {
                     $error .= ' ' . I18N::translate('Please check the include structure of the selected export filters.');
@@ -812,20 +847,223 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 throw new DownloadGedcomWithUrlException($error);
             }
             
-            if ($export_filter !== null) {
+            if ($gedcom_filter !== null) {
 
                 //Add include filters before
-                $export_filter_set = array_merge($export_filter_set, $this->addIncludedExportFilters([], $export_filter->getIncludedFiltersBefore(), $include_structure));
+                $gedcom_filter_set = array_merge($gedcom_filter_set, $this->addIncludedGedcomFilters([], $gedcom_filter->getIncludedFiltersBefore(), $include_structure));
                 //Add filter
-                array_push($export_filter_set, $export_filter);
+                array_push($gedcom_filter_set, $gedcom_filter);
                 //Add include filters after
-                $export_filter_set = array_merge($export_filter_set, $this->addIncludedExportFilters([], $export_filter->getIncludedFiltersAfter(), $include_structure));
+                $gedcom_filter_set = array_merge($gedcom_filter_set, $this->addIncludedGedcomFilters([], $gedcom_filter->getIncludedFiltersAfter(), $include_structure));
             }
         }    
 
-        return $export_filter_set;
+        return $gedcom_filter_set;
     }
 
+    /**
+     * Get the namespace for the views
+     *
+     * @return string
+     */
+    public static function viewsNamespace(): string
+    {
+        return '_' . basename(__DIR__) . '_';
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param Tree $tree
+     *
+     * @return string
+     *
+     * @see \Fisharebest\Webtrees\Module\ModuleDataFixInterface::fixOptions()
+     */
+    public function fixOptions(Tree $tree): string
+    {   
+        //Reset matched patterns at the start of the data fix 
+        $this->matched_pattern_for_tag_combination_in_data_fix = [];
+
+        //Load export filters
+        try {
+            self::loadGedcomFilterClasses();
+        }
+        catch (DownloadGedcomWithUrlException $ex) {
+            FlashMessages::addMessage($ex->getMessage(), 'danger');
+        }
+
+        return view(
+            self::viewsNamespace() . '::options',
+            [
+                self::VAR_GEDCOM_FILTER_LIST    => $this->getGedcomFilterList(),
+                self::VAR_GEDOCM_FILTER . '1'   => '',
+                self::VAR_GEDOCM_FILTER . '2'   => '',
+                self::VAR_GEDOCM_FILTER . '3'   => '',
+                self::VAR_DATA_FIX_TYPES        => [Individual::RECORD_TYPE => I18N::translate('Individual')],
+            ]
+        );
+    }
+
+    /**
+     * A list of all records that need examining.  This may include records
+     * that do not need updating, if we can't detect this quickly using SQL.
+     *
+     * @param Tree                 $tree
+     * @param array<string,string> $params
+     *
+     * @return Collection<int,string>|null
+     */
+    protected function individualsToFix(Tree $tree, array $params): ?Collection
+    {
+        return $this->individualsToFixQuery($tree, $params)
+            ->pluck('i_id');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param GedcomRecord $record
+     * @param array        $params
+     *
+     * @return bool
+     *
+     * @see \Fisharebest\Webtrees\Module\ModuleDataFixInterface::doesRecordNeedUpdate()
+     */
+    public function doesRecordNeedUpdate(GedcomRecord $record, array $params): bool
+    {
+        //Get filters, if not yet available
+        if ($this->gedcom_filters_in_data_fix === []) {
+            $this->gedcom_filters_in_data_fix = $this->getGedcomFiltersFromParams($params);
+        }
+
+        if ($this->gedcom_filters_in_data_fix === []) return false;
+
+        $gedcom = $record->gedcom();
+        $filtered_records = $this->gedcom_export_service->applyExportFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $record->tree());
+
+        $old = $gedcom . "\n";
+        $new = $filtered_records[0] ?? $gedcom;
+
+        return $new !== $old;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param GedcomRecord $record
+     * @param array        $params
+     *
+     * @return string
+     *
+     * @see \Fisharebest\Webtrees\Module\ModuleDataFixInterface::previewUpdate()
+     */
+    public function previewUpdate(GedcomRecord $record, array $params): string
+    {
+        $gedcom = $record->gedcom();
+        $filtered_records = $this->gedcom_export_service->applyExportFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $record->tree());
+
+        $old = $gedcom;
+        $new = $filtered_records[0] ?? '';
+
+        return $this->data_fix_service->gedcomDiff($record->tree(), $old, $new);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param GedcomRecord $record
+     * @param array        $params
+     *
+     * @return void
+     *
+     * @see \Fisharebest\Webtrees\Module\ModuleDataFixInterface::updateRecord()
+     */
+    public function updateRecord(GedcomRecord $record, array $params): void
+    {
+        $gedcom = $record->gedcom();
+        $filtered_records = $this->gedcom_export_service->applyExportFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $record->tree());
+
+        $new = $filtered_records[0] ?? $gedcom;  
+        $record->updateRecord($new, false);
+
+        return;
+    }    
+
+	/**
+     * Get Gedcom filters from data fix params
+     * 
+     * @param array $params                    Params of a data fix          
+     * 
+     * @return array<ExportFilterInterface>    A set of Gedcom filters
+     */	
+    public function getGedcomFiltersFromParams(array $params): array    
+    {
+        $gedcom_filters = [];
+
+        foreach ($params as $key => $gedcom_filter_name) {
+
+            if (strpos($key, self::VAR_GEDOCM_FILTER) !== false && $gedcom_filter_name !== '') {
+                $gedcom_filters[] = $gedcom_filter_name;
+            }
+        }
+
+        $gedcom_filter1 = $gedcom_filters[0] ?? '';
+        $gedcom_filter2 = $gedcom_filters[1] ?? '';
+        $gedcom_filter3 = $gedcom_filters[2] ?? '';
+
+        //Load Gedcom filters
+        try {
+            self::loadGedcomFilterClasses();
+        }
+        catch (DownloadGedcomWithUrlException $ex) {
+            FlashMessages::addMessage($ex->getMessage(), 'danger');
+        }
+
+        try {
+            $gedcom_filters = $this->createGedcomFilterList($gedcom_filter1, $gedcom_filter2, $gedcom_filter3);
+        }
+        catch (DownloadGedcomWithUrlException $ex) {
+            FlashMessages::addMessage($ex->getMessage(), 'danger');
+        }
+        
+        return $gedcom_filters;
+    }
+
+	/**
+     * Create a list of Gedcom filters from filter names; also handle include structure of the filters
+     * 
+     * @param string $gedcom_filter1            Name of Gedcom filter 1
+     * @param string $gedcom_filter2            Name of Gedcom filter 2
+     * @param string $gedcom_filter3            Name of Gedcom filter 3
+     *
+     * @return array<ExportFilterInterface> 	A set of Gedcom filters
+     */	
+    public function createGedcomFilterList(string $gedcom_filter1, string $gedcom_filter2, string $gedcom_filter3): array    
+    {
+        //Add namespace to Gedcom filters
+        $gedcom_filter_class_name1 = __NAMESPACE__ . '\\' . $gedcom_filter1;
+        $gedcom_filter_class_name2 = __NAMESPACE__ . '\\' . $gedcom_filter2;
+        $gedcom_filter_class_name3 = __NAMESPACE__ . '\\' . $gedcom_filter3;
+
+        //Get instances of Gedcom filters
+        $gedcom_filter_instance1 = $gedcom_filter1 !== '' ? new $gedcom_filter_class_name1() : null;
+        $gedcom_filter_instance2 = $gedcom_filter2 !== '' ? new $gedcom_filter_class_name2() : null;
+        $gedcom_filter_instance3 = $gedcom_filter3 !== '' ? new $gedcom_filter_class_name3() : null;
+
+        //Create set of Gedcom filters
+        $filters_to_add = [
+            $gedcom_filter_instance1,
+            $gedcom_filter_instance2,
+            $gedcom_filter_instance3,
+        ];
+
+        //Add Gedcom filters, which might also add further Gedcom filters from their include lists
+        $gedcom_filter_set = $this->addIncludedGedcomFilters([], $filters_to_add, []);
+
+        return $gedcom_filter_set;
+    }
+    
 	/**
      * Execute the request (from URL or from control panel) to download or save 
      * 
@@ -858,17 +1096,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Check update of module version
         $this->checkModuleVersionUpdate();
 
-        //Add namespace to export filters
-        $export_filter_class_name1 = __NAMESPACE__ . '\\' . $export_filter1;
-        $export_filter_class_name2 = __NAMESPACE__ . '\\' . $export_filter2;
-        $export_filter_class_name3 = __NAMESPACE__ . '\\' . $export_filter3;
+        //Add namespace to Gedcom filters
+        $gedcom_filter_class_name1 = __NAMESPACE__ . '\\' . $export_filter1;
+        $gedcom_filter_class_name2 = __NAMESPACE__ . '\\' . $export_filter2;
+        $gedcom_filter_class_name3 = __NAMESPACE__ . '\\' . $export_filter3;
 
-        //Load export filter classes
+        //Load Gedcom filter classes
         if ($export_filter1 !== '' OR $export_filter2 !== '' OR $export_filter3 !== '') {
-            $load_filter_result = self::loadEportFilterClasses();
-
-            if ($load_filter_result !== '') {
-                return $this->showErrorMessage($load_filter_result);
+            try {
+                self::loadGedcomFilterClasses();
+            }
+            catch (DownloadGedcomWithUrlException $ex) {
+                return $this->showErrorMessage($ex->getMessage());
             }    
         }
 
@@ -924,69 +1163,36 @@ class DownloadGedcomWithURL extends AbstractModule implements
         elseif (!in_array($time_stamp, ['prefix', 'postfix', 'none'])) {
 			return $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
-		//Error if export filter 1 is not found
-        elseif ($export_filter1 !== '' && (!class_exists($export_filter_class_name1) OR !(new $export_filter_class_name1() instanceof ExportFilterInterface))) {
+		//Error if Gedcom filter 1 is not found
+        elseif ($export_filter1 !== '' && (!class_exists($gedcom_filter_class_name1) OR !(new $gedcom_filter_class_name1() instanceof ExportFilterInterface))) {
             return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter1);
         }
-		//Error if export filter 2 is not found
-        elseif ($export_filter2 !== '' && (!class_exists($export_filter_class_name2) OR !(new $export_filter_class_name2() instanceof ExportFilterInterface))) {
+		//Error if Gedcom filter 2 is not found
+        elseif ($export_filter2 !== '' && (!class_exists($gedcom_filter_class_name2) OR !(new $gedcom_filter_class_name2() instanceof ExportFilterInterface))) {
             return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter2);
         }
-		//Error if export filter 3 is not found
-        elseif ($export_filter3 !== '' && (!class_exists($export_filter_class_name3) OR !(new $export_filter_class_name3() instanceof ExportFilterInterface))) {
+		//Error if Gedcom filter 3 is not found
+        elseif ($export_filter3 !== '' && (!class_exists($gedcom_filter_class_name3) OR !(new $gedcom_filter_class_name3() instanceof ExportFilterInterface))) {
             return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter3);
         }
-		//Error if export filter 1 validation fails
-        elseif ($export_filter1 !== '' && ($error = $this->validateExportFilter($export_filter1)) !== '') {
+		//Error if Gedcom filter 1 validation fails
+        elseif ($export_filter1 !== '' && ($error = $this->validateGedcomFilter($export_filter1)) !== '') {
             return $this->showErrorMessage($error);
         }
 		//Error if export filter 2 validation fails
-        elseif ($export_filter2 !== '' && ($error = $this->validateExportFilter($export_filter2)) !== '') {
+        elseif ($export_filter2 !== '' && ($error = $this->validateGedcomFilter($export_filter2)) !== '') {
             return $this->showErrorMessage($error);
         }
-		//Error if export filter 3 validation fails
-        elseif ($export_filter3 !== '' && ($error = $this->validateExportFilter($export_filter3)) !== '') {
+		//Error if Gedcom filter 3 validation fails
+        elseif ($export_filter3 !== '' && ($error = $this->validateGedcomFilter($export_filter3)) !== '') {
             return $this->showErrorMessage($error);
         }
 
 		//If no errors, execute the core activities of the module
-        //Get instance of export filter 1
-        if ($export_filter1 !== '') {
-            $export_filter_instance1 = new $export_filter_class_name1();
-        }
-        else {
-            $export_filter_instance1 = null;
-        }
-
-        //Get instance of export filter 2
-        if ($export_filter2 !== '') {
-            $export_filter_instance2 = new $export_filter_class_name2();
-        }
-        else {
-            $export_filter_instance2 = null;
-        }
-
-        //Get instance of export filter 3
-        if ($export_filter3 !== '') {
-            $export_filter_instance3 = new $export_filter_class_name3();
-        }
-        else {
-            $export_filter_instance3 = null;
-        }
-
-        //Create set of export filters
-        $filters_to_add = [
-            $export_filter_instance1,
-            $export_filter_instance2,
-            $export_filter_instance3,
-        ];
-
-        //Add export filters, which might also add further exports filters from their include lists
-        try{
-            $export_filter_set = $this->addIncludedExportFilters([], $filters_to_add, []);
+        try {
+            $gedcom_filter_set = $this->createGedcomFilterList($export_filter1, $export_filter2, $export_filter3);
         }
         catch (DownloadGedcomWithUrlException $ex) {
-
             return $this->showErrorMessage($ex->getMessage());
         }
 
@@ -1016,7 +1222,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                 //Create response
                 try {
-                    $resource = $this->gedcom_export_service->filteredSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $export_filter_set);
+                    $resource = $this->gedcom_export_service->filteredSaveResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $format, $gedcom_filter_set);
                     $root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
                     fclose($resource);
                     $response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
@@ -1042,7 +1248,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, '1'))) {
                 try {
                     //Create response
-                    $response = $this->gedcom_export_service->filteredDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $export_filter_set);
+                    $response = $this->gedcom_export_service->filteredDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_filter_set);
                 }
                 catch (DownloadGedcomWithUrlException $ex) {
                     return $this->showErrorMessage($ex->getMessage());

@@ -18,7 +18,7 @@ use Fisharebest\Webtrees\View;
 /**
  * @var  string		$title
  * @var  array      $tree_list
- * @var  array      $export_filter_list
+ * @var  array      $gedcom_filter_list
  * @var  bool		$use_hash
  * @var  string		$secret_key
  * @var  string		$control_panel_secret_key
@@ -404,7 +404,7 @@ use Fisharebest\Webtrees\View;
 			</label>
 			<div class="col-sm-3">
 				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER1, 'selected' => $default_export_filter1, 
-					'options' => $export_filter_list]) ?>
+					'options' => $gedcom_filter_list]) ?>
 			</div>
 			<div class="form-text col-sm-9 offset-sm-3">
 				<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '1'); ?>
@@ -416,7 +416,7 @@ use Fisharebest\Webtrees\View;
 			</label>
 			<div class="col-sm-3">
 				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER2, 'selected' => $default_export_filter2, 
-					'options' => $export_filter_list]) ?>
+					'options' => $gedcom_filter_list]) ?>
 			</div>
 			<div class="form-text col-sm-9 offset-sm-3">
 			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '2'); ?>
@@ -428,7 +428,7 @@ use Fisharebest\Webtrees\View;
 			</label>
 			<div class="col-sm-3">
 				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FILTER3, 'selected' => $default_export_filter3, 
-					'options' => $export_filter_list]) ?>
+					'options' => $gedcom_filter_list]) ?>
 			</div>
 			<div class="form-text col-sm-9 offset-sm-3">
 			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>

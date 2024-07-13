@@ -642,7 +642,7 @@ class GedcomExportFilterService extends GedcomExportService
      *
      * @param array<string>                 $gedcom_structures   An array with Gedcom structures
      * @param array<ExportFilterInterface>  $export_filters      An array with export filters
-     * @param array>string>                 $matched_pattern_for_tag_combination   An array with matched tag combinations
+     * @param array<string>                 $matched_pattern_for_tag_combination   An array with matched tag combinations
      * @param Tree                          $tree
      * 
      * @return array<string>                                     An array with Gedcom structures after filter application

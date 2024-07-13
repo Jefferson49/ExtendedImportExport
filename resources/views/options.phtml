@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @var array   $gedcom_filter_list
+ * @var string  $gedcom_filter1 
+ * @var string  $gedcom_filter2 
+ * @var string  $gedcom_filter3
+ */
+ 
+declare(strict_types=1);
+
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Individual;
+
+?>
+
+<div class="row mb-3">
+    <label class="col-form-label col-sm-3">
+    <?= I18N::translate('GEDCOM filter %s', '1') ?>
+    </label>
+    <div class="col-sm-3">
+        <?= view('components/select', ['name' => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '1', 'selected' => $gedcom_filter1, 
+            'options' => $gedcom_filter_list]) ?>
+    </div>
+    <div class="form-text col-sm-9 offset-sm-3">
+        <?= I18N::translate('Select a GEDCOM filter'); ?>
+    </div>
+</div>		
+<div class="row mb-3">
+    <label class="col-form-label col-sm-3">
+        <?= I18N::translate('GEDCOM filter %s', '2') ?>
+    </label>
+    <div class="col-sm-3">
+        <?= view('components/select', ['name' => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '2', 'selected' => $gedcom_filter2, 
+            'options' => $gedcom_filter_list]) ?>
+    </div>
+    <div class="form-text col-sm-9 offset-sm-3">
+        <?= I18N::translate('Select a GEDCOM filter'); ?>
+    </div>
+</div>		
+<div class="row mb-3">
+    <label class="col-form-label col-sm-3">
+        <?= I18N::translate('GEDCOM filter %s', '3') ?>
+    </label>
+    <div class="col-sm-3">
+        <?= view('components/select', ['name' => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '3', 'selected' => $gedcom_filter3, 
+            'options' => $gedcom_filter_list]) ?>
+    </div>
+    <div class="form-text col-sm-9 offset-sm-3">
+        <?= I18N::translate('Select a GEDCOM filter'); ?>
+    </div>
+</div>		
+<div class="row mb-3">
+    <label class="col-sm-3 col-form-label" for="type">
+        <?= I18N::translate('Records') ?>
+    </label>
+    <div class="col-sm-3">
+        <?= view('components/select', ['name' => 'type', 'options' => $types, 'selected' => Individual::RECORD_TYPE]) ?>
+    </div>
+</div>

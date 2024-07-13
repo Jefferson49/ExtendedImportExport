@@ -51,12 +51,5 @@ use Fisharebest\Webtrees\Individual;
     <div class="form-text col-sm-9 offset-sm-3">
         <?= I18N::translate('Select a GEDCOM filter'); ?>
     </div>
-</div>		
-<div class="row mb-3">
-    <label class="col-sm-3 col-form-label" for="type">
-        <?= I18N::translate('Records') ?>
-    </label>
-    <div class="col-sm-3">
-        <?= view('components/select', ['name' => 'type', 'options' => $types, 'selected' => Individual::RECORD_TYPE]) ?>
-    </div>
 </div>
+

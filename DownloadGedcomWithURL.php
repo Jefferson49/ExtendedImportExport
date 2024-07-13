@@ -44,10 +44,14 @@ use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
+use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Individual;
+use Fisharebest\Webtrees\Location;
+use Fisharebest\Webtrees\Media;
+use Fisharebest\Webtrees\Note;
 use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleConfigInterface;
 use Fisharebest\Webtrees\Module\ModuleConfigTrait;
@@ -56,8 +60,11 @@ use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Module\ModuleDataFixInterface;
 use Fisharebest\Webtrees\Module\ModuleDataFixTrait;
 use Fisharebest\Webtrees\Registry;
+use Fisharebest\Webtrees\Repository;
 use Fisharebest\Webtrees\Services\DataFixService;
 use Fisharebest\Webtrees\Session;
+use Fisharebest\Webtrees\Source;
+use Fisharebest\Webtrees\Submitter;
 use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Validator;
@@ -79,6 +86,7 @@ use ErrorException;
 use Throwable;
 
 use ReflectionClass;
+use stdClass;
 
 use function substr;
 
@@ -900,7 +908,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 self::VAR_GEDOCM_FILTER . '1'   => '',
                 self::VAR_GEDOCM_FILTER . '2'   => '',
                 self::VAR_GEDOCM_FILTER . '3'   => '',
-                self::VAR_DATA_FIX_TYPES        => [Individual::RECORD_TYPE => I18N::translate('Individual')],
             ]
         );
     }
@@ -912,12 +919,68 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @param Tree                 $tree
      * @param array<string,string> $params
      *
-     * @return Collection<int,string>|null
+     * @return Collection<int,object>
      */
-    protected function individualsToFix(Tree $tree, array $params): ?Collection
+    public function recordsToFix(Tree $tree, array $params): Collection
     {
-        return $this->individualsToFixQuery($tree, $params)
-            ->pluck('i_id');
+        $families     = $this->familiesToFixQuery($tree, $params)->pluck('f_id');
+        $individuals  = $this->individualsToFixQuery($tree, $params)->pluck('i_id');
+        $locations    = $this->locationsToFixQuery($tree, $params)->pluck('o_id');
+        $media        = $this->mediaToFixQuery($tree, $params)->pluck('m_id');
+        $notes        = $this->notesToFixQuery($tree, $params)->pluck('o_id');
+        $repositories = $this->repositoriesToFixQuery($tree, $params)->pluck('o_id');
+        $sources      = $this->sourcesToFixQuery($tree, $params)->pluck('s_id');
+        $submitters   = $this->submittersToFixQuery($tree, $params)->pluck('o_id');
+
+        $header = new stdClass;
+        $header->xref = 'HEAD';
+        $header->type = 'HEAD';
+
+        $records = new Collection([$header]);
+        
+        if ($families !== null) {
+            $records = $records->concat($this->mergePendingRecords($families, $tree, Family::RECORD_TYPE));
+        }
+
+        if ($individuals !== null) {
+            $records = $records->concat($this->mergePendingRecords($individuals, $tree, Individual::RECORD_TYPE));
+        }
+
+        if ($locations !== null) {
+            $records = $records->concat($this->mergePendingRecords($locations, $tree, Location::RECORD_TYPE));
+        }
+
+        if ($media !== null) {
+            $records = $records->concat($this->mergePendingRecords($media, $tree, Media::RECORD_TYPE));
+        }
+
+        if ($notes !== null) {
+            $records = $records->concat($this->mergePendingRecords($notes, $tree, Note::RECORD_TYPE));
+        }
+
+        if ($repositories !== null) {
+            $records = $records->concat($this->mergePendingRecords($repositories, $tree, Repository::RECORD_TYPE));
+        }
+
+        if ($sources !== null) {
+            $records = $records->concat($this->mergePendingRecords($sources, $tree, Source::RECORD_TYPE));
+        }
+
+        if ($submitters !== null) {
+            $records = $records->concat($this->mergePendingRecords($submitters, $tree, Submitter::RECORD_TYPE));
+        }
+
+        $trailer = new stdClass;
+        $trailer->xref = 'TRLR';
+        $trailer->type = 'TRLR';
+
+        $records = $records->concat([$trailer]);
+
+        return $records
+            ->unique()
+            ->sort(static function (object $x, object $y) {
+                return $x->xref <=> $y->xref;
+            });
     }
 
     /**

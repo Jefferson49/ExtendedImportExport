@@ -12,13 +12,19 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 use Fisharebest\Webtrees\I18N;
-use Fisharebest\Webtrees\Individual;
 
 ?>
-
+<h4>
+    <?= I18N::translate('GEDCOM Filter Data Fix'); ?>
+</h4>
+<p>
+    <?= I18N::translate('You can select up to 3 GEDCOM filters, which will be applied as a data fix.') . ' '; ?>
+<p>
+    <b><?= I18N::translate('It is strongly recommended to backup your tree or your database first.'); ?></b>
+</p>
 <div class="row mb-3">
-    <label class="col-form-label col-sm-3">
-    <?= I18N::translate('GEDCOM filter %s', '1') ?>
+    <label class="col-sm-3 col-form-label" for="filter 1">
+        <?= I18N::translate('GEDCOM filter %s', '1') ?>
     </label>
     <div class="col-sm-3">
         <?= view('components/select', ['name' => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '1', 'selected' => $gedcom_filter1, 
@@ -29,7 +35,7 @@ use Fisharebest\Webtrees\Individual;
     </div>
 </div>		
 <div class="row mb-3">
-    <label class="col-form-label col-sm-3">
+    <label class="col-sm-3 col-form-label" for="filter 2">
         <?= I18N::translate('GEDCOM filter %s', '2') ?>
     </label>
     <div class="col-sm-3">
@@ -41,7 +47,7 @@ use Fisharebest\Webtrees\Individual;
     </div>
 </div>		
 <div class="row mb-3">
-    <label class="col-form-label col-sm-3">
+    <label class="col-sm-3 col-form-label" for="filter 3">
         <?= I18N::translate('GEDCOM filter %s', '3') ?>
     </label>
     <div class="col-sm-3">

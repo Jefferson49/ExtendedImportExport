@@ -236,7 +236,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public function description(): string
     {
         /* I18N: Description of the “AncestorsChart” module */
-        return I18N::translate('A custom module to download GEDCOM files on URL requests with the tree name, GEDCOM file name, and authorization provided as parameters within the URL.');
+        return I18N::translate('A custom module for advanced GEDCOM import, export and filter operations. The module also supports remote downloads/uploads/filters via URL requests.');
     }
 
     /**

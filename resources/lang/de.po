@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-07-12 18:52+0200\n"
-"PO-Revision-Date: 2024-07-12 18:53+0200\n"
+"POT-Creation-Date: 2024-07-13 19:15+0200\n"
+"PO-Revision-Date: 2024-07-13 19:17+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -142,16 +142,16 @@ msgid "The %s method of the used export filter (%s) throws a PHP error"
 msgstr ""
 "Die %s Methode des genutzten Export-Filters (%s) erzeugt einen PHP-Fehler"
 
-#: DownloadGedcomWithURL.php:205
+#: DownloadGedcomWithURL.php:239
 msgid ""
-"A custom module to download GEDCOM files on URL requests with the tree name, "
-"GEDCOM file name, and authorization provided as parameters within the URL."
+"A custom module for advanced GEDCOM import, export and filter operations. "
+"The module also supports remote downloads/uploads/filters via URL requests."
 msgstr ""
-"Ein benutzerdefiniertes Modul zum Herunterladen von GEDCOM Dateien auf Basis "
-"von URL Anfragen, welche den Stammbaum-Namen, den GEDCOM Dateinamen und die "
-"Authorisierung als Paramter innerhalb der URL beinhalten."
+"Ein benutzerspezifisches Modul für einen erweiterte GEDCOM-Import/-Export "
+"und -Filter Operationen. Das Modul unterstützt außerdem Remote-Downloads/-"
+"Uploads/-Filter mittels URL-Aufrufen."
 
-#: DownloadGedcomWithURL.php:454
+#: DownloadGedcomWithURL.php:490
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -159,7 +159,7 @@ msgstr ""
 "Der angegebene Autorisierungs-Schlüssel ist zu kurz. Bitte geben Sie "
 "mindestens eine Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:460
+#: DownloadGedcomWithURL.php:496
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -168,7 +168,7 @@ msgstr ""
 "nicht akzeptiert werden. Bitte geben Sie einen anderen Autorisierungs-"
 "Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:490
+#: DownloadGedcomWithURL.php:526
 #, php-format
 msgid ""
 "The folder settings could not be saved, because the folder “%s” does not "
@@ -177,12 +177,12 @@ msgstr ""
 "Die Einstellungen für den Ordner konnten nicht gespeichert werden, weil der "
 "Ordner \"%s\" nicht existiert."
 
-#: DownloadGedcomWithURL.php:519
+#: DownloadGedcomWithURL.php:555
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:563
+#: DownloadGedcomWithURL.php:599
 #, php-format
 msgid ""
 "The preferences for the custom module \"%s\" were sucessfully updated to the "
@@ -191,7 +191,7 @@ msgstr ""
 "Die Einstellungen für das benutzerdefinierte Modul \"%s\" wurden für die "
 "neue Modul-Version %s aktualisiert."
 
-#: DownloadGedcomWithURL.php:590
+#: DownloadGedcomWithURL.php:626
 #, php-format
 msgid ""
 "The preferences for the default export filter were reset to \"none\", "
@@ -200,28 +200,28 @@ msgstr ""
 "Die Voreinstellung für den Export-Filter wurden auf \"Keine\" zurückgesetzt, "
 "weil der ausgewählte Export-Filter %s nicht gefunden wurde"
 
-#: DownloadGedcomWithURL.php:709
+#: DownloadGedcomWithURL.php:749
 msgid "A compilation error was detected in the following export filter"
 msgstr "In folgendem Export-Filter wurde ein Kompilierungs-Fehler erkannt"
 
-#: DownloadGedcomWithURL.php:710
+#: DownloadGedcomWithURL.php:750
 msgid "line"
 msgstr "Zeile"
 
-#: DownloadGedcomWithURL.php:710
+#: DownloadGedcomWithURL.php:750
 msgid "error message"
 msgstr "Fehlermeldung"
 
-#: DownloadGedcomWithURL.php:730 resources/views/settings.phtml:244
+#: DownloadGedcomWithURL.php:771 resources/views/settings.phtml:244
 msgid "None"
 msgstr ""
 
-#: DownloadGedcomWithURL.php:764 DownloadGedcomWithURL.php:929
-#: DownloadGedcomWithURL.php:933 DownloadGedcomWithURL.php:937
+#: DownloadGedcomWithURL.php:807 DownloadGedcomWithURL.php:1231
+#: DownloadGedcomWithURL.php:1235 DownloadGedcomWithURL.php:1239
 msgid "The export filter was not found"
 msgstr "Der Export-Filter wurde nicht gefunden"
 
-#: DownloadGedcomWithURL.php:802
+#: DownloadGedcomWithURL.php:845
 #, php-format
 msgid ""
 "The include hierarchy for export filters exceeds the maximum level of %s "
@@ -230,7 +230,7 @@ msgstr ""
 "Die Include-Schachtelung des Export-Filters überschreitet die maximale "
 "Schwelle von %s Includes."
 
-#: DownloadGedcomWithURL.php:806
+#: DownloadGedcomWithURL.php:849
 msgid ""
 "The following export filter might cause a loop in the include structure, "
 "because it was detected more than once in the include hierarchy"
@@ -239,12 +239,12 @@ msgstr ""
 "Include-Struktur, weil der Filter mehr als einmal in der Include-Hierarchie "
 "detektiert wurde"
 
-#: DownloadGedcomWithURL.php:809
+#: DownloadGedcomWithURL.php:852
 msgid "Please check the include structure of the selected export filters."
 msgstr ""
 "Bitte überprüfen Sie die Include-Struktur des ausgewählten Export-Filters."
 
-#: DownloadGedcomWithURL.php:883 RemoteImportGedcomAction.php:121
+#: DownloadGedcomWithURL.php:1185 RemoteImportGedcomAction.php:121
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -253,7 +253,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:887 RemoteImportGedcomAction.php:125
+#: DownloadGedcomWithURL.php:1189 RemoteImportGedcomAction.php:125
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -262,66 +262,66 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:891 RemoteImportGedcomAction.php:129
+#: DownloadGedcomWithURL.php:1193 RemoteImportGedcomAction.php:129
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:895 RemoteImportGedcomAction.php:133
+#: DownloadGedcomWithURL.php:1197 RemoteImportGedcomAction.php:133
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:901
+#: DownloadGedcomWithURL.php:1203
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:905
+#: DownloadGedcomWithURL.php:1207
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:909
+#: DownloadGedcomWithURL.php:1211
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:913
+#: DownloadGedcomWithURL.php:1215
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:917
+#: DownloadGedcomWithURL.php:1219
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:921
+#: DownloadGedcomWithURL.php:1223
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:925
+#: DownloadGedcomWithURL.php:1227
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1022
+#: DownloadGedcomWithURL.php:1291
 #, php-format
 msgid "The family tree \"%s\" has been exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1030
+#: DownloadGedcomWithURL.php:1299
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:1035
+#: DownloadGedcomWithURL.php:1304
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe, um GEDCOM-Dateien mittels URL auf dem Server zu speichern "
 "sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1036 DownloadGedcomWithURL.php:1053
+#: DownloadGedcomWithURL.php:1305 DownloadGedcomWithURL.php:1322
 #: RemoteImportGedcomAction.php:113
 msgid "Please check the module settings in the control panel."
 msgstr "Bitte überprüfen Sie die Modul-Einstellungen in der Verwaltung."
 
-#: DownloadGedcomWithURL.php:1052
+#: DownloadGedcomWithURL.php:1321
 msgid "Remote URL requests to download GEDCOM files are not allowed."
 msgstr "Remote-Aufrufe, um GEDCOM-Dateien herunterzuladen sind nicht erlaubt."
 
@@ -368,6 +368,34 @@ msgstr ""
 #: resources/views/alert.phtml:22
 msgid "Custom module"
 msgstr "Benutzerdefiniertes Modul"
+
+#: resources/views/options.phtml:18
+msgid "GEDCOM Filter Data Fix"
+msgstr "GEDCOM-Filter Datenkorrekturen"
+
+#: resources/views/options.phtml:21
+msgid ""
+"You can select up to 3 GEDCOM filters, which will be applied as a data fix."
+msgstr ""
+"Sie können bis zu 3 GEDCOM-Filter selektieren, welche als Datenkorrekturen "
+"angewendet werden."
+
+#: resources/views/options.phtml:23
+msgid "It is strongly recommended to backup your tree or your database first."
+msgstr ""
+"Es wird dringend empfohlen, zuerst ein Backup des Stammbaums oder der "
+"Datenbank zu erstellen."
+
+#: resources/views/options.phtml:28 resources/views/options.phtml:40
+#: resources/views/options.phtml:52
+#, php-format
+msgid "GEDCOM filter %s"
+msgstr "GEDCOM-Filter %s"
+
+#: resources/views/options.phtml:35 resources/views/options.phtml:47
+#: resources/views/options.phtml:59
+msgid "Select a GEDCOM filter"
+msgstr "Selektieren Sie ein GEDCOM-Filter"
 
 #: resources/views/settings.phtml:46
 msgid "Control panel"
@@ -757,6 +785,15 @@ msgid "Upload"
 msgstr "Hochladen"
 
 #~ msgid ""
+#~ "A custom module to download GEDCOM files on URL requests with the tree "
+#~ "name, GEDCOM file name, and authorization provided as parameters within "
+#~ "the URL."
+#~ msgstr ""
+#~ "Ein benutzerdefiniertes Modul zum Herunterladen von GEDCOM Dateien auf "
+#~ "Basis von URL Anfragen, welche den Stammbaum-Namen, den GEDCOM Dateinamen "
+#~ "und die Authorisierung als Paramter innerhalb der URL beinhalten."
+
+#~ msgid ""
 #~ "By selecting this option, it is possible to activate remote downloads via "
 #~ "calling an URL. Please note: Even if the option is un-selected, GEDCOM "
 #~ "files can still be be saved on the server via URL request."
@@ -802,9 +839,6 @@ msgstr "Hochladen"
 #~ msgstr ""
 #~ "Der ausgewählte Export-Filter (%s) ist leer bzw. enthält keine Filter-"
 #~ "Regeln."
-
-#~ msgid "Default GEDCOM 7 flag"
-#~ msgstr "Voreinstellung GEDCOM 7 Flag"
 
 #~ msgid ""
 #~ "Select the default GEDCOM version. This GEDCOM version will be chosen if "

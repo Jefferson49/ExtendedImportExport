@@ -166,7 +166,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @param string                      $line_endings
      * @param string                      $filename     Name of download file, without an extension
      * @param string                      $format       One of: gedcom, zip, zipmedia, gedzip
-     * @param array<ExportFilterInterface>       $export_filters       An array, which contains GEDCOM export filters
+     * @param array<ExportFilterInterface>       $export_filters       An array, which contains GEDCOM filters
      * @param Collection<int,string|object|GedcomRecord>|null $records
      *
      * @return ResponseInterface
@@ -271,7 +271,6 @@ class GedcomExportFilterService extends GedcomExportService
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
      * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
-     * @param Collection|null                                 $records
      *
      * @return resource
      */
@@ -303,8 +302,16 @@ class GedcomExportFilterService extends GedcomExportService
             $data = [
                 new Collection([$this->createHeader($tree, $encoding, false)]),
                 $records,
-                new Collection(['0 TRLR']),
             ];
+            //Avoid to create a second header
+            if (preg_match('/0 HEAD/', $records->first())) {
+                array_shift($data);
+            }
+            //Add a trailer if not already exists
+            if (!preg_match('/0 TRLR/', $records->last())) {
+               $data[] = new Collection(['0 TRLR']);
+            }
+
         } elseif ($access_level === Auth::PRIV_HIDE) {
             // If we will be applying privacy filters, then we will need the GEDCOM record objects.
             $data = [
@@ -366,8 +373,13 @@ class GedcomExportFilterService extends GedcomExportService
                     }
                 }
 
+                //Add line end if not already exists
+                if (!strpos($gedcom, "\n", -1)) {
+                    $gedcom .= "\n";
+                }
+
                 //Add Gedcom to the export
-                $gedcom_export[] = $gedcom .= "\n";
+                $gedcom_export[] = $gedcom;
 			}
         }
 

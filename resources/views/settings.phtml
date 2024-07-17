@@ -10,6 +10,9 @@ use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
+use Fisharebest\Webtrees\Services\AdminService;
+use Fisharebest\Webtrees\Services\GedcomImportService;
+use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\View;
@@ -41,6 +44,14 @@ use Fisharebest\Webtrees\View;
  * @var  bool       $default_gedcom_version
  * @var  bool       $default_gedcom_l_selection
  */
+
+ $tree_service        = new TreeService(new GedcomImportService);
+ $admin_service       = new AdminService();
+ $tree                = $tree_service->all()[$default_tree_name];
+ $default_gedcom_file = $tree->getPreference('gedcom_filename');
+ $gedcom_media_path   = $tree->getPreference('GEDCOM_MEDIA_PATH');
+ $data_filesystem     = Registry::filesystem()->data();
+ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem); 
 
 ?>
 
@@ -448,6 +459,18 @@ use Fisharebest\Webtrees\View;
 			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>
 			</div>
 		</div>
+
+		<div class="row mb-3">
+			<?= view('admin/trees-import', [
+            'data_folder'         => $folder_to_save,
+            'default_gedcom_file' => $default_gedcom_file,
+            'gedcom_files'        => $gedcom_files,
+            'gedcom_media_path'   => $gedcom_media_path,
+            'title'               => I18N::translate('Import'),
+            'tree'                => $tree,
+        ]) ?>
+		</div>
+
 		<div class="row mb-3">
 			<div class="col">
 				<p></p>

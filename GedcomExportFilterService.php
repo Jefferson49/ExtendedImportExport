@@ -159,14 +159,14 @@ class GedcomExportFilterService extends GedcomExportService
 	}
 
     /**
-     * @param Tree                        $tree         Export data from this tree
-     * @param bool                        $sort_by_xref Write GEDCOM records in XREF order
-     * @param string                      $encoding     Convert from UTF-8 to other encoding
-     * @param string                      $privacy      Filter records by role
-     * @param string                      $line_endings
-     * @param string                      $filename     Name of download file, without an extension
-     * @param string                      $format       One of: gedcom, zip, zipmedia, gedzip
-     * @param array<ExportFilterInterface>       $export_filters       An array, which contains GEDCOM filters
+     * @param Tree                         $tree           Export data from this tree
+     * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
+     * @param string                       $encoding       Convert from UTF-8 to other encoding
+     * @param string                       $privacy        Filter records by role
+     * @param string                       $line_endings
+     * @param string                       $filename       Name of download file, without an extension
+     * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
+     * @param array<ExportFilterInterface> $export_filters An array, which contains GEDCOM filters
      * @param Collection<int,string|object|GedcomRecord>|null $records
      *
      * @return ResponseInterface
@@ -180,7 +180,7 @@ class GedcomExportFilterService extends GedcomExportService
         string $filename,
         string $format,
         array $export_filters = null,
-        Collection $records = null
+        Collection $records = null,
     ): ResponseInterface {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
@@ -232,14 +232,14 @@ class GedcomExportFilterService extends GedcomExportService
     }
     
     /**
-     * @param Tree                   $tree         Export data from this tree
-     * @param bool                   $sort_by_xref Write GEDCOM records in XREF order
-     * @param string                 $encoding     Convert from UTF-8 to other encoding
-     * @param string                 $privacy      Filter records by role
-     * @param string                 $line_endings
-     * @param string                 $format       One of: gedcom, zip, zipmedia, gedzip
-     * @param array<ExportFilterInterface>       $export_filters       An array, which contains GEDCOM export filters
-     * @param Collection|null        $records
+     * @param Tree                         $tree           Export data from this tree
+     * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
+     * @param string                       $encoding       Convert from UTF-8 to other encoding
+     * @param string                       $privacy        Filter records by role
+     * @param string                       $line_endings
+     * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
+     * @param array<ExportFilterInterface> $export_filters An array, which contains GEDCOM export filters
+     * @param Collection|null              $records
      *
      * @return resource
      */
@@ -251,7 +251,7 @@ class GedcomExportFilterService extends GedcomExportService
         string $line_endings,
         string $format,
         array $export_filters = null,
-        Collection $records = null
+        Collection $records = null,
     ) {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
@@ -267,11 +267,10 @@ class GedcomExportFilterService extends GedcomExportService
      * @param string                                          $encoding       Convert from UTF-8 to other encoding
      * @param int                                             $access_level   Apply privacy filtering
      * @param string                                          $line_endings   CRLF or LF
-     * @param array<ExportFilterInterface>                    $export_filters       An array, which contains GEDCOM export filters
+     * @param array<ExportFilterInterface>                    $export_filters An array, which contains GEDCOM export filters
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
      * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
-     *
      * @return resource
      */
     public function filteredExport(
@@ -300,17 +299,8 @@ class GedcomExportFilterService extends GedcomExportService
         if ($records instanceof Collection) {
             // Export just these records - e.g. from clippings cart.
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, false)]),
                 $records,
             ];
-            //Avoid to create a second header
-            if (preg_match('/0 HEAD/', $records->first())) {
-                array_shift($data);
-            }
-            //Add a trailer if not already exists
-            if (!preg_match('/0 TRLR/', $records->last())) {
-               $data[] = new Collection(['0 TRLR']);
-            }
 
         } elseif ($access_level === Auth::PRIV_HIDE) {
             // If we will be applying privacy filters, then we will need the GEDCOM record objects.

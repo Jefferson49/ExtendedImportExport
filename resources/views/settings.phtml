@@ -23,8 +23,9 @@ use Fisharebest\Webtrees\View;
  * @var  string		$secret_key
  * @var  string		$control_panel_secret_key
  * @var  bool       $allow_remote_download
- * @var  bool       $allow_remote_save
  * @var  bool       $allow_remote_upload
+ * @var  bool       $allow_remote_save
+ * @var  bool       $allow_remote_convert
  * @var  string		$folder_to_save 
  * @var  string     $default_tree_name
  * @var  string     $default_file_name
@@ -63,20 +64,20 @@ use Fisharebest\Webtrees\View;
 			</span>
 		</div>
 		<div id="id-common" class="collapse">	
-			<?php if ($allow_remote_download OR $allow_remote_upload) : ?>
+			<?php if ($allow_remote_download OR $allow_remote_upload OR $allow_remote_save OR $allow_remote_convert) : ?>
 				<div class="alert alert-warning">
-					<p><?= I18N::translate('Currently, remote downloading, uploading or saving of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation.') ?></p>
+					<p><?= I18N::translate('Currently, remote downloading, uploading, saving or converting of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation.') ?></p>
 				</div>
 			<?php endif ?>
 			<fieldset class="mb-3">
 				<div class="row">
 					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Allow remote download of GEDCOM files via URL') ?>
+						<?= I18N::translate('Allow remote requests via URL to download GEDCOM files') ?>
 					</legend>
 					<div class="col-sm-9">
 						<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_DOWNLOAD, 'checked' => $allow_remote_download]) ?>
 						<div class="form-text">
-							<?= I18N::translate('By selecting this option, it is possible to activate remote downloads via calling an URL.'); ?>
+							<?= I18N::translate('By selecting this option, it is possible to activate remote downloads by calling an URL.'); ?>
 						</div>
 					</div>
 				</div>
@@ -89,7 +90,7 @@ use Fisharebest\Webtrees\View;
 					<div class="col-sm-9">
 						<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_SAVE, 'checked' => $allow_remote_save]) ?>
 						<div class="form-text">
-							<?= I18N::translate('By selecting this option, it is possible to activate remote requests to save GEDCOM files to the server via calling an URL.'); ?>
+							<?= I18N::translate('By selecting this option, it is possible to activate remote requests to save GEDCOM files on the server via calling an URL.'); ?>
 						</div>
 					</div>
 				</div>
@@ -97,12 +98,25 @@ use Fisharebest\Webtrees\View;
 			<fieldset class="mb-3">
 				<div class="row">
 					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Allow remote upload of GEDCOM files via URL') ?>
+						<?= I18N::translate('Allow remote requests via URL to upload GEDCOM files') ?>
 					</legend>
 					<div class="col-sm-9">
 						<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_UPLOAD, 'checked' => $allow_remote_upload]) ?>
 						<div class="form-text">
 							<?= I18N::translate('By selecting this option, it is possible to activate remote uploads via calling an URL.'); ?>
+						</div>
+					</div>
+				</div>
+			</fieldset>		
+			<fieldset class="mb-3">
+				<div class="row">
+					<legend class="col-form-label col-sm-3">
+						<?= I18N::translate('Allow remote requests via URL to convert GEDCOM files on the server') ?>
+					</legend>
+					<div class="col-sm-9">
+						<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_CONVERT, 'checked' => $allow_remote_convert]) ?>
+						<div class="form-text">
+							<?= I18N::translate('By selecting this option, it is possible to activate remote conversion of GEDCOM files on the server via calling an URL.'); ?>
 						</div>
 					</div>
 				</div>
@@ -159,7 +173,7 @@ use Fisharebest\Webtrees\View;
 			</div>
 		</div>
 
-		<?php if ($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $secret_key !== '') : ?>
+		<?php if ($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert OR $secret_key !== '') : ?>
 			<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-common" aria-controls="id-common" aria-expanded="false">
 				<span class="chart-expand">
 					<?= view('icons/expand') ?>
@@ -178,9 +192,9 @@ use Fisharebest\Webtrees\View;
 							<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
 						</div>  
 					<?php endif ?>
-					<?php if (($allow_remote_download OR $allow_remote_save OR $allow_remote_upload) && $secret_key === '') : ?>
+					<?php if (($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert) && $secret_key === '') : ?>
 						<div class="alert alert-danger">
-							<p><?= I18N::translate('One of the options remote download/save/upload is activated and the authorization key is empty or not available') ?></p>
+							<p><?= I18N::translate('One of the options remote download/upload/save/convert is activated and the authorization key is empty or not available') ?></p>
 						</div>  
 					<?php endif ?>		
 					<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
@@ -320,9 +334,9 @@ use Fisharebest\Webtrees\View;
 					<div class="col-sm-9">
 						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ACTION, 'selected' => $default_action,
 							'options' => [
-								'download' => 'download (' . I18N::translate('Download') . ')',
-								'save'     => 'save (' . I18N::translate('Save') . ')',
-								'both'     => 'both (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
+								DownloadGedcomWithURL::ACTION_DOWNLOAD => DownloadGedcomWithURL::ACTION_DOWNLOAD . ' (' . I18N::translate('Download') . ')',
+								DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save') . ')',
+								DownloadGedcomWithURL::ACTION_BOTH     => DownloadGedcomWithURL::ACTION_BOTH     . ' (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
 							]
 						]) ?>
 						<div class="form-text">
@@ -339,9 +353,9 @@ use Fisharebest\Webtrees\View;
 					<div class="col-sm-9">
 						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, 'selected' => $default_time_stamp,
 							'options' => [
-								'none'    => 'none (' . I18N::translate('No time stamp') . ')',
-								'prefix'  => 'prefix (' .  I18N::translate('Prefix time stamp') . ')',
-								'postfix' => 'postfix (' . I18N::translate('Postfix time stamp') . ')',
+								DownloadGedcomWithURL::TIME_STAMP_NONE    => DownloadGedcomWithURL::TIME_STAMP_NONE    . ' (' . I18N::translate('No time stamp') . ')',
+								DownloadGedcomWithURL::TIME_STAMP_PREFIX  => DownloadGedcomWithURL::TIME_STAMP_PREFIX  . ' (' .  I18N::translate('Prefix time stamp') . ')',
+								DownloadGedcomWithURL::TIME_STAMP_POSTFIX => DownloadGedcomWithURL::TIME_STAMP_POSTFIX . ' (' . I18N::translate('Postfix time stamp') . ')',
 							] 
 						]) ?>
 						<div class="form-text">
@@ -433,8 +447,7 @@ use Fisharebest\Webtrees\View;
 			<div class="form-text col-sm-9 offset-sm-3">
 			<?= I18N::translate('Select a default filter for export filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>
 			</div>
-		</div>		
-
+		</div>
 		<div class="row mb-3">
 			<div class="col">
 				<p></p>
@@ -453,23 +466,61 @@ use Fisharebest\Webtrees\View;
 <div class="row mb-3">
 	<div class="col">
 		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-				'key'                 => $control_panel_secret_key . Session::getCsrfToken(),
+				'key'		=> $control_panel_secret_key . Session::getCsrfToken(),
+				'action'	=> DownloadGedcomWithURL::ACTION_DOWNLOAD,
 				])) ?>">
 			<?= csrf_field() ?>
 			<button type="submit" class="btn btn-secondary">
 				<?= view('icons/save') ?>
-				<?= I18N::translate('Download') ?>
+				<?= I18N::translate('Download GEDCOM file') ?>
 			</button>
 		</form>
 	</div>
 	<div class="col">
-		<form method="post" action="<?= e(route(RemoteImportGedcomAction::class, [
-				'key'                 => $control_panel_secret_key . Session::getCsrfToken(),
+		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
+				'key'       => $control_panel_secret_key . Session::getCsrfToken(),
+				'action'	=> DownloadGedcomWithURL::ACTION_SAVE,
+				])) ?>">
+			<?= csrf_field() ?>
+			<button type="submit" class="btn btn-secondary">
+				<?= view('icons/save') ?>
+				<?= I18N::translate('Save GEDCOM file to server') ?>
+			</button>
+		</form>
+	</div>
+	<div class="col">
+		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
+				'key'       => $control_panel_secret_key . Session::getCsrfToken(),
+				'action'	=> DownloadGedcomWithURL::ACTION_UPLOAD,
 				])) ?>">
 			<?= csrf_field() ?>
 			<button type="submit" class="btn btn-secondary" data-wt-confirm="<?= I18N::translate('Are you absolutely sure you want to upload/import the selected file into the specified tree? Please be aware that uploading/importing the file will delete all existing data in the tree without possibility to recover! Therefore, also consider to backup the webtrees database before uploading new files.') ?>">
 				<?= view('icons/save') ?>
-				<?= I18N::translate('Upload') ?>
+				<?= I18N::translate('Upload GEDCOM file') ?>
+			</button>
+		</form>
+	</div>
+	<div class="col">
+		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
+				'key'       => $control_panel_secret_key . Session::getCsrfToken(),
+				'action'	=> DownloadGedcomWithURL::ACTION_CONVERT,
+				])) ?>">
+			<?= csrf_field() ?>
+			<button type="submit" class="btn btn-secondary">
+				<?= view('icons/save') ?>
+				<?= I18N::translate('Convert GEDCOM file') ?>
+			</button>
+		</form>
+	</div>
+	<div class="col">
+		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
+				'key'       => $control_panel_secret_key . Session::getCsrfToken(),
+				'action'	=> DownloadGedcomWithURL::ACTION_CONVERT,
+				])) ?>">
+			<?= csrf_field() ?>
+			<button type="submit" class="btn btn-secondary">
+				<?= view('icons/save') ?>
+				<?= I18N::translate('Convert GEDCOM file on server') ?>
 			</button>
 		</form>
 	</div>

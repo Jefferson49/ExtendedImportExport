@@ -1,0 +1,163 @@
+<?php
+
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+
+use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Session;
+use Fisharebest\Webtrees\View;
+use Illuminate\Support\Collection;
+
+
+/**
+ * @var  string                 $title,
+ * @var  string                 $data_folder,
+ * @var  string                 $default_gedcom_file,
+ * @var  Collection<int,string> $gedcom_files,
+ * @var  string                 $gedcom_media_path,
+ * @var  string                 $default_tree_name,
+ * @var  array<string>          $tree_list
+ * @var  string                 $control_panel_secret_key
+ * @var  array                  $gedcom_filter_list
+ * @var  string                 $default_gedcom_filter1
+ * @var  string                 $default_gedcom_filter2
+ * @var  string                 $default_gedcom_filter3
+ */
+
+?>
+
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(SettingsPage::class) => I18N::translate('Extended Import/Export'), $title]]) ?>
+
+<h1><?=e($title) ?></h1>
+<div class="row mb-3"><?= view('icons/spacer') ?></div>
+
+<div class="alert alert-warning">
+    <?= /* I18N: %s is the name of a family tree */ I18N::translate('Any import will delete all the genealogy data of the tree in the database and replace it with data from a GEDCOM file.') ?>
+</div>
+
+<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
+		'key'       => $control_panel_secret_key . Session::getCsrfToken(),
+		'action'	=> DownloadGedcomWithURL::ACTION_UPLOAD,
+		])) ?>" enctype="multipart/form-data">
+
+	<?= csrf_field() ?>
+	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
+	
+		<div class="h4 wt-chart-expansion-control">
+			<?= I18N::translate('Select a tree') ?>
+		</div>
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Select a tree') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => 'tree', 'selected' => $default_tree_name, 
+					'options' => $tree_list]) ?>
+			</div>
+		</div>
+
+		<div class="h4 wt-chart-expansion-control">
+			<?= I18N::translate('Select a GEDCOM file to import') ?>
+		</div>
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<input type="radio" name="source" id="import-client" value="client" checked>
+				<?= I18N::translate('A file on your computer') ?>
+			</label>
+			<div class="col-sm-8">
+				<input id="import-client-file" type="file" name="client_file" class="form-control">
+			</div>
+		</div>
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<input type="radio" name="source" id="import-server" value="server">
+				<?= I18N::translate('A file on the server') ?>
+			</label>
+			<div class="col-sm-8">
+				<div class="input-group" dir="ltr">
+					<span class="input-group-text" dir="ltr">
+						<?= e($data_folder) ?>
+					</span>
+
+					<select name="server_file" class="form-select" dir="ltr" id="import-server-file">
+						<option selected="selected" value="">&nbsp;</option>
+						<?php foreach ($gedcom_files as $gedcom_file) : ?>
+							<option value="<?= e($gedcom_file) ?>" <?= $gedcom_file === $default_gedcom_file ? 'selected' : '' ?>>
+								<?= e($gedcom_file) ?>
+							</option>
+						<?php endforeach ?>
+						<?php if ($gedcom_files->isEmpty()) : ?>
+							<option disabled selected>
+								<?= I18N::translate('No GEDCOM files found.') ?>
+							</option>
+						<?php endif ?>
+					</select>
+				</div>
+			</div>
+		</div>	
+
+		<div class="h4 wt-chart-expansion-control">
+			<?= I18N::translate('Select GEDCOM filters') ?>
+		</div>
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Gedcom filter %s', '1') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => 'gedcom_filter1', 'selected' => $default_gedcom_filter1, 
+					'options' => $gedcom_filter_list]) ?>
+			</div>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Gedcom filter %s', '2') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => 'gedcom_filter2', 'selected' => $default_gedcom_filter2, 
+					'options' => $gedcom_filter_list]) ?>
+			</div>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Gedcom filter %s', '3') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => 'gedcom_filter3', 'selected' => $default_gedcom_filter3, 
+					'options' => $gedcom_filter_list]) ?>
+			</div>
+		</div>		
+
+		<div class="row mb-3">
+			<div class="col">
+			<button type="submit" class="btn btn-primary" data-wt-confirm="<?= I18N::translate('Are you absolutely sure you want to import the selected file into the specified tree? Please be aware that importing the file will delete all existing data in the tree without possibility to recover! Therefore, also consider to backup the webtrees database before importing new files.') ?>">
+				<?= view('icons/upload') ?>
+				<?= I18N::translate('Import GEDCOM file') ?>
+			</button>
+		</div>
+	</input>		
+</form>
+
+<?php View::push('javascript') ?>
+<script>
+    $('#select-all-1').change(function(e) {
+        if (e.currentTarget.checked) {
+            $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', true);
+        } else {
+            $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', false);
+        }
+    });
+	function checkGedcomImportForm (message) {
+		let oldFile = $('#gedcom_filename').val();
+		let method = $('input[name=source]:checked').val();
+		let newFile = method === 'server' ? $('#import-server-file').val() : $('#import-client-file').val();
+
+		// Some browsers include c:\fakepath\ in the filename.
+		newFile = newFile.replace(/.*[/\\]/, '');
+		if (newFile !== oldFile && oldFile !== '') {
+		return window.confirm(message);
+		} else {
+		return true;
+		}
+	};
+</script>
+<?php View::endpush() ?>

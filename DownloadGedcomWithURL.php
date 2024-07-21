@@ -44,6 +44,7 @@ use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
+use Fisharebest\Webtrees\Exceptions\FileUploadException;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
@@ -133,8 +134,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	//Custom module version
 	public const CUSTOM_VERSION = '3.2.4';
 
-	//Route
-	protected const ROUTE_URL = '/DownloadGedcomWithURL'; 
+	//Routes
+	protected const ROUTE_REMOTE_ACTION = '/DownloadGedcomWithURL';
+	protected const ROUTE_IMPORT_PAGE   = '/ExtendedGedcomImport';
+	protected const ROUTE_SETTINGS_PAGE   = '/ExtendedGedcomImportExportSettings';
 
 	//Github repository
 	public const GITHUB_REPO = 'Jefferson49/DownloadGedcomWithURL';
@@ -163,9 +166,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
     public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
     public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
-    public const PREF_DEFAULT_EXPORT_FILTER1 = 'default_export_filter1';
-    public const PREF_DEFAULT_EXPORT_FILTER2 = 'default_export_filter2';
-    public const PREF_DEFAULT_EXPORT_FILTER3 = 'default_export_filter3';
+    public const PREF_DEFAULT_GEDCOM_FILTER1 = 'default_gedcom_filter1';
+    public const PREF_DEFAULT_GEDCOM_FILTER2 = 'default_gedcom_filter2';
+    public const PREF_DEFAULT_GEDCOM_FILTER3 = 'default_gedcom_filter3';
     public const PREF_DEFAULT_PRIVACY_LEVEL = 'default_privacy_level'; 
     public const PREF_DEFAULT_EXPORT_FORMAT = 'default_export_format';
     public const PREF_DEFAULT_ENCODING = 'default_encoding';
@@ -233,7 +236,17 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         //Register a route for remote requests
         $router
-            ->get(static::class, self::ROUTE_URL, $this)
+            ->get(static::class, self::ROUTE_REMOTE_ACTION, $this)
+            ->allows(RequestMethodInterface::METHOD_POST);
+            
+        //Register a route for the settings view
+        $router
+            ->get(SettingsPage::class, self::ROUTE_SETTINGS_PAGE)
+            ->allows(RequestMethodInterface::METHOD_POST);
+
+        //Register a route for the import view
+        $router
+            ->get(ImportGedcomPage::class, self::ROUTE_IMPORT_PAGE)
             ->allows(RequestMethodInterface::METHOD_POST);
 
 		// Register a namespace for the views.
@@ -262,7 +275,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public function description(): string
     {
         /* I18N: Description of the “AncestorsChart” module */
-        return I18N::translate('A custom module for advanced GEDCOM import, export and filter operations. The module also supports remote downloads/uploads/filters via URL requests.');
+        return I18N::translate('A custom module for advanced GEDCOM import, export, and filter operations. The module also supports remote downloads/uploads/filters via URL requests.');
     }
 
     /**
@@ -416,17 +429,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
             FlashMessages::addMessage($ex->getMessage(), 'danger');
         }
         
-        $tree_list = [];
-        $all_trees = $this->all();
-
-        foreach($all_trees as $tree) {
-            $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
-        }
+        $tree_list = $this->getTreeNameTitleList();
 
         //Check the Gedcom filters, which are defined in the prefernces
-        $this->checkFilterPreferences(self::PREF_DEFAULT_EXPORT_FILTER1);
-        $this->checkFilterPreferences(self::PREF_DEFAULT_EXPORT_FILTER2);
-        $this->checkFilterPreferences(self::PREF_DEFAULT_EXPORT_FILTER3);
+        $this->checkFilterPreferences(self::PREF_DEFAULT_GEDCOM_FILTER1);
+        $this->checkFilterPreferences(self::PREF_DEFAULT_GEDCOM_FILTER2);
+        $this->checkFilterPreferences(self::PREF_DEFAULT_GEDCOM_FILTER3);
 
         $data_folder = str_replace('\\', '/', Registry::filesystem()->dataName());
 		$root_folder = str_replace('\\', '/', Registry::filesystem()->rootName());
@@ -448,9 +456,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, $data_folder_relative),
                 self::PREF_DEFAULT_TREE_NAME          => $this->getPreference(self::PREF_DEFAULT_TREE_NAME, array_key_first($tree_list)),
                 self::PREF_DEFAULT_FiLE_NAME          => $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, array_key_first($tree_list)),
-                self::PREF_DEFAULT_EXPORT_FILTER1     => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER1, ''),
-                self::PREF_DEFAULT_EXPORT_FILTER2     => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2, ''),
-                self::PREF_DEFAULT_EXPORT_FILTER3     => $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER3, ''),
+                self::PREF_DEFAULT_GEDCOM_FILTER1     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''),
+                self::PREF_DEFAULT_GEDCOM_FILTER2     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''),
+                self::PREF_DEFAULT_GEDCOM_FILTER3     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''),
                 self::PREF_DEFAULT_PRIVACY_LEVEL      => $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none'),
                 self::PREF_DEFAULT_EXPORT_FORMAT      => $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
                 self::PREF_DEFAULT_ENCODING           => $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME),
@@ -482,9 +490,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $folder_to_save             = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY'));
         $default_tree_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TREE_NAME, '');
         $default_file_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_FiLE_NAME, 'export');
-        $default_export_filter1     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FILTER1, '');
-        $default_export_filter2     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FILTER2, '');
-        $default_export_filter3     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FILTER3, '');
+        $default_gedcom_filter1     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER1, '');
+        $default_gedcom_filter2     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER2, '');
+        $default_gedcom_filter3     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER3, '');
         $default_privacy_level      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_PRIVACY_LEVEL, 'none');
         $default_export_format      = Validator::parsedBody($request)->string(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom');
         $default_encoding           = Validator::parsedBody($request)->string(self::PREF_DEFAULT_ENCODING, UTF8::NAME);
@@ -568,9 +576,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
             //Save default settings to preferences
             $this->setPreference(self::PREF_DEFAULT_TREE_NAME, $default_tree_name);
             $this->setPreference(self::PREF_DEFAULT_FiLE_NAME, $default_file_name);
-            $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER1, $default_export_filter1);
-            $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER2, $default_export_filter2);
-            $this->setPreference(self::PREF_DEFAULT_EXPORT_FILTER3, $default_export_filter3);
+            $this->setPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, $default_gedcom_filter1);
+            $this->setPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, $default_gedcom_filter2);
+            $this->setPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, $default_gedcom_filter3);
             $this->setPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, $default_privacy_level);
             $this->setPreference(self::PREF_DEFAULT_EXPORT_FORMAT, $default_export_format);
             $this->setPreference(self::PREF_DEFAULT_ENCODING, $default_encoding);
@@ -652,7 +660,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $this->setPreference($preference_name, '');
 
             //Create flash message
-            $message = I18N::translate('The preferences for the default export filter were reset to "none", because the selected export filter %s could not be found', $gedcom_filter_class_name);
+            $message = I18N::translate('The preferences for the default GEDCOM filter were reset to "none", because the selected GEDCOM filter %s could not be found', $gedcom_filter_class_name);
             FlashMessages::addMessage($message, 'danger');
 
             $gedcom_filter_class_name = '';
@@ -750,6 +758,23 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	}
 
 	 /**
+     * Get an array [name => title] for all trees 
+     *
+     * @return array error message
+     */ 
+     public function getTreeNameTitleList(): array {
+
+        $tree_list = [];
+        $all_trees = $this->all();
+
+        foreach($all_trees as $tree) {
+            $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
+        }    
+
+        return $tree_list;
+     }
+
+	 /**
      * Load classes for Gedcom filters
      *
      * @return string error message
@@ -775,7 +800,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         require __DIR__ . '/resources/filter/' . $file;
                     }
                     catch (Throwable $th) {
-                        throw new DownloadGedcomWithUrlException(I18N::translate('A compilation error was detected in the following export filter') . ': ' . 
+                        throw new DownloadGedcomWithUrlException(I18N::translate('A compilation error was detected in the following GEDCOM filter') . ': ' . 
                         __DIR__ . '/resources/filter/' . $file . ', ' . I18N::translate('line') . ': ' . $th-> getLine() . ', ' . I18N::translate('error message') . ': ' . $th->getMessage());
                     }
                     finally {
@@ -794,7 +819,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @return array<string>  An array with the class names all available Gedcom filters
      */ 
 
-     private function getGedcomFilterList(): array {
+     public function getGedcomFilterList(): array {
 
         $gedcom_filter_list =[
             ''             => I18N::translate('None'),
@@ -833,7 +858,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         if (!class_exists($gedcom_filter_class_name) OR !(new $gedcom_filter_class_name() instanceof ExportFilterInterface)) {
 
-            return I18N::translate('The export filter was not found') . ': ' . $gedcom_filter_name;
+            return I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter_name;
         }
 
         $gedcom_filter_instance = new $gedcom_filter_class_name();
@@ -865,20 +890,20 @@ class DownloadGedcomWithURL extends AbstractModule implements
             //Get first item of Gedcom filter set and remove it from additional filter list
             $gedcom_filter = array_shift($additional_filters);
 
-            //Add export filter to include structure
+            //Add Gedcom filter to include structure
             $include_structure[] = $gedcom_filter;
 
             //Error if size of include structure exceeds maximum level
             if (sizeof($include_structure) > self::MAXIMUM_FILTER_INCLUDE_LEVELS) {
 
-                $error = I18N::translate('The include hierarchy for export filters exceeds the maximum level of %s includes.', (string) self::MAXIMUM_FILTER_INCLUDE_LEVELS);
+                $error = I18N::translate('The include hierarchy for GEDCOM filters exceeds the maximum level of %s includes.', (string) self::MAXIMUM_FILTER_INCLUDE_LEVELS);
 
                 if (in_array($gedcom_filter, $include_structure)) {
 
-                    $error .= ' ' . I18N::translate('The following export filter might cause a loop in the include structure, because it was detected more than once in the include hierarchy') . ': ' . (new ReflectionClass($gedcom_filter))->getShortName();
+                    $error .= ' ' . I18N::translate('The following GEDCOM filter might cause a loop in the include structure, because it was detected more than once in the include hierarchy') . ': ' . (new ReflectionClass($gedcom_filter))->getShortName();
                 }
                 else {
-                    $error .= ' ' . I18N::translate('Please check the include structure of the selected export filters.');
+                    $error .= ' ' . I18N::translate('Please check the include structure of the selected GEDCOM filters.');
                 }
 
                 throw new DownloadGedcomWithUrlException($error);
@@ -922,7 +947,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Reset matched patterns at the start of the data fix 
         $this->matched_pattern_for_tag_combination_in_data_fix = [];
 
-        //Load export filters
+        //Load Gedcom filters
         try {
             self::loadGedcomFilterClasses();
         }
@@ -1236,7 +1261,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
 		$key                 = Validator::queryParams($request)->string('key', '');
-		$tree_name           = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
         $file_name           = Validator::queryParams($request)->string('file',  $this->getPreference(self::PREF_DEFAULT_FiLE_NAME, ''));
         $format              = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
         $privacy             = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
@@ -1244,9 +1268,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $line_endings        = Validator::queryParams($request)->string('line_endings',  $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'));
 		$action              = Validator::queryParams($request)->string('action', $this->getPreference(self::PREF_DEFAULT_ACTION, self::ACTION_DOWNLOAD));
 		$time_stamp          = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, self::TIME_STAMP_NONE));
-		$export_filter1      = Validator::queryParams($request)->string('export_filter1', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER1, ''));
-		$export_filter2      = Validator::queryParams($request)->string('export_filter2', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER2, ''));
-		$export_filter3      = Validator::queryParams($request)->string('export_filter3', $this->getPreference(self::PREF_DEFAULT_EXPORT_FILTER3, ''));
+		$tree_name           = Validator::queryParams($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
+		$gedcom_filter1      = Validator::queryParams($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
+		$gedcom_filter2      = Validator::queryParams($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
+		$gedcom_filter3      = Validator::queryParams($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
+        $source              = Validator::queryParams($request)->isInArray(['client', 'server'])->string('source', '');
+        
+        // If POST requests (from control panel), parse certain parameters accordingly
+        if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
+
+            $tree_name           = Validator::parsedBody($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
+            $gedcom_filter1      = Validator::parsedBody($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
+            $gedcom_filter2      = Validator::parsedBody($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
+            $gedcom_filter3      = Validator::parsedBody($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
+            $source              = Validator::parsedBody($request)->isInArray(['client', 'server'])->string('source', '');
+        }        
 
         if ($file_name === '') {
             $file_name = $tree_name;
@@ -1259,12 +1295,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $called_from_control_panel = $key === $this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '') . Session::getCsrfToken();
 
         //Add namespace to Gedcom filters
-        $gedcom_filter_class_name1 = __NAMESPACE__ . '\\' . $export_filter1;
-        $gedcom_filter_class_name2 = __NAMESPACE__ . '\\' . $export_filter2;
-        $gedcom_filter_class_name3 = __NAMESPACE__ . '\\' . $export_filter3;
+        $gedcom_filter_class_name1 = __NAMESPACE__ . '\\' . $gedcom_filter1;
+        $gedcom_filter_class_name2 = __NAMESPACE__ . '\\' . $gedcom_filter2;
+        $gedcom_filter_class_name3 = __NAMESPACE__ . '\\' . $gedcom_filter3;
 
         //Load Gedcom filter classes
-        if ($export_filter1 !== '' OR $export_filter2 !== '' OR $export_filter3 !== '') {
+        if ($gedcom_filter1 !== '' OR $gedcom_filter2 !== '' OR $gedcom_filter3 !== '') {
             try {
                 self::loadGedcomFilterClasses();
             }
@@ -1326,27 +1362,27 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			return $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
 		//Error if Gedcom filter 1 is not found
-        elseif ($export_filter1 !== '' && (!class_exists($gedcom_filter_class_name1) OR !(new $gedcom_filter_class_name1() instanceof ExportFilterInterface))) {
-            return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter1);
+        elseif ($gedcom_filter1 !== '' && (!class_exists($gedcom_filter_class_name1) OR !(new $gedcom_filter_class_name1() instanceof ExportFilterInterface))) {
+            return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter1);
         }
 		//Error if Gedcom filter 2 is not found
-        elseif ($export_filter2 !== '' && (!class_exists($gedcom_filter_class_name2) OR !(new $gedcom_filter_class_name2() instanceof ExportFilterInterface))) {
-            return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter2);
+        elseif ($gedcom_filter2 !== '' && (!class_exists($gedcom_filter_class_name2) OR !(new $gedcom_filter_class_name2() instanceof ExportFilterInterface))) {
+            return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter2);
         }
 		//Error if Gedcom filter 3 is not found
-        elseif ($export_filter3 !== '' && (!class_exists($gedcom_filter_class_name3) OR !(new $gedcom_filter_class_name3() instanceof ExportFilterInterface))) {
-            return $this->showErrorMessage(I18N::translate('The export filter was not found') . ': ' . $export_filter3);
+        elseif ($gedcom_filter3 !== '' && (!class_exists($gedcom_filter_class_name3) OR !(new $gedcom_filter_class_name3() instanceof ExportFilterInterface))) {
+            return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter3);
         }
 		//Error if Gedcom filter 1 validation fails
-        elseif ($export_filter1 !== '' && ($error = $this->validateGedcomFilter($export_filter1)) !== '') {
+        elseif ($gedcom_filter1 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter1)) !== '') {
             return $this->showErrorMessage($error);
         }
-		//Error if export filter 2 validation fails
-        elseif ($export_filter2 !== '' && ($error = $this->validateGedcomFilter($export_filter2)) !== '') {
+		//Error if Gedcom filter 2 validation fails
+        elseif ($gedcom_filter2 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter2)) !== '') {
             return $this->showErrorMessage($error);
         }
 		//Error if Gedcom filter 3 validation fails
-        elseif ($export_filter3 !== '' && ($error = $this->validateGedcomFilter($export_filter3)) !== '') {
+        elseif ($gedcom_filter3 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter3)) !== '') {
             return $this->showErrorMessage($error);
         }
 
@@ -1364,7 +1400,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         //Initialize filters and get filter list
         try {
-            $gedcom_filter_set = $this->createGedcomFilterList($export_filter1, $export_filter2, $export_filter3);
+            $gedcom_filter_set = $this->createGedcomFilterList($gedcom_filter1, $gedcom_filter2, $gedcom_filter3);
         }
         catch (DownloadGedcomWithUrlException $ex) {
             return $this->showErrorMessage($ex->getMessage());
@@ -1434,35 +1470,59 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }
         }
 
-        //If upload or convert is requested 
+        //If upload or convert is requested
         if ($action === self::ACTION_UPLOAD OR $action === self::ACTION_CONVERT) {
 
-            //Get folder from module settings, create server file name, and read from file
-            $folder = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
-            $root_filesystem = Registry::filesystem()->root();
-            $server_file = $folder . $file_name . '.ged';
+            if ($source === 'server') {
 
-            try {
-                $resource = $root_filesystem->readStream($server_file);
+                //Get folder from module settings, create server file name, and read from file
+                $folder = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
+                $root_filesystem = Registry::filesystem()->root();
+                $server_file = $folder . $file_name . '.ged';
+
+                try {
+                    $resource = $root_filesystem->readStream($server_file);
+                    $stream = $this->stream_factory->createStreamFromResource($resource);
+                }
+                catch (Throwable $ex) {
+                    $message = I18N::translate('Unable to read file "%s".', $server_file);
+                    return $this->showErrorMessage($message);
+                }
             }
-            catch (Throwable $ex) {
-                $message = I18N::translate('Unable to read file "%s".', $server_file);
-                return $this->showErrorMessage($message);
-            }        
+            if ($source === 'client') {
+                $client_file = $request->getUploadedFiles()['client_file'] ?? null;
+
+                if ($client_file === null || $client_file->getError() === UPLOAD_ERR_NO_FILE) {
+                    $message = I18N::translate('No GEDCOM file was received.');    
+                    return $this->showErrorMessage($message);
+                }
+    
+                if ($client_file->getError() !== UPLOAD_ERR_OK) {
+                    throw new FileUploadException($client_file);
+                }
+    
+                try {
+                    $stream = $client_file->getStream();    
+                    $file_name = basename($client_file->getClientFilename());
+                }
+                catch (Throwable $ex) {
+                    $message = I18N::translate('Unable to read file "%s".', $client_file);
+                    return $this->showErrorMessage($message);
+                }   
+            }
 
             //Import the file to a set of Gedcom records
             try {
-                $stream = $this->stream_factory->createStreamFromResource($resource);
-                $gedcom_records = $this->importGedcomFile($tree, $stream, $server_file, $encoding);
+                $gedcom_records = $this->importGedcomFile($tree, $stream, $file_name, $encoding);
 
                 $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $file_name . '.ged', $tree->name());
                 FlashMessages::addMessage($message, 'success');
             }
             catch (Throwable $ex) {
                 return $this->showErrorMessage($ex->getMessage());
-            }      
+            }            
 
-            //Apply export filters
+            //Apply Gedcom filters
             $matched_tag_combinations = [];
             $gedcom_records = $this->gedcom_filter_service->applyExportFilters($gedcom_records, $gedcom_filter_set, $matched_tag_combinations, $tree);
             
@@ -1493,7 +1553,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     //Import the stream into the database
                     try {
-                        $this->tree_service->importGedcomFile($tree, $stream, $server_file, $encoding);
+                        $this->tree_service->importGedcomFile($tree, $stream, $file_name, $encoding);
                     }
                     catch (Throwable $ex) {
                         return $this->showErrorMessage($ex->getMessage());

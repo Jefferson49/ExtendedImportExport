@@ -1277,11 +1277,23 @@ class DownloadGedcomWithURL extends AbstractModule implements
         // If POST requests (from control panel), parse certain parameters accordingly
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
 
-            $tree_name           = Validator::parsedBody($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
-            $gedcom_filter1      = Validator::parsedBody($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
-            $gedcom_filter2      = Validator::parsedBody($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
-            $gedcom_filter3      = Validator::parsedBody($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
-            $source              = Validator::parsedBody($request)->isInArray(['client', 'server'])->string('source', '');
+            $tree_name          = Validator::parsedBody($request)->string('tree', $this->getPreference(self::PREF_DEFAULT_TREE_NAME, ''));
+            $gedcom_filter1     = Validator::parsedBody($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
+            $gedcom_filter2     = Validator::parsedBody($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
+            $gedcom_filter3     = Validator::parsedBody($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
+            $source             = Validator::parsedBody($request)->isInArray(['client', 'server'])->string('source', '');
+            $keep_media         = Validator::parsedBody($request)->boolean('keep_media', false);
+            $word_wrapped_notes = Validator::parsedBody($request)->boolean('WORD_WRAPPED_NOTES', false);
+            $gedcom_media_path  = Validator::parsedBody($request)->string('GEDCOM_MEDIA_PATH');
+            $encodings          = ['' => ''] + Registry::encodingFactory()->list();
+            $import_encoding    = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding');
+
+            // Save choices as defaults
+            $tree_service  = new TreeService(new GedcomImportService);
+            $tree  = $tree_service->all()[$tree_name];
+            $tree->setPreference('keep_media', $keep_media ? '1' : '0');
+            $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
+            $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);     
         }        
 
         if ($file_name === '') {
@@ -1346,7 +1358,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			return $this->showErrorMessage(I18N::translate('Export format not accepted') . ': ' . $format);
         }       
         //Error if encoding is not valid
-		elseif (!in_array($encoding, [UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
+		elseif (!in_array($encoding, ['', UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
 			return $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
         }       
         //Error action is not valid
@@ -1489,7 +1501,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     return $this->showErrorMessage($message);
                 }
             }
-            if ($source === 'client') {
+            elseif ($source === 'client') {
                 $client_file = $request->getUploadedFiles()['client_file'] ?? null;
 
                 if ($client_file === null || $client_file->getError() === UPLOAD_ERR_NO_FILE) {
@@ -1510,10 +1522,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     return $this->showErrorMessage($message);
                 }   
             }
+            else {
+                $message = I18N::translate('No GEDCOM file was received.');
+                return $this->showErrorMessage($message);
+            }
 
             //Import the file to a set of Gedcom records
             try {
-                $gedcom_records = $this->importGedcomFile($tree, $stream, $file_name, $encoding);
+                $gedcom_records = $this->importGedcomFile($tree, $stream, $file_name, $import_encoding);
 
                 $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $file_name . '.ged', $tree->name());
                 FlashMessages::addMessage($message, 'success');

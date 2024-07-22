@@ -14,14 +14,15 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 use Fisharebest\Webtrees\I18N;
 
 ?>
-<h4>
+<div class="h4">
     <?= I18N::translate('GEDCOM Filter Data Fix'); ?>
-</h4>
+</div>		
 <p>
     <?= I18N::translate('You can select up to 3 GEDCOM filters, which will be applied as a data fix.') . ' '; ?>
-<p>
-    <b><?= I18N::translate('It is strongly recommended to backup your tree or your database first.'); ?></b>
-</p>
+</p>    
+<div class="alert alert-warning">
+    <?= I18N::translate('It is strongly recommended to backup your tree or your database first.'); ?>
+</div>
 <div class="row mb-3">
     <label class="col-sm-3 col-form-label" for="filter 1">
         <?= I18N::translate('GEDCOM filter %s', '1') ?>

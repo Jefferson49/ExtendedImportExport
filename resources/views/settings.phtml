@@ -14,7 +14,6 @@ use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\AdminService;
 use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\TreeService;
-use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\View;
 
@@ -46,6 +45,8 @@ use Fisharebest\Webtrees\View;
  * @var  bool       $default_gedcom_l_selection
  */
 
+
+//ToDo: Handle default values for gedcom_media_path
  $tree_service        = new TreeService(new GedcomImportService);
  $admin_service       = new AdminService();
  $default_tree        = $tree_service->all()[$default_tree_name];
@@ -602,69 +603,6 @@ use Fisharebest\Webtrees\View;
 		</div>		
 	</input>
 </form>	
-
-<div class="row mb-3">
-	<div class="col">
-		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-				'key'		=> $control_panel_secret_key . Session::getCsrfToken(),
-				'action'	=> DownloadGedcomWithURL::ACTION_DOWNLOAD,
-				])) ?>">
-			<?= csrf_field() ?>
-			<button type="submit" class="btn btn-secondary">
-				<?= view('icons/save') ?>
-				<?= I18N::translate('Download GEDCOM file') ?>
-			</button>
-		</form>
-	</div>
-	<div class="col">
-		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-				'key'       => $control_panel_secret_key . Session::getCsrfToken(),
-				'action'	=> DownloadGedcomWithURL::ACTION_SAVE,
-				])) ?>">
-			<?= csrf_field() ?>
-			<button type="submit" class="btn btn-secondary">
-				<?= view('icons/save') ?>
-				<?= I18N::translate('Save GEDCOM file to server') ?>
-			</button>
-		</form>
-	</div>
-	<div class="col">
-		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-				'key'       => $control_panel_secret_key . Session::getCsrfToken(),
-				'action'	=> DownloadGedcomWithURL::ACTION_UPLOAD,
-				])) ?>">
-			<?= csrf_field() ?>
-			<button type="submit" class="btn btn-secondary" data-wt-confirm="<?= I18N::translate('Are you absolutely sure you want to upload/import the selected file into the specified tree? Please be aware that uploading/importing the file will delete all existing data in the tree without possibility to recover! Therefore, also consider to backup the webtrees database before uploading new files.') ?>">
-				<?= view('icons/save') ?>
-				<?= I18N::translate('Upload GEDCOM file') ?>
-			</button>
-		</form>
-	</div>
-	<div class="col">
-		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-				'key'       => $control_panel_secret_key . Session::getCsrfToken(),
-				'action'	=> DownloadGedcomWithURL::ACTION_CONVERT,
-				])) ?>">
-			<?= csrf_field() ?>
-			<button type="submit" class="btn btn-secondary">
-				<?= view('icons/save') ?>
-				<?= I18N::translate('Convert GEDCOM file') ?>
-			</button>
-		</form>
-	</div>
-	<div class="col">
-		<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-				'key'       => $control_panel_secret_key . Session::getCsrfToken(),
-				'action'	=> DownloadGedcomWithURL::ACTION_CONVERT,
-				])) ?>">
-			<?= csrf_field() ?>
-			<button type="submit" class="btn btn-secondary">
-				<?= view('icons/save') ?>
-				<?= I18N::translate('Convert GEDCOM file on server') ?>
-			</button>
-		</form>
-	</div>
-</div>
 </div>
 
 <?php View::push('javascript') ?>

@@ -49,7 +49,7 @@ use Illuminate\Support\Collection;
 	<?= csrf_field() ?>
 	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
 	
-		<div class="h4 wt-chart-expansion-control">
+		<div class="h4">
 			<?= I18N::translate('Select a tree') ?>
 		</div>
 		<div class="row mb-3">
@@ -62,7 +62,7 @@ use Illuminate\Support\Collection;
 			</div>
 		</div>
 
-		<div class="h4 wt-chart-expansion-control">
+		<div class="h4">
 			<?= I18N::translate('Select a GEDCOM file to import') ?>
 		</div>
 		<div class="row mb-3">
@@ -102,7 +102,58 @@ use Illuminate\Support\Collection;
 			</div>
 		</div>	
 		
-		<div class="h4 wt-chart-expansion-control">
+		<div class="h4">
+			<?= I18N::translate('Settings for GEDCOM Import') ?>
+		</div>
+		<div class="row mb-3">
+			<label for="import_encoding" class="col-sm-3">
+				<?= I18N::translate('Character encoding') ?>
+			</label>
+			<div class="col-sm-9">
+				<?= view('components/select', ['name' => 'import_encoding', 'selected' => '', 'options' => ['' => I18N::translate('automatic')] + Registry::encodingFactory()->list()]) ?>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-sm-3">
+				<?= /* I18N: A configuration setting */ I18N::translate('Keep media objects') ?>
+			</div>
+			<div class="col-sm-9">
+				<div class="form-check">
+					<input type="checkbox" class="form-check-input" name="keep_media" id="keep_media" value="1" <?= $default_tree->getPreference('keep_media') ? 'checked' : '' ?>>
+					<label for="keep_media" class="form-check-label">
+						<?= I18N::translate('If you have created media objects in webtrees, and have subsequently edited this GEDCOM file using genealogy software that deletes media objects, then select this option to merge the current media objects with the new GEDCOM file.') ?>
+					</label>
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-sm-3">
+				<?= I18N::translate('Add spaces where long lines were wrapped') ?>
+			</div>
+			<div class="col-sm-9">
+				<div class="form-check">
+					<input type="checkbox" class="form-check-input" name="WORD_WRAPPED_NOTES" id="WORD_WRAPPED_NOTES" value="1" <?= $default_tree->getPreference('WORD_WRAPPED_NOTES') ? 'checked' : '' ?>>
+					<label for="WORD_WRAPPED_NOTES" class="form-check-label">
+						<?= I18N::translate('If you created this GEDCOM file using genealogy software that omits spaces when splitting long lines, then select this option to reinsert the missing spaces.') ?>
+					</label>
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<label for="GEDCOM_MEDIA_PATH" class="col-sm-3">
+				<?= /* I18N: A media path (e.g. c:\aaa\bbb\ccc\ddd.jpeg) in a GEDCOM file */ I18N::translate('Remove the GEDCOM media path from filenames') ?>
+			</label>
+
+			<div class="col-sm-9">
+				<input class="form-control" dir="ltr" id="GEDCOM_MEDIA_PATH" maxlength="255" name="GEDCOM_MEDIA_PATH" type="text" value="<?= e($gedcom_media_path) ?>">
+				<div class="form-text">
+					<?= /* I18N: Help text for the “GEDCOM media path” configuration setting. A “path” is something like “C:\Documents\Genealogy\Photos\John_Smith.jpeg” */ I18N::translate('Some genealogy software creates GEDCOM files that contain media filenames with full paths. These paths will not exist on the web-server. To allow webtrees to find the file, the first part of the path must be removed.') ?>
+					<?= /* I18N: Help text for the “GEDCOM media path” configuration setting. %s are all folder names */ I18N::translate('For example, if the GEDCOM file contains %1$s and webtrees expects to find %2$s in the media folder, then you would need to remove %3$s.', '<code>C:\\Documents\\family\\photo.jpeg</code>', '<code>family/photo.jpeg</code>', '<code>C:\\Documents\\</code>') ?>
+				</div>
+			</div>
+		</div>
+
+		<div class="h4">
 			<?= I18N::translate('Select GEDCOM filters') ?>
 		</div>
 		<div class="row mb-3">
@@ -132,67 +183,6 @@ use Illuminate\Support\Collection;
 					'options' => $gedcom_filter_list]) ?>
 			</div>
 		</div>		
-
-		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-import" aria-controls="id-import" aria-expanded="false">
-			<span class="chart-expand">
-				<?= view('icons/expand') ?>
-			</span>
-			<span class="chart-collapse">
-				<?= view('icons/collapse') ?>
-			</span>
-			<span>
-				<?= I18N::translate('Settings for GEDCOM Import') ?>
-			</span>
-		</div>
-		<div id="id-import" class="collapse">		
-			<div class="row mb-3">
-				<label for="import_encoding" class="col-sm-3">
-					<?= I18N::translate('Character encoding') ?>
-				</label>
-				<div class="col-sm-9">
-					<?= view('components/select', ['name' => 'import_encoding', 'selected' => '', 'options' => ['' => I18N::translate('automatic')] + Registry::encodingFactory()->list()]) ?>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-sm-3">
-					<?= /* I18N: A configuration setting */ I18N::translate('Keep media objects') ?>
-				</div>
-				<div class="col-sm-9">
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" name="keep_media" id="keep_media" value="1" <?= $default_tree->getPreference('keep_media') ? 'checked' : '' ?>>
-						<label for="keep_media" class="form-check-label">
-							<?= I18N::translate('If you have created media objects in webtrees, and have subsequently edited this GEDCOM file using genealogy software that deletes media objects, then select this option to merge the current media objects with the new GEDCOM file.') ?>
-						</label>
-					</div>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-sm-3">
-					<?= I18N::translate('Add spaces where long lines were wrapped') ?>
-				</div>
-				<div class="col-sm-9">
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" name="WORD_WRAPPED_NOTES" id="WORD_WRAPPED_NOTES" value="1" <?= $default_tree->getPreference('WORD_WRAPPED_NOTES') ? 'checked' : '' ?>>
-						<label for="WORD_WRAPPED_NOTES" class="form-check-label">
-							<?= I18N::translate('If you created this GEDCOM file using genealogy software that omits spaces when splitting long lines, then select this option to reinsert the missing spaces.') ?>
-						</label>
-					</div>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<label for="GEDCOM_MEDIA_PATH" class="col-sm-3">
-					<?= /* I18N: A media path (e.g. c:\aaa\bbb\ccc\ddd.jpeg) in a GEDCOM file */ I18N::translate('Remove the GEDCOM media path from filenames') ?>
-				</label>
-
-				<div class="col-sm-9">
-					<input class="form-control" dir="ltr" id="GEDCOM_MEDIA_PATH" maxlength="255" name="GEDCOM_MEDIA_PATH" type="text" value="<?= e($gedcom_media_path) ?>">
-					<div class="form-text">
-						<?= /* I18N: Help text for the “GEDCOM media path” configuration setting. A “path” is something like “C:\Documents\Genealogy\Photos\John_Smith.jpeg” */ I18N::translate('Some genealogy software creates GEDCOM files that contain media filenames with full paths. These paths will not exist on the web-server. To allow webtrees to find the file, the first part of the path must be removed.') ?>
-						<?= /* I18N: Help text for the “GEDCOM media path” configuration setting. %s are all folder names */ I18N::translate('For example, if the GEDCOM file contains %1$s and webtrees expects to find %2$s in the media folder, then you would need to remove %3$s.', '<code>C:\\Documents\\family\\photo.jpeg</code>', '<code>family/photo.jpeg</code>', '<code>C:\\Documents\\</code>') ?>
-					</div>
-				</div>
-			</div>
-		</div>
 
 		<div class="row mb-3">
 			<div class="col">

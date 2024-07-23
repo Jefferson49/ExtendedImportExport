@@ -47,15 +47,21 @@ use Fisharebest\Webtrees\View;
 
 
 //ToDo: Handle default values for gedcom_media_path
- $tree_service        = new TreeService(new GedcomImportService);
- $admin_service       = new AdminService();
- $default_tree        = $tree_service->all()[$default_tree_name];
- $default_gedcom_file = $default_tree->getPreference('gedcom_filename');
- $gedcom_media_path   = $default_tree->getPreference('GEDCOM_MEDIA_PATH');
+$tree_service        = new TreeService(new GedcomImportService);
+$admin_service       = new AdminService();
 
- //ToDo: Create file system from "folder to save"
- $data_filesystem     = Registry::filesystem()->data();
- $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
+if ($default_tree_name === '') {
+	$default_tree_name = array_key_first($tree_list);
+} 
+
+$default_tree = $tree_service->all()[$default_tree_name];
+
+$default_gedcom_file = $default_tree->getPreference('gedcom_filename');
+$gedcom_media_path   = $default_tree->getPreference('GEDCOM_MEDIA_PATH');
+
+//ToDo: Create file system from "folder to save"
+$data_filesystem     = Registry::filesystem()->data();
+$gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 
 ?>
 

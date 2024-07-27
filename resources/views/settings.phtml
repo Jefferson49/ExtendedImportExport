@@ -92,7 +92,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			<li>
 				<span class="fa-li"><?= view('icons/data-fix') ?></span>
 				<a href="<?= e(route(DataFixPage::class, ['tree' => $default_tree_name, 'data_fix' => DownloadGedcomWithURL::activeModuleName()])) ?>">
-					<?= I18N::translate('Datafix') ?>
+					<?= I18N::translate('Datafix for GEDCOM filters') ?>
 				</a>
 			</li>
 		</ul>

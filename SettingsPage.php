@@ -2,7 +2,7 @@
 
 /**
  * webtrees: online genealogy
- * Copyright (C) 2023 webtrees development team
+ * Copyright (C) 2024 webtrees development team
  *                    <http://webtrees.net>
  *
  * Fancy Research Links (webtrees custom module):
@@ -10,7 +10,7 @@
  *                    <https://justcarmen.nl>
  *
  * DownloadGedcomWithURL (webtrees custom module):
- * Copyright (C) 2023 Markus Hemprich
+ * Copyright (C) 2024 Markus Hemprich
  *                    <http://www.familienforschung-hemprich.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,27 +25,39 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  * 
- * 
  * DownloadGedcomWithURL
  *
- * A weebtrees(https://webtrees.net) 2.1 custom module to download GEDCOM files on URL requests 
+ * A weebtrees(https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests 
  * with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
  * 
  */
- 
 
 declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
-require __DIR__ . '/DownloadGedcomWithURL.php';
-require __DIR__ . '/DownloadGedcomWithUrlException.php';
-require __DIR__ . '/ExportFilterInterface.php';
-require __DIR__ . '/AbstractExportFilter.php';
-require __DIR__ . '/ImportGedcomPage.php';
-require __DIR__ . '/Record.php';
-require __DIR__ . '/GedcomExportFilterService.php';
-require __DIR__ . '/RemoteImportGedcomAction.php';
-require __DIR__ . '/SettingsPage.php';
+use Fisharebest\Webtrees\Services\ModuleService;
+use Jefferson49\Webtrees\Module\DownloadGedcomWithURL\DownloadGedcomWithURL;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-return new DownloadGedcomWithURL();
+
+/**
+ * View the settings page
+ */
+class SettingsPage implements RequestHandlerInterface
+{
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $module_service = new ModuleService();
+        $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+
+        return $download_gedcom_with_url->getAdminAction($request);
+    }
+}

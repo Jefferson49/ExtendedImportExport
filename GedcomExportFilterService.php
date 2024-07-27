@@ -175,7 +175,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @return resource
      */
     public function filteredResource(
-        Tree $tree,
+        Tree $tree = null,
         bool $sort_by_xref,
         string $encoding,
         string $privacy,
@@ -239,7 +239,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @return ResponseInterface
      */
     public function filteredDownloadResponse(
-        Tree $tree,
+        Tree $tree = null,
         bool $sort_by_xref,
         string $encoding,
         string $privacy,
@@ -295,7 +295,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @return resource
      */
     public function filteredExport(
-        Tree $tree,
+        Tree $tree = null,
         bool $sort_by_xref = false,
         string $encoding = UTF8::NAME,
         int $access_level = Auth::PRIV_HIDE,
@@ -351,7 +351,9 @@ class GedcomExportFilterService extends GedcomExportService
             ];
         }
 
-        $media_filesystem = $tree->mediaFilesystem();
+        if ($tree !== null) {
+            $media_filesystem = $tree->mediaFilesystem();
+        }
 
         foreach ($data as $rows) {
             foreach ($rows as $datum) {
@@ -378,8 +380,10 @@ class GedcomExportFilterService extends GedcomExportService
                     foreach ($matches as $match) {
                         $media_file = $match[1];
 
-                        if ($media_filesystem->fileExists($media_file)) {
-                            $zip_filesystem->writeStream($media_path . $media_file, $media_filesystem->readStream($media_file));
+                        if ($tree !== null) {
+                            if ($media_filesystem->fileExists($media_file)) {
+                                $zip_filesystem->writeStream($media_path . $media_file, $media_filesystem->readStream($media_file));
+                            }    
                         }
                     }
                 }
@@ -670,7 +674,7 @@ class GedcomExportFilterService extends GedcomExportService
      * 
      * @return array<string>                                     An array with Gedcom structures after filter application
      */
-    public function applyExportFilters(array $gedcom_structures, array $export_filters, array &$matched_pattern_for_tag_combination, Tree $tree): array
+    public function applyExportFilters(array $gedcom_structures, array $export_filters, array &$matched_pattern_for_tag_combination, Tree $tree = null): array
     {
         foreach($export_filters as $export_filter) {
 

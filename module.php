@@ -38,14 +38,15 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+require __DIR__ . '/ConvertGedcomPage.php';
 require __DIR__ . '/DownloadGedcomWithURL.php';
 require __DIR__ . '/DownloadGedcomWithUrlException.php';
 require __DIR__ . '/ExportFilterInterface.php';
 require __DIR__ . '/AbstractExportFilter.php';
 require __DIR__ . '/ExportGedcomPage.php';
+require __DIR__ . '/GedcomExportFilterService.php';
 require __DIR__ . '/ImportGedcomPage.php';
 require __DIR__ . '/Record.php';
-require __DIR__ . '/GedcomExportFilterService.php';
 require __DIR__ . '/RemoteImportGedcomAction.php';
 require __DIR__ . '/SettingsPage.php';
 

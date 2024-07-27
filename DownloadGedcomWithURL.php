@@ -80,6 +80,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Jose\Component\KeyManagement\Analyzer\ESKeyAnalyzer;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\UnableToWriteFile;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -138,6 +139,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	protected const ROUTE_REMOTE_ACTION = '/DownloadGedcomWithURL';
 	protected const ROUTE_EXPORT_PAGE   = '/ExtendedGedcomExport';
 	protected const ROUTE_IMPORT_PAGE   = '/ExtendedGedcomImport';
+	protected const ROUTE_CONVERT_PAGE   = '/ExtendedGedcomConvert';
 	protected const ROUTE_SETTINGS_PAGE   = '/ExtendedGedcomImportExportSettings';
 
 	//Github repository
@@ -253,6 +255,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Register a route for the export view
         $router
             ->get(ExportGedcomPage::class, self::ROUTE_EXPORT_PAGE)
+            ->allows(RequestMethodInterface::METHOD_POST);
+
+            //Register a route for the convert view
+        $router
+            ->get(ConvertGedcomPage::class, self::ROUTE_CONVERT_PAGE)
             ->allows(RequestMethodInterface::METHOD_POST);
 
 		// Register a namespace for the views.
@@ -1205,7 +1212,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      *
      * @return array<string>                 A set of Gedcom record strings
      */
-    public function importGedcomFile(Tree $tree, StreamInterface $stream, string $filename, string $encoding): array
+    public function importGedcomFile(StreamInterface $stream, string $encoding): array
     {
         $gedcom_records = [];
 
@@ -1302,7 +1309,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $keep_media         = Validator::parsedBody($request)->boolean('keep_media', false);
             $word_wrapped_notes = Validator::parsedBody($request)->boolean('WORD_WRAPPED_NOTES', false);
             $gedcom_media_path  = Validator::parsedBody($request)->string('GEDCOM_MEDIA_PATH', '');
-            $action             = Validator::parsedBody($request)->string('action', self::ACTION_DOWNLOAD);
             $format             = Validator::parsedBody($request)->string('format', 'gedcom');
             $encoding           = Validator::parsedBody($request)->string('encoding', UTF8::NAME);
             $line_endings       = Validator::parsedBody($request)->string('line_endings', 'CRLF');
@@ -1312,12 +1318,22 @@ class DownloadGedcomWithURL extends AbstractModule implements
             //ToDo: Default value for import encoding
             $import_encoding    = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
 
-            // Save choices as defaults
             $tree_service  = new TreeService(new GedcomImportService);
-            $tree  = $tree_service->all()[$tree_name];
-            $tree->setPreference('keep_media', $keep_media ? '1' : '0');
-            $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
-            $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);     
+
+            if ($tree_name !== '') {
+                $tree  = $tree_service->all()[$tree_name];
+            }
+            else {
+                $tree = null;
+            }
+
+            // Save choices as defaults
+            if ($action === self::ACTION_UPLOAD) {
+                $tree  = $tree_service->all()[$tree_name];
+                $tree->setPreference('keep_media', $keep_media ? '1' : '0');
+                $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
+                $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);     
+            }
         }        
 
         //Check update of module version
@@ -1366,7 +1382,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
 
         //Error if tree name is not valid
-        if (!$this->isValidTree($tree_name)) {
+        if ($action !== self::ACTION_CONVERT && !$this->isValidTree($tree_name)) {
 			return $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
 		}
         //Error if privacy level is not valid
@@ -1421,14 +1437,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		//If no errors, execute the core activities of the module
 
         //Get the tree
-        try {
-            $tree = $this->tree_service->all()[$tree_name];
-            assert($tree instanceof Tree);
+        if ($action !== self::ACTION_CONVERT) {
+            try {
+                $tree = $this->tree_service->all()[$tree_name];
+                assert($tree instanceof Tree);
+            }
+            catch (Throwable $ex) {
+                $message = I18N::translate('Could not find the requested tree "%s".', $tree_name);
+                return $this->showErrorMessage($message);
+            }             
         }
-        catch (Throwable $ex) {
-            $message = I18N::translate('Could not find the requested tree "%s".', $tree_name);
-            return $this->showErrorMessage($message);
-        }             
 
         //Initialize filters and get filter list
         try {
@@ -1556,9 +1574,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             //Import the file to a set of Gedcom records
             try {
-                $gedcom_records = $this->importGedcomFile($tree, $stream, $file_name, $import_encoding);
+                $gedcom_records = $this->importGedcomFile($stream, $import_encoding);
 
-                $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $file_name . '.ged', $tree->name());
+                $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $file_name . '.ged', $tree_name);
                 FlashMessages::addMessage($message, 'success');
             }
             catch (Throwable $ex) {
@@ -1578,7 +1596,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             
                     //Download the data
                     //ToDo: download to the server
-                    return $response;    
+                    return $response;   
                 }
                 else {
                     return $this->showErrorMessage( I18N::translate('Remote URL requests to convert GEDCOM files on the server are not allowed.') . ' ' . 

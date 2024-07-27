@@ -1,0 +1,246 @@
+<?php
+
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+
+use Fisharebest\Webtrees\Encodings\ANSEL;
+use Fisharebest\Webtrees\Encodings\ASCII;
+use Fisharebest\Webtrees\Encodings\UTF16BE;
+use Fisharebest\Webtrees\Encodings\UTF8;
+use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Session;
+use Fisharebest\Webtrees\Tree;
+use Fisharebest\Webtrees\View;
+use Illuminate\Support\Collection;
+
+
+/**
+ * @var  string                 $title,
+ * @var  Tree                   $tree,
+ * @var  string                 $data_folder,
+ * @var  string                 $default_gedcom_file,
+ * @var  Collection<int,string> $gedcom_files,
+ * @var  string                 $control_panel_secret_key
+ * @var  array                  $gedcom_filter_list
+ * @var  string                 $default_gedcom_filter1
+ * @var  string                 $default_gedcom_filter2
+ * @var  string                 $default_gedcom_filter3
+ */
+
+ $default_gedcom_file = $tree->getPreference('gedcom_filename');
+ $gedcom_media_path   = $tree->getPreference('GEDCOM_MEDIA_PATH');
+
+?>
+
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(SettingsPage::class) => I18N::translate('Extended Import/Export'), $title]]) ?>
+
+<h1><?=e($title) ?></h1>
+<div class="row mb-3"><?= view('icons/spacer') ?></div>
+
+<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
+		'key'       => $control_panel_secret_key . Session::getCsrfToken(),
+		'action'	=> DownloadGedcomWithURL::ACTION_CONVERT,
+		])) ?>" enctype="multipart/form-data">
+
+	<?= csrf_field() ?>
+	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
+	
+		<div class="h4">
+			<?= I18N::translate('Select a GEDCOM file') ?>
+		</div>
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<input type="radio" name="source" id="import-client" value="client" checked>
+				<?= I18N::translate('A file on your computer') ?>
+			</label>
+			<div class="col-sm-8">
+				<input id="import-client-file" type="file" name="client_file" class="form-control">
+			</div>
+		</div>
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<input type="radio" name="source" id="import-server" value="server">
+				<?= I18N::translate('A file on the server') ?>
+			</label>
+			<div class="col-sm-8">
+				<div class="input-group" dir="ltr">
+					<span class="input-group-text" dir="ltr">
+						<?= e($data_folder) ?>
+					</span>
+
+					<select name="server_file" class="form-select" dir="ltr" id="import-server-file">
+						<option selected="selected" value="">&nbsp;</option>
+						<?php foreach ($gedcom_files as $gedcom_file) : ?>
+							<option value="<?= e($gedcom_file) ?>" <?= $gedcom_file === $default_gedcom_file ? 'selected' : '' ?>>
+								<?= e($gedcom_file) ?>
+							</option>
+						<?php endforeach ?>
+						<?php if ($gedcom_files->isEmpty()) : ?>
+							<option disabled selected>
+								<?= I18N::translate('No GEDCOM files found.') ?>
+							</option>
+						<?php endif ?>
+					</select>
+				</div>
+			</div>
+		</div>	
+
+		<div class="h4">
+			<?= I18N::translate('Conversion settings') ?>
+		</div>
+
+		<div class="row mb-3">
+			<label class="col-sm-3" for="format">
+				<?= I18N::translate('Format') ?>
+			</label>
+
+			<div class="col-sm-9">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="format" id="format-gedcom" value="gedcom" <?= $default_format === 'gedcom' ? 'checked="checked"' : '' ?> data-wt-extension=".ged">
+
+					<label class="form-check-label" for="format-gedcom">
+						<?= I18N::translate('GEDCOM') ?>
+					</label>
+				</div>
+
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="format" id="format-zip" value="zip" <?= $default_format === 'zip' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
+
+					<label class="form-check-label" for="format-zip">
+						<?= /* I18N: ZIP = file format */ I18N::translate('ZIP') ?>
+					</label>
+				</div>
+
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="format" id="format-zipmedia" value="zipmedia" <?= $default_format === 'zipmedia' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
+
+					<label class="form-check-label" for="format-zipmedia">
+						<?= /* I18N: ZIP = file format */ I18N::translate('ZIP') ?>
+						<?= I18N::translate('(includes media files)') ?>
+					</label>
+				</div>
+
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="format" id="format-gdz" value="gedzip" <?= $default_format === 'gedzip' ? 'checked="checked"' : '' ?> data-wt-extension=".gdz" <?= $zip_available ? '' : 'disabled="disabled"'?>>
+
+					<label class="form-check-label" for="format-gdz">
+						<?= /* I18N: GEDZIP = file format */ I18N::translate('GEDZIP') ?>
+						<?= I18N::translate('(includes media files)') ?>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<label class="col-sm-3" for="encoding">
+				<?= I18N::translate('Character encoding') ?>
+			</label>
+
+			<div class="col-sm-9">
+				<?= view('components/select', ['name' => 'encoding', 'id' => 'encoding', 'selected' => $default_encoding, 'options' => [UTF8::NAME => 'UTF-8', UTF16BE::NAME => 'UNICODE (UTF16-BE)', ANSEL::NAME => 'ANSEL', ASCII::NAME => 'ASCII', 'CP1252' => 'ANSI (CP1252)']]) ?>
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<label class="col-sm-3" for="line_endings">
+				<?= I18N::translate('Line endings') ?>
+			</label>
+
+			<div class="col-sm-9">
+				<?= view('components/radios-inline', ['name' => 'line_endings', 'options' => ['CRLF' => 'CR/LF (windows)', 'LF' => 'LF (unix)'], 'selected' => $default_endings]) ?>
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<label class="col-sm-3" for="privacy">
+				<?= I18N::translate('Apply privacy settings') ?>
+			</label>
+
+			<div class="col-sm-9">
+				<input type="hidden" name="privacy" value="<?= e($default_privacy) ?>">
+			</div>
+		</div>
+
+		<fieldset class="mb-3">
+			<div class="row">
+				<legend class="col-form-label col-sm-3">
+					<?= I18N::translate('Time stamp') ?>
+				</legend>
+				<div class="col-sm-9">
+					<?= view('components/radios-inline', ['name' => 'time_stamp', 'selected' => $default_time_stamp,
+						'options' => [
+							DownloadGedcomWithURL::TIME_STAMP_NONE    => DownloadGedcomWithURL::TIME_STAMP_NONE    . ' (' . I18N::translate('No time stamp') . ')',
+							DownloadGedcomWithURL::TIME_STAMP_PREFIX  => DownloadGedcomWithURL::TIME_STAMP_PREFIX  . ' (' .  I18N::translate('Prefix time stamp') . ')',
+							DownloadGedcomWithURL::TIME_STAMP_POSTFIX => DownloadGedcomWithURL::TIME_STAMP_POSTFIX . ' (' . I18N::translate('Postfix time stamp') . ')',
+						] 
+					]) ?>
+				</div>
+			</div>
+		</fieldset>		
+
+		<div class="h4">
+			<?= I18N::translate('Select GEDCOM filters') ?>
+		</div>
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Gedcom filter %s', '1') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => 'gedcom_filter1', 'selected' => $default_gedcom_filter1, 
+					'options' => $gedcom_filter_list]) ?>
+			</div>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Gedcom filter %s', '2') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => 'gedcom_filter2', 'selected' => $default_gedcom_filter2, 
+					'options' => $gedcom_filter_list]) ?>
+			</div>
+		</div>		
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Gedcom filter %s', '3') ?>
+			</label>
+			<div class="col-sm-3">
+				<?= view('components/select', ['name' => 'gedcom_filter3', 'selected' => $default_gedcom_filter3, 
+					'options' => $gedcom_filter_list]) ?>
+			</div>
+		</div>		
+
+		<div class="row mb-3">
+			<div class="col">
+				<button type="submit" class="btn btn-primary">
+					<?= view('icons/copy') ?>
+					<?= I18N::translate('Convert GEDCOM file') ?>
+				</button>
+			</div>
+		</div>
+	</input>		
+</form>
+
+<?php View::push('javascript') ?>
+<script>
+    $('#select-all-1').change(function(e) {
+        if (e.currentTarget.checked) {
+            $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', true);
+        } else {
+            $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', false);
+        }
+    });
+	function checkGedcomImportForm (message) {
+		let oldFile = $('#gedcom_filename').val();
+		let method = $('input[name=source]:checked').val();
+		let newFile = method === 'server' ? $('#import-server-file').val() : $('#import-client-file').val();
+
+		// Some browsers include c:\fakepath\ in the filename.
+		newFile = newFile.replace(/.*[/\\]/, '');
+		if (newFile !== oldFile && oldFile !== '') {
+		return window.confirm(message);
+		} else {
+		return true;
+		}
+	};
+</script>
+<?php View::endpush() ?>

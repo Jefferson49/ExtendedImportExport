@@ -87,7 +87,14 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			</li>
 			<li>
 				<span class="fa-li"><?= view('icons/copy') ?></span>
-				<?= I18N::translate('GEDCOM Conversion') ?>
+				<a href="<?= e(route(ConvertGedcomPage::class, [
+					'tree_name'              => $default_tree_name,
+					'default_gedcom_filter1' => $default_gedcom_filter1,
+					'default_gedcom_filter2' => $default_gedcom_filter2,
+					'default_gedcom_filter3' => $default_gedcom_filter3,
+					])) ?>">
+					<?= I18N::translate('GEDCOM Conversion') ?>
+				</a>
 			</li>
 			<li>
 				<span class="fa-li"><?= view('icons/data-fix') ?></span>

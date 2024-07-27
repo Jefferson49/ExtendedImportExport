@@ -1590,8 +1590,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_UPLOAD, '0'))) {
 
                     //Create a stream from the filtered data
-                    $resource = $this->gedcom_filter_service->filteredSaveResponse(
-                        $tree, true, $encoding, $privacy, $line_endings, $format, [], new Collection($gedcom_records));
+                    $resource = $this->gedcom_filter_service->filteredResource(
+                        $tree, true, $encoding, $privacy, $line_endings, $file_name, $format, [], new Collection($gedcom_records));
                     $stream = $this->stream_factory->createStreamFromResource($resource);
 
                     //Import the stream into the database

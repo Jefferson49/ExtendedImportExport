@@ -47,6 +47,7 @@ use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
 
 use RuntimeException;
 use Throwable;
@@ -168,10 +169,12 @@ class GedcomExportFilterService extends GedcomExportService
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
      * @param array<ExportFilterInterface> $export_filters An array, which contains GEDCOM filters
      * @param Collection<int,string|object|GedcomRecord>|null $records
+     * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
+     * @param string|null                  $media_path     Location within the zip filesystem
      *
-     * @return ResponseInterface
+     * @return resource
      */
-    public function filteredDownloadResponse(
+    public function filteredResource(
         Tree $tree,
         bool $sort_by_xref,
         string $encoding,
@@ -181,18 +184,14 @@ class GedcomExportFilterService extends GedcomExportService
         string $format,
         array $export_filters = null,
         Collection $records = null,
-    ): ResponseInterface {
+        ?FilesystemOperator $zip_filesystem = null,
+        ?string $media_path = null        
+    ) {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
         if ($format === 'gedcom') {
             //Create export
-            $resource = $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
-            $stream   = $this->stream_factory->createStreamFromResource($resource);
-
-            return $this->response_factory->createResponse()
-                ->withBody($stream)
-                ->withHeader('content-type', 'text/x-gedcom; charset=' . UTF8::NAME)
-                ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . '.ged"');
+            return $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
         }
 
         // Create a new/empty .ZIP file
@@ -215,20 +214,13 @@ class GedcomExportFilterService extends GedcomExportService
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
-            $extension = '.gdz';
         } else {
             $zip_filesystem->writeStream($filename . '.ged', $resource);
-            $extension = '.zip';
         }
 
         fclose($resource);
 
-        $stream = $this->stream_factory->createStreamFromFile($temp_zip_file);
-
-        return $this->response_factory->createResponse()
-            ->withBody($stream)
-            ->withHeader('content-type', 'application/zip')
-            ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . $extension . '"');
+        return fopen($temp_zip_file, 'r');
     }
     
     /**
@@ -237,30 +229,58 @@ class GedcomExportFilterService extends GedcomExportService
      * @param string                       $encoding       Convert from UTF-8 to other encoding
      * @param string                       $privacy        Filter records by role
      * @param string                       $line_endings
+     * @param string                       $filename       Name of download file, without an extension
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
      * @param array<ExportFilterInterface> $export_filters An array, which contains GEDCOM export filters
      * @param Collection|null              $records
+     * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
+     * @param string|null                  $media_path     Location within the zip filesystem     
      *
-     * @return resource
+     * @return ResponseInterface
      */
-    public function filteredSaveResponse(
+    public function filteredDownloadResponse(
         Tree $tree,
         bool $sort_by_xref,
         string $encoding,
         string $privacy,
         string $line_endings,
+        string $filename,
         string $format,
         array $export_filters = null,
-        Collection $records = null,
-    ) {
-        $access_level = self::ACCESS_LEVELS[$privacy];
+        ?Collection $records = null,
+        ?FilesystemOperator $zip_filesystem = null,
+        ?string $media_path = null        
+    ): ResponseInterface {
 
+        if ($format === 'gedcom') {
+            //Create export
+            $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $export_filters, $records);
+            $stream = $this->stream_factory->createStreamFromResource($resource);
+
+            return $this->response_factory->createResponse()
+                ->withBody($stream)
+                ->withHeader('content-type', 'text/x-gedcom; charset=' . UTF8::NAME)
+                ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . '.ged"');
+        }
+        
         //Create export
-        return $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
+        $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $export_filters, $records, $zip_filesystem, $media_path);
+        $stream = $this->stream_factory->createStreamFromResource($resource);
+
+        if ($format === 'gedzip') {
+            $extension = '.gdz';
+        } else {
+            $extension = '.zip';
+        }
+
+        return $this->response_factory->createResponse()
+        ->withBody($stream)
+        ->withHeader('content-type', 'application/zip')
+        ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . $extension . '"');
     }
 
     /**
-     * Write GEDCOM data to a stream.
+     * Filter GEDCOM data and write to a stream.
      *
      * @param Tree                                            $tree           Export data from this tree
      * @param bool                                            $sort_by_xref   Write GEDCOM records in XREF order
@@ -271,6 +291,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
      * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
+     * 
      * @return resource
      */
     public function filteredExport(

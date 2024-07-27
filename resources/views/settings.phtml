@@ -12,14 +12,15 @@ use Fisharebest\Webtrees\Http\RequestHandlers\DataFixPage;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\AdminService;
-use Fisharebest\Webtrees\Services\GedcomImportService;
-use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Site;
+use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
 
+use function e;
 
 /**
  * @var  string		$title
+ * @var  Tree       $default_tree
  * @var  array      $tree_list
  * @var  array      $gedcom_filter_list
  * @var  bool		$use_hash
@@ -30,8 +31,6 @@ use Fisharebest\Webtrees\View;
  * @var  bool       $allow_remote_save
  * @var  bool       $allow_remote_convert
  * @var  string		$folder_to_save 
- * @var  string     $default_tree_name
- * @var  string     $default_file_name
  * @var  string     $default_gedcom_filter1
  * @var  string     $default_gedcom_filter2
  * @var  string     $default_gedcom_filter3
@@ -45,19 +44,8 @@ use Fisharebest\Webtrees\View;
  * @var  bool       $default_gedcom_l_selection
  */
 
-
-//ToDo: Handle default values for gedcom_media_path
-$tree_service        = new TreeService(new GedcomImportService);
-$admin_service       = new AdminService();
-
-if ($default_tree_name === '') {
-	$default_tree_name = array_key_first($tree_list);
-} 
-
-$default_tree = $tree_service->all()[$default_tree_name];
-
-$default_gedcom_file = $default_tree->getPreference('gedcom_filename');
-$gedcom_media_path   = $default_tree->getPreference('GEDCOM_MEDIA_PATH');
+$admin_service     = new AdminService();
+$default_tree_name = $default_tree->name();
 
 //ToDo: Create file system from "folder to save"
 $data_filesystem     = Registry::filesystem()->data();
@@ -77,9 +65,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			<li>
 				<span class="fa-li"><?= view('icons/upload') ?></span>
 				<a href="<?= e(route(ImportGedcomPage::class, [
-					'default_tree_name'      => $default_tree_name,
-					'default_gedcom_file'    => $default_gedcom_file,
-					'gedcom_media_path'      => $gedcom_media_path,
+					'tree_name'              => $default_tree_name,
 					'default_gedcom_filter1' => $default_gedcom_filter1,
 					'default_gedcom_filter2' => $default_gedcom_filter2,
 					'default_gedcom_filter3' => $default_gedcom_filter3,
@@ -89,7 +75,15 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			</li>				
 			<li>
 				<span class="fa-li"><?= view('icons/download') ?></span>
-				<?= I18N::translate('GEDCOM Export') ?>
+				<a href="<?= e(route(ExportGedcomPage::class, [
+					'tree_name'              => $default_tree_name,
+					'default_action'         => $default_action,
+					'default_gedcom_filter1' => $default_gedcom_filter1,
+					'default_gedcom_filter2' => $default_gedcom_filter2,
+					'default_gedcom_filter3' => $default_gedcom_filter3,
+					])) ?>">
+					<?= I18N::translate('GEDCOM Export') ?>
+				</a>
 			</li>
 			<li>
 				<span class="fa-li"><?= view('icons/copy') ?></span>
@@ -302,43 +296,6 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			</div>
 		</div>
 
-		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-tree" aria-controls="id-tree" aria-expanded="false">
-			<span class="chart-expand">
-				<?= view('icons/expand') ?>
-			</span>
-			<span class="chart-collapse">
-				<?= view('icons/collapse') ?>
-			</span>
-			<span>
-				<?= I18N::translate('Default Settings for the Tree') ?>	
-			</span>
-		</div>
-		<div id="id-tree" class="collapse">			
-			<div class="row mb-3">
-				<label class="col-form-label col-sm-3">
-					<?= I18N::translate('Default tree') ?>
-				</label>
-				<div class="col-sm-3">
-					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, 'selected' => $default_tree_name, 
-						'options' => $tree_list]) ?>
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-					<?= I18N::translate('Select the default tree. This tree will be chosen if no specific tree is provided as URL parameter.'); ?>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<label class="col-sm-3 col-form-label wt-page-options-label" for="default_file_name">
-					<?= I18N::translate('Default file name') ?>
-				</label>
-				<div class="col-sm-9 wt-page-options-value">
-					<input class="form-control" id="default_file_name" name="default_file_name" type="text" value="<?= e($default_file_name) ?>">
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-					<?= I18N::translate('Specifiy the default file name. This file name will be chosen if no specific file name is provided as URL parameter.'); ?>
-				</div>
-			</div>
-		</div>
-
 		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-export" aria-controls="id-export" aria-expanded="false">
 			<span class="chart-expand">
 				<?= view('icons/expand') ?>
@@ -441,7 +398,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ACTION, 'selected' => $default_action,
 							'options' => [
 								DownloadGedcomWithURL::ACTION_DOWNLOAD => DownloadGedcomWithURL::ACTION_DOWNLOAD . ' (' . I18N::translate('Download') . ')',
-								DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save') . ')',
+								DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save on the webtrees') . ')',
 								DownloadGedcomWithURL::ACTION_BOTH     => DownloadGedcomWithURL::ACTION_BOTH     . ' (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
 							]
 						]) ?>
@@ -470,92 +427,6 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 					</div>
 				</div>
 			</fieldset>	
-		</div>
-
-		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-import" aria-controls="id-import" aria-expanded="false">
-			<span class="chart-expand">
-				<?= view('icons/expand') ?>
-			</span>
-			<span class="chart-collapse">
-				<?= view('icons/collapse') ?>
-			</span>
-			<span>
-				<?= I18N::translate('Default Settings for GEDCOM Import') ?>
-			</span>
-		</div>
-		<div id="id-import" class="collapse">		
-			<div class="row mb-3">
-				<label for="encoding" class="col-sm-3">
-					<?= I18N::translate('A file on the server') ?>
-				</label>
-				<div class="col-sm-8">
-					<div class="input-group" dir="ltr">
-						<span class="input-group-text" dir="ltr">
-							<?= e($data_folder) ?>
-						</span>
-						<select name="server_file" class="form-select" dir="ltr" id="import-server-file">
-							<option selected="selected" value="">&nbsp;</option>
-							<?php foreach ($gedcom_files as $gedcom_file) : ?>
-								<option value="<?= e($gedcom_file) ?>" <?= $gedcom_file === $default_gedcom_file ? 'selected' : '' ?>>
-									<?= e($gedcom_file) ?>
-								</option>
-							<?php endforeach ?>
-							<?php if ($gedcom_files->isEmpty()) : ?>
-								<option disabled selected>
-									<?= I18N::translate('No GEDCOM files found.') ?>
-								</option>
-							<?php endif ?>
-						</select>
-					</div>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<label for="encoding" class="col-sm-3">
-					<?= I18N::translate('Character encoding') ?>
-				</label>
-				<div class="col-sm-9">
-					<?= view('components/select', ['name' => 'encoding', 'selected' => '', 'options' => ['' => I18N::translate('automatic')] + Registry::encodingFactory()->list()]) ?>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-sm-3">
-					<?= /* I18N: A configuration setting */ I18N::translate('Keep media objects') ?>
-				</div>
-				<div class="col-sm-9">
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" name="keep_media" id="keep_media" value="1" <?= $default_tree->getPreference('keep_media') ? 'checked' : '' ?>>
-						<label for="keep_media" class="form-check-label">
-							<?= I18N::translate('If you have created media objects in webtrees, and have subsequently edited this GEDCOM file using genealogy software that deletes media objects, then select this option to merge the current media objects with the new GEDCOM file.') ?>
-						</label>
-					</div>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-sm-3">
-					<?= I18N::translate('Add spaces where long lines were wrapped') ?>
-				</div>
-				<div class="col-sm-9">
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" name="WORD_WRAPPED_NOTES" id="WORD_WRAPPED_NOTES" value="1" <?= $default_tree->getPreference('WORD_WRAPPED_NOTES') ? 'checked' : '' ?>>
-						<label for="WORD_WRAPPED_NOTES" class="form-check-label">
-							<?= I18N::translate('If you created this GEDCOM file using genealogy software that omits spaces when splitting long lines, then select this option to reinsert the missing spaces.') ?>
-						</label>
-					</div>
-				</div>
-			</div>
-			<div class="row mb-3">
-				<label for="GEDCOM_MEDIA_PATH" class="col-sm-3">
-					<?= /* I18N: A media path (e.g. c:\aaa\bbb\ccc\ddd.jpeg) in a GEDCOM file */ I18N::translate('Remove the GEDCOM media path from filenames') ?>
-				</label>
-
-				<div class="col-sm-9">
-					<input class="form-control" dir="ltr" id="GEDCOM_MEDIA_PATH" maxlength="255" name="GEDCOM_MEDIA_PATH" type="text" value="<?= e($gedcom_media_path) ?>">
-					<div class="form-text">
-						<?= /* I18N: Help text for the “GEDCOM media path” configuration setting. A “path” is something like “C:\Documents\Genealogy\Photos\John_Smith.jpeg” */ I18N::translate('Some genealogy software creates GEDCOM files that contain media filenames with full paths. These paths will not exist on the web-server. To allow webtrees to find the file, the first part of the path must be removed.') ?>
-						<?= /* I18N: Help text for the “GEDCOM media path” configuration setting. %s are all folder names */ I18N::translate('For example, if the GEDCOM file contains %1$s and webtrees expects to find %2$s in the media folder, then you would need to remove %3$s.', '<code>C:\\Documents\\family\\photo.jpeg</code>', '<code>family/photo.jpeg</code>', '<code>C:\\Documents\\</code>') ?>
-					</div>
-				</div>
-			</div>
 		</div>
 
 		<div class="h4 wt-chart-expansion-control" data-bs-toggle="collapse" data-bs-target="#id-filters" aria-controls="id-filters" aria-expanded="false">

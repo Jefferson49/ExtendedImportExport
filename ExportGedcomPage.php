@@ -36,10 +36,10 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
-use Fisharebest\Webtrees\Http\ViewResponseTrait;
+use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\FlashMessages;
+use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\I18N;
-use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\AdminService;
 use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\ModuleService;
@@ -50,11 +50,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use function e;
 
 /**
  * Import a GEDCOM file into a tree.
  */
-class ImportGedcomPage implements RequestHandlerInterface
+class ExportGedcomPage implements RequestHandlerInterface
 {
     use ViewResponseTrait;
 
@@ -82,12 +83,8 @@ class ImportGedcomPage implements RequestHandlerInterface
         $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter2', I18N::translate('None'));
         $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter3', I18N::translate('None'));
 
-        $tree_service = new TreeService(new GedcomImportService()); 
+        $tree_service = new TreeService(new GedcomImportService());
         $tree = $tree_service->all()[$tree_name];
-
-        $data_filesystem = Registry::filesystem()->data();
-        $data_folder     = Registry::filesystem()->dataName();
-        $gedcom_files    = $this->admin_service->gedcomFiles($data_filesystem);
 
         $module_service = new ModuleService();
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
@@ -98,21 +95,27 @@ class ImportGedcomPage implements RequestHandlerInterface
         }
         catch (DownloadGedcomWithUrlException $ex) {
             FlashMessages::addMessage($ex->getMessage(), 'danger');
-        }
+        }       
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
         $tree_list = $download_gedcom_with_url->getTreeNameTitleList();
         $control_panel_secret_key= $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_CONTROL_PANEL_SECRET_KEY, '');
 
+
         return $this->viewResponse(
-            DownloadGedcomWithURL::viewsNamespace() . '::import',
+            DownloadGedcomWithURL::viewsNamespace() . '::export',
             [
-                'title'                    => I18N::translate('Extended GEDCOM Import'),
-                'tree'                     => $tree,
-                'tree_list'                => $tree_list,                
-                'data_folder'              => $data_folder,
-                'gedcom_files'             => $gedcom_files,
+                'title'                    => I18N::translate('Extended GEDCOM Export'),
                 'control_panel_secret_key' => $control_panel_secret_key,
+                'tree'                     => $tree,
+                'tree_list'                => $tree_list,
+                'zip_available'            => extension_loaded('zip'),
+                'default_action'           => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ACTION, DownloadGedcomWithURL::ACTION_DOWNLOAD),
+                'default_format'           => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
+                'default_encoding'         => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENCODING,  UTF8::NAME),
+                'default_endings'          => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'CRLF'),
+                'default_privacy'          => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'),
+                'default_time_stamp'       => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, DownloadGedcomWithURL::TIME_STAMP_NONE),
                 'gedcom_filter_list'       => $gedcom_filter_list,
                 'default_gedcom_filter1'   => $default_gedcom_filter1,
                 'default_gedcom_filter2'   => $default_gedcom_filter2,

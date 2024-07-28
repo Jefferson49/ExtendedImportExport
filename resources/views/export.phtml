@@ -33,10 +33,9 @@ use Fisharebest\Webtrees\View;
  * @var  string                 $default_gedcom_filter3
  */
 
-//ToDo: e($variable) 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(SettingsPage::class) => I18N::translate('Extended Import/Export'), $title]]) ?>
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(SettingsPage::class) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
 
 <h1><?= $title ?></h1>
 
@@ -117,7 +116,12 @@ use Fisharebest\Webtrees\View;
 		</label>
 
 		<div class="col-sm-9">
-			<?= view('components/select', ['name' => 'encoding', 'id' => 'encoding', 'selected' => $default_encoding, 'options' => [UTF8::NAME => 'UTF-8', UTF16BE::NAME => 'UNICODE (UTF16-BE)', ANSEL::NAME => 'ANSEL', ASCII::NAME => 'ASCII', 'CP1252' => 'ANSI (CP1252)']]) ?>
+			<?= view('components/select', [
+				'name'     => 'encoding',
+				'id'       => 'encoding',
+				'selected' => $default_encoding,
+				'options'  => [UTF8::NAME => 'UTF-8', UTF16BE::NAME => 'UNICODE (UTF16-BE)', ANSEL::NAME => 'ANSEL', ASCII::NAME => 'ASCII', 'CP1252' => 'ANSI (CP1252)'],
+				]) ?>
 		</div>
 	</div>
 
@@ -127,7 +131,11 @@ use Fisharebest\Webtrees\View;
 		</label>
 
 		<div class="col-sm-9">
-			<?= view('components/radios-inline', ['name' => 'line_endings', 'options' => ['CRLF' => 'CR/LF (windows)', 'LF' => 'LF (unix)'], 'selected' => $default_endings]) ?>
+			<?= view('components/radios-inline', [
+				'name'     => 'line_endings',
+				'options'  => ['CRLF' => 'CR/LF (windows)', 'LF' => 'LF (unix)'],
+				'selected' => $default_endings,
+				]) ?>
 		</div>
 	</div>
 
@@ -136,7 +144,7 @@ use Fisharebest\Webtrees\View;
 			<?= I18N::translate('Apply privacy settings') ?>
 		</label>
 		<div class="col-sm-9">
-			<?= view('components/radios-inline', ['name' => 'privacy','selected' => e($default_privacy), 
+			<?= view('components/radios-inline', ['name' => 'privacy','selected' => $default_privacy, 
 				'options' => [
 					'none'     => 'none (' . I18N::translate('None') .')', 
 					'gedadmin' => 'gedadmin (' . I18N::translate('Manager') .')', 
@@ -192,8 +200,11 @@ use Fisharebest\Webtrees\View;
 			<?= I18N::translate('Gedcom filter %s', '1') ?>
 		</label>
 		<div class="col-sm-9">
-			<?= view('components/select', ['name' => 'gedcom_filter1', 'selected' => $default_gedcom_filter1, 
-				'options' => $gedcom_filter_list]) ?>
+			<?= view('components/select', [
+				'name'     => 'gedcom_filter1',
+				'selected' => $default_gedcom_filter1, 
+				'options'  => $gedcom_filter_list,
+				]) ?>
 		</div>
 	</div>		
 	<div class="row mb-3">
@@ -201,8 +212,11 @@ use Fisharebest\Webtrees\View;
 			<?= I18N::translate('Gedcom filter %s', '2') ?>
 		</label>
 		<div class="col-sm-9">
-			<?= view('components/select', ['name' => 'gedcom_filter2', 'selected' => $default_gedcom_filter2, 
-				'options' => $gedcom_filter_list]) ?>
+			<?= view('components/select', [
+				'name'     => 'gedcom_filter2',
+				'selected' => $default_gedcom_filter2, 
+				'options'  => $gedcom_filter_list,
+				]) ?>
 		</div>
 	</div>		
 	<div class="row mb-3">
@@ -210,8 +224,11 @@ use Fisharebest\Webtrees\View;
 			<?= I18N::translate('Gedcom filter %s', '3') ?>
 		</label>
 		<div class="col-sm-9">
-			<?= view('components/select', ['name' => 'gedcom_filter3', 'selected' => $default_gedcom_filter3, 
-				'options' => $gedcom_filter_list]) ?>
+			<?= view('components/select', [
+				'name'     => 'gedcom_filter3',
+				'selected' => $default_gedcom_filter3, 
+				'options'  => $gedcom_filter_list,
+				]) ?>
 		</div>
 	</div>
 

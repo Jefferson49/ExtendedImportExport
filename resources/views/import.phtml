@@ -29,7 +29,7 @@ use Illuminate\Support\Collection;
 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(SettingsPage::class) => I18N::translate('Extended Import/Export'), $title]]) ?>
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(SettingsPage::class) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
 
 <h1><?=e($title) ?></h1>
 <div class="row mb-3"><?= view('icons/spacer') ?></div>
@@ -158,8 +158,11 @@ use Illuminate\Support\Collection;
 				<?= I18N::translate('Gedcom filter %s', '1') ?>
 			</label>
 			<div class="col-sm-3">
-				<?= view('components/select', ['name' => 'gedcom_filter1', 'selected' => $default_gedcom_filter1, 
-					'options' => $gedcom_filter_list]) ?>
+				<?= view('components/select', [
+					'name'     => 'gedcom_filter1',
+					'selected' => $default_gedcom_filter1, 
+					'options'  => $gedcom_filter_list,
+					]) ?>
 			</div>
 		</div>		
 		<div class="row mb-3">
@@ -167,8 +170,11 @@ use Illuminate\Support\Collection;
 				<?= I18N::translate('Gedcom filter %s', '2') ?>
 			</label>
 			<div class="col-sm-3">
-				<?= view('components/select', ['name' => 'gedcom_filter2', 'selected' => $default_gedcom_filter2, 
-					'options' => $gedcom_filter_list]) ?>
+				<?= view('components/select', [
+					'name'     => 'gedcom_filter2',
+					'selected' => $default_gedcom_filter2, 
+					'options'  => $gedcom_filter_list,
+					]) ?>
 			</div>
 		</div>		
 		<div class="row mb-3">
@@ -176,8 +182,11 @@ use Illuminate\Support\Collection;
 				<?= I18N::translate('Gedcom filter %s', '3') ?>
 			</label>
 			<div class="col-sm-3">
-				<?= view('components/select', ['name' => 'gedcom_filter3', 'selected' => $default_gedcom_filter3, 
-					'options' => $gedcom_filter_list]) ?>
+				<?= view('components/select', [
+					'name'     => 'gedcom_filter3',
+					'selected' => $default_gedcom_filter3, 
+					'options'  => $gedcom_filter_list,
+					]) ?>
 			</div>
 		</div>		
 

@@ -11,7 +11,6 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\Http\RequestHandlers\DataFixPage;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
-use Fisharebest\Webtrees\Services\AdminService;
 use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
@@ -44,16 +43,11 @@ use function e;
  * @var  bool       $default_gedcom_l_selection
  */
 
-$admin_service     = new AdminService();
 $default_tree_name = $default_tree->name();
-
-//ToDo: Create file system from "folder to save"
-$data_filesystem     = Registry::filesystem()->data();
-$gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), $title]]) ?>
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), e($title)]]) ?>
 
 <h1><?=e($title) ?></h1>
 <div class="row mb-3"><?= view('icons/spacer') ?></div>
@@ -98,7 +92,10 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			</li>
 			<li>
 				<span class="fa-li"><?= view('icons/data-fix') ?></span>
-				<a href="<?= e(route(DataFixPage::class, ['tree' => $default_tree_name, 'data_fix' => DownloadGedcomWithURL::activeModuleName()])) ?>">
+				<a href="<?= e(route(DataFixPage::class, [
+						'tree'     => $default_tree_name,
+						'data_fix' => DownloadGedcomWithURL::activeModuleName(),
+						])) ?>">
 					<?= I18N::translate('Datafix using GEDCOM filters') ?>
 				</a>
 			</li>
@@ -133,7 +130,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			</span>
 		</div>
 
-		<div id="id-remote" class="expand">			
+		<div id="id-remote" class="collapse">			
 			<?php if ($allow_remote_download OR $allow_remote_upload OR $allow_remote_save OR $allow_remote_convert) : ?>
 				<div class="alert alert-warning">
 					<p><?= I18N::translate('Currently, remote downloading, uploading, saving or converting of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation.') ?></p>
@@ -295,7 +292,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 					<?= Registry::filesystem()->dataName() ?>
 					<br>
 					<b><?= I18N::translate('webtrees data folder (relative path)') ?>: </b>
-					<?= $data_folder_relative ?>
+					<?= e($data_folder_relative) ?>
 					<br>		
 					<b><?= I18N::translate('webtrees data folder (setting in the control panel)') ?>: </b>
 					<?= Site::getPreference('INDEX_DIRECTORY') ?>

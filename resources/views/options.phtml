@@ -28,8 +28,11 @@ use Fisharebest\Webtrees\I18N;
         <?= I18N::translate('GEDCOM filter %s', '1') ?>
     </label>
     <div class="col-sm-3">
-        <?= view('components/select', ['name' => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '1', 'selected' => $gedcom_filter1, 
-            'options' => $gedcom_filter_list]) ?>
+        <?= view('components/select', [
+            'name'     => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '1',
+            'selected' => $gedcom_filter1, 
+            'options'  => $gedcom_filter_list,
+            ]) ?>
     </div>
     <div class="form-text col-sm-9 offset-sm-3">
         <?= I18N::translate('Select a GEDCOM filter'); ?>
@@ -40,8 +43,11 @@ use Fisharebest\Webtrees\I18N;
         <?= I18N::translate('GEDCOM filter %s', '2') ?>
     </label>
     <div class="col-sm-3">
-        <?= view('components/select', ['name' => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '2', 'selected' => $gedcom_filter2, 
-            'options' => $gedcom_filter_list]) ?>
+        <?= view('components/select', [
+            'name'     => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '2',
+            'selected' => $gedcom_filter2, 
+            'options'  => $gedcom_filter_list,
+            ]) ?>
     </div>
     <div class="form-text col-sm-9 offset-sm-3">
         <?= I18N::translate('Select a GEDCOM filter'); ?>
@@ -52,8 +58,11 @@ use Fisharebest\Webtrees\I18N;
         <?= I18N::translate('GEDCOM filter %s', '3') ?>
     </label>
     <div class="col-sm-3">
-        <?= view('components/select', ['name' => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '3', 'selected' => $gedcom_filter3, 
-            'options' => $gedcom_filter_list]) ?>
+        <?= view('components/select', [
+            'name'     => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '3',
+            'selected' => $gedcom_filter3, 
+            'options'  => $gedcom_filter_list,
+            ]) ?>
     </div>
     <div class="form-text col-sm-9 offset-sm-3">
         <?= I18N::translate('Select a GEDCOM filter'); ?>

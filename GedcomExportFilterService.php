@@ -200,7 +200,7 @@ class GedcomExportFilterService extends GedcomExportService
         $zip_adapter    = new ZipArchiveAdapter($zip_provider);
         $zip_filesystem = new Filesystem($zip_adapter);
 
-        if ($format === 'zipmedia') {
+        if ($tree !== null && $format === 'zipmedia') {
             $media_path = $tree->getPreference('MEDIA_DIRECTORY');
         } elseif ($format === 'gedzip') {
             $media_path = '';

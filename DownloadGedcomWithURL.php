@@ -80,8 +80,8 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Jose\Component\KeyManagement\Analyzer\ESKeyAnalyzer;
 use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToWriteFile;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -124,13 +124,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //A stream factory
     private StreamFactoryInterface $stream_factory;
 
+    //The root file system
+    private FilesystemOperator $root_filesystem;
+
     //A set of patterns for tag combinations, which has already been matched in a data fix
     private array $matched_pattern_for_tag_combination_in_data_fix;
 
     //A set of Gedcom filters, which is used in the data fix
     private array $gedcom_filters_in_data_fix;
-
-    private Tree $download_tree;
 
 	//Custom module version
 	public const CUSTOM_VERSION = '3.2.4';
@@ -228,6 +229,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $this->matched_pattern_for_tag_combination_in_data_fix = [];
         $this->gedcom_filters_in_data_fix = [];
         $this->gedcom_filters_loaded_in_data_fix = false;
+        $this->root_filesystem = Registry::filesystem()->root();
+        
 
         //Generate random key if control panel key is empty
         if ($this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '') === '') {
@@ -740,10 +743,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         });
 		
 		$is_valid_tree = $find_tree instanceof Tree;
-		
-		if ($is_valid_tree) {
-            $this->download_tree = $find_tree;
-        }
 		
 		return $is_valid_tree;
 	 }
@@ -1285,7 +1284,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
 		$key                 = Validator::queryParams($request)->string('key', '');
 		$tree_name           = Validator::queryParams($request)->string('tree', '');
-        $file_name           = Validator::queryParams($request)->string('file', $tree_name);
+        $filename            = Validator::queryParams($request)->string('file', $tree_name);
         $format              = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
         $privacy             = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
         $encoding            = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
@@ -1301,11 +1300,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
 
             $tree_name          = Validator::parsedBody($request)->string('tree', '');
-            $file_name          = Validator::parsedBody($request)->string('filename', $tree_name);
+            $filename           = Validator::parsedBody($request)->string('filename', $tree_name);
             $gedcom_filter1     = Validator::parsedBody($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
             $gedcom_filter2     = Validator::parsedBody($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
             $gedcom_filter3     = Validator::parsedBody($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
             $source             = Validator::parsedBody($request)->isInArray(['client', 'server'])->string('source', '');
+            $server_file        = Validator::parsedBody($request)->string('server_file', '');
             $keep_media         = Validator::parsedBody($request)->boolean('keep_media', false);
             $word_wrapped_notes = Validator::parsedBody($request)->boolean('WORD_WRAPPED_NOTES', false);
             $gedcom_media_path  = Validator::parsedBody($request)->string('GEDCOM_MEDIA_PATH', '');
@@ -1338,6 +1338,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         //Check update of module version
         $this->checkModuleVersionUpdate();
+
+        //Get folder from module settings and file system
+        $folder_on_server = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
 
         //An action from control panel is recognized if a certain key is received
         $called_from_control_panel = $key === $this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '') . Session::getCsrfToken();
@@ -1458,19 +1461,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         //Add time stamp to file name if requested
         if($time_stamp === self::TIME_STAMP_PREFIX){
-            $file_name = date('Y-m-d_H-i-s_') . $file_name;
+            $filename = date('Y-m-d_H-i-s_') . $filename;
         } 
         elseif($time_stamp === self::TIME_STAMP_POSTFIX){
-            $file_name .= date('_Y-m-d_H-i-s');
+            $filename .= date('_Y-m-d_H-i-s');
         }
 
         //If saving to server is requested and allowed
         if (($action === self::ACTION_SAVE) OR ($action === self::ACTION_BOTH)) {
 
             if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_SAVE, '0'))) {
-
-                $root_filesystem = Registry::filesystem()->root();
-                $export_file_name = $file_name;
 
                 // File extension
                 if ($format === 'gedcom') {
@@ -1483,16 +1483,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     $extension = '.zip';
                 }
 
-                $export_file_name = $file_name . $extension;
+                $export_file_name = $filename . $extension;
  
                 //Get folder from settings
-                $folder_to_save = $this->getPreference(self::PREF_FOLDER_TO_SAVE, '');
+                $folder_on_server = $this->getPreference(self::PREF_FOLDER_TO_SAVE, '');
 
                 //Create response
                 try {
-                    $resource = $this->gedcom_export_service->filteredResource($this->download_tree, true, $encoding, $privacy, $line_endings, $export_file_name, $format, $gedcom_filter_set);
-                    $root_filesystem->writeStream($folder_to_save . $export_file_name, $resource);
-                    $response = $this->showSuccessMessage(I18N::translate('The family tree "%s" has been exported to: %s', $tree_name, $folder_to_save . $export_file_name));
+                    $resource = $this->gedcom_export_service->filteredResource($tree, true, $encoding, $privacy, $line_endings, $export_file_name, $format, $gedcom_filter_set);
+                    $this->root_filesystem->writeStream($folder_on_server . $export_file_name, $resource);
+                    $response = $this->showSuccessMessage(I18N::translate('The family tree "%s" was exported to: %s', $tree_name, $folder_on_server . $export_file_name));
                 } 
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
 
@@ -1500,7 +1500,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         return $this->showErrorMessage($ex->getMessage());
                     }
                     else {
-                        return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_to_save . $export_file_name));
+                        return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_on_server . $export_file_name));
                     }
                 }
             }
@@ -1515,7 +1515,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, '0'))) {
                 try {
                     //Create response
-                    $response = $this->gedcom_export_service->filteredDownloadResponse($this->download_tree, true, $encoding, $privacy, $line_endings, $file_name, $format, $gedcom_filter_set);
+                    $response = $this->gedcom_export_service->filteredDownloadResponse($tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set);
                 }
                 catch (DownloadGedcomWithUrlException $ex) {
                     return $this->showErrorMessage($ex->getMessage());
@@ -1532,17 +1532,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             if ($source === 'server') {
 
-                //Get folder from module settings, create server file name, and read from file
-                $folder = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
-                $root_filesystem = Registry::filesystem()->root();
-                $server_file = $folder . $file_name . '.ged';
-
                 try {
-                    $resource = $root_filesystem->readStream($server_file);
+                    $resource = $this->root_filesystem->readStream($folder_on_server . $server_file);
                     $stream = $this->stream_factory->createStreamFromResource($resource);
+                    $filename = $server_file;
                 }
                 catch (Throwable $ex) {
-                    $message = I18N::translate('Unable to read file "%s".', $server_file);
+                    $message = I18N::translate('Unable to read file "%s".', $folder_on_server . $server_file);
                     return $this->showErrorMessage($message);
                 }
             }
@@ -1559,8 +1555,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 }
     
                 try {
-                    $stream = $client_file->getStream();    
-                    $file_name = basename($client_file->getClientFilename());
+                    $stream = $client_file->getStream(); 
+                    $filename = basename($client_file->getClientFilename());                    
                 }
                 catch (Throwable $ex) {
                     $message = I18N::translate('Unable to read file "%s".', $client_file);
@@ -1576,12 +1572,28 @@ class DownloadGedcomWithURL extends AbstractModule implements
             try {
                 $gedcom_records = $this->importGedcomFile($stream, $import_encoding);
 
-                $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $file_name . '.ged', $tree_name);
-                FlashMessages::addMessage($message, 'success');
+                if ($action === self::ACTION_UPLOAD) {
+                    $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename . '.ged', $tree_name);
+                    FlashMessages::addMessage($message, 'success');
+                }
             }
             catch (Throwable $ex) {
                 return $this->showErrorMessage($ex->getMessage());
             }            
+
+            //Export file name and extension
+            $extension = pathinfo($filename);
+            $filename  = basename($filename,'.'.$extension['extension']);
+
+            if ($format === 'gedcom') {
+                $extension = '.ged';
+            } 
+            elseif ($format === 'gedzip') {
+                $extension = '.gdz';
+            }
+            else {
+                $extension = '.zip';
+            }
 
             //Apply Gedcom filters
             $matched_tag_combinations = [];
@@ -1589,14 +1601,35 @@ class DownloadGedcomWithURL extends AbstractModule implements
             
             if ($action === self::ACTION_CONVERT) {
                 if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_CONVERT, '0'))) {
+                    if ($source === 'client') {
+                        //Create a response from the filtered data
+                        return $this->gedcom_filter_service->filteredDownloadResponse(
+                            $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], new Collection($gedcom_records));
+                    }
+                    else {
+                        //Download to the server
+                
+                        //Create response
+                        $export_file_name = $folder_on_server . $filename . '_converted' . $extension;
+                        try {
+                            //Create a stream from the filtered data
+                            $resource = $this->gedcom_filter_service->filteredResource(
+                                $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], new Collection($gedcom_records));
 
-                    //Create a response from the filtered data
-                    $response = $this->gedcom_filter_service->filteredDownloadResponse(
-                        $tree, true, $encoding, $privacy, $line_endings, $file_name, $format, [], new Collection($gedcom_records));
-            
-                    //Download the data
-                    //ToDo: download to the server
-                    return $response;   
+                            $this->root_filesystem->writeStream($export_file_name, $resource);
+                            $response = $this->showSuccessMessage(I18N::translate('The GEDCOM file "%s" was converted to: %s', $filename, $export_file_name));
+                        } 
+                        catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
+        
+                            if ($ex instanceof DownloadGedcomWithUrlException) {
+                                return $this->showErrorMessage($ex->getMessage());
+                            }
+                            else {
+                                return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_on_server . $export_file_name));
+                            }
+                        }
+        
+                    }
                 }
                 else {
                     return $this->showErrorMessage( I18N::translate('Remote URL requests to convert GEDCOM files on the server are not allowed.') . ' ' . 
@@ -1609,12 +1642,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     //Create a stream from the filtered data
                     $resource = $this->gedcom_filter_service->filteredResource(
-                        $tree, true, $encoding, $privacy, $line_endings, $file_name, $format, [], new Collection($gedcom_records));
+                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], new Collection($gedcom_records));
                     $stream = $this->stream_factory->createStreamFromResource($resource);
 
                     //Import the stream into the database
                     try {
-                        $this->tree_service->importGedcomFile($tree, $stream, $file_name, $encoding);
+                        $this->tree_service->importGedcomFile($tree, $stream, $filename, $encoding);
                     }
                     catch (Throwable $ex) {
                         return $this->showErrorMessage($ex->getMessage());

@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 /**
  * @var  string                 $title,
  * @var  Tree                   $tree,
- * @var  string                 $data_folder,
+ * @var  string                 $folder,
  * @var  string                 $default_gedcom_file,
  * @var  Collection<int,string> $gedcom_files,
  * @var  string                 $control_panel_secret_key
@@ -65,7 +65,7 @@ use Illuminate\Support\Collection;
 			<div class="col-sm-8">
 				<div class="input-group" dir="ltr">
 					<span class="input-group-text" dir="ltr">
-						<?= e($data_folder) ?>
+						<?= e($folder) ?>
 					</span>
 
 					<select name="server_file" class="form-select" dir="ltr" id="import-server-file">

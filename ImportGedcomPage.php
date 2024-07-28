@@ -85,12 +85,12 @@ class ImportGedcomPage implements RequestHandlerInterface
         $tree_service = new TreeService(new GedcomImportService()); 
         $tree = $tree_service->all()[$tree_name];
 
-        $data_filesystem = Registry::filesystem()->data();
-        $data_folder     = Registry::filesystem()->dataName();
-        $gedcom_files    = $this->admin_service->gedcomFiles($data_filesystem);
-
         $module_service = new ModuleService();
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+
+        $folder          = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
+        $data_filesystem = Registry::filesystem()->root($folder);
+        $gedcom_files    = $this->admin_service->gedcomFiles($data_filesystem);
 
         //Load export filters
         try {
@@ -110,7 +110,7 @@ class ImportGedcomPage implements RequestHandlerInterface
                 'title'                    => I18N::translate('Extended GEDCOM Import'),
                 'tree'                     => $tree,
                 'tree_list'                => $tree_list,                
-                'data_folder'              => $data_folder,
+                'folder'                   => $folder,
                 'gedcom_files'             => $gedcom_files,
                 'control_panel_secret_key' => $control_panel_secret_key,
                 'gedcom_filter_list'       => $gedcom_filter_list,

@@ -135,9 +135,15 @@ use Fisharebest\Webtrees\View;
 		<label class="col-sm-3" for="privacy">
 			<?= I18N::translate('Apply privacy settings') ?>
 		</label>
-
 		<div class="col-sm-9">
-			<input type="hidden" name="privacy" value="<?= e($default_privacy) ?>">
+			<?= view('components/radios-inline', ['name' => 'privacy','selected' => e($default_privacy), 
+				'options' => [
+					'none'     => 'none (' . I18N::translate('None') .')', 
+					'gedadmin' => 'gedadmin (' . I18N::translate('Manager') .')', 
+					'user'     => 'user (' . I18N::translate('Member') .')',  
+					'visitor'  => 'visitor (' . I18N::translate('Visitor') .')', 
+				]
+			]) ?>
 		</div>
 	</div>
 

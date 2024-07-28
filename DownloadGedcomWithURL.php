@@ -1282,6 +1282,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */	
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $encodings          = ['' => ''] + Registry::encodingFactory()->list();
+
 		$key                 = Validator::queryParams($request)->string('key', '');
 		$tree_name           = Validator::queryParams($request)->string('tree', '');
         $filename            = Validator::queryParams($request)->string('file', $tree_name);
@@ -1294,8 +1296,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$gedcom_filter1      = Validator::queryParams($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
 		$gedcom_filter2      = Validator::queryParams($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
 		$gedcom_filter3      = Validator::queryParams($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
-        $source              = Validator::queryParams($request)->isInArray(['client', 'server'])->string('source', '');
-        
+        $source              = Validator::queryParams($request)->string('source', 'server');
+        $server_file         = Validator::queryParams($request)->string('server_file', '');
+        $import_encoding     = Validator::queryParams($request)->isInArrayKeys($encodings)->string('import_encoding', '');
+
         // If POST requests (from control panel), parse certain parameters accordingly
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
 
@@ -1314,28 +1318,27 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $line_endings       = Validator::parsedBody($request)->string('line_endings', 'CRLF');
             $privacy            = Validator::parsedBody($request)->string('privacy', 'visitor');
             $time_stamp         = Validator::parsedBody($request)->string('time_stamp', self::TIME_STAMP_NONE);
-            $encodings          = ['' => ''] + Registry::encodingFactory()->list();
             $import_encoding    = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
-
-            $tree_service  = new TreeService(new GedcomImportService);
-
-            if ($tree_name !== '') {
-                $tree  = $tree_service->all()[$tree_name];
-            }
-            else {
-                $tree = null;
-            }
-
-            if ($filename === '') $filename = $tree_name;
-
-            // Save choices as defaults
-            if ($action === self::ACTION_UPLOAD) {
-                $tree  = $tree_service->all()[$tree_name];
-                $tree->setPreference('keep_media', $keep_media ? '1' : '0');
-                $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
-                $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);     
-            }
         }        
+
+        $tree_service  = new TreeService(new GedcomImportService);
+
+        if ($tree_name !== '') {
+            $tree  = $tree_service->all()[$tree_name];
+        }
+        else {
+            $tree = null;
+        }
+
+        if ($filename === '') $filename = $tree_name;
+
+        // Save choices as defaults
+        if ($action === self::ACTION_UPLOAD) {
+            $tree  = $tree_service->all()[$tree_name];
+            $tree->setPreference('keep_media', $keep_media ? '1' : '0');
+            $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
+            $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);     
+        }
 
         //Check update of module version
         $this->checkModuleVersionUpdate();
@@ -1532,6 +1535,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
         if ($action === self::ACTION_UPLOAD OR $action === self::ACTION_CONVERT) {
 
             if ($source === 'server') {
+
+                //Add server file has no extension, add .ged 
+                if (strpos($server_file, '.ged', -4) === false && strpos($server_file, '.zip', -4) === false && strpos($server_file, '.gdz', -4) === false) {
+                    $server_file .= '.ged';
+                }
 
                 try {
                     $resource = $this->root_filesystem->readStream($folder_on_server . $server_file);

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
 "POT-Creation-Date: 2024-07-28 16:00+0200\n"
-"PO-Revision-Date: 2024-07-28 16:01+0200\n"
+"PO-Revision-Date: 2024-07-28 16:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -666,7 +666,7 @@ msgstr "GEDCOM-Export"
 
 #: resources/views/settings.phtml:105
 msgid "Settings"
-msgstr ""
+msgstr "Einstellungen"
 
 #: resources/views/settings.phtml:113
 msgid "Save"
@@ -677,8 +677,8 @@ msgid ""
 "In order to use changed settings for a download/upload, the settings need to "
 "be saved first."
 msgstr ""
-"Um geänderte Einstellungen beim \"Herunterladen\"/\"Hochladen\" zu nutzen, "
-"müssen die Einstellungen zunächst gespeichert werden."
+"Um geänderte Einstellungen beim Herunterladen/Hochladen zu nutzen, müssen "
+"die Einstellungen zunächst gespeichert werden."
 
 #: resources/views/settings.phtml:129
 msgid "Settings for Remote Import/Export"

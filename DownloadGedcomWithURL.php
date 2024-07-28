@@ -278,7 +278,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function title(): string
     {
-        return 'DownloadGedcomWithURL';
+        return 'Extended Import/Export';
     }
 
     /**

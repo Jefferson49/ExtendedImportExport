@@ -133,7 +133,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			</span>
 		</div>
 
-		<div id="id-remote" class="collapse">			
+		<div id="id-remote" class="expand">			
 			<?php if ($allow_remote_download OR $allow_remote_upload OR $allow_remote_save OR $allow_remote_convert) : ?>
 				<div class="alert alert-warning">
 					<p><?= I18N::translate('Currently, remote downloading, uploading, saving or converting of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation.') ?></p>

@@ -1327,6 +1327,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $tree = null;
             }
 
+            if ($filename === '') $filename = $tree_name;
+
             // Save choices as defaults
             if ($action === self::ACTION_UPLOAD) {
                 $tree  = $tree_service->all()[$tree_name];

@@ -7,14 +7,14 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 use Fisharebest\Webtrees\Gedcom;
 
 /**
- * An export filter to remove empty and unlinked records (FAM, NOTE, OBJE, REPO, SOUR, _LOC)
+ * A GEDCOM filter to remove empty and unlinked records (FAM, NOTE, OBJE, REPO, SOUR, _LOC)
  */
-class RemoveEmptyOrUnlinkedRecordsExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
     protected const USES_REFERENCES_ANALYSIS = true;
-    protected const EXPORT_FILTER_RULES = [
+    protected const GEDCOM_FILTER_RULES = [
         
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
         'HEAD'                      => [],
         'HEAD:*'                    => [],

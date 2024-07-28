@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * An export filter, which removes CHAN structures
+ * A GEDCOM filter, which removes CHAN structures
  */
-class RemoveChangeDataExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class RemoveChangeDataGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {    
-    protected const EXPORT_FILTER_RULES = [
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+    protected const GEDCOM_FILTER_RULES = [
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
         //Remove CHAN data

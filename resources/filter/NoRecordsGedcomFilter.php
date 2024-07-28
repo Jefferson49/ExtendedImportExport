@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * An export filter, which exports no records; only HEAD, SUBM, TRLR
+ * A GEDCOM filter, which includes no records; only HEAD, SUBM, TRLR
  */
-class NoRecordsExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class NoRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
-    protected const EXPORT_FILTER_RULES = [
+    protected const GEDCOM_FILTER_RULES = [
         
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
-        //Only export HEAD, SUBM, TRLR; nothing else
+        //Only include HEAD, SUBM, TRLR; nothing else
         'HEAD'                      => [],
         'HEAD:*'                    => [],
 

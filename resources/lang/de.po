@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-07-28 16:00+0200\n"
-"PO-Revision-Date: 2024-07-28 16:35+0200\n"
+"POT-Creation-Date: 2024-07-28 22:16+0200\n"
+"PO-Revision-Date: 2024-07-28 22:16+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -15,116 +15,116 @@ msgstr ""
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: AbstractExportFilter.php:121
+#: AbstractGedcomFilter.php:121
 #, php-format
 msgid ""
-"The selected export filter (%s) contains an invalid filter definition (%s)."
+"The selected GEDCOM filter (%s) contains an invalid filter definition (%s)."
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
+"Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Filter-Definition "
 "(%s)."
 
-#: AbstractExportFilter.php:126
+#: AbstractGedcomFilter.php:126
 #, php-format
-msgid "The selected export filter (%s) does not contain any filter rules."
-msgstr "Der ausgewählte Export-Filter (%s) enthält keine Filter Regeln."
+msgid "The selected GEDCOM filter (%s) does not contain any filter rules."
+msgstr "Der ausgewählte GEDCOM -Filter (%s) enthält keine Filter Regeln."
 
-#: AbstractExportFilter.php:131
+#: AbstractGedcomFilter.php:131
 #, php-format
 msgid ""
-"The selected export filter (%s) contains an invalid definition for regular "
+"The selected GEDCOM filter (%s) contains an invalid definition for regular "
 "expression macros (%s)."
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält eine ungültige Definition für "
+"Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Definition für "
 "Macros von regulären Ausdrücken (%s)."
 
-#: AbstractExportFilter.php:138
+#: AbstractGedcomFilter.php:138
 #, php-format
 msgid ""
-"The selected export filter (%s) contains an invalid definition for the "
+"The selected GEDCOM filter (%s) contains an invalid definition for the "
 "regular expression macro %s."
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält eine ungültige Definition für das "
-"Macro %s."
+"Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Definition für "
+"das Macro %s."
 
-#: AbstractExportFilter.php:139 AbstractExportFilter.php:154
+#: AbstractGedcomFilter.php:139 AbstractGedcomFilter.php:154
 msgid "Invalid definition"
 msgstr "Ungültige Definition"
 
-#: AbstractExportFilter.php:145
+#: AbstractGedcomFilter.php:145
 #, php-format
 msgid ""
-"The variable type of the filter rules definition (%s) of the export filter "
+"The variable type of the filter rules definition (%s) of the GEDCOM filter "
 "(%s) does not have the type \"array\"."
 msgstr ""
-"Der Variablen-Typ der Filterregel-Definition (%s) für den Export-Filter (%s) "
-"hat nicht den erforderliche Typ \"array\"."
+"Der Variablen-Typ der Filterregel-Definition (%s) für den GEDCOM -Filter "
+"(%s) hat nicht den erforderliche Typ \"array\"."
 
-#: AbstractExportFilter.php:153
+#: AbstractGedcomFilter.php:153
 #, php-format
 msgid ""
-"The selected export filter (%s) contains an invalid filter definition for "
+"The selected GEDCOM filter (%s) contains an invalid filter definition for "
 "tag pattern %s."
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält eine ungültige Filter-Definition "
+"Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Filter-Definition "
 "für das Tag-Muster %s."
 
-#: AbstractExportFilter.php:161
+#: AbstractGedcomFilter.php:161
 #, php-format
-msgid "The selected export filter (%s) contains an invalid tag definition"
+msgid "The selected GEDCOM filter (%s) contains an invalid tag definition"
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält eine ungültige Tag-Definition"
+"Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Tag-Definition"
 
-#: AbstractExportFilter.php:173
+#: AbstractGedcomFilter.php:173
 #, php-format
 msgid ""
-"The used export filter (%s) contains a %s command with a method (%s), which "
+"The used GEDCOM filter (%s) contains a %s command with a method (%s), which "
 "is not available. Currently, only \"%s\" is allowed to be used as a method."
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält einen %s Befehl mit einer Methode "
-"(%s), die nicht verfügbar ist. Momentan ist es nur erlaubt, \"%s\" als "
-"Methode einzusetzen."
+"Der ausgewählte GEDCOM -Filter (%s) enthält einen %s Befehl mit einer "
+"Methode (%s), die nicht verfügbar ist. Momentan ist es nur erlaubt, \"%s\" "
+"als Methode einzusetzen."
 
-#: AbstractExportFilter.php:183
+#: AbstractGedcomFilter.php:183
 #, php-format
 msgid ""
-"The used export filter (%s) contains a %s command with a method (%s), but "
+"The used GEDCOM filter (%s) contains a %s command with a method (%s), but "
 "the filter class does not contain a \"%s\" method."
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält einen %s Befehl mit einer Methode "
-"(%s), aber die Filter-Klasse enthält keine \"%s\" Methode."
+"Der ausgewählte GEDCOM -Filter (%s) enthält einen %s Befehl mit einer "
+"Methode (%s), aber die Filter-Klasse enthält keine \"%s\" Methode."
 
-#: AbstractExportFilter.php:193
+#: AbstractGedcomFilter.php:193
 #, php-format
 msgid ""
-"The used export filter (%s) contains a macro command (%s) for a regular "
+"The used GEDCOM filter (%s) contains a macro command (%s) for a regular "
 "expression, but the macro is not defined in the filter."
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält einen Macro-Befehl (%s) für einen "
-"regulären Ausdruck, aber das Macro ist im Filter nicht definiert."
+"Der ausgewählte GEDCOM -Filter (%s) enthält einen Macro-Befehl (%s) für "
+"einen regulären Ausdruck, aber das Macro ist im Filter nicht definiert."
 
-#: AbstractExportFilter.php:202 AbstractExportFilter.php:209
+#: AbstractGedcomFilter.php:202 AbstractGedcomFilter.php:209
 #, php-format
-msgid "The selected export filter (%s) contains an invalid regular expression"
+msgid "The selected GEDCOM filter (%s) contains an invalid regular expression"
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält einen ungültigen regulären "
+"Der ausgewählte GEDCOM -Filter (%s) enthält einen ungültigen regulären "
 "Ausdruck"
 
-#: AbstractExportFilter.php:202
+#: AbstractGedcomFilter.php:202
 msgid "Error message"
 msgstr "Fehlermeldung"
 
-#: AbstractExportFilter.php:219
+#: AbstractGedcomFilter.php:219
 #, php-format
 msgid ""
-"The selected export filter (%s) contains a black list filter rule (%s) with "
+"The selected GEDCOM filter (%s) contains a black list filter rule (%s) with "
 "a regular expression, which will never be executed, because the black list "
 "filter rule will delete the related GEDCOM line."
 msgstr ""
-"Der ausgewählte Export-Filter (%s) enthält eine Black-List Filter-Regel (%s) "
-"mit einem regulären Ausdruck, welcher niemals ausgeführt wird, weil die "
+"Der ausgewählte GEDCOM -Filter (%s) enthält eine Black-List Filter-Regel "
+"(%s) mit einem regulären Ausdruck, welcher niemals ausgeführt wird, weil die "
 "Black-List Filter-Regel die zugehörige GEDCOM-Zeile löschen wird."
 
-#: AbstractExportFilter.php:240
+#: AbstractGedcomFilter.php:240
 #, php-format
 msgid ""
 "The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
@@ -135,12 +135,12 @@ msgstr ""
 "dominiert und wird daher niemals ausgeführt werden. Bitte entfernen Sie die "
 "Filter-Regel oder ändern Sie die Reihenfolge der Filter-Regeln."
 
-#: AbstractExportFilter.php:251 AbstractExportFilter.php:260
-#: AbstractExportFilter.php:268
+#: AbstractGedcomFilter.php:251 AbstractGedcomFilter.php:260
+#: AbstractGedcomFilter.php:268
 #, php-format
-msgid "The %s method of the used export filter (%s) throws a PHP error"
+msgid "The %s method of the used GEDCOM filter (%s) throws a PHP error"
 msgstr ""
-"Die %s Methode des genutzten Export-Filters (%s) erzeugt einen PHP-Fehler"
+"Die %s Methode des genutzten GEDCOM -Filters (%s) erzeugt einen PHP-Fehler"
 
 #: ConvertGedcomPage.php:83 ConvertGedcomPage.php:84 ConvertGedcomPage.php:85
 #: DownloadGedcomWithURL.php:847 ExportGedcomPage.php:82
@@ -318,7 +318,7 @@ msgstr "Der angeforderte Stammbaum \"%s\" konnte nicht gefunden werden."
 msgid "The family tree \"%s\" was exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1507 DownloadGedcomWithURL.php:1632
+#: DownloadGedcomWithURL.php:1507 DownloadGedcomWithURL.php:1637
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
@@ -330,7 +330,7 @@ msgstr ""
 "sind nicht erlaubt."
 
 #: DownloadGedcomWithURL.php:1513 DownloadGedcomWithURL.php:1530
-#: DownloadGedcomWithURL.php:1640 DownloadGedcomWithURL.php:1665
+#: DownloadGedcomWithURL.php:1645 DownloadGedcomWithURL.php:1670
 msgid "Please check the module settings in the control panel."
 msgstr "Bitte überprüfen Sie die Modul-Einstellungen in der Verwaltung."
 
@@ -341,34 +341,34 @@ msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien herunterzuladen, sind nicht "
 "erlaubt."
 
-#: DownloadGedcomWithURL.php:1545 DownloadGedcomWithURL.php:1566
+#: DownloadGedcomWithURL.php:1550 DownloadGedcomWithURL.php:1571
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Die Datei \"%s\" konnte nicht eingelesen werden."
 
-#: DownloadGedcomWithURL.php:1553 DownloadGedcomWithURL.php:1571
+#: DownloadGedcomWithURL.php:1558 DownloadGedcomWithURL.php:1576
 msgid "No GEDCOM file was received."
 msgstr ""
 
-#: DownloadGedcomWithURL.php:1580
+#: DownloadGedcomWithURL.php:1585
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr ""
 "Die Datei \"%s\" für den Stammbaum \"%s\" wurde erfolgreich hochgeladen."
 
-#: DownloadGedcomWithURL.php:1624
+#: DownloadGedcomWithURL.php:1629
 #, php-format
 msgid "The GEDCOM file \"%s\" was converted to: %s"
 msgstr "Die GEDCOM-Datei \"%s\" wurde konvertiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1639
+#: DownloadGedcomWithURL.php:1644
 msgid ""
 "Remote URL requests to convert GEDCOM files on the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu "
 "konvertieren, sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1664
+#: DownloadGedcomWithURL.php:1669
 msgid ""
 "Remote URL requests to upload GEDCOM files to the server are not allowed."
 msgstr ""
@@ -981,11 +981,11 @@ msgstr "Voreinstellung für GEDCOM-Filter %s"
 #: resources/views/settings.phtml:481
 #, php-format
 msgid ""
-"Select a default filter for export filter %s. This filter will be chosen if "
+"Select a default filter for GEDCOM filter %s. This filter will be chosen if "
 "no specific filter is provided as URL parameter."
 msgstr ""
-"Geben Sie die Voreinstellung für den Export-Filter %s an. Dieser Filter wird "
-"genutzt, wenn kein spezifischer Filter als URL-Parameter übergeben wird."
+"Geben Sie die Voreinstellung für den GEDCOM -Filter %s an. Dieser Filter "
+"wird genutzt, wenn kein spezifischer Filter als URL-Parameter übergeben wird."
 
 #~ msgid "GEDCOM Filter Data Fix"
 #~ msgstr "GEDCOM-Filter Datenkorrekturen"

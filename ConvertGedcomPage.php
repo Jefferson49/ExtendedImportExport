@@ -94,7 +94,7 @@ class ConvertGedcomPage implements RequestHandlerInterface
         $data_filesystem = Registry::filesystem()->root($folder);
         $gedcom_files    = $this->admin_service->gedcomFiles($data_filesystem);
 
-        //Load export filters
+        //Load Gedcom filters
         try {
             DownloadGedcomWithURL::loadGedcomFilterClasses();
         }

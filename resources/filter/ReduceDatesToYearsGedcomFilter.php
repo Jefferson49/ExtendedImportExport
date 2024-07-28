@@ -7,14 +7,14 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 use Fisharebest\Webtrees\Tree;
 
 /**
- * An export filter, which reduces all dates to years only
+ * A GEDCOM filter, which reduces all dates to years only
  * 
  */
-class ReduceDatesToYearsExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class ReduceDatesToYearsGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
-    protected const EXPORT_FILTER_RULES = [
+    protected const GEDCOM_FILTER_RULES = [
       
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
         //Do not change dates in HEAD

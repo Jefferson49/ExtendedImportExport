@@ -853,11 +853,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             if (strpos($className, $name_space) !==  false) {
 
-                if (in_array($name_space . 'ExportFilterInterface', class_implements($className))) {
+                if (in_array($name_space . 'GedcomFilterInterface', class_implements($className))) {
 
                     $className = str_replace($name_space, '', $className);
 
-                    if ($className !== 'AbstractExportFilter') $gedcom_filter_list[$className] = $className;
+                    if ($className !== 'AbstractGedcomFilter') $gedcom_filter_list[$className] = $className;
                 }
             }
         }
@@ -878,7 +878,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Check if Gedcom filter class is valid
         $gedcom_filter_class_name = __NAMESPACE__ . '\\' . $gedcom_filter_name;
 
-        if (!class_exists($gedcom_filter_class_name) OR !(new $gedcom_filter_class_name() instanceof ExportFilterInterface)) {
+        if (!class_exists($gedcom_filter_class_name) OR !(new $gedcom_filter_class_name() instanceof GedcomFilterInterface)) {
 
             return I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter_name;
         }
@@ -1134,7 +1134,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * 
      * @param array $params                    Params of a data fix          
      * 
-     * @return array<ExportFilterInterface>    A set of Gedcom filters
+     * @return array<GedcomFilterInterface>    A set of Gedcom filters
      */	
     public function getGedcomFiltersFromParams(array $params): array    
     {
@@ -1176,7 +1176,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @param string $gedcom_filter2            Name of Gedcom filter 2
      * @param string $gedcom_filter3            Name of Gedcom filter 3
      *
-     * @return array<ExportFilterInterface> 	A set of Gedcom filters
+     * @return array<GedcomFilterInterface> 	A set of Gedcom filters
      */	
     public function createGedcomFilterList(string $gedcom_filter1, string $gedcom_filter2, string $gedcom_filter3): array    
     {
@@ -1417,15 +1417,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			return $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         } 	
 		//Error if Gedcom filter 1 is not found
-        elseif ($gedcom_filter1 !== '' && (!class_exists($gedcom_filter_class_name1) OR !(new $gedcom_filter_class_name1() instanceof ExportFilterInterface))) {
+        elseif ($gedcom_filter1 !== '' && (!class_exists($gedcom_filter_class_name1) OR !(new $gedcom_filter_class_name1() instanceof GedcomFilterInterface))) {
             return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter1);
         }
 		//Error if Gedcom filter 2 is not found
-        elseif ($gedcom_filter2 !== '' && (!class_exists($gedcom_filter_class_name2) OR !(new $gedcom_filter_class_name2() instanceof ExportFilterInterface))) {
+        elseif ($gedcom_filter2 !== '' && (!class_exists($gedcom_filter_class_name2) OR !(new $gedcom_filter_class_name2() instanceof GedcomFilterInterface))) {
             return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter2);
         }
 		//Error if Gedcom filter 3 is not found
-        elseif ($gedcom_filter3 !== '' && (!class_exists($gedcom_filter_class_name3) OR !(new $gedcom_filter_class_name3() instanceof ExportFilterInterface))) {
+        elseif ($gedcom_filter3 !== '' && (!class_exists($gedcom_filter_class_name3) OR !(new $gedcom_filter_class_name3() instanceof GedcomFilterInterface))) {
             return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter3);
         }
 		//Error if Gedcom filter 1 validation fails

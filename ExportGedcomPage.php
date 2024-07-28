@@ -89,7 +89,7 @@ class ExportGedcomPage implements RequestHandlerInterface
         $module_service = new ModuleService();
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
-        //Load export filters
+        //Load Gedcom filters
         try {
             DownloadGedcomWithURL::loadGedcomFilterClasses();
         }

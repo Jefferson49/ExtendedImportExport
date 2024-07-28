@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * An export filter to remove empty records (FAM, NOTE, OBJE, REPO, SOUR)
+ * A GEDCOM filter to remove empty records (FAM, NOTE, OBJE, REPO, SOUR)
  */
-class RemoveEmptyRecordsExportFilter extends RemoveEmptyOrUnlinkedRecordsExportFilter implements ExportFilterInterface
+class RemoveEmptyRecordsGedcomFilter extends RemoveEmptyOrUnlinkedRecordsGedcomFilter implements GedcomFilterInterface
 {
     /**
     * Custom conversion of a Gedcom string

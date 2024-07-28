@@ -7,26 +7,26 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 use Fisharebest\Webtrees\Gedcom;
 
 /**
- * An example export filter, which demonstrates the different options, which can be used in export filters
+ * An example GEDCOM filter, which demonstrates the different options, which can be used in GEDCOM filters
  */
-class ExampleExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class ExampleGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
-    protected const EXPORT_FILTER_RULES = [
+    protected const GEDCOM_FILTER_RULES = [
 
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
-        //Only export the year of all birth dates, i.e. 01 JAN 1900 => 1900
+        //Only include the year of all birth dates, i.e. 01 JAN 1900 => 1900
         'INDI:BIRT:DATE'            => ["DATE .*([\d]{4})\n" => "DATE $1\n"],
 
-        //Do not export baptism data
+        //Do not include baptism data
         '!INDI:BAPM'                => [],
         '!INDI:BAPM:*'              => [],
 
         //Remove RESN tag with value 'none', because it is not allowed in the Gedcom 5.5.1 standard
         'INDI:RESN'                 => ["1 RESN (?i)none\n" => ""],
 
-        //Do not export marriage place data
+        //Do not include marriage place data
         '!FAM:MARR:PLAC'            => [],
         '!FAM:MARR:PLAC:*'          => [],
 

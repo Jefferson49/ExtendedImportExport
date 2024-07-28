@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * An export filter, which creates a CSV list (Surname, Given names) of all individuals 
+ * A GEDCOM filter, which creates a CSV list (Surname, Given names) of all individuals 
  */
-class IndividualNamesCsvExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class IndividualNamesCsvGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
-    protected const EXPORT_FILTER_RULES = [
+    protected const GEDCOM_FILTER_RULES = [
         
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
         //Create the first line of the CSV file with column names (Surname, Given names)

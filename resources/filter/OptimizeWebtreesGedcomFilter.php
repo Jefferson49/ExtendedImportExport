@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * An export filter, which changes some of the webtrees export structures in order to be compliant to the GEDCOM 7.0 standard
+ * A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to be compliant to the GEDCOM 7.0 standard
  */
-class OptimizeWebtreesExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
     protected const WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES = true;
     
-    protected const EXPORT_FILTER_RULES = [
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+    protected const GEDCOM_FILTER_RULES = [
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
         //Remove * from names (indicates first name underlined by webtrees)

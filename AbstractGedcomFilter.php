@@ -44,9 +44,9 @@ use ReflectionClass;
 use Throwable;
 
 /**
- * Abstract export filter, which contains basic export filter rules for the mandatory HEAD, SUBM, TRLR structures only
+ * Abstract Gedcom filter, which contains basic Gedcom filter rules for the mandatory HEAD, SUBM, TRLR structures only
  */
-class AbstractExportFilter implements ExportFilterInterface
+class AbstractGedcomFilter implements GedcomFilterInterface
 {    
     //A switch, whether the filter uses a references analysis between the records
     protected const USES_REFERENCES_ANALYSIS = false;
@@ -62,33 +62,33 @@ class AbstractExportFilter implements ExportFilterInterface
     public const PHP_FUNCTION_STRING   = 'PHP_function';
     public const CUSTOM_CONVERT        = 'customConvert';
 
-    //The definition of the export filter rules. As a default, export all (i.e. '*')
-    protected const EXPORT_FILTER_RULES = [
+    //The definition of the GEDCOM filter rules. As a default, process all (i.e. '*')
+    protected const GEDCOM_FILTER_RULES = [
 
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
         '*'                         => [],
     ];
 
-    //Macros for regular expressions, which can be used in export filter rules
+    //Macros for regular expressions, which can be used in GEDCOM filter rules
     protected const REGEXP_MACROS = [
     //Name                          => Regular expression to be applied for the chosen GEDCOM tag
     //                                 ["search pattern" => "replace pattern"],
     ];
 
     /**
-     * Get the export filter
+     * Get the GEDCOM filter
      * 
      * @param Tree $tree
      *
      * @return array
      */
-    public function getExportFilterRules(Tree $tree = null): array {
+    public function getGedcomFilterRules(Tree $tree = null): array {
 
-        $export_filter_rules = $this->replaceMacros(static::EXPORT_FILTER_RULES, static::REGEXP_MACROS);
-        $export_filter_rules = $this->addPregDelimiters($export_filter_rules);
+        $gedcom_filter_rules = $this->replaceMacros(static::GEDCOM_FILTER_RULES, static::REGEXP_MACROS);
+        $gedcom_filter_rules = $this->addPregDelimiters($gedcom_filter_rules);
 
-        return $export_filter_rules;
+        return $gedcom_filter_rules;
     }
 
     /**
@@ -107,7 +107,7 @@ class AbstractExportFilter implements ExportFilterInterface
     }
     
     /**
-     * Validate the export filter
+     * Validate the GEDCOM filter
      *
      * @return string   Validation error; empty, if successful validation
      */
@@ -117,40 +117,40 @@ class AbstractExportFilter implements ExportFilterInterface
         $class_name = str_replace($name_space, '', get_class($this));
 
         //Validate if EXPORT_FILTER contains an array
-        if (!is_array(static::EXPORT_FILTER_RULES)) {
-            return I18N::translate('The selected export filter (%s) contains an invalid filter definition (%s).', $class_name, 'const EXPORT_FILTER_RULES');
+        if (!is_array(static::GEDCOM_FILTER_RULES)) {
+            return I18N::translate('The selected GEDCOM filter (%s) contains an invalid filter definition (%s).', $class_name, 'const GEDCOM_FILTER_RULES');
         }
 
         //Validate if EXPORT_FILTER is empty
-        if (sizeof(static::EXPORT_FILTER_RULES) === 0) {
-            return I18N::translate('The selected export filter (%s) does not contain any filter rules.', $class_name);
+        if (sizeof(static::GEDCOM_FILTER_RULES) === 0) {
+            return I18N::translate('The selected GEDCOM filter (%s) does not contain any filter rules.', $class_name);
         }
 
         //Validate if REGEXP_MACROS contains an array
         if (!is_array(static::REGEXP_MACROS)) {
-            return I18N::translate('The selected export filter (%s) contains an invalid definition for regular expression macros (%s).', $class_name, 'const REGEXP_MACROS');
+            return I18N::translate('The selected GEDCOM filter (%s) contains an invalid definition for regular expression macros (%s).', $class_name, 'const REGEXP_MACROS');
         }
 
         foreach(static::REGEXP_MACROS as $name => $regexps) {
 
             //Validate regexp macros
             if (!is_array($regexps)) {
-                return I18N::translate('The selected export filter (%s) contains an invalid definition for the regular expression macro %s.', $class_name, $name) . ' ' .
+                return I18N::translate('The selected GEDCOM filter (%s) contains an invalid definition for the regular expression macro %s.', $class_name, $name) . ' ' .
                        I18N::translate('Invalid definition') . ': ' . (string) $regexps;
             }
         }
 
-        //Validate if EXPORT_FILTER_RULES is an array
-        if (!is_array(static::EXPORT_FILTER_RULES)) {
-            return I18N::translate('The variable type of the filter rules definition (%s) of the export filter (%s) does not have the type "array".', 'const EXPORT_FILTER_RULES', $class_name,);
+        //Validate if GEDCOM_FILTER_RULES is an array
+        if (!is_array(static::GEDCOM_FILTER_RULES)) {
+            return I18N::translate('The variable type of the filter rules definition (%s) of the GEDCOM filter (%s) does not have the type "array".', 'const GEDCOM_FILTER_RULES', $class_name,);
         }
 
-        //Validate EXPORT_FILTER_RULES
-        foreach(static::EXPORT_FILTER_RULES as $pattern => $regexps) {
+        //Validate GEDCOM_FILTER_RULES
+        foreach(static::GEDCOM_FILTER_RULES as $pattern => $regexps) {
 
             //Validate filter rule
             if (!is_array($regexps)) {
-                return I18N::translate('The selected export filter (%s) contains an invalid filter definition for tag pattern %s.', $class_name, $pattern) . ' ' .
+                return I18N::translate('The selected GEDCOM filter (%s) contains an invalid filter definition for tag pattern %s.', $class_name, $pattern) . ' ' .
                        I18N::translate('Invalid definition') . ': ' . (string) $regexps;
             }
 
@@ -158,10 +158,10 @@ class AbstractExportFilter implements ExportFilterInterface
             preg_match_all('/!?(' . Gedcom::REGEX_TAG . '|[\*)])(\:(' . Gedcom::REGEX_TAG . '|[\*)]))*/', $pattern, $match, PREG_PATTERN_ORDER);
 
             if ($match[0][0] !== $pattern) {
-                return I18N::translate('The selected export filter (%s) contains an invalid tag definition', $class_name) . ': ' . $pattern;
+                return I18N::translate('The selected GEDCOM filter (%s) contains an invalid tag definition', $class_name) . ': ' . $pattern;
             }
 
-            //Validate regular expressions in export filter
+            //Validate regular expressions in GEDCOM filter
             foreach($regexps as $search => $replace) {
                 
                 //If the filter contains a PHP function command, check if the filter class has the required method
@@ -170,7 +170,7 @@ class AbstractExportFilter implements ExportFilterInterface
                     //Check if customConvert method is chosen
                     if ($replace !== self::CUSTOM_CONVERT) {
 
-                        return I18N::translate('The used export filter (%s) contains a %s command with a method (%s), which is not available. Currently, only "%s" is allowed to be used as a method.', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, $replace, self::CUSTOM_CONVERT);
+                        return I18N::translate('The used GEDCOM filter (%s) contains a %s command with a method (%s), which is not available. Currently, only "%s" is allowed to be used as a method.', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, $replace, self::CUSTOM_CONVERT);
                     }
                     try {
                         $reflection = new ReflectionClass($this);
@@ -180,7 +180,7 @@ class AbstractExportFilter implements ExportFilterInterface
                         };
                     }
                     catch (Throwable $th) {
-                        return I18N::translate('The used export filter (%s) contains a %s command with a method (%s), but the filter class does not contain a "%s" method.', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, self::CUSTOM_CONVERT, self::CUSTOM_CONVERT);
+                        return I18N::translate('The used GEDCOM filter (%s) contains a %s command with a method (%s), but the filter class does not contain a "%s" method.', (new ReflectionClass($this))->getShortName(), self::PHP_FUNCTION_STRING, self::CUSTOM_CONVERT, self::CUSTOM_CONVERT);
                     }
                 }
                 //If the filter contains a RegExp macro command, check if the macro exists
@@ -190,7 +190,7 @@ class AbstractExportFilter implements ExportFilterInterface
                         $macro = static::REGEXP_MACROS[$replace];
                     }
                     catch (Throwable $th) {
-                        return I18N::translate('The used export filter (%s) contains a macro command (%s) for a regular expression, but the macro is not defined in the filter.', (new ReflectionClass($this))->getShortName(), $replace);
+                        return I18N::translate('The used GEDCOM filter (%s) contains a macro command (%s) for a regular expression, but the macro is not defined in the filter.', (new ReflectionClass($this))->getShortName(), $replace);
                     }
                 }
 
@@ -199,14 +199,14 @@ class AbstractExportFilter implements ExportFilterInterface
                     preg_match('/' . $search . '/', "Lorem ipsum");
                 }
                 catch (Throwable $th) {
-                    return I18N::translate('The selected export filter (%s) contains an invalid regular expression', $class_name) . ': ' . $search . '. ' . I18N::translate('Error message'). ': ' . $th->getMessage();
+                    return I18N::translate('The selected GEDCOM filter (%s) contains an invalid regular expression', $class_name) . ': ' . $search . '. ' . I18N::translate('Error message'). ': ' . $th->getMessage();
                 }
 
                 try {
                     preg_replace('/' . $search . '/', $replace, "Lorem ipsum");
                 }
                 catch (Throwable $th) {
-                    return I18N::translate('The selected export filter (%s) contains an invalid regular expression', $class_name) . ': ' . $replace . '. ' . $th->getMessage();
+                    return I18N::translate('The selected GEDCOM filter (%s) contains an invalid regular expression', $class_name) . ': ' . $replace . '. ' . $th->getMessage();
                 }
             }
 
@@ -216,15 +216,15 @@ class AbstractExportFilter implements ExportFilterInterface
                 foreach($regexps as $search => $replace) {
 
                     if ($search !== '' OR $replace !== '') {
-                        return I18N::translate('The selected export filter (%s) contains a black list filter rule (%s) with a regular expression, which will never be executed, because the black list filter rule will delete the related GEDCOM line.', $class_name, $pattern);
+                        return I18N::translate('The selected GEDCOM filter (%s) contains a black list filter rule (%s) with a regular expression, which will never be executed, because the black list filter rule will delete the related GEDCOM line.', $class_name, $pattern);
                     } 
                 }
             }
 
-            //Check if a rule is dominated by another rule, which is higher priority (i.e. earlier entry in the export filter list)
+            //Check if a rule is dominated by another rule, which is higher priority (i.e. earlier entry in the GEDCOM filter list)
             $i = 0;
-            $size = sizeof(static::EXPORT_FILTER_RULES);
-            $pattern_list = array_keys(static::EXPORT_FILTER_RULES);
+            $size = sizeof(static::GEDCOM_FILTER_RULES);
+            $pattern_list = array_keys(static::GEDCOM_FILTER_RULES);
 
             while($i < $size && $pattern !== $pattern_list[$i]) {
 
@@ -243,12 +243,12 @@ class AbstractExportFilter implements ExportFilterInterface
             }            
         }
 
-        //Validate, if getExportFilterRules() creates a PHP error
+        //Validate, if getGedcomFilterRules() creates a PHP error
         try {
-            $test = $this->getExportFilterRules();
+            $test = $this->getGedcomFilterRules();
         }
         catch (Throwable $th) {
-            return I18N::translate('The %s method of the used export filter (%s) throws a PHP error', 'getExportFilterRules', (new ReflectionClass($this))->getShortName()) .
+            return I18N::translate('The %s method of the used GEDCOM filter (%s) throws a PHP error', 'getGedcomFilterRules', (new ReflectionClass($this))->getShortName()) .
                                     ': ' . $th->getMessage();
         }        
 
@@ -257,7 +257,7 @@ class AbstractExportFilter implements ExportFilterInterface
             $test = $this->getIncludedFiltersBefore();
         }
         catch (Throwable $th) {
-            return I18N::translate('The %s method of the used export filter (%s) throws a PHP error', 'getIncludedFiltersBefore', (new ReflectionClass($this))->getShortName()) .
+            return I18N::translate('The %s method of the used GEDCOM filter (%s) throws a PHP error', 'getIncludedFiltersBefore', (new ReflectionClass($this))->getShortName()) .
                                     ': ' . $th->getMessage();
         }                
         //Validate, if getIncludedFiltersAfter creates a PHP error
@@ -265,7 +265,7 @@ class AbstractExportFilter implements ExportFilterInterface
             $test = $this->getIncludedFiltersAfter();
         }
         catch (Throwable $th) {
-            return I18N::translate('The %s method of the used export filter (%s) throws a PHP error', 'getIncludedFiltersAfter', (new ReflectionClass($this))->getShortName()) .
+            return I18N::translate('The %s method of the used GEDCOM filter (%s) throws a PHP error', 'getIncludedFiltersAfter', (new ReflectionClass($this))->getShortName()) .
                                     ': ' . $th->getMessage();
         }
         
@@ -339,7 +339,7 @@ class AbstractExportFilter implements ExportFilterInterface
     /**
      * Include a set of other filters, which shall be executed before the current filter
      *
-     * @return array<ExportFilterInterface>    A set of included export filters
+     * @return array<GedcomFilterInterface>    A set of included GEDCOM filters
      */
     public function getIncludedFiltersBefore(): array {
 
@@ -349,7 +349,7 @@ class AbstractExportFilter implements ExportFilterInterface
     /**
      * Include a set of other filters, which shall be executed after the current filter
      *
-     * @return array<ExportFilterInterface>    A set of included export filters
+     * @return array<GedcomFilterInterface>    A set of included GEDCOM filters
      */
     public function getIncludedFiltersAfter(): array {
 
@@ -366,7 +366,7 @@ class AbstractExportFilter implements ExportFilterInterface
      */
     public function replaceMacros(array $filter_rules, array $regexp_macros): array {
 
-        $export_filter_rules = [];
+        $gedcom_filter_rules = [];
 
         foreach($filter_rules as $tag => $conversion_rules) {
 
@@ -385,10 +385,10 @@ class AbstractExportFilter implements ExportFilterInterface
                 }
             }
 
-            $export_filter_rules[$tag] = $modfied_conversion_rules;
+            $gedcom_filter_rules[$tag] = $modfied_conversion_rules;
         }
 
-        return $export_filter_rules;
+        return $gedcom_filter_rules;
     }   
     
     
@@ -401,7 +401,7 @@ class AbstractExportFilter implements ExportFilterInterface
      */
     public function addPregDelimiters(array $filter_rules): array {
 
-        $export_filter_rules = [];
+        $gedcom_filter_rules = [];
 
         foreach($filter_rules as $tag => $conversion_rules) {
 
@@ -418,9 +418,9 @@ class AbstractExportFilter implements ExportFilterInterface
                 $modfied_conversion_rules[$search] = $replace;
             }
 
-            $export_filter_rules[$tag] = $modfied_conversion_rules;
+            $gedcom_filter_rules[$tag] = $modfied_conversion_rules;
         }
 
-        return $export_filter_rules;
+        return $gedcom_filter_rules;
     }      
 }

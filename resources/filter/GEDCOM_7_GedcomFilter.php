@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 /**
- * An export filter, which converts GEDCOM 5.5.1 to GEDCOM 7.0
+ * A GEDCOM filter, which converts GEDCOM 5.5.1 to GEDCOM 7.0
  */
-class GEDCOM_7_ExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
     //Mapping table of languages to IANA language tags
     private array $language_to_code_table;
 
-    protected const EXPORT_FILTER_RULES = [
+    protected const GEDCOM_FILTER_RULES = [
 
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
         //Remove submissions, because they do not exist in GEDCOM 7

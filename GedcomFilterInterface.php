@@ -28,18 +28,18 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 use Fisharebest\Webtrees\Tree;
 
 /**
- * Interface for export filters
+ * Interface for GEDCOM filters
  */
-interface ExportFilterInterface
+interface GedcomFilterInterface
 {
     /**
-     * Get the export filter
+     * Get the Gedcom filter
      * 
      * @param Tree $tree
      *
      * @return array
      */
-    public function getExportFilterRules(Tree $tree = null): array;
+    public function getGedcomFilterRules(Tree $tree = null): array;
 
     /**
      * Custom conversion of a Gedcom string
@@ -53,7 +53,7 @@ interface ExportFilterInterface
     public function customConvert(string $pattern, string $gedcom, array &$records_list): string;
 
     /**
-     * Validate the export filter
+     * Validate the Gedcom filter
      *
      * @return bool   Validation error; empty, if successful validation
      */
@@ -83,14 +83,14 @@ interface ExportFilterInterface
     /**
      * Include a set of other filters, which shall be executed before the current filter
      *
-     * @return array<ExportFilterInterface>    A set of included export filters
+     * @return array<GedcomFilterInterface>    A set of included Gedcom filters
      */
     public function getIncludedFiltersBefore(): array;
 
     /**
      * Include a set of other filters, which shall be executed after the current filter
      *
-     * @return array<ExportFilterInterface>    A set of included export filters
+     * @return array<GedcomFilterInterface>    A set of included Gedcom filters
      */
     public function getIncludedFiltersAfter(): array;
 }

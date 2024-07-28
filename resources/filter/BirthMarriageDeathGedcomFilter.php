@@ -7,16 +7,16 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 use Fisharebest\Webtrees\Tree;
 
 /**
- * An export filter, which exports birth, marriage, and death data only.
+ * A GEDCOM filter, which includes birth, marriage, and death data only.
  * 
- * All exported dates are shortened to include the year only (i.e. 01 JAN 1900 => 1900).
- * The export also generates links to the related individuals and families in webtrees.
+ * All included dates are shortened to include the year only (i.e. 01 JAN 1900 => 1900).
+ * The generated GEDCOM also contains links to the related individuals and families in webtrees.
  */
-class BirthMarriageDeathExportFilter extends AbstractExportFilter implements ExportFilterInterface
+class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
-    protected const EXPORT_FILTER_RULES = [
+    protected const GEDCOM_FILTER_RULES = [
       
-        //GEDCOM tag to be exported => Regular expression to be applied for the chosen GEDCOM tag
+        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
         'HEAD'                      => [],
         'HEAD:SOUR'                 => [],
@@ -87,20 +87,20 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
     ];   
 
     /**
-     * Get the export filter and replace tree name in URLs
+     * Get the GEDCOM filter and replace tree name in URLs
      * 
-     * In this specific case, the export filter rules are modified to replace 
+     * In this specific case, the GEDCOM filter rules are modified to replace 
      * %TREE% in the filter rule by the actual tree name in webtrees
      *
      * @param Tree $tree
      *
      * @return array
      */
-    public function getExportFilterRules(Tree $tree = null): array {
+    public function getGedcomFilterRules(Tree $tree = null): array {
 
-        $export_filter = [];
+        $gedcom_filter = [];
 
-        foreach(parent::getExportFilterRules($tree) as $tag => $regexps) {
+        foreach(parent::getGedcomFilterRules($tree) as $tag => $regexps) {
 
         $replaced_regexps = [];
 
@@ -112,9 +112,9 @@ class BirthMarriageDeathExportFilter extends AbstractExportFilter implements Exp
             $replaced_regexps[$search] = $replace;
         }
 
-        $export_filter[$tag] = $replaced_regexps;
+        $gedcom_filter[$tag] = $replaced_regexps;
         }
 
-        return $export_filter;
+        return $gedcom_filter;
     }
 }

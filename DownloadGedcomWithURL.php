@@ -1315,7 +1315,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $privacy            = Validator::parsedBody($request)->string('privacy', 'visitor');
             $time_stamp         = Validator::parsedBody($request)->string('time_stamp', self::TIME_STAMP_NONE);
             $encodings          = ['' => ''] + Registry::encodingFactory()->list();
-            //ToDo: Default value for import encoding
             $import_encoding    = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
 
             $tree_service  = new TreeService(new GedcomImportService);

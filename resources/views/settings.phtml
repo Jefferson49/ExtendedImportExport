@@ -99,7 +99,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			<li>
 				<span class="fa-li"><?= view('icons/data-fix') ?></span>
 				<a href="<?= e(route(DataFixPage::class, ['tree' => $default_tree_name, 'data_fix' => DownloadGedcomWithURL::activeModuleName()])) ?>">
-					<?= I18N::translate('Datafix for GEDCOM filters') ?>
+					<?= I18N::translate('Datafix using GEDCOM filters') ?>
 				</a>
 			</li>
 		</ul>
@@ -315,7 +315,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 			</span>
 		</div>
 		<div id="id-export" class="collapse">		
-			<p><?= I18N::translate('These settings are used if the download button is pressed or as default values for remote downloads if certain parameter values are not provided within the URL. By specifying the default values, the URLs can be simplified. In the most extreme case, it is sufficient to provide the authorization key parameter only.') ?></p>	
+			<p><?= I18N::translate('These settings are used as default values for exports, e.g. if certain parameter values are not provided within the URL. By specifying the default values, the URLs can be simplified. In the most extreme case, it is sufficient to provide the tree and the authorization key parameter only.') ?></p>	
 			<p><?= I18N::translate('Any parameters provided in the URL of a remote download have a higher priority and will overrule the default settings.') ?></p>
 			<fieldset class="mb-3">
 				<div class="row">
@@ -405,7 +405,7 @@ $gedcom_files        = $admin_service->gedcomFiles($data_filesystem);
 						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ACTION, 'selected' => $default_action,
 							'options' => [
 								DownloadGedcomWithURL::ACTION_DOWNLOAD => DownloadGedcomWithURL::ACTION_DOWNLOAD . ' (' . I18N::translate('Download') . ')',
-								DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save on the webtrees') . ')',
+								DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save on the webtrees server') . ')',
 								DownloadGedcomWithURL::ACTION_BOTH     => DownloadGedcomWithURL::ACTION_BOTH     . ' (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
 							]
 						]) ?>

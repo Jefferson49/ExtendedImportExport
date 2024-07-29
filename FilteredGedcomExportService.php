@@ -73,7 +73,7 @@ use const STREAM_FILTER_WRITE;
 /**
  * Export data in GEDCOM format
  */
-class GedcomExportFilterService extends GedcomExportService
+class FilteredGedcomExportService extends GedcomExportService
 {
     //Custom tags and schema definitions
     private const SCHEMAS = [
@@ -167,7 +167,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @param string                       $line_endings
      * @param string                       $filename       Name of download file, without an extension
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
-     * @param array<GedcomFilterInterface> $export_filters An array, which contains GEDCOM filters
+     * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param Collection<int,string|object|GedcomRecord>|null $records
      * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
      * @param string|null                  $media_path     Location within the zip filesystem
@@ -182,7 +182,7 @@ class GedcomExportFilterService extends GedcomExportService
         string $line_endings,
         string $filename,
         string $format,
-        array $export_filters = null,
+        array $gedcom_filters = null,
         Collection $records = null,
         ?FilesystemOperator $zip_filesystem = null,
         ?string $media_path = null        
@@ -191,7 +191,7 @@ class GedcomExportFilterService extends GedcomExportService
 
         if ($format === 'gedcom') {
             //Create export
-            return $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records);
+            return $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_filters, $records);
         }
 
         // Create a new/empty .ZIP file
@@ -210,7 +210,7 @@ class GedcomExportFilterService extends GedcomExportService
         }
 
         //Create export
-        $resource = $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $export_filters, $records, $zip_filesystem, $media_path);
+        $resource = $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_filters, $records, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
@@ -231,7 +231,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @param string                       $line_endings
      * @param string                       $filename       Name of download file, without an extension
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
-     * @param array<GedcomFilterInterface> $export_filters An array, which contains GEDCOM export filters
+     * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param Collection|null              $records
      * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
      * @param string|null                  $media_path     Location within the zip filesystem     
@@ -246,7 +246,7 @@ class GedcomExportFilterService extends GedcomExportService
         string $line_endings,
         string $filename,
         string $format,
-        array $export_filters = null,
+        array $gedcom_filters = null,
         ?Collection $records = null,
         ?FilesystemOperator $zip_filesystem = null,
         ?string $media_path = null        
@@ -254,7 +254,7 @@ class GedcomExportFilterService extends GedcomExportService
 
         if ($format === 'gedcom') {
             //Create export
-            $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $export_filters, $records);
+            $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filters, $records);
             $stream = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()
@@ -264,7 +264,7 @@ class GedcomExportFilterService extends GedcomExportService
         }
         
         //Create export
-        $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $export_filters, $records, $zip_filesystem, $media_path);
+        $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filters, $records, $zip_filesystem, $media_path);
         $stream = $this->stream_factory->createStreamFromResource($resource);
 
         if ($format === 'gedzip') {
@@ -287,7 +287,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @param string                                          $encoding       Convert from UTF-8 to other encoding
      * @param int                                             $access_level   Apply privacy filtering
      * @param string                                          $line_endings   CRLF or LF
-     * @param array<GedcomFilterInterface>                    $export_filters An array, which contains GEDCOM export filters
+     * @param array<GedcomFilterInterface>                    $gedcom_filters An array, which contains GEDCOM filters
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
      * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
@@ -300,7 +300,7 @@ class GedcomExportFilterService extends GedcomExportService
         string $encoding = UTF8::NAME,
         int $access_level = Auth::PRIV_HIDE,
         string $line_endings = 'CRLF',
-        array $export_filters = [],
+        array $gedcom_filters = [],
         ?Collection $records = null,
         ?FilesystemOperator $zip_filesystem = null,
         ?string $media_path = null
@@ -308,7 +308,7 @@ class GedcomExportFilterService extends GedcomExportService
         //Create stream and initialize array with Gedcom export
         $stream = fopen('php://memory', 'wb+');
 
-        //Initialize gedcom export array
+        //Initialize array for Gedcom export
         $gedcom_export = [];
 
         if ($stream === false) {
@@ -403,10 +403,10 @@ class GedcomExportFilterService extends GedcomExportService
         //After filter application, the array keys will contain all tag combinations from the final filter run
         //array: tag combination => matched filter rule
 
-        //Apply export filters
-        $gedcom_export = $this->applyExportFilters($gedcom_export, $export_filters, $matched_tag_combinations, $tree);
+        //Apply GEDCOM filters
+        $gedcom_export = $this->applyGedcomFilters($gedcom_export, $gedcom_filters, $matched_tag_combinations, $tree);
 
-        //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
+        //Assume GEDCOM 7 export, if first item in record list is a GEDCOM 7 header
         $gedcom7 = ($this->isGedcom7Header($gedcom_export[0] ?? false));
 
         // If requested, add SCHMA for extension tags found
@@ -665,40 +665,40 @@ class GedcomExportFilterService extends GedcomExportService
     }
 
     /**
-     * Apply export filters to a set of Gedcom structures
+     * Apply GEDCOM filters to a set of GEDCOM structures
      *
-     * @param array<string>                 $gedcom_structures   An array with Gedcom structures
-     * @param array<GedcomFilterInterface>  $export_filters      An array with export filters
+     * @param array<string>                 $gedcom_structures   An array with GEDCOM structures
+     * @param array<GedcomFilterInterface>  $gedcom_filters      An array with GEDCOM filters
      * @param array<string>                 $matched_pattern_for_tag_combination   An array with matched tag combinations
      * @param Tree                          $tree
      * 
      * @return array<string>                                     An array with Gedcom structures after filter application
      */
-    public function applyExportFilters(array $gedcom_structures, array $export_filters, array &$matched_pattern_for_tag_combination, Tree $tree = null): array
+    public function applyGedcomFilters(array $gedcom_structures, array $gedcom_filters, array &$matched_pattern_for_tag_combination, Tree $tree = null): array
     {
-        foreach($export_filters as $export_filter) {
+        foreach($gedcom_filters as $gedcom_filter) {
 
-            if ($export_filter === null) break;
+            if ($gedcom_filter === null) break;
 
-            //Initialize export filter
-            $export_filter_rules = $export_filter->getGedcomFilterRules($tree);
-            $export_filter_patterns = array_keys($export_filter_rules);
-            $export_filter_rule_has_regexp = $export_filter_patterns;
-            $records_references_analysis = $export_filter->usesReferencesAnalysis();
+            //Initialize GEDCOM filter
+            $gedcom_filter_rules = $gedcom_filter->getGedcomFilterRules($tree);
+            $gedcom_filter_patterns = array_keys($gedcom_filter_rules);
+            $gedcom_filter_rule_has_regexp = $gedcom_filter_patterns;
+            $records_references_analysis = $gedcom_filter->usesReferencesAnalysis();
             $records_references = [];
             $matched_pattern_for_tag_combination = [];
 
             //Globally remember, whether to apply SCHMA tag analysis to the final export
-            $this->use_schema_tag_analysis = $this->use_schema_tag_analysis || $export_filter->usesSchemaTagAnalysis();
+            $this->use_schema_tag_analysis = $this->use_schema_tag_analysis || $gedcom_filter->usesSchemaTagAnalysis();
 
             //Globally remember, whether to wrap lines without leading/trailing spaces
-            $this->wrap_lines_without_leading_and_trailing_spaces = $this->wrap_lines_without_leading_and_trailing_spaces || $export_filter->wrapLinesWithoutLeadingAndTrailingSpaces();
+            $this->wrap_lines_without_leading_and_trailing_spaces = $this->wrap_lines_without_leading_and_trailing_spaces || $gedcom_filter->wrapLinesWithoutLeadingAndTrailingSpaces();
 
             //Create lookup table if regexp exists for a pattern
-            foreach($export_filter_patterns as $pattern) {
+            foreach($gedcom_filter_patterns as $pattern) {
                 
                 //TodDo: Does filter always contain an array??
-                $export_filter_rule_has_regexp[$pattern] = $export_filter_rules[$pattern] !== [];
+                $gedcom_filter_rule_has_regexp[$pattern] = $gedcom_filter_rules[$pattern] !== [];
             }
 
             //If requested, perform empty and not referenced records analysis
@@ -729,7 +729,7 @@ class GedcomExportFilterService extends GedcomExportService
 
                 foreach($gedcom_records as $gedcom) {
 
-                    $gedcom = $this->executeFilter($gedcom, 0, '', '', $export_filter, $export_filter_patterns, $export_filter_rules, $export_filter_rule_has_regexp, $matched_pattern_for_tag_combination, $records_references);
+                    $gedcom = $this->executeFilter($gedcom, 0, '', '', $gedcom_filter, $gedcom_filter_patterns, $gedcom_filter_rules, $gedcom_filter_rule_has_regexp, $matched_pattern_for_tag_combination, $records_references);
 
                     if ($gedcom !== '') {
                         $filtered_gedcom_records[] = $gedcom;
@@ -743,16 +743,16 @@ class GedcomExportFilterService extends GedcomExportService
     }
 
     /**
-     * Convert Gedcom record according to an export filter
+     * Convert Gedcom record according to an GEDCOM filter
      *
      * @param string $gedcom
      * @param int    $level                                Level of Gedcom structure
      * @param string $higher_level_matched_tag_pattern     Pattern, which was matched on higher level of GEDCOM structure (recursion)
      * @param string $tag_combination                      e.g. INDI:BIRT:DATE
-     * @param GedcomFilterInterface $export_filter         The export filter used
-     * @param array  $export_filter_patterns               The patterns of the export filter
-     * @param array  $export_filter_rules                  The filter rules of the export filter
-     * @param array  $export_filter_rule_has_regexp        A lookup table whether a filter rules uses a regular expression
+     * @param GedcomFilterInterface $gedcom_filter         The GEDCOM filter used
+     * @param array  $gedcom_filter_patterns               The patterns of the GEDCOM filter
+     * @param array  $gedcom_filter_rules                  The filter rules of the GEDCOM filter
+     * @param array  $gedcom_filter_rule_has_regexp        A lookup table whether a filter rules uses a regular expression
      * @param array  $matched_pattern_for_tag_combination  A hash table, which contains patterns, which have already been matched
      * @param array  $records_references                   A list of records as <Record> objects, which contain the references between the records
      *                                                     array <string xref => Record record>
@@ -764,10 +764,10 @@ class GedcomExportFilterService extends GedcomExportService
         int    $level,
         string $higher_level_matched_tag_pattern,
         string $tag_combination,
-        GedcomFilterInterface $export_filter,
-        array  &$export_filter_patterns,
-        array  &$export_filter_rules,
-        array  &$export_filter_rule_has_regexp,
+        GedcomFilterInterface $gedcom_filter,
+        array  &$gedcom_filter_patterns,
+        array  &$gedcom_filter_rules,
+        array  &$gedcom_filter_rule_has_regexp,
         array  &$matched_pattern_for_tag_combination,
         array  &$records_references
         ): string
@@ -797,7 +797,7 @@ class GedcomExportFilterService extends GedcomExportService
         }
 
         //Get matched pattern from hash table (if already matched before), otherwise evaluate matched pattern 
-        $matched_tag_pattern = $matched_pattern_for_tag_combination[$tag_combination] ?? self::getMatchedPattern($tag_combination, $export_filter_patterns);
+        $matched_tag_pattern = $matched_pattern_for_tag_combination[$tag_combination] ?? self::getMatchedPattern($tag_combination, $gedcom_filter_patterns);
 
         //Add found tag pattern to the hash table; even if empty, i.e ''
         $matched_pattern_for_tag_combination[$tag_combination] = $matched_tag_pattern;
@@ -808,22 +808,22 @@ class GedcomExportFilterService extends GedcomExportService
             $converted_gedcom = $match[0] ."\n";
         }
 
-        //Get sub-structure of Gedcom and recursively apply export filter to next level
+        //Get sub-structure of Gedcom and recursively apply GEDCOM filter to next level
         $gedcom_substructures = self::parseGedcomSubstructures($gedcom, $level + 1);
 
         foreach ($gedcom_substructures as $gedcom_substructure) {
 
-            $converted_gedcom .= $this->executeFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination, $export_filter, $export_filter_patterns, $export_filter_rules, $export_filter_rule_has_regexp, $matched_pattern_for_tag_combination, $records_references);
+            $converted_gedcom .= $this->executeFilter($gedcom_substructure, $level + 1, $matched_tag_pattern, $tag_combination, $gedcom_filter, $gedcom_filter_patterns, $gedcom_filter_rules, $gedcom_filter_rule_has_regexp, $matched_pattern_for_tag_combination, $records_references);
         }
 
         //If regular expressions are provided for the pattern, run replacements
         //Do not replace again if pattern has already been matched on higher level of the Gedcom structure
         if (   $matched_tag_pattern !== ''   
-            && $export_filter_rule_has_regexp[$matched_tag_pattern] 
+            && $gedcom_filter_rule_has_regexp[$matched_tag_pattern] 
             && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
 
-            $replace_pairs = $export_filter_rules[$matched_tag_pattern];                
-            $converted_gedcom = $this->replaceInGedcom($converted_gedcom, $matched_tag_pattern, $replace_pairs, $export_filter, $records_references);
+            $replace_pairs = $gedcom_filter_rules[$matched_tag_pattern];                
+            $converted_gedcom = $this->replaceInGedcom($converted_gedcom, $matched_tag_pattern, $replace_pairs, $gedcom_filter, $records_references);
         }            
 
         return $converted_gedcom;
@@ -929,7 +929,7 @@ class GedcomExportFilterService extends GedcomExportService
      * @param string                $gedcom               Gedcom to convert
      * @param string                $matched_pattern      The matched pattern (i.e. INDI:NAME) of the filter rule, whose replacements shall be applied
      * @param array                 $replace_pairs        An array with replace pairs, i.e. ["search pattern" => "replace pattern"] 
-     * @param GedcomFilterInterface $export_filter        The export filter used
+     * @param GedcomFilterInterface $gedcom_filter        The GEDCOM filter used
      * @param array                 $records_references   A list of records as <Record> objects, which contain the references between the records
      *                                                    array <string xref => Record record>
      *
@@ -939,7 +939,7 @@ class GedcomExportFilterService extends GedcomExportService
         string                $gedcom,
         string                $matched_pattern,       
         array                 $replace_pairs,
-        GedcomFilterInterface $export_filter,
+        GedcomFilterInterface $gedcom_filter,
         array                 &$records_references
         ): string {
 
@@ -949,7 +949,7 @@ class GedcomExportFilterService extends GedcomExportService
             //If according string is found, apply custom conversion
             if ($search === AbstractGedcomFilter::PHP_FUNCTION_STRING) {
 
-                $gedcom = $export_filter->customConvert($matched_pattern, $gedcom, $records_references);
+                $gedcom = $gedcom_filter->customConvert($matched_pattern, $gedcom, $records_references);
             }
 
             //Else apply RegExp replacement

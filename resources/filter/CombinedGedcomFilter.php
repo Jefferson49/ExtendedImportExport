@@ -20,9 +20,9 @@ class CombinedGedcomFilter extends AbstractGedcomFilter implements GedcomFilterI
     public function getIncludedFiltersBefore(): array {
 
         return [
-        new BirthMarriageDeathExportFilter(),
-        new Gedcom_7_ExportFilter(),
-        new RemoveEmptyRecordsExportFilter(),      
+            new BirthMarriageDeathGedcomFilter(),
+            new Gedcom_7_GedcomFilter(),
+            new RemoveEmptyRecordsGedcomFilter(),      
         ];
     }
 }

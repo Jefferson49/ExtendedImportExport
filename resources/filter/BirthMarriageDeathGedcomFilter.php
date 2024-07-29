@@ -80,7 +80,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
     ];
 
     protected const REGEXP_MACROS = [
-        //Name                      => Regular expression to be applied for the chosen GEDCOM tag
+        //Macro Name                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
         "DateToYear"                => ["2 DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*\n" => "2 DATE $1$2$3$4$5\n"],

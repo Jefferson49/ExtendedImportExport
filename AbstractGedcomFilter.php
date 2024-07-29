@@ -72,7 +72,7 @@ class AbstractGedcomFilter implements GedcomFilterInterface
 
     //Macros for regular expressions, which can be used in GEDCOM filter rules
     protected const REGEXP_MACROS = [
-    //Name                          => Regular expression to be applied for the chosen GEDCOM tag
+    //Macro Name                    => Regular expression to be applied for the chosen GEDCOM tag
     //                                 ["search pattern" => "replace pattern"],
     ];
 

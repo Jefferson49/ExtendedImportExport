@@ -113,7 +113,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
     ];
 
    protected const REGEXP_MACROS = [
-        //Name                      => Regular expression to be applied for the chosen GEDCOM tag
+        //Macro Name                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
         "DateConversion"			=> ["0([\d]) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) ([\d]{1,4})" => "$1 $2 $3",

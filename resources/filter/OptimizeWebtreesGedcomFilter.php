@@ -72,7 +72,7 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements Gedco
     ];
 
     protected const REGEXP_MACROS = [
-        //Name                      => Regular expression to be applied for the chosen GEDCOM tag
+        //Macro Name                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
         
         "Godparent"                 => ["([\d]) RELA (?i)GODPARENT" => "$1 RELA Godparent"],

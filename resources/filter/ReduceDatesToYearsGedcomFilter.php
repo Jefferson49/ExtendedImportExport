@@ -42,7 +42,7 @@ class ReduceDatesToYearsGedcomFilter extends AbstractGedcomFilter implements Ged
     ];
 
     protected const REGEXP_MACROS = [
-        //Name                      => Regular expression to be applied for the chosen GEDCOM tag
+        //Macro Name                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
         "DateToYear"                => ["([\d]) DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*" => "$1 DATE $2$3$4$5$6"],

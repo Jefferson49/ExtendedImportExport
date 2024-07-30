@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\I18N;
+
 /**
  * A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to be compliant to the GEDCOM 7.0 standard
  */
@@ -47,6 +49,16 @@ class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter impleme
     //Export other structures      
         '*'                         => [],
     ];
+
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('Optimize webtrees export for GEDCOM 7 filter');
+    } 
 
     /**
      * Custom conversion of a Gedcom string

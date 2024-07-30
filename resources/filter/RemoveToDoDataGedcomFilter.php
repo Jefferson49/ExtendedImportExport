@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\I18N;
+
 /**
  * A GEDCOM filter, which removes _TODO structures
  */
@@ -22,4 +24,14 @@ class RemoveToDoDataGedcomFilter extends AbstractGedcomFilter implements GedcomF
         //Export other structures      
         '*'                         => [],
     ];
+
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('Remove ToDo data (i.e. _TODO) GEDCOM filter');
+    }     
 }

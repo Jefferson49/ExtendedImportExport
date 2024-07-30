@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\I18N;
+
 /**
  * A GEDCOM filter, which includes no records; only HEAD, SUBM, TRLR
  */
@@ -23,4 +25,14 @@ class NoRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilter
 
         'TRLR'                      => [],
     ];
+
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('No records GEDCOM filter');
+    }    
 }

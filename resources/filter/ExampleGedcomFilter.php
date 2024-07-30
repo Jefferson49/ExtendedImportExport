@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 use Fisharebest\Webtrees\Gedcom;
+use Fisharebest\Webtrees\I18N;
 
 /**
  * An example GEDCOM filter, which demonstrates the different options, which can be used in GEDCOM filters
@@ -44,6 +45,16 @@ class ExampleGedcomFilter extends AbstractGedcomFilter implements GedcomFilterIn
         '*'                         => [],
     ];
 
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('Example GEDCOM filter');
+    }      
+    
     /**
      * Custom conversion of a Gedcom string
      *

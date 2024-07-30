@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\I18N;
+
 /**
  * A GEDCOM filter, which combines several other GEDCOM filters
  * 
@@ -12,6 +14,16 @@ namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
  */
 class CombinedGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('Combined GEDCOM filter');
+    }      
+
     /**
      * Include a set of other filters, which shall be executed before the current filter
      *

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\I18N;
+
 /**
  * A GEDCOM filter, which avoids leading spaces from all CONC structures
  * 
@@ -22,4 +24,14 @@ class AvoidLeadingSpacesForCONC_GedcomFilter extends AbstractGedcomFilter implem
         //Export all
         '*'                         => [],
 	];
+
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('Avoid leading spaces for CONC GEDCOM filter');
+    }      
 }

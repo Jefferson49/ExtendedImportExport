@@ -840,17 +840,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
             ''             => I18N::translate('None'),
         ];
 
-        foreach (get_declared_classes() as $className) {
+        foreach (get_declared_classes() as $class_name) {
 
             $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
 
-            if (strpos($className, $name_space) !==  false) {
+            if (strpos($class_name, $name_space) !==  false) {
 
-                if (in_array($name_space . 'GedcomFilterInterface', class_implements($className))) {
+                if (in_array($name_space . 'GedcomFilterInterface', class_implements($class_name))) {
 
-                    $className = str_replace($name_space, '', $className);
+                    $object = new $class_name();
+                    $class_name = str_replace($name_space, '', $class_name);
 
-                    if ($className !== 'AbstractGedcomFilter') $gedcom_filter_list[$className] = $className;
+                    if ($class_name !== 'AbstractGedcomFilter') $gedcom_filter_list[$class_name] = $object->name();
                 }
             }
         }

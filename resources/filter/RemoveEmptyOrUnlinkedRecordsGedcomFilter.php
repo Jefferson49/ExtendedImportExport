@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 use Fisharebest\Webtrees\Gedcom;
+use Fisharebest\Webtrees\I18N;
 
 /**
  * A GEDCOM filter to remove empty and unlinked records (FAM, NOTE, OBJE, REPO, SOUR, _LOC)
@@ -56,6 +57,16 @@ class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter impl
         //Export other records
         '*'							=> [],
     ];
+
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('Remove empty or unlinked records GEDCOM filter');
+    } 
 
     /**
     * Custom conversion of a Gedcom string

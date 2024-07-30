@@ -4,11 +4,23 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\I18N;
+
 /**
  * A GEDCOM filter to remove empty records (FAM, NOTE, OBJE, REPO, SOUR)
  */
 class RemoveEmptyRecordsGedcomFilter extends RemoveEmptyOrUnlinkedRecordsGedcomFilter implements GedcomFilterInterface
 {
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('Remove empty records GEDCOM filter');
+    } 
+
     /**
     * Custom conversion of a Gedcom string
     *

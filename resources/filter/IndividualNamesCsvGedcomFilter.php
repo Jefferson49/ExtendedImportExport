@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\I18N;
+
 /**
  * A GEDCOM filter, which creates a CSV list (Surname, Given names) of all individuals 
  */
@@ -25,6 +27,16 @@ class IndividualNamesCsvGedcomFilter extends AbstractGedcomFilter implements Ged
         'INDI:NAME'                 => ["PHP_function" => "customConvert",
                                         "1 NAME (.*[^ ])? ?\/([^\/]*)\/(.*)\n" => "\"$2\",\"$1\"\n"],
     ];
+
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('Individual names CSV list generation GEDCOM filter');
+    }   
 
     /**
      * Custom conversion of a Gedcom string

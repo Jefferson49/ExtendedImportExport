@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Fisharebest\Webtrees\I18N;
+
 /**
  * A GEDCOM filter, which converts GEDCOM 5.5.1 to GEDCOM 7.0
  */
@@ -184,6 +186,16 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
             $this->language_to_code_table[strtoupper($match[2])]= $match[1];
         }   
     }
+
+    /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        return I18N::translate('GEDCOM 7 conversion filter');
+    }      
 
     /**
      * Custom conversion of a Gedcom string

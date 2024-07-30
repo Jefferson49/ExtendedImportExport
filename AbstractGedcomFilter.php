@@ -77,6 +77,20 @@ class AbstractGedcomFilter implements GedcomFilterInterface
     ];
 
     /**
+     * Get the name of the GEDCOM filter
+     * 
+     * @return string
+     */
+    public function name(): string {
+
+        $class_name = get_class($this);
+        $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
+        $class_name = str_replace($name_space, '', $class_name);
+
+        return $class_name;
+    }
+
+    /**
      * Get the GEDCOM filter
      * 
      * @param Tree $tree

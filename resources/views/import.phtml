@@ -38,6 +38,7 @@ use Illuminate\Support\Collection;
 
 <form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
 		'action'	=> DownloadGedcomWithURL::ACTION_UPLOAD,
+		'called_from_control_panel'	=> true,
 		])) ?>" enctype="multipart/form-data">
 
 	<?= csrf_field() ?>

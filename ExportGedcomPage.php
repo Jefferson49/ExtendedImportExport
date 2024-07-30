@@ -105,7 +105,7 @@ class ExportGedcomPage implements RequestHandlerInterface
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::export',
             [
-                'title'                    => I18N::translate('Extended GEDCOM Export'),
+                'title'                    => I18N::translate('Extended GEDCOM Export') . ' — ' . e($tree->title()),
                 'control_panel_secret_key' => $control_panel_secret_key,
                 'tree'                     => $tree,
                 'tree_list'                => $tree_list,

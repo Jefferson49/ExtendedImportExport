@@ -110,7 +110,7 @@ class ConvertGedcomPage implements RequestHandlerInterface
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::convert',
             [
-                'title'                    => I18N::translate('GEDCOM Conversion'),
+                'title'                    => I18N::translate('GEDCOM Conversion')  . ' — ' . e($tree->title()),
                 'control_panel_secret_key' => $control_panel_secret_key,
                 'tree'                     => $tree,
                 'tree_list'                => $tree_list,

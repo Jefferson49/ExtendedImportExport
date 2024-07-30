@@ -158,6 +158,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
     //Prefences, Settings
 	public const PREF_MODULE_VERSION = 'module_version';
+    public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
 	public const PREF_SECRET_KEY = "secret_key";
 	public const PREF_CONTROL_PANEL_SECRET_KEY = "control_panel_secret_key";
 	public const PREF_USE_HASH = "use_hash";
@@ -199,7 +200,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
     //Old preferences    
 	public const PREF_ALLOW_DOWNLOAD = "allow_download";
-    public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
     public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
 
 
@@ -453,14 +453,19 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$root_folder = str_replace('\\', '/', Registry::filesystem()->rootName());
 		$data_folder_relative = str_replace($root_folder, '', $data_folder);
 
-        $default_tree_name = array_key_first($tree_list);
+        $default_tree_name = $this->getPreference(self::PREF_DEFAULT_TREE_NAME, '');
+        
+        if (!array_key_exists($default_tree_name, $tree_list)) {
+            $default_tree_name = array_key_first($tree_list);
+        }
+
         $default_tree      = $this->tree_service->all()[$default_tree_name];
 
         return $this->viewResponse(
             $this->name() . '::settings',
             [
                 'title'                               => $this->title(),
-                'default_tree'                        => $default_tree,
+                self::PREF_DEFAULT_TREE_NAME          => $default_tree->name(),
                 'tree_list'                           => $tree_list,
                 self::VAR_GEDCOM_FILTER_LIST          => $this->getGedcomFilterList(),
 				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
@@ -497,6 +502,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         $save                       = Validator::parsedBody($request)->string('save', '');
         $use_hash                   = Validator::parsedBody($request)->boolean(self::PREF_USE_HASH, false);
+        $use_hash                   = Validator::parsedBody($request)->boolean(self::PREF_USE_HASH, false);
         $allow_remote_download      = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_DOWNLOAD, false);
         $allow_remote_upload        = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_UPLOAD, false);
         $allow_remote_save          = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_SAVE, false);
@@ -504,7 +510,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $new_secret_key             = Validator::parsedBody($request)->string('new_secret_key', '');
         $folder_to_save             = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY'));
         $default_tree_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TREE_NAME, '');
-        $default_file_name          = Validator::parsedBody($request)->string(self::PREF_DEFAULT_FiLE_NAME, 'export');
         $default_gedcom_filter1     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER1, '');
         $default_gedcom_filter2     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER2, '');
         $default_gedcom_filter3     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER3, '');
@@ -590,7 +595,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             //Save default settings to preferences
             $this->setPreference(self::PREF_DEFAULT_TREE_NAME, $default_tree_name);
-            $this->setPreference(self::PREF_DEFAULT_FiLE_NAME, $default_file_name);
             $this->setPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, $default_gedcom_filter1);
             $this->setPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, $default_gedcom_filter2);
             $this->setPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, $default_gedcom_filter3);
@@ -642,9 +646,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
 
         //Remove old preferences
-        if ($this->getPreference(self::PREF_DEFAULT_TREE_NAME, '') !== '') {
-            $this->setPreference(self::PREF_DEFAULT_TREE_NAME, '');
-        }    
         if ($this->getPreference(self::PREF_DEFAULT_FiLE_NAME, '') !== '') {
             $this->setPreference(self::PREF_DEFAULT_FiLE_NAME, '');
         }    

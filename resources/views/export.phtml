@@ -33,6 +33,15 @@ use Fisharebest\Webtrees\View;
  * @var  string                 $default_gedcom_filter3
  */
 
+$filename = $tree->name();
+
+// Force a ".ged" suffix
+if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
+	$export_file_name  = substr($filename, 0, -4);
+} else {
+	$export_file_name = $filename;
+}
+
 ?>
 
 <?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(SettingsPage::class) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
@@ -43,17 +52,7 @@ use Fisharebest\Webtrees\View;
 			'key'       => $control_panel_secret_key . Session::getCsrfToken(),
 		])) ?>" class="form form-horizontal">
 	<?= csrf_field() ?>
-	<input type="hidden" name="save" id="save" value="1">
-
-	<div class="row mb-3">
-		<label class="col-form-label col-sm-3">
-			<?= I18N::translate('Select a tree') ?>
-		</label>
-		<div class="col-sm-9">
-			<?= view('components/select', ['name' => 'tree', 'selected' => $tree->name(), 
-				'options' => $tree_list]) ?>
-		</div>
-	</div>	
+	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="format">
@@ -104,7 +103,7 @@ use Fisharebest\Webtrees\View;
 
 		<div class="col-sm-9">
 			<div class="input-group">
-				<input class="form-control" id="filename" name="filename" type="text" value="">
+				<input class="form-control" id="filename" name="filename" type="text" value="<?= $export_file_name ?>">
 				<span class="input-group-text" id="extension">.ged</span>
 			</div>
 		</div>

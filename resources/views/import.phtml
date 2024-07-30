@@ -15,7 +15,6 @@ use Illuminate\Support\Collection;
  * @var  string                 $title,
  * @var  Tree                   $tree,
  * @var  string                 $folder,
- * @var  string                 $default_gedcom_file,
  * @var  Collection<int,string> $gedcom_files,
  * @var  string                 $control_panel_secret_key
  * @var  array                  $gedcom_filter_list
@@ -44,21 +43,9 @@ use Illuminate\Support\Collection;
 		])) ?>" enctype="multipart/form-data">
 
 	<?= csrf_field() ?>
+	<input type="hidden" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
 	
-		<div class="h4">
-			<?= I18N::translate('Select a tree') ?>
-		</div>
-		<div class="row mb-3">
-			<label class="col-form-label col-sm-3">
-				<?= I18N::translate('Select a tree') ?>
-			</label>
-			<div class="col-sm-3">
-				<?= view('components/select', ['name' => 'tree', 'selected' => $tree->name(), 
-					'options' => $tree_list]) ?>
-			</div>
-		</div>
-
 		<div class="h4">
 			<?= I18N::translate('Select a GEDCOM file to import') ?>
 		</div>

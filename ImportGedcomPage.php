@@ -107,7 +107,7 @@ class ImportGedcomPage implements RequestHandlerInterface
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::import',
             [
-                'title'                    => I18N::translate('Extended GEDCOM Import'),
+                'title'                    => I18N::translate('Extended GEDCOM Import') . ' — ' . e($tree->title()),
                 'tree'                     => $tree,
                 'tree_list'                => $tree_list,                
                 'folder'                   => $folder,

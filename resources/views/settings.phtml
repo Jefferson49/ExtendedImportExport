@@ -19,7 +19,7 @@ use function e;
 
 /**
  * @var  string		$title
- * @var  Tree       $default_tree
+ * @var  string     $default_tree_name
  * @var  array      $tree_list
  * @var  array      $gedcom_filter_list
  * @var  bool		$use_hash
@@ -43,8 +43,6 @@ use function e;
  * @var  bool       $default_gedcom_l_selection
  */
 
-$default_tree_name = $default_tree->name();
-
 ?>
 
 <?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), e($title)]]) ?>
@@ -52,9 +50,19 @@ $default_tree_name = $default_tree->name();
 <h1><?=e($title) ?></h1>
 <div class="row mb-3"><?= view('icons/spacer') ?></div>
 
-<form method="post">
+<form method="post" id="settings-form">
 	<?= csrf_field() ?>
 	<input type="hidden" name="save" id="save" value="1">
+		<div class="row mb-3">
+			<label class="col-form-label col-sm-3">
+				<?= I18N::translate('Select a tree') ?>
+			</label>
+			<div class="col-sm-9">
+				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, 'selected' => $default_tree_name,
+					'options' => $tree_list]) ?>
+			</div>
+		</div>	
+
 		<ul class="fa-ul mx-0">
 			<li>
 				<span class="fa-li"><?= view('icons/upload') ?></span>
@@ -100,23 +108,6 @@ $default_tree_name = $default_tree->name();
 				</a>
 			</li>
 		</ul>
-		
-		<div class="h3">
-			<?= I18N::translate('Settings') ?>	
-		</div>
-			
-		<div class="row mb-3">
-			<div class="col">
-				<p></p>
-				<button type="submit" class="btn btn-primary">
-					<?= view('icons/save') ?>
-					<?= I18N::translate('Save') ?>
-				</button>
-				<div class="form-text">
-					<?= I18N::translate('In order to use changed settings for a download/upload, the settings need to be saved first.')?>
-				</div>
-			</div>		
-		</div>		
 
 		<div class="h4 wt-chart-expansion-control collapsed" data-bs-toggle="collapse" data-bs-target="#id-remote" aria-controls="id-remote" aria-expanded="false">
 			<span class="chart-expand">
@@ -130,7 +121,7 @@ $default_tree_name = $default_tree->name();
 			</span>
 		</div>
 
-		<div id="id-remote" class="collapse">			
+		<div id="id-remote" class="collapse">
 			<?php if ($allow_remote_download OR $allow_remote_upload OR $allow_remote_save OR $allow_remote_convert) : ?>
 				<div class="alert alert-warning">
 					<p><?= I18N::translate('Currently, remote downloading, uploading, saving or converting of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation.') ?></p>
@@ -494,6 +485,9 @@ $default_tree_name = $default_tree->name();
         } else {
             $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', false);
         }
+    });
+	$('#settings-form select, #settings-form input').change(function () {
+        $('#settings-form').submit();
     });
 	function checkGedcomImportForm (message) {
 		let oldFile = $('#gedcom_filename').val();

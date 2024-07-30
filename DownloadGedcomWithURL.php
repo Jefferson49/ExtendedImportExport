@@ -160,7 +160,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const PREF_MODULE_VERSION = 'module_version';
     public const PREF_DEFAULT_TREE_NAME = 'default_tree_name';
 	public const PREF_SECRET_KEY = "secret_key";
-	public const PREF_CONTROL_PANEL_SECRET_KEY = "control_panel_secret_key";
 	public const PREF_USE_HASH = "use_hash";
 	public const PREF_ALLOW_REMOTE_DOWNLOAD = "allow_remote_download";
 	public const PREF_ALLOW_REMOTE_UPLOAD = "allow_remote_upload";
@@ -185,6 +184,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const ACTION_BOTH     = 'both';
     public const ACTION_UPLOAD   = 'upload';
     public const ACTION_CONVERT  = 'convert';
+    public const CALLED_FROM_CONTROL_PANEL = "called_from_control_panel";
 
     //Time stamp values
     public const TIME_STAMP_PREFIX  = 'prefix';
@@ -201,6 +201,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //Old preferences    
 	public const PREF_ALLOW_DOWNLOAD = "allow_download";
     public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
+    public const PREF_CONTROL_PANEL_SECRET_KEY = 'control_panel_secret_key';
 
 
    /**
@@ -227,13 +228,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $this->gedcom_filters_in_data_fix = [];
         $this->gedcom_filters_loaded_in_data_fix = false;
         $this->root_filesystem = Registry::filesystem()->root();
-        
-
-        //Generate random key if control panel key is empty
-        if ($this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '') === '') {
-
-            $this->setPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, Str::random(32));
-        }
 
         $router = Registry::routeFactory()->routeMap();            
 
@@ -641,6 +635,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $this->setPreference(self::PREF_ALLOW_REMOTE_SAVE, self::PREF_ALLOW_DOWNLOAD);
 
             //Delete old preference value, i.e. set to ''
+            $this->setPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '');      
             $this->setPreference(self::PREF_ALLOW_DOWNLOAD, '');      
             $sucessful_update = true;      
         }
@@ -1280,6 +1275,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */	
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        //Check update of module version
+        $this->checkModuleVersionUpdate();
+
         $encodings          = ['' => ''] + Registry::encodingFactory()->list();
 
 		$key                 = Validator::queryParams($request)->string('key', '');
@@ -1301,22 +1299,23 @@ class DownloadGedcomWithURL extends AbstractModule implements
         // If POST requests (from control panel), parse certain parameters accordingly
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
 
-            $tree_name          = Validator::parsedBody($request)->string('tree', '');
-            $filename           = Validator::parsedBody($request)->string('filename', $tree_name);
-            $gedcom_filter1     = Validator::parsedBody($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
-            $gedcom_filter2     = Validator::parsedBody($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
-            $gedcom_filter3     = Validator::parsedBody($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
-            $source             = Validator::parsedBody($request)->isInArray(['client', 'server'])->string('source', '');
-            $server_file        = Validator::parsedBody($request)->string('server_file', '');
-            $keep_media         = Validator::parsedBody($request)->boolean('keep_media', false);
-            $word_wrapped_notes = Validator::parsedBody($request)->boolean('WORD_WRAPPED_NOTES', false);
-            $gedcom_media_path  = Validator::parsedBody($request)->string('GEDCOM_MEDIA_PATH', '');
-            $format             = Validator::parsedBody($request)->string('format', 'gedcom');
-            $encoding           = Validator::parsedBody($request)->string('encoding', UTF8::NAME);
-            $line_endings       = Validator::parsedBody($request)->string('line_endings', 'CRLF');
-            $privacy            = Validator::parsedBody($request)->string('privacy', 'visitor');
-            $time_stamp         = Validator::parsedBody($request)->string('time_stamp', self::TIME_STAMP_NONE);
-            $import_encoding    = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
+            $called_from_control_panel = Validator::parsedBody($request)->boolean('called_from_control_panel', false);
+            $tree_name                 = Validator::parsedBody($request)->string('tree', '');
+            $filename                  = Validator::parsedBody($request)->string('filename', $tree_name);
+            $gedcom_filter1            = Validator::parsedBody($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
+            $gedcom_filter2            = Validator::parsedBody($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
+            $gedcom_filter3            = Validator::parsedBody($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
+            $source                    = Validator::parsedBody($request)->isInArray(['client', 'server'])->string('source', '');
+            $server_file               = Validator::parsedBody($request)->string('server_file', '');
+            $keep_media                = Validator::parsedBody($request)->boolean('keep_media', false);
+            $word_wrapped_notes        = Validator::parsedBody($request)->boolean('WORD_WRAPPED_NOTES', false);
+            $gedcom_media_path         = Validator::parsedBody($request)->string('GEDCOM_MEDIA_PATH', '');
+            $format                    = Validator::parsedBody($request)->string('format', 'gedcom');
+            $encoding                  = Validator::parsedBody($request)->string('encoding', UTF8::NAME);
+            $line_endings              = Validator::parsedBody($request)->string('line_endings', 'CRLF');
+            $privacy                   = Validator::parsedBody($request)->string('privacy', 'visitor');
+            $time_stamp                = Validator::parsedBody($request)->string('time_stamp', self::TIME_STAMP_NONE);
+            $import_encoding           = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
         }        
 
         $tree_service  = new TreeService(new GedcomImportService);
@@ -1338,14 +1337,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);     
         }
 
-        //Check update of module version
-        $this->checkModuleVersionUpdate();
-
         //Get folder from module settings and file system
         $folder_on_server = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
-
-        //An action from control panel is recognized if a certain key is received
-        $called_from_control_panel = $key === $this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '') . Session::getCsrfToken();
 
         //Add namespace to Gedcom filters
         $gedcom_filter_class_name1 = __NAMESPACE__ . '\\' . $gedcom_filter1;

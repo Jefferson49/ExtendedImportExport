@@ -8,7 +8,6 @@ use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
-use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
 use Illuminate\Support\Collection;
@@ -20,7 +19,6 @@ use Illuminate\Support\Collection;
  * @var  string                 $folder,
  * @var  string                 $default_gedcom_file,
  * @var  Collection<int,string> $gedcom_files,
- * @var  string                 $control_panel_secret_key
  * @var  array                  $gedcom_filter_list
  * @var  string                 $default_gedcom_filter1
  * @var  string                 $default_gedcom_filter2
@@ -37,11 +35,11 @@ use Illuminate\Support\Collection;
 <div class="row mb-3"><?= view('icons/spacer') ?></div>
 
 <form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-		'key'       => $control_panel_secret_key . Session::getCsrfToken(),
-		'action'	=> DownloadGedcomWithURL::ACTION_CONVERT,
+		'action'	                => DownloadGedcomWithURL::ACTION_CONVERT,
 		])) ?>" enctype="multipart/form-data">
 
 	<?= csrf_field() ?>
+	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
 	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
 	
 		<div class="h4">

@@ -20,7 +20,6 @@ use Fisharebest\Webtrees\View;
  * @var  Tree                   $tree,
  * @var  string                 $data_folder,
  * @var  bool                   $zip_available
- * @var  string                 $control_panel_secret_key
  * @var  string                 $default_action
  * @var  string                 $default_format
  * @var  string                 $default_encoding
@@ -49,10 +48,12 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 <h1><?= $title ?></h1>
 
 <form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-			'key'       => $control_panel_secret_key . Session::getCsrfToken(),
+		'action'	                => DownloadGedcomWithURL::ACTION_DOWNLOAD,
 		])) ?>" class="form form-horizontal">
+		
 	<?= csrf_field() ?>
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
+	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="format">

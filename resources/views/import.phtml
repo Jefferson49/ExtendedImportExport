@@ -16,7 +16,6 @@ use Illuminate\Support\Collection;
  * @var  Tree                   $tree,
  * @var  string                 $folder,
  * @var  Collection<int,string> $gedcom_files,
- * @var  string                 $control_panel_secret_key
  * @var  array                  $gedcom_filter_list
  * @var  string                 $default_gedcom_filter1
  * @var  string                 $default_gedcom_filter2
@@ -38,12 +37,12 @@ use Illuminate\Support\Collection;
 </div>
 
 <form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-		'key'       => $control_panel_secret_key . Session::getCsrfToken(),
 		'action'	=> DownloadGedcomWithURL::ACTION_UPLOAD,
 		])) ?>" enctype="multipart/form-data">
 
 	<?= csrf_field() ?>
-	<input type="hidden" id="tree" value="<?= $tree->name() ?>">
+	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
+	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
 	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
 	
 		<div class="h4">

@@ -102,7 +102,6 @@ class ImportGedcomPage implements RequestHandlerInterface
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
         $tree_list = $download_gedcom_with_url->getTreeNameTitleList();
-        $control_panel_secret_key= $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_CONTROL_PANEL_SECRET_KEY, '');
 
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::import',
@@ -112,7 +111,6 @@ class ImportGedcomPage implements RequestHandlerInterface
                 'tree_list'                => $tree_list,                
                 'folder'                   => $folder,
                 'gedcom_files'             => $gedcom_files,
-                'control_panel_secret_key' => $control_panel_secret_key,
                 'gedcom_filter_list'       => $gedcom_filter_list,
                 'default_gedcom_filter1'   => $default_gedcom_filter1,
                 'default_gedcom_filter2'   => $default_gedcom_filter2,

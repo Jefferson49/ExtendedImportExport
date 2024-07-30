@@ -99,14 +99,11 @@ class ExportGedcomPage implements RequestHandlerInterface
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
         $tree_list = $download_gedcom_with_url->getTreeNameTitleList();
-        $control_panel_secret_key= $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_CONTROL_PANEL_SECRET_KEY, '');
-
 
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::export',
             [
                 'title'                    => I18N::translate('Extended GEDCOM Export') . ' — ' . e($tree->title()),
-                'control_panel_secret_key' => $control_panel_secret_key,
                 'tree'                     => $tree,
                 'tree_list'                => $tree_list,
                 'zip_available'            => extension_loaded('zip'),

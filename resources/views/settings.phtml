@@ -12,7 +12,6 @@ use Fisharebest\Webtrees\Http\RequestHandlers\DataFixPage;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Site;
-use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
 
 use function e;
@@ -53,429 +52,390 @@ use function e;
 <form method="post" id="settings-form">
 	<?= csrf_field() ?>
 	<input type="hidden" name="save" id="save" value="1">
-		<div class="row mb-3">
-			<label class="col-form-label col-sm-3">
-				<?= I18N::translate('Select a tree') ?>
-			</label>
+	<div class="row mb-3">
+		<label class="col-form-label col-sm-3">
+			<?= I18N::translate('Select a tree') ?>
+		</label>
+		<div class="col-sm-9" id="tree-select">
+			<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, 'selected' => $default_tree_name,
+				'options' => $tree_list]) ?>
+		</div>
+	</div>
+
+	<ul class="fa-ul mx-0">
+		<li>
+			<span class="fa-li"><?= view('icons/upload') ?></span>
+			<a href="<?= e(route(ImportGedcomPage::class, [
+				'tree_name'              => $default_tree_name,
+				'default_gedcom_filter1' => $default_gedcom_filter1,
+				'default_gedcom_filter2' => $default_gedcom_filter2,
+				'default_gedcom_filter3' => $default_gedcom_filter3,
+				])) ?>">
+				<?= I18N::translate('GEDCOM Import') ?>
+			</a>
+		</li>				
+		<li>
+			<span class="fa-li"><?= view('icons/download') ?></span>
+			<a href="<?= e(route(ExportGedcomPage::class, [
+				'tree_name'              => $default_tree_name,
+				'default_action'         => $default_action,
+				'default_gedcom_filter1' => $default_gedcom_filter1,
+				'default_gedcom_filter2' => $default_gedcom_filter2,
+				'default_gedcom_filter3' => $default_gedcom_filter3,
+				])) ?>">
+				<?= I18N::translate('GEDCOM Export') ?>
+			</a>
+		</li>
+		<li>
+			<span class="fa-li"><?= view('icons/copy') ?></span>
+			<a href="<?= e(route(ConvertGedcomPage::class, [
+				'tree_name'              => $default_tree_name,
+				'default_gedcom_filter1' => $default_gedcom_filter1,
+				'default_gedcom_filter2' => $default_gedcom_filter2,
+				'default_gedcom_filter3' => $default_gedcom_filter3,
+				])) ?>">
+				<?= I18N::translate('GEDCOM Conversion') ?>
+			</a>
+		</li>
+		<li>
+			<span class="fa-li"><?= view('icons/data-fix') ?></span>
+			<a href="<?= e(route(DataFixPage::class, [
+					'tree'     => $default_tree_name,
+					'data_fix' => DownloadGedcomWithURL::activeModuleName(),
+					])) ?>">
+				<?= I18N::translate('Datafix using GEDCOM filters') ?>
+			</a>
+		</li>
+	</ul>	
+
+	<div class="row mb-3"><?= view('icons/spacer') ?></div>
+
+	<div class="h4">
+		<?= I18N::translate('Settings for Remote Import/Export') ?>	
+	</div>
+	<?php if ($allow_remote_download OR $allow_remote_upload OR $allow_remote_save OR $allow_remote_convert) : ?>
+		<div class="alert alert-warning">
+			<p><?= I18N::translate('Currently, remote downloading, uploading, saving or converting of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation.') ?></p>
+		</div>
+	<?php endif ?>
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Allow remote requests via URL to download GEDCOM files') ?>
+			</legend>
 			<div class="col-sm-9">
-				<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, 'selected' => $default_tree_name,
-					'options' => $tree_list]) ?>
+				<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_DOWNLOAD, 'checked' => $allow_remote_download]) ?>
+				<div class="form-text">
+					<?= I18N::translate('By selecting this option, it is possible to activate remote downloads by calling an URL.'); ?>
+				</div>
 			</div>
-		</div>	
-
-		<ul class="fa-ul mx-0">
-			<li>
-				<span class="fa-li"><?= view('icons/upload') ?></span>
-				<a href="<?= e(route(ImportGedcomPage::class, [
-					'tree_name'              => $default_tree_name,
-					'default_gedcom_filter1' => $default_gedcom_filter1,
-					'default_gedcom_filter2' => $default_gedcom_filter2,
-					'default_gedcom_filter3' => $default_gedcom_filter3,
-					])) ?>">
-					<?= I18N::translate('GEDCOM Import') ?>
-				</a>
-			</li>				
-			<li>
-				<span class="fa-li"><?= view('icons/download') ?></span>
-				<a href="<?= e(route(ExportGedcomPage::class, [
-					'tree_name'              => $default_tree_name,
-					'default_action'         => $default_action,
-					'default_gedcom_filter1' => $default_gedcom_filter1,
-					'default_gedcom_filter2' => $default_gedcom_filter2,
-					'default_gedcom_filter3' => $default_gedcom_filter3,
-					])) ?>">
-					<?= I18N::translate('GEDCOM Export') ?>
-				</a>
-			</li>
-			<li>
-				<span class="fa-li"><?= view('icons/copy') ?></span>
-				<a href="<?= e(route(ConvertGedcomPage::class, [
-					'tree_name'              => $default_tree_name,
-					'default_gedcom_filter1' => $default_gedcom_filter1,
-					'default_gedcom_filter2' => $default_gedcom_filter2,
-					'default_gedcom_filter3' => $default_gedcom_filter3,
-					])) ?>">
-					<?= I18N::translate('GEDCOM Conversion') ?>
-				</a>
-			</li>
-			<li>
-				<span class="fa-li"><?= view('icons/data-fix') ?></span>
-				<a href="<?= e(route(DataFixPage::class, [
-						'tree'     => $default_tree_name,
-						'data_fix' => DownloadGedcomWithURL::activeModuleName(),
-						])) ?>">
-					<?= I18N::translate('Datafix using GEDCOM filters') ?>
-				</a>
-			</li>
-		</ul>
-
-		<div class="h4 wt-chart-expansion-control collapsed" data-bs-toggle="collapse" data-bs-target="#id-remote" aria-controls="id-remote" aria-expanded="false">
-			<span class="chart-expand">
-				<?= view('icons/expand') ?>
-			</span>
-			<span class="chart-collapse">
-				<?= view('icons/collapse') ?>
-			</span>
-			<span>
-				<?= I18N::translate('Settings for Remote Import/Export') ?>	
-			</span>
 		</div>
+	</fieldset>		
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Allow remote requests via URL to save GEDCOM files to the server') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_SAVE, 'checked' => $allow_remote_save]) ?>
+				<div class="form-text">
+					<?= I18N::translate('By selecting this option, it is possible to activate remote requests to save GEDCOM files on the server via calling an URL.'); ?>
+				</div>
+			</div>
+		</div>
+	</fieldset>				
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Allow remote requests via URL to upload GEDCOM files') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_UPLOAD, 'checked' => $allow_remote_upload]) ?>
+				<div class="form-text">
+					<?= I18N::translate('By selecting this option, it is possible to activate remote uploads via calling an URL.'); ?>
+				</div>
+			</div>
+		</div>
+	</fieldset>		
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Allow remote requests via URL to convert GEDCOM files on the server') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_CONVERT, 'checked' => $allow_remote_convert]) ?>
+				<div class="form-text">
+					<?= I18N::translate('By selecting this option, it is possible to activate remote conversion of GEDCOM files on the server via calling an URL.'); ?>
+				</div>
+			</div>
+		</div>
+	</fieldset>		
 
-		<div id="id-remote" class="collapse">
-			<?php if ($allow_remote_download OR $allow_remote_upload OR $allow_remote_save OR $allow_remote_convert) : ?>
+	<?php if ($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert OR $secret_key !== '') : ?>
+		<div class="h4">
+			<?= I18N::translate('Settings for the Authorization Key') ?>
+		</div>
+		<div class="row mb-3">
+			<?php if ($secret_key !== '' && !$use_hash) : ?>
 				<div class="alert alert-warning">
-					<p><?= I18N::translate('Currently, remote downloading, uploading, saving or converting of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation.') ?></p>
-				</div>
+					<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
+				</div>  
 			<?php endif ?>
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Allow remote requests via URL to download GEDCOM files') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_DOWNLOAD, 'checked' => $allow_remote_download]) ?>
-						<div class="form-text">
-							<?= I18N::translate('By selecting this option, it is possible to activate remote downloads by calling an URL.'); ?>
-						</div>
-					</div>
-				</div>
-			</fieldset>		
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Allow remote requests via URL to save GEDCOM files to the server') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_SAVE, 'checked' => $allow_remote_save]) ?>
-						<div class="form-text">
-							<?= I18N::translate('By selecting this option, it is possible to activate remote requests to save GEDCOM files on the server via calling an URL.'); ?>
-						</div>
-					</div>
-				</div>
-			</fieldset>				
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Allow remote requests via URL to upload GEDCOM files') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_UPLOAD, 'checked' => $allow_remote_upload]) ?>
-						<div class="form-text">
-							<?= I18N::translate('By selecting this option, it is possible to activate remote uploads via calling an URL.'); ?>
-						</div>
-					</div>
-				</div>
-			</fieldset>		
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Allow remote requests via URL to convert GEDCOM files on the server') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/checkbox', ['label' => I18N::translate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_REMOTE_CONVERT, 'checked' => $allow_remote_convert]) ?>
-						<div class="form-text">
-							<?= I18N::translate('By selecting this option, it is possible to activate remote conversion of GEDCOM files on the server via calling an URL.'); ?>
-						</div>
-					</div>
-				</div>
-			</fieldset>		
-		</div>
-
-		<?php if ($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert OR $secret_key !== '') : ?>
-			<div class="h4 wt-chart-expansion-control collapsed" data-bs-toggle="collapse" data-bs-target="#id-key" aria-controls="id-key" aria-expanded="false">
-				<span class="chart-expand">
-					<?= view('icons/expand') ?>
-				</span>
-				<span class="chart-collapse">
-					<?= view('icons/collapse') ?>
-				</span>
-				<span>
-					<?= I18N::translate('Settings for the Authorization Key') ?>
-				</span>
+			<?php if (($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert) && $secret_key === '') : ?>
+				<div class="alert alert-danger">
+					<p><?= I18N::translate('One of the options remote download/upload/save/convert is activated and the authorization key is empty or not available') ?></p>
+				</div>  
+			<?php endif ?>		
+			<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
+				<?= I18N::translate('Current authorization key') ?>
+			</label>
+			<?php if ($use_hash && ($secret_key !== '')) : ?>
+				<?php $text_shown_for_secret_key = I18N::translate('The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.')  ?>
+			<?php else : ?>
+				<?php $text_shown_for_secret_key = $secret_key  ?>
+			<?php endif ?>
+			<div class="col-sm-9 wt-page-options-value">
+				<input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($text_shown_for_secret_key) ?>">
 			</div>
-			<div id="id-key" class="collapse">				
-				<div class="row mb-3">
-					<?php if ($secret_key !== '' && !$use_hash) : ?>
-						<div class="alert alert-warning">
-							<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
-						</div>  
-					<?php endif ?>
-					<?php if (($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert) && $secret_key === '') : ?>
-						<div class="alert alert-danger">
-							<p><?= I18N::translate('One of the options remote download/upload/save/convert is activated and the authorization key is empty or not available') ?></p>
-						</div>  
-					<?php endif ?>		
-					<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
-						<?= I18N::translate('Current authorization key') ?>
-					</label>
-					<?php if ($use_hash && ($secret_key !== '')) : ?>
-						<?php $text_shown_for_secret_key = I18N::translate('The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.')  ?>
-					<?php else : ?>
-						<?php $text_shown_for_secret_key = $secret_key  ?>
-					<?php endif ?>
-					<div class="col-sm-9 wt-page-options-value">
-						<input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($text_shown_for_secret_key) ?>">
-					</div>
-				</div>				
-				<div class="row mb-3">
-					<label class="col-sm-3 col-form-label wt-page-options-label" for="new_secret_key">
-						<?= I18N::translate('New authorization key') ?>
-					</label>
-					<div class="col-sm-9 wt-page-options-value">
-						<input class="form-control" id="new_secret_key" name="new_secret_key" type="text">
-					</div>
-				</div>
-				<fieldset class="mb-3">
-					<div class="row">
-						<legend class="col-form-label col-sm-3">
-							<?= I18N::translate('Activate encryption of the authorization key') ?>
-						</legend>
-						<div class="col-sm-9">
-						<?= view('components/checkbox', ['label' => I18N::translate('Activate'), 'name' => DownloadGedcomWithURL::PREF_USE_HASH, 'checked' => $use_hash]) ?>
-							<div class="form-text">
-								<?= I18N::translate('The encryption of the authorization key is more secure, because the authorization key is not visible to anyone and also encrypted in the database. However, the authorization key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.'); ?>
-							</div>
-						</div>
-					</div>
-				</fieldset>		
-			</div>		
-		<?php endif ?>	
-
-		<div class="h4 wt-chart-expansion-control collapsed" data-bs-toggle="collapse" data-bs-target="#id-folder" aria-controls="id-folder" aria-expanded="false">
-			<span class="chart-expand">
-				<?= view('icons/expand') ?>
-			</span>
-			<span class="chart-collapse">
-				<?= view('icons/collapse') ?>
-			</span>
-			<span>
-				<?= I18N::translate('Settings for the Import/Export Folder on the webtrees Server') ?>	
-			</span>
-		</div>
-		<div id="id-folder" class="collapse">	
-			<div class="row mb-3">
-				<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
-					<?= I18N::translate('Folder name') ?>
-				</label>
-				<div class="col-sm-9 wt-page-options-value">
-					<input class="form-control" id="folder_to_save" name="folder_to_save" type="text" value="<?= e($folder_to_save) ?>">
-				</div>
-
-				<?php $data_folder = str_replace('\\', '/', Registry::filesystem()->dataName()) ?>
-				<?php $root_folder = str_replace('\\', '/', Registry::filesystem()->rootName()) ?>
-				<?php $data_folder_relative = str_replace($root_folder, '', $data_folder) ?>
-
-				<?php if (substr_compare($folder_to_save, $data_folder_relative, 0, strlen($data_folder_relative)) !== 0) : ?>
-					<div class="alert alert-warning">
-						<p>
-							<?= I18N::translate('Currently, the folder to save is not a sub-directory of the webtrees data folder. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to this folder. If you choose a folder outside of the webtrees data folder, the saved GEDCOM file might be unprotected against unauthorized access.' ) ?>
-						</p>
-					</div>  
-				<?php endif ?>				
-
-				<div class="form-text col-sm-9 offset-sm-3">
-					<?= I18N::translate('Folder within the webtrees root path, where GEDCOM import/exports are saved. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to the data folder. The current settings (Control panel / Website preferences) for the webtrees root and data folder are:'); ?> 
-					<br>
-					<b><?= I18N::translate('webtrees root folder') ?>: </b>
-					<?= Registry::filesystem()->rootName() ?>
-					<br>
-					<b><?= I18N::translate('webtrees data folder') ?>: </b>
-					<?= Registry::filesystem()->dataName() ?>
-					<br>
-					<b><?= I18N::translate('webtrees data folder (relative path)') ?>: </b>
-					<?= e($data_folder_relative) ?>
-					<br>		
-					<b><?= I18N::translate('webtrees data folder (setting in the control panel)') ?>: </b>
-					<?= Site::getPreference('INDEX_DIRECTORY') ?>
-				</div>			
+		</div>				
+		<div class="row mb-3">
+			<label class="col-sm-3 col-form-label wt-page-options-label" for="new_secret_key">
+				<?= I18N::translate('New authorization key') ?>
+			</label>
+			<div class="col-sm-9 wt-page-options-value">
+				<input class="form-control" id="new_secret_key" name="new_secret_key" type="text">
 			</div>
 		</div>
+		<fieldset class="mb-3">
+			<div class="row">
+				<legend class="col-form-label col-sm-3">
+					<?= I18N::translate('Activate encryption of the authorization key') ?>
+				</legend>
+				<div class="col-sm-9">
+				<?= view('components/checkbox', ['label' => I18N::translate('Activate'), 'name' => DownloadGedcomWithURL::PREF_USE_HASH, 'checked' => $use_hash]) ?>
+					<div class="form-text">
+						<?= I18N::translate('The encryption of the authorization key is more secure, because the authorization key is not visible to anyone and also encrypted in the database. However, the authorization key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.'); ?>
+					</div>
+				</div>
+			</div>
+		</fieldset>		
+	<?php endif ?>	
 
-		<div class="h4 wt-chart-expansion-control collapsed" data-bs-toggle="collapse" data-bs-target="#id-export" aria-controls="id-export" aria-expanded="false">
-			<span class="chart-expand">
-				<?= view('icons/expand') ?>
-			</span>
-			<span class="chart-collapse">
-				<?= view('icons/collapse') ?>
-			</span>
-			<span>
-				<?= I18N::translate('Default Settings for Gedcom Export') ?>
-			</span>
-		</div>
-		<div id="id-export" class="collapse">		
-			<p><?= I18N::translate('These settings are used as default values for exports, e.g. if certain parameter values are not provided within the URL. By specifying the default values, the URLs can be simplified. In the most extreme case, it is sufficient to provide the tree and the authorization key parameter only.') ?></p>	
-			<p><?= I18N::translate('Any parameters provided in the URL of a remote download have a higher priority and will overrule the default settings.') ?></p>
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Default privacy level') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL,'selected' => $default_privacy_level, 
-							'options' => [
-								'none'     => 'none (' . I18N::translate('None') .')', 
-								'gedadmin' => 'gedadmin (' . I18N::translate('Manager') .')', 
-								'user'     => 'user (' . I18N::translate('Member') .')',  
-								'visitor'  => 'visitor (' . I18N::translate('Visitor') .')', 
-							]
-						]) ?>
-						<div class="form-text">
-							<?= I18N::translate('Select the default privacy level. This privacy level will be chosen if no specific privacy level is provided as URL parameter.')?>
-						</div>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Default export format') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'selected' => $default_export_format,
-							'options' => [
-								'gedcom'   => 'gedcom', 
-								'zip'      => 'zip', 
-								'zipmedia' => 'zipmedia (' . I18N::translate ('includes media files') .')', 
-								'gedzip'   => 'gedzip (' . I18N::translate ('includes media files') .')', 
-							]
-						]) ?>
-						<div class="form-text">
-							<?= I18N::translate('Select the default export format. This export format will be chosen if no specific export format is provided as URL parameter.')?>
-						</div>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Default encoding') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ENCODING, 'selected' => $default_encoding,
-							'options' => [
-								UTF8::NAME        => UTF8::NAME, 
-								UTF16BE::NAME     => UTF16BE::NAME, 
-								ANSEL::NAME       => ANSEL::NAME, 
-								ASCII::NAME       => ASCII::NAME, 
-								Windows1252::NAME => Windows1252::NAME,
-							]
-						]) ?>
-						<div class="form-text">
-							<?= I18N::translate('Select the default export format. This export format will be chosen if no specific export format is provided as URL parameter.')?>
-						</div>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Default ending') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'selected' => $default_ending,
-							'options' => [
-								'CRLF' => 'CRLF (Windows)',
-								'LF'   => 'LF (UNIX)',
-							]
-						]) ?>
-						<div class="form-text">
-							<?= I18N::translate('Select the default ending. This ending will be chosen if no specific ending is provided as URL parameter.')?>
-						</div>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Default action') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ACTION, 'selected' => $default_action,
-							'options' => [
-								DownloadGedcomWithURL::ACTION_DOWNLOAD => DownloadGedcomWithURL::ACTION_DOWNLOAD . ' (' . I18N::translate('Download') . ')',
-								DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save on the webtrees server') . ')',
-								DownloadGedcomWithURL::ACTION_BOTH     => DownloadGedcomWithURL::ACTION_BOTH     . ' (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
-							]
-						]) ?>
-						<div class="form-text">
-							<?= I18N::translate('Select the default action. This action will be chosen if no specific action is provided as URL parameter. If "both" is chosen, the file is downloaded and saved in parallel.')?>
-						</div>
-					</div>
-				</div>
-			</fieldset>	
-			<fieldset class="mb-3">
-				<div class="row">
-					<legend class="col-form-label col-sm-3">
-						<?= I18N::translate('Default time stamp') ?>
-					</legend>
-					<div class="col-sm-9">
-						<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, 'selected' => $default_time_stamp,
-							'options' => [
-								DownloadGedcomWithURL::TIME_STAMP_NONE    => DownloadGedcomWithURL::TIME_STAMP_NONE    . ' (' . I18N::translate('No time stamp') . ')',
-								DownloadGedcomWithURL::TIME_STAMP_PREFIX  => DownloadGedcomWithURL::TIME_STAMP_PREFIX  . ' (' .  I18N::translate('Prefix time stamp') . ')',
-								DownloadGedcomWithURL::TIME_STAMP_POSTFIX => DownloadGedcomWithURL::TIME_STAMP_POSTFIX . ' (' . I18N::translate('Postfix time stamp') . ')',
-							] 
-						]) ?>
-						<div class="form-text">
-							<?= I18N::translate('Select the default time stamp. This time stamp will be chosen if no specific time stamp is provided as URL parameter. If "none" is chosen, no time stamp will be used.')?>
-						</div>
-					</div>
-				</div>
-			</fieldset>	
+	<div class="h4">
+		<?= I18N::translate('Settings for the Import/Export Folder on the webtrees Server') ?>	
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
+			<?= I18N::translate('Folder name') ?>
+		</label>
+		<div class="col-sm-9 wt-page-options-value">
+			<input class="form-control" id="folder_to_save" name="folder_to_save" type="text" value="<?= e($folder_to_save) ?>">
 		</div>
 
-		<div class="h4 wt-chart-expansion-control collapsed" data-bs-toggle="collapse" data-bs-target="#id-filters" aria-controls="id-filters" aria-expanded="false">
-			<span class="chart-expand">
-				<?= view('icons/expand') ?>
-			</span>
-			<span class="chart-collapse">
-				<?= view('icons/collapse') ?>
-			</span>
-			<span>
-				<?= I18N::translate('Default Settings for GEDCOM Filters') ?>
-			</span>
+		<?php $data_folder = str_replace('\\', '/', Registry::filesystem()->dataName()) ?>
+		<?php $root_folder = str_replace('\\', '/', Registry::filesystem()->rootName()) ?>
+		<?php $data_folder_relative = str_replace($root_folder, '', $data_folder) ?>
+
+		<?php if (substr_compare($folder_to_save, $data_folder_relative, 0, strlen($data_folder_relative)) !== 0) : ?>
+			<div class="alert alert-warning">
+				<p>
+					<?= I18N::translate('Currently, the folder to save is not a sub-directory of the webtrees data folder. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to this folder. If you choose a folder outside of the webtrees data folder, the saved GEDCOM file might be unprotected against unauthorized access.' ) ?>
+				</p>
+			</div>  
+		<?php endif ?>				
+
+		<div class="form-text col-sm-9 offset-sm-3">
+			<?= I18N::translate('Folder within the webtrees root path, where GEDCOM import/exports are saved. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to the data folder. The current settings (Control panel / Website preferences) for the webtrees root and data folder are:'); ?> 
+			<br>
+			<b><?= I18N::translate('webtrees root folder') ?>: </b>
+			<?= Registry::filesystem()->rootName() ?>
+			<br>
+			<b><?= I18N::translate('webtrees data folder') ?>: </b>
+			<?= Registry::filesystem()->dataName() ?>
+			<br>
+			<b><?= I18N::translate('webtrees data folder (relative path)') ?>: </b>
+			<?= e($data_folder_relative) ?>
+			<br>		
+			<b><?= I18N::translate('webtrees data folder (setting in the control panel)') ?>: </b>
+			<?= Site::getPreference('INDEX_DIRECTORY') ?>
+		</div>			
+	</div>
+
+	<div class="h4">
+		<?= I18N::translate('Default Settings for Gedcom Export') ?>
+	</div>
+	<p><?= I18N::translate('These settings are used as default values for exports, e.g. if certain parameter values are not provided within the URL. By specifying the default values, the URLs can be simplified. In the most extreme case, it is sufficient to provide the tree and the authorization key parameter only.') ?></p>	
+	<p><?= I18N::translate('Any parameters provided in the URL of a remote download have a higher priority and will overrule the default settings.') ?></p>
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Default privacy level') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL,'selected' => $default_privacy_level, 
+					'options' => [
+						'none'     => 'none (' . I18N::translate('None') .')', 
+						'gedadmin' => 'gedadmin (' . I18N::translate('Manager') .')', 
+						'user'     => 'user (' . I18N::translate('Member') .')',  
+						'visitor'  => 'visitor (' . I18N::translate('Visitor') .')', 
+					]
+				]) ?>
+				<div class="form-text">
+					<?= I18N::translate('Select the default privacy level. This privacy level will be chosen if no specific privacy level is provided as URL parameter.')?>
+				</div>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Default export format') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'selected' => $default_export_format,
+					'options' => [
+						'gedcom'   => 'gedcom', 
+						'zip'      => 'zip', 
+						'zipmedia' => 'zipmedia (' . I18N::translate ('includes media files') .')', 
+						'gedzip'   => 'gedzip (' . I18N::translate ('includes media files') .')', 
+					]
+				]) ?>
+				<div class="form-text">
+					<?= I18N::translate('Select the default export format. This export format will be chosen if no specific export format is provided as URL parameter.')?>
+				</div>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Default encoding') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ENCODING, 'selected' => $default_encoding,
+					'options' => [
+						UTF8::NAME        => UTF8::NAME, 
+						UTF16BE::NAME     => UTF16BE::NAME, 
+						ANSEL::NAME       => ANSEL::NAME, 
+						ASCII::NAME       => ASCII::NAME, 
+						Windows1252::NAME => Windows1252::NAME,
+					]
+				]) ?>
+				<div class="form-text">
+					<?= I18N::translate('Select the default export format. This export format will be chosen if no specific export format is provided as URL parameter.')?>
+				</div>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Default ending') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'selected' => $default_ending,
+					'options' => [
+						'CRLF' => 'CRLF (Windows)',
+						'LF'   => 'LF (UNIX)',
+					]
+				]) ?>
+				<div class="form-text">
+					<?= I18N::translate('Select the default ending. This ending will be chosen if no specific ending is provided as URL parameter.')?>
+				</div>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Default action') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ACTION, 'selected' => $default_action,
+					'options' => [
+						DownloadGedcomWithURL::ACTION_DOWNLOAD => DownloadGedcomWithURL::ACTION_DOWNLOAD . ' (' . I18N::translate('Download') . ')',
+						DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save on the webtrees server') . ')',
+						DownloadGedcomWithURL::ACTION_BOTH     => DownloadGedcomWithURL::ACTION_BOTH     . ' (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
+					]
+				]) ?>
+				<div class="form-text">
+					<?= I18N::translate('Select the default action. This action will be chosen if no specific action is provided as URL parameter. If "both" is chosen, the file is downloaded and saved in parallel.')?>
+				</div>
+			</div>
+		</div>
+	</fieldset>	
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Default time stamp') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, 'selected' => $default_time_stamp,
+					'options' => [
+						DownloadGedcomWithURL::TIME_STAMP_NONE    => DownloadGedcomWithURL::TIME_STAMP_NONE    . ' (' . I18N::translate('No time stamp') . ')',
+						DownloadGedcomWithURL::TIME_STAMP_PREFIX  => DownloadGedcomWithURL::TIME_STAMP_PREFIX  . ' (' .  I18N::translate('Prefix time stamp') . ')',
+						DownloadGedcomWithURL::TIME_STAMP_POSTFIX => DownloadGedcomWithURL::TIME_STAMP_POSTFIX . ' (' . I18N::translate('Postfix time stamp') . ')',
+					] 
+				]) ?>
+				<div class="form-text">
+					<?= I18N::translate('Select the default time stamp. This time stamp will be chosen if no specific time stamp is provided as URL parameter. If "none" is chosen, no time stamp will be used.')?>
+				</div>
+			</div>
+		</div>
+	</fieldset>	
+
+	<div class="h4">
+		<?= I18N::translate('Default Settings for GEDCOM Filters') ?>
+	</div>		
+	<div class="row mb-3">
+		<label class="col-form-label col-sm-3">
+		<?= I18N::translate('Default GEDCOM filter %s', '1') ?>
+		</label>
+		<div class="col-sm-3">
+			<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER1, 'selected' => $default_gedcom_filter1, 
+				'options' => $gedcom_filter_list]) ?>
+		</div>
+		<div class="form-text col-sm-9 offset-sm-3">
+			<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '1'); ?>
+		</div>
+	</div>		
+	<div class="row mb-3">
+		<label class="col-form-label col-sm-3">
+			<?= I18N::translate('Default GEDCOM filter %s', '2') ?>
+		</label>
+		<div class="col-sm-3">
+			<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER2, 'selected' => $default_gedcom_filter2, 
+				'options' => $gedcom_filter_list]) ?>
+		</div>
+		<div class="form-text col-sm-9 offset-sm-3">
+		<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '2'); ?>
+		</div>
+	</div>		
+	<div class="row mb-3">
+		<label class="col-form-label col-sm-3">
+			<?= I18N::translate('Default GEDCOM filter %s', '3') ?>
+		</label>
+		<div class="col-sm-3">
+			<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER3, 'selected' => $default_gedcom_filter3, 
+				'options' => $gedcom_filter_list]) ?>
+		</div>
+		<div class="form-text col-sm-9 offset-sm-3">
+		<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>
+		</div>
+	</div>		
+	<div class="row mb-3">
+		<div class="col">
+			<p></p>
+			<button type="submit" class="btn btn-primary">
+				<?= view('icons/save') ?>
+				<?= I18N::translate('Save') ?>
+			</button>
+			<div class="form-text">
+				<?= I18N::translate('In order to use changed settings for a download/upload, the settings need to be saved first.')?>
+			</div>
 		</div>		
-		<div id="id-filters" class="collapse">		
-			<div class="row mb-3">
-				<label class="col-form-label col-sm-3">
-				<?= I18N::translate('Default GEDCOM filter %s', '1') ?>
-				</label>
-				<div class="col-sm-3">
-					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER1, 'selected' => $default_gedcom_filter1, 
-						'options' => $gedcom_filter_list]) ?>
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-					<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '1'); ?>
-				</div>
-			</div>		
-			<div class="row mb-3">
-				<label class="col-form-label col-sm-3">
-					<?= I18N::translate('Default GEDCOM filter %s', '2') ?>
-				</label>
-				<div class="col-sm-3">
-					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER2, 'selected' => $default_gedcom_filter2, 
-						'options' => $gedcom_filter_list]) ?>
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-				<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '2'); ?>
-				</div>
-			</div>		
-			<div class="row mb-3">
-				<label class="col-form-label col-sm-3">
-					<?= I18N::translate('Default GEDCOM filter %s', '3') ?>
-				</label>
-				<div class="col-sm-3">
-					<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER3, 'selected' => $default_gedcom_filter3, 
-						'options' => $gedcom_filter_list]) ?>
-				</div>
-				<div class="form-text col-sm-9 offset-sm-3">
-				<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>
-				</div>
-			</div>		
-		</div>		
-	</input>
+	</div>		
 </form>	
-</div>
 
 <?php View::push('javascript') ?>
 <script>
@@ -486,7 +446,7 @@ use function e;
             $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', false);
         }
     });
-	$('#settings-form select, #settings-form input').change(function () {
+	$('#tree-select select').change(function () {
         $('#settings-form').submit();
     });
 	function checkGedcomImportForm (message) {

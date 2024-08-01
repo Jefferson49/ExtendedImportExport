@@ -391,9 +391,12 @@ use function e;
 		<label class="col-form-label col-sm-3">
 		<?= I18N::translate('Default GEDCOM filter %s', '1') ?>
 		</label>
-		<div class="col-sm-3">
-			<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER1, 'selected' => $default_gedcom_filter1, 
-				'options' => $gedcom_filter_list]) ?>
+		<div class="col-sm-9">
+			<?= view('components/select', [
+				'name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER1, 
+				'selected' => $default_gedcom_filter1, 
+				'options' => $gedcom_filter_list,
+				]) ?>
 		</div>
 		<div class="form-text col-sm-9 offset-sm-3">
 			<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '1'); ?>
@@ -403,9 +406,12 @@ use function e;
 		<label class="col-form-label col-sm-3">
 			<?= I18N::translate('Default GEDCOM filter %s', '2') ?>
 		</label>
-		<div class="col-sm-3">
-			<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER2, 'selected' => $default_gedcom_filter2, 
-				'options' => $gedcom_filter_list]) ?>
+		<div class="col-sm-9">
+			<?= view('components/select', [
+				'name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER2,
+				'selected' => $default_gedcom_filter2,
+				'options' => $gedcom_filter_list,
+				]) ?>
 		</div>
 		<div class="form-text col-sm-9 offset-sm-3">
 		<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '2'); ?>
@@ -415,9 +421,12 @@ use function e;
 		<label class="col-form-label col-sm-3">
 			<?= I18N::translate('Default GEDCOM filter %s', '3') ?>
 		</label>
-		<div class="col-sm-3">
-			<?= view('components/select', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER3, 'selected' => $default_gedcom_filter3, 
-				'options' => $gedcom_filter_list]) ?>
+		<div class="col-sm-9">
+			<?= view('components/select', [
+				'name' => DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER3,
+				'selected' => $default_gedcom_filter3,
+				'options' => $gedcom_filter_list,
+				]) ?>
 		</div>
 		<div class="form-text col-sm-9 offset-sm-3">
 		<?= I18N::translate('Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter.', '3'); ?>

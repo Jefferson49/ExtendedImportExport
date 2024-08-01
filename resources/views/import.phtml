@@ -54,7 +54,7 @@ use Illuminate\Support\Collection;
 				<input type="radio" name="source" id="import-client" value="client" checked>
 				<?= I18N::translate('A file on your computer') ?>
 			</label>
-			<div class="col-sm-8">
+			<div class="col-sm-9">
 				<input id="import-client-file" type="file" name="client_file" class="form-control">
 			</div>
 		</div>
@@ -63,7 +63,7 @@ use Illuminate\Support\Collection;
 				<input type="radio" name="source" id="import-server" value="server">
 				<?= I18N::translate('A file on the server') ?>
 			</label>
-			<div class="col-sm-8">
+			<div class="col-sm-9">
 				<div class="input-group" dir="ltr">
 					<span class="input-group-text" dir="ltr">
 						<?= e($folder) ?>
@@ -144,7 +144,7 @@ use Illuminate\Support\Collection;
 			<label class="col-form-label col-sm-3">
 				<?= I18N::translate('Gedcom filter %s', '1') ?>
 			</label>
-			<div class="col-sm-3">
+			<div class="col-sm-9">
 				<?= view('components/select', [
 					'name'     => 'gedcom_filter1',
 					'selected' => $default_gedcom_filter1, 
@@ -156,8 +156,8 @@ use Illuminate\Support\Collection;
 			<label class="col-form-label col-sm-3">
 				<?= I18N::translate('Gedcom filter %s', '2') ?>
 			</label>
-			<div class="col-sm-3">
-				<?= view('components/select', [
+			<div class="col-sm-9">
+			<?= view('components/select', [
 					'name'     => 'gedcom_filter2',
 					'selected' => $default_gedcom_filter2, 
 					'options'  => $gedcom_filter_list,
@@ -168,7 +168,7 @@ use Illuminate\Support\Collection;
 			<label class="col-form-label col-sm-3">
 				<?= I18N::translate('Gedcom filter %s', '3') ?>
 			</label>
-			<div class="col-sm-3">
+			<div class="col-sm-9">
 				<?= view('components/select', [
 					'name'     => 'gedcom_filter3',
 					'selected' => $default_gedcom_filter3, 

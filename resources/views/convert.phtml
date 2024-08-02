@@ -2,6 +2,7 @@
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Cissee\WebtreesExt\MoreI18N;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -74,7 +75,7 @@ use Illuminate\Support\Collection;
 						<?php endforeach ?>
 						<?php if ($gedcom_files->isEmpty()) : ?>
 							<option disabled selected>
-								<?= I18N::translate('No GEDCOM files found.') ?>
+								<?= MoreI18N::xlate('No GEDCOM files found.') ?>
 							</option>
 						<?php endif ?>
 					</select>
@@ -88,7 +89,7 @@ use Illuminate\Support\Collection;
 
 		<div class="row mb-3">
 			<label class="col-sm-3" for="format">
-				<?= I18N::translate('Format') ?>
+				<?= MoreI18N::xlate('Format') ?>
 			</label>
 
 			<div class="col-sm-9">
@@ -96,7 +97,7 @@ use Illuminate\Support\Collection;
 					<input class="form-check-input" type="radio" name="format" id="format-gedcom" value="gedcom" <?= $default_format === 'gedcom' ? 'checked="checked"' : '' ?> data-wt-extension=".ged">
 
 					<label class="form-check-label" for="format-gedcom">
-						<?= I18N::translate('GEDCOM') ?>
+						<?= MoreI18N::xlate('GEDCOM') ?>
 					</label>
 				</div>
 
@@ -104,7 +105,7 @@ use Illuminate\Support\Collection;
 					<input class="form-check-input" type="radio" name="format" id="format-zip" value="zip" <?= $default_format === 'zip' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 					<label class="form-check-label" for="format-zip">
-						<?= /* I18N: ZIP = file format */ I18N::translate('ZIP') ?>
+						<?= /* I18N: ZIP = file format */ MoreI18N::xlate('ZIP') ?>
 					</label>
 				</div>
 
@@ -112,8 +113,8 @@ use Illuminate\Support\Collection;
 					<input class="form-check-input" type="radio" name="format" id="format-zipmedia" value="zipmedia" <?= $default_format === 'zipmedia' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 					<label class="form-check-label" for="format-zipmedia">
-						<?= /* I18N: ZIP = file format */ I18N::translate('ZIP') ?>
-						<?= I18N::translate('(includes media files)') ?>
+						<?= /* I18N: ZIP = file format */ MoreI18N::xlate('ZIP') ?>
+						<?= MoreI18N::xlate('(includes media files)') ?>
 					</label>
 				</div>
 
@@ -121,8 +122,8 @@ use Illuminate\Support\Collection;
 					<input class="form-check-input" type="radio" name="format" id="format-gdz" value="gedzip" <?= $default_format === 'gedzip' ? 'checked="checked"' : '' ?> data-wt-extension=".gdz" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 					<label class="form-check-label" for="format-gdz">
-						<?= /* I18N: GEDZIP = file format */ I18N::translate('GEDZIP') ?>
-						<?= I18N::translate('(includes media files)') ?>
+						<?= /* I18N: GEDZIP = file format */ MoreI18N::xlate('GEDZIP') ?>
+						<?= MoreI18N::xlate('(includes media files)') ?>
 					</label>
 				</div>
 			</div>
@@ -130,7 +131,7 @@ use Illuminate\Support\Collection;
 
 		<div class="row mb-3">
 			<label class="col-sm-3" for="encoding">
-				<?= I18N::translate('Character encoding') ?>
+				<?= MoreI18N::xlate('Character encoding') ?>
 			</label>
 
 			<div class="col-sm-9">
@@ -140,7 +141,7 @@ use Illuminate\Support\Collection;
 
 		<div class="row mb-3">
 			<label class="col-sm-3" for="line_endings">
-				<?= I18N::translate('Line endings') ?>
+				<?= MoreI18N::xlate('Line endings') ?>
 			</label>
 
 			<div class="col-sm-9">
@@ -150,7 +151,7 @@ use Illuminate\Support\Collection;
 
 		<div class="row mb-3">
 			<label class="col-sm-3" for="privacy">
-				<?= I18N::translate('Apply privacy settings') ?>
+				<?= MoreI18N::xlate('Apply privacy settings') ?>
 			</label>
 
 			<div class="col-sm-9">

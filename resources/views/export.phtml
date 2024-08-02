@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Cissee\WebtreesExt\MoreI18N;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -57,7 +58,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="format">
-			<?= I18N::translate('Format') ?>
+			<?= MoreI18N::xlate('Format') ?>
 		</label>
 
 		<div class="col-sm-9">
@@ -65,7 +66,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 				<input class="form-check-input" type="radio" name="format" id="format-gedcom" value="gedcom" <?= $default_format === 'gedcom' ? 'checked="checked"' : '' ?> data-wt-extension=".ged">
 
 				<label class="form-check-label" for="format-gedcom">
-					<?= I18N::translate('GEDCOM') ?>
+					<?= MoreI18N::xlate('GEDCOM') ?>
 				</label>
 			</div>
 
@@ -73,7 +74,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 				<input class="form-check-input" type="radio" name="format" id="format-zip" value="zip" <?= $default_format === 'zip' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 				<label class="form-check-label" for="format-zip">
-					<?= /* I18N: ZIP = file format */ I18N::translate('ZIP') ?>
+					<?= /* I18N: ZIP = file format */ MoreI18N::xlate('ZIP') ?>
 				</label>
 			</div>
 
@@ -81,8 +82,8 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 				<input class="form-check-input" type="radio" name="format" id="format-zipmedia" value="zipmedia" <?= $default_format === 'zipmedia' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 				<label class="form-check-label" for="format-zipmedia">
-					<?= /* I18N: ZIP = file format */ I18N::translate('ZIP') ?>
-					<?= I18N::translate('(includes media files)') ?>
+					<?= /* I18N: ZIP = file format */ MoreI18N::xlate('ZIP') ?>
+					<?= MoreI18N::xlate('(includes media files)') ?>
 				</label>
 			</div>
 
@@ -90,8 +91,8 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 				<input class="form-check-input" type="radio" name="format" id="format-gdz" value="gedzip" <?= $default_format === 'gedzip' ? 'checked="checked"' : '' ?> data-wt-extension=".gdz" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 				<label class="form-check-label" for="format-gdz">
-					<?= /* I18N: GEDZIP = file format */ I18N::translate('GEDZIP') ?>
-					<?= I18N::translate('(includes media files)') ?>
+					<?= /* I18N: GEDZIP = file format */ MoreI18N::xlate('GEDZIP') ?>
+					<?= MoreI18N::xlate('(includes media files)') ?>
 				</label>
 			</div>
 		</div>
@@ -99,7 +100,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="filename">
-			<?= I18N::translate('Filename') ?>
+			<?= MoreI18N::xlate('Filename') ?>
 		</label>
 
 		<div class="col-sm-9">
@@ -112,7 +113,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="encoding">
-			<?= I18N::translate('Character encoding') ?>
+			<?= MoreI18N::xlate('Character encoding') ?>
 		</label>
 
 		<div class="col-sm-9">
@@ -127,7 +128,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="line_endings">
-			<?= I18N::translate('Line endings') ?>
+			<?= MoreI18N::xlate('Line endings') ?>
 		</label>
 
 		<div class="col-sm-9">
@@ -141,15 +142,15 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="privacy">
-			<?= I18N::translate('Apply privacy settings') ?>
+			<?= MoreI18N::xlate('Apply privacy settings') ?>
 		</label>
 		<div class="col-sm-9">
 			<?= view('components/radios-inline', ['name' => 'privacy','selected' => $default_privacy, 
 				'options' => [
-					'none'     => 'none (' . I18N::translate('None') .')', 
-					'gedadmin' => 'gedadmin (' . I18N::translate('Manager') .')', 
-					'user'     => 'user (' . I18N::translate('Member') .')',  
-					'visitor'  => 'visitor (' . I18N::translate('Visitor') .')', 
+					'none'     => 'none (' . MoreI18N::xlate('None') .')', 
+					'gedadmin' => 'gedadmin (' . MoreI18N::xlate('Manager') .')', 
+					'user'     => 'user (' . MoreI18N::xlate('Member') .')',  
+					'visitor'  => 'visitor (' . MoreI18N::xlate('Visitor') .')', 
 				]
 			]) ?>
 		</div>
@@ -183,7 +184,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			<div class="col-sm-9">
 				<?= view('components/radios-inline', ['name' => 'action', 'selected' => $default_action,
 					'options' => [
-						DownloadGedcomWithURL::ACTION_DOWNLOAD => I18N::translate('Download'),
+						DownloadGedcomWithURL::ACTION_DOWNLOAD => MoreI18N::xlate('Download'),
 						DownloadGedcomWithURL::ACTION_SAVE     => I18N::translate('Save on the webtrees server'),
 						DownloadGedcomWithURL::ACTION_BOTH     => I18N::translate('Both, i.e. download and save in parallel'),
 					]

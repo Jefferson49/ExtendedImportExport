@@ -36,6 +36,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Cissee\WebtreesExt\MoreI18N;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
@@ -269,6 +270,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function title(): string
     {
+        //ToDo: Translate title
         return 'Extended Import/Export';
     }
 
@@ -837,7 +839,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      public function getGedcomFilterList(): array {
 
         $gedcom_filter_list =[
-            ''             => I18N::translate('None'),
+            ''             => MoreI18N::xlate('None'),
         ];
 
         foreach (get_declared_classes() as $class_name) {
@@ -1547,7 +1549,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $client_file = $request->getUploadedFiles()['client_file'] ?? null;
 
                 if ($client_file === null || $client_file->getError() === UPLOAD_ERR_NO_FILE) {
-                    $message = I18N::translate('No GEDCOM file was received.');    
+                    $message = MoreI18N::xlate('No GEDCOM file was received.');    
                     return $this->showErrorMessage($message);
                 }
     
@@ -1565,7 +1567,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 }   
             }
             else {
-                $message = I18N::translate('No GEDCOM file was received.');
+                $message = MoreI18N::xlate('No GEDCOM file was received.');
                 return $this->showErrorMessage($message);
             }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
-use Fisharebest\Webtrees\I18N;
+use Cissee\WebtreesExt\MoreI18N;
 
 /**
  * A GEDCOM filter, which includes all records (i.e. everything)
@@ -26,6 +26,6 @@ class AllRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilte
      */
     public function name(): string {
 
-        return I18N::translate('All records');
+        return MoreI18N::xlate('All records');
     }    
 }

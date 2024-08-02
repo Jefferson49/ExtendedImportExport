@@ -36,6 +36,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Cissee\WebtreesExt\MoreI18N;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
@@ -79,9 +80,9 @@ class ExportGedcomPage implements RequestHandlerInterface
         $this->layout = 'layouts/administration';
 
         $tree_name               = Validator::queryParams($request)->string('tree_name');
-        $default_gedcom_filter1  = Validator::queryParams($request)->string('default_gedcom_filter1', I18N::translate('None'));
-        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter2', I18N::translate('None'));
-        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter3', I18N::translate('None'));
+        $default_gedcom_filter1  = Validator::queryParams($request)->string('default_gedcom_filter1', MoreI18N::xlate('None'));
+        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter2', MoreI18N::xlate('None'));
+        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter3', MoreI18N::xlate('None'));
 
         $tree_service = new TreeService(new GedcomImportService());
         $tree = $tree_service->all()[$tree_name];

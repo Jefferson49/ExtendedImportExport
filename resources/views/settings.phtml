@@ -2,6 +2,7 @@
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+use Cissee\WebtreesExt\MoreI18N;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -274,10 +275,10 @@ use function e;
 			<div class="col-sm-9">
 				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL,'selected' => $default_privacy_level, 
 					'options' => [
-						'none'     => 'none (' . I18N::translate('None') .')', 
-						'gedadmin' => 'gedadmin (' . I18N::translate('Manager') .')', 
-						'user'     => 'user (' . I18N::translate('Member') .')',  
-						'visitor'  => 'visitor (' . I18N::translate('Visitor') .')', 
+						'none'     => 'none (' . MoreI18N::xlate('None') .')', 
+						'gedadmin' => 'gedadmin (' . MoreI18N::xlate('Manager') .')', 
+						'user'     => 'user (' . MoreI18N::xlate('Member') .')',  
+						'visitor'  => 'visitor (' . MoreI18N::xlate('Visitor') .')', 
 					]
 				]) ?>
 				<div class="form-text">
@@ -353,7 +354,7 @@ use function e;
 			<div class="col-sm-9">
 				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ACTION, 'selected' => $default_action,
 					'options' => [
-						DownloadGedcomWithURL::ACTION_DOWNLOAD => DownloadGedcomWithURL::ACTION_DOWNLOAD . ' (' . I18N::translate('Download') . ')',
+						DownloadGedcomWithURL::ACTION_DOWNLOAD => DownloadGedcomWithURL::ACTION_DOWNLOAD . ' (' . MoreI18N::xlate('Download') . ')',
 						DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save on the webtrees server') . ')',
 						DownloadGedcomWithURL::ACTION_BOTH     => DownloadGedcomWithURL::ACTION_BOTH     . ' (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
 					]
@@ -437,7 +438,7 @@ use function e;
 			<p></p>
 			<button type="submit" class="btn btn-primary">
 				<?= view('icons/save') ?>
-				<?= I18N::translate('Save') ?>
+				<?= MoreI18N::xlate('Save') ?>
 			</button>
 			<div class="form-text">
 				<?= I18N::translate('In order to use changed settings for a download/upload, the settings need to be saved first.')?>

@@ -1295,7 +1295,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$gedcom_filter1      = Validator::queryParams($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
 		$gedcom_filter2      = Validator::queryParams($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
 		$gedcom_filter3      = Validator::queryParams($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
-        $source              = Validator::queryParams($request)->string('source', 'server');
         $server_file         = Validator::queryParams($request)->string('server_file', '');
         $import_encoding     = Validator::queryParams($request)->isInArrayKeys($encodings)->string('import_encoding', '');
         $keep_media          = Validator::queryParams($request)->boolean('keep_media', false);

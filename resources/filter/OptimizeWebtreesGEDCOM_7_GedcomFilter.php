@@ -57,7 +57,7 @@ class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter impleme
      */
     public function name(): string {
 
-        return I18N::translate('Optimize webtrees export for GEDCOM 7 filter');
+        return I18N::translate('Optimization of webtrees export for GEDCOM 7');
     } 
 
     /**

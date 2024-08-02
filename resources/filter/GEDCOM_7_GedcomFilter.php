@@ -194,7 +194,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
      */
     public function name(): string {
 
-        return I18N::translate('GEDCOM 7 conversion filter');
+        return I18N::translate('GEDCOM 7 conversion');
     }      
 
     /**

@@ -9,7 +9,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS only, and removes their data
  * 
- * This filter is intended to be used after webtrees data was exported with privacy settings, which might create
+ * This filter is intended to be used if webtrees data shall be exported with privacy settings, which might create
  * INDI records with minimal data (i.e. SEX/FAMC/FAMS only). After applying this filter, the related INDI records 
  * will be empty and can be removed with the RemoveEmptyRecords GEDCOM filter.
  */
@@ -35,6 +35,6 @@ class ReduceMinimalIndividualsGedcomFilter extends AbstractGedcomFilter implemen
      */
     public function name(): string {
 
-        return I18N::translate('Reduce minimal individuals GEDCOM filter');
+        return I18N::translate('Reduce minimal individuals (e.g. created by privacy settings) to empty records');
     } 
 }

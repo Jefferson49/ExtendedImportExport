@@ -30,6 +30,6 @@ class RemoveChangeDataGedcomFilter extends AbstractGedcomFilter implements Gedco
      */
     public function name(): string {
 
-        return I18N::translate('Remove change data (i.e. CHAN) GEDCOM filter');
+        return I18N::translate('Remove change data (i.e. CHAN structures)');
     } 
 }

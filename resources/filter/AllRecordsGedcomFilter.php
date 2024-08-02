@@ -26,6 +26,6 @@ class AllRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilte
      */
     public function name(): string {
 
-        return I18N::translate('All records GEDCOM filter');
+        return I18N::translate('All records');
     }    
 }

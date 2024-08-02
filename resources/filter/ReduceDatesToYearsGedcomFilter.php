@@ -56,6 +56,6 @@ class ReduceDatesToYearsGedcomFilter extends AbstractGedcomFilter implements Ged
      */
     public function name(): string {
 
-        return I18N::translate('Reduce dates to years GEDCOM filter');
+        return I18N::translate('Reduce dates to years');
     }     
 }

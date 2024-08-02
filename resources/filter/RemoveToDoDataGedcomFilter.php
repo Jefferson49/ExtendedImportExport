@@ -32,6 +32,6 @@ class RemoveToDoDataGedcomFilter extends AbstractGedcomFilter implements GedcomF
      */
     public function name(): string {
 
-        return I18N::translate('Remove ToDo data (i.e. _TODO) GEDCOM filter');
+        return I18N::translate('Remove ToDo data (i.e. _TODO structures)');
     }     
 }

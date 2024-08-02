@@ -94,7 +94,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
      */
     public function name(): string {
 
-        return I18N::translate('Birth, marriage, death GEDCOM filter');
+        return I18N::translate('Birth, marriage, death export');
     }    
 
     /**

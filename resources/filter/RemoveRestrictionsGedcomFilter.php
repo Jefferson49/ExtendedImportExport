@@ -31,6 +31,6 @@ class RemoveRestrictionsGedcomFilter extends AbstractGedcomFilter implements Ged
      */
     public function name(): string {
 
-        return I18N::translate('Remove restrictions (i.e. RESN) GEDCOM filter');
+        return I18N::translate('Remove restrictions (i.e. RESN tags)');
     }     
 }

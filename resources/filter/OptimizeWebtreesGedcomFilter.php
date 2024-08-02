@@ -96,7 +96,7 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements Gedco
      */
     public function name(): string {
 
-        return I18N::translate('Optimize webtrees GEDCOM filter');
+        return I18N::translate('Optimization of webtrees export for GEDCOM 5.5.1');
     } 
 
    /**

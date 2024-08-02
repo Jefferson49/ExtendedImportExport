@@ -30,6 +30,6 @@ class RemoveWebtreesUserGedcomFilter extends AbstractGedcomFilter implements Ged
      */
     public function name(): string {
 
-        return I18N::translate('Remove webtrees user (i.e. _WT_USER) GEDCOM filter');
+        return I18N::translate('Remove webtrees user data (i.e. _WT_USER tags)');
     }     
 }

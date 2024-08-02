@@ -32,6 +32,6 @@ class AvoidLeadingSpacesForCONC_GedcomFilter extends AbstractGedcomFilter implem
      */
     public function name(): string {
 
-        return I18N::translate('Avoid leading spaces for CONC GEDCOM filter');
+        return I18N::translate('Avoid leading spaces for CONC');
     }      
 }

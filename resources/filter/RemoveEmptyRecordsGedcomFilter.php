@@ -18,7 +18,7 @@ class RemoveEmptyRecordsGedcomFilter extends RemoveEmptyOrUnlinkedRecordsGedcomF
      */
     public function name(): string {
 
-        return I18N::translate('Remove empty records GEDCOM filter');
+        return I18N::translate('Remove empty records');
     } 
 
     /**

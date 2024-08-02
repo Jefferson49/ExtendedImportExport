@@ -35,7 +35,7 @@ class IndividualNamesCsvGedcomFilter extends AbstractGedcomFilter implements Ged
      */
     public function name(): string {
 
-        return I18N::translate('Individual names CSV list generation GEDCOM filter');
+        return I18N::translate('Individual names CSV list');
     }   
 
     /**

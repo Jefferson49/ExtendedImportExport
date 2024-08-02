@@ -33,6 +33,6 @@ class NoRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilter
      */
     public function name(): string {
 
-        return I18N::translate('No records GEDCOM filter');
+        return I18N::translate('No records');
     }    
 }

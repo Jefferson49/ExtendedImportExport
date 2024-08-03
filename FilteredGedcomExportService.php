@@ -418,7 +418,7 @@ class FilteredGedcomExportService extends GedcomExportService
         //Add a byte order mark for UTF8 if Gedcom 7 (required by the standard) 
         if ($gedcom7 && $encoding === UTF8::NAME) {
 
-            $byte_order_mark = "\xEF\xBB\xBF";
+            $byte_order_mark = UTF8::BYTE_ORDER_MARK;
             $bytes_written = fwrite($stream, $byte_order_mark);
         }
 

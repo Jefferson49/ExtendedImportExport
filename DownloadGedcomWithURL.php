@@ -68,7 +68,6 @@ use Fisharebest\Webtrees\Repository;
 use Fisharebest\Webtrees\Services\DataFixService;
 use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\TreeService;
-use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Source;
 use Fisharebest\Webtrees\Submitter;
 use Fisharebest\Webtrees\Site;
@@ -80,7 +79,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToWriteFile;
@@ -1237,9 +1235,28 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $chunk_data = $file_data;
         $chunk_data = str_replace("\r\n", "\n", $chunk_data);
         $remaining_string = $this->addToGedcomRecords($gedcom_records, $chunk_data);
-        $gedcom_records[] = $remaining_string;
+
+        if ($remaining_string !== '') {
+            $gedcom_records[] = $remaining_string;
+        }
 
         fclose($stream);
+
+        if (!empty($gedcom_records)) {
+
+            $first_record = reset($gedcom_records);
+            $first_key    = key($gedcom_records);
+
+            //Remove any byte-order-mark
+            if (str_starts_with($first_record, UTF8::BYTE_ORDER_MARK)) {
+                $first_record = substr($first_record, strlen(UTF8::BYTE_ORDER_MARK));
+                $gedcom_records[$first_key] = $first_record;
+            }
+
+            if (!str_starts_with($first_record, '0 HEAD')) {
+                throw new DownloadGedcomWithUrlException(MoreI18N::xlate('Invalid GEDCOM file - no header record found.'));
+            }
+        }
 
         return $gedcom_records;
     }
@@ -1572,14 +1589,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
             try {
                 $gedcom_records = $this->importGedcomFile($stream, $import_encoding);
 
-                if ($action === self::ACTION_UPLOAD) {
+                if (empty($gedcom_records)) {
+                    $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename);
+                    return $this->showErrorMessage($message);
+                }
+                elseif ($action === self::ACTION_UPLOAD) {
                     $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename, $tree_name);
                     FlashMessages::addMessage($message, 'success');
                 }
             }
             catch (Throwable $ex) {
                 return $this->showErrorMessage($ex->getMessage());
-            }            
+            } 
 
             //Export file name and extension
             $extension = pathinfo($filename);

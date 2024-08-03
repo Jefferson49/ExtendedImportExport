@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-08-02 07:30+0200\n"
-"PO-Revision-Date: 2024-08-02 07:31+0200\n"
+"POT-Creation-Date: 2024-08-03 13:57+0200\n"
+"PO-Revision-Date: 2024-08-03 13:58+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -142,9 +142,14 @@ msgid "The %s method of the used GEDCOM filter (%s) throws a PHP error"
 msgstr ""
 "Die %s Methode des genutzten GEDCOM -Filters (%s) erzeugt einen PHP-Fehler"
 
-#: ConvertGedcomPage.php:111 resources/views/settings.phtml:97
+#: ConvertGedcomPage.php:112 resources/views/settings.phtml:96
 msgid "GEDCOM Conversion"
 msgstr "GEDCOM-Konvertierung"
+
+#: DownloadGedcomWithURL.php:272 resources/views/convert.phtml:33
+#: resources/views/export.phtml:47 resources/views/import.phtml:30
+msgid "Extended Import/Export"
+msgstr "Erweiterter Import/Export"
 
 #: DownloadGedcomWithURL.php:285
 msgid ""
@@ -155,7 +160,7 @@ msgstr ""
 "und -Filter Operationen. Das Modul unterstützt außerdem Remote-Downloads/-"
 "Uploads/-Filter mittels URL-Aufrufen."
 
-#: DownloadGedcomWithURL.php:540
+#: DownloadGedcomWithURL.php:538
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -163,7 +168,7 @@ msgstr ""
 "Der angegebene Autorisierungs-Schlüssel ist zu kurz. Bitte geben Sie "
 "mindestens eine Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:546
+#: DownloadGedcomWithURL.php:544
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -172,7 +177,7 @@ msgstr ""
 "nicht akzeptiert werden. Bitte geben Sie einen anderen Autorisierungs-"
 "Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:576
+#: DownloadGedcomWithURL.php:574
 #, php-format
 msgid ""
 "The folder settings could not be saved, because the folder “%s” does not "
@@ -181,12 +186,12 @@ msgstr ""
 "Die Einstellungen für den Ordner konnten nicht gespeichert werden, weil der "
 "Ordner \"%s\" nicht existiert."
 
-#: DownloadGedcomWithURL.php:605
+#: DownloadGedcomWithURL.php:602
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:655
+#: DownloadGedcomWithURL.php:653
 #, php-format
 msgid ""
 "The preferences for the custom module \"%s\" were sucessfully updated to the "
@@ -195,7 +200,7 @@ msgstr ""
 "Die Einstellungen für das benutzerdefinierte Modul \"%s\" wurden für die "
 "neue Modul-Version %s aktualisiert."
 
-#: DownloadGedcomWithURL.php:682
+#: DownloadGedcomWithURL.php:680
 #, php-format
 msgid ""
 "The preferences for the default GEDCOM filter were reset to \"none\", "
@@ -204,24 +209,24 @@ msgstr ""
 "Die Voreinstellung für den GEDCOM-Filter wurden auf \"keine\" zurückgesetzt, "
 "weil der ausgewählte GEDCOM-Filter %s nicht gefunden wurde"
 
-#: DownloadGedcomWithURL.php:818
+#: DownloadGedcomWithURL.php:816
 msgid "A compilation error was detected in the following GEDCOM filter"
 msgstr "In folgendem Export-Filter wurde ein Kompilierungs-Fehler erkannt"
 
-#: DownloadGedcomWithURL.php:819
+#: DownloadGedcomWithURL.php:817
 msgid "line"
 msgstr "Zeile"
 
-#: DownloadGedcomWithURL.php:819
+#: DownloadGedcomWithURL.php:817
 msgid "error message"
 msgstr "Fehlermeldung"
 
-#: DownloadGedcomWithURL.php:877 DownloadGedcomWithURL.php:1413
-#: DownloadGedcomWithURL.php:1417 DownloadGedcomWithURL.php:1421
+#: DownloadGedcomWithURL.php:875 DownloadGedcomWithURL.php:1422
+#: DownloadGedcomWithURL.php:1426 DownloadGedcomWithURL.php:1430
 msgid "The GEDCOM filter was not found"
 msgstr "Der GEDCOM-Filter wurde nicht gefunden"
 
-#: DownloadGedcomWithURL.php:915
+#: DownloadGedcomWithURL.php:913
 #, php-format
 msgid ""
 "The include hierarchy for GEDCOM filters exceeds the maximum level of %s "
@@ -230,7 +235,7 @@ msgstr ""
 "Die Include-Hierarchie für Export-Filter überschreitet die maximale Schwelle "
 "von %s Includes."
 
-#: DownloadGedcomWithURL.php:919
+#: DownloadGedcomWithURL.php:917
 msgid ""
 "The following GEDCOM filter might cause a loop in the include structure, "
 "because it was detected more than once in the include hierarchy"
@@ -239,12 +244,12 @@ msgstr ""
 "Include-Struktur, weil der Filter mehr als einmal in der Include-Hierarchie "
 "detektiert wurde"
 
-#: DownloadGedcomWithURL.php:922
+#: DownloadGedcomWithURL.php:920
 msgid "Please check the include structure of the selected GEDCOM filters."
 msgstr ""
 "Bitte überprüfen Sie die Include-Struktur der ausgewählten Export-Filter."
 
-#: DownloadGedcomWithURL.php:1367
+#: DownloadGedcomWithURL.php:1376
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -253,7 +258,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:1371
+#: DownloadGedcomWithURL.php:1380
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -262,108 +267,115 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:1375
+#: DownloadGedcomWithURL.php:1384
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:1379
+#: DownloadGedcomWithURL.php:1388
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:1385
+#: DownloadGedcomWithURL.php:1394
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:1389
+#: DownloadGedcomWithURL.php:1398
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1393
+#: DownloadGedcomWithURL.php:1402
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1397
+#: DownloadGedcomWithURL.php:1406
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1401
+#: DownloadGedcomWithURL.php:1410
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1405
+#: DownloadGedcomWithURL.php:1414
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1409
+#: DownloadGedcomWithURL.php:1418
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1445
+#: DownloadGedcomWithURL.php:1454
 #, php-format
 msgid "Could not find the requested tree \"%s\"."
 msgstr "Der angeforderte Stammbaum \"%s\" konnte nicht gefunden werden."
 
-#: DownloadGedcomWithURL.php:1491
+#: DownloadGedcomWithURL.php:1500
 #, php-format
 msgid "The family tree \"%s\" was exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1499 DownloadGedcomWithURL.php:1629
+#: DownloadGedcomWithURL.php:1508 DownloadGedcomWithURL.php:1649
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:1504
+#: DownloadGedcomWithURL.php:1513
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu speichern, "
 "sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1505 DownloadGedcomWithURL.php:1522
-#: DownloadGedcomWithURL.php:1637 DownloadGedcomWithURL.php:1662
+#: DownloadGedcomWithURL.php:1514 DownloadGedcomWithURL.php:1531
+#: DownloadGedcomWithURL.php:1657 DownloadGedcomWithURL.php:1682
 msgid "Please check the module settings in the control panel."
 msgstr "Bitte überprüfen Sie die Modul-Einstellungen in der Verwaltung."
 
-#: DownloadGedcomWithURL.php:1521
+#: DownloadGedcomWithURL.php:1530
 msgid ""
 "Remote URL requests to download GEDCOM files from the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien herunterzuladen, sind nicht "
 "erlaubt."
 
-#: DownloadGedcomWithURL.php:1542 DownloadGedcomWithURL.php:1563
+#: DownloadGedcomWithURL.php:1558 DownloadGedcomWithURL.php:1579
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Die Datei \"%s\" konnte nicht eingelesen werden."
 
-#: DownloadGedcomWithURL.php:1577
+#: DownloadGedcomWithURL.php:1593
+#, php-format
+msgid "No data imported from file \"%s\". The file might be empty."
+msgstr ""
+"Es wurden keine Daten aus der Datei \"%s\" importiert. Die Datei ist "
+"möglicherweise leer."
+
+#: DownloadGedcomWithURL.php:1597
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr ""
 "Die Datei \"%s\" für den Stammbaum \"%s\" wurde erfolgreich hochgeladen."
 
-#: DownloadGedcomWithURL.php:1621
+#: DownloadGedcomWithURL.php:1641
 #, php-format
 msgid "The GEDCOM file \"%s\" was converted to: %s"
 msgstr "Die GEDCOM-Datei \"%s\" wurde konvertiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1636
+#: DownloadGedcomWithURL.php:1656
 msgid ""
 "Remote URL requests to convert GEDCOM files on the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu "
 "konvertieren, sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1661
+#: DownloadGedcomWithURL.php:1681
 msgid ""
 "Remote URL requests to upload GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien hochzuladen, sind nicht "
 "erlaubt."
 
-#: ExportGedcomPage.php:106
+#: ExportGedcomPage.php:107
 msgid "Extended GEDCOM Export"
 msgstr "Erweiterter GEDCOM-Export"
 
@@ -382,7 +394,7 @@ msgstr ""
 "Schwerwiegender Fehler: Zu viele Iterationen beim Entfernen von leeren oder "
 "unverknüpften Datensätzen."
 
-#: ImportGedcomPage.php:109
+#: ImportGedcomPage.php:110
 msgid "Extended GEDCOM Import"
 msgstr "Erweiterter GEDCOM-Import"
 
@@ -467,11 +479,6 @@ msgstr "Benutzerdefiniertes Modul"
 msgid "Control panel"
 msgstr "Verwaltung"
 
-#: resources/views/convert.phtml:33 resources/views/export.phtml:47
-#: resources/views/import.phtml:30
-msgid "Extended Import/Export"
-msgstr "Erweiterter Import/Export"
-
 #: resources/views/convert.phtml:47
 msgid "Select a GEDCOM file"
 msgstr "Wählen Sie eine GEDCOM-Datei"
@@ -493,17 +500,17 @@ msgid "Time stamp"
 msgstr "Zeitstempel"
 
 #: resources/views/convert.phtml:170 resources/views/export.phtml:167
-#: resources/views/settings.phtml:375
+#: resources/views/settings.phtml:355
 msgid "No time stamp"
 msgstr "Kein Zeitstempel"
 
 #: resources/views/convert.phtml:171 resources/views/export.phtml:168
-#: resources/views/settings.phtml:376
+#: resources/views/settings.phtml:356
 msgid "Prefix time stamp"
 msgstr "Prefix Zeitstempel"
 
 #: resources/views/convert.phtml:172 resources/views/export.phtml:169
-#: resources/views/settings.phtml:377
+#: resources/views/settings.phtml:357
 msgid "Postfix time stamp"
 msgstr "Postfix Zeitstempel"
 
@@ -533,11 +540,11 @@ msgstr "Export-Aktion"
 msgid "Action"
 msgstr "Aktion"
 
-#: resources/views/export.phtml:188 resources/views/settings.phtml:357
+#: resources/views/export.phtml:188
 msgid "Save on the webtrees server"
 msgstr "Auf dem webtrees Server speichern"
 
-#: resources/views/export.phtml:189 resources/views/settings.phtml:358
+#: resources/views/export.phtml:189
 msgid "Both, i.e. download and save in parallel"
 msgstr "Beides, d.h. Herunterladen und gleichzeitig Speichern"
 
@@ -575,7 +582,7 @@ msgstr ""
 msgid "Import GEDCOM file"
 msgstr "GEDCOM-Datei importieren"
 
-#: resources/views/options.phtml:18 resources/views/settings.phtml:106
+#: resources/views/options.phtml:18 resources/views/settings.phtml:105
 msgid "Datafix using GEDCOM filters"
 msgstr "Datenkorrektur mit Hilfe von GEDCOM-Filtern"
 
@@ -611,15 +618,15 @@ msgstr "Wählen Sie einen Stammbaum"
 msgid "GEDCOM Import"
 msgstr "GEDCOM-Import"
 
-#: resources/views/settings.phtml:86
+#: resources/views/settings.phtml:85
 msgid "GEDCOM Export"
 msgstr "GEDCOM-Export"
 
-#: resources/views/settings.phtml:114
+#: resources/views/settings.phtml:113
 msgid "Settings for Remote Import/Export"
 msgstr "Einstellungen für Remote-Import/-Export"
 
-#: resources/views/settings.phtml:118
+#: resources/views/settings.phtml:117
 msgid ""
 "Currently, remote downloading, uploading, saving or converting of GEDCOM "
 "files is allowed. Please note that everyone with access to the authorization "
@@ -631,17 +638,17 @@ msgstr ""
 "den Autorisierungs-Schlüssel GEDCOM-Dateien von/zu Ihrer webtrees-"
 "Installation herunterladen/hochladen/speichern kann."
 
-#: resources/views/settings.phtml:124
+#: resources/views/settings.phtml:123
 msgid "Allow remote requests via URL to download GEDCOM files"
 msgstr ""
 "Remote-Anfragen mittels URL zum Herunterladen von GEDCOM-Dateien erlauben"
 
-#: resources/views/settings.phtml:127 resources/views/settings.phtml:140
-#: resources/views/settings.phtml:153 resources/views/settings.phtml:166
+#: resources/views/settings.phtml:126 resources/views/settings.phtml:139
+#: resources/views/settings.phtml:152 resources/views/settings.phtml:165
 msgid "Allow"
 msgstr "Erlauben"
 
-#: resources/views/settings.phtml:129
+#: resources/views/settings.phtml:128
 msgid ""
 "By selecting this option, it is possible to activate remote downloads by "
 "calling an URL."
@@ -649,13 +656,13 @@ msgstr ""
 "Durch Auswahl dieser Option, ist es möglich, Remote-Downloads mittels Aufruf "
 "über URL zu aktivieren."
 
-#: resources/views/settings.phtml:137
+#: resources/views/settings.phtml:136
 msgid "Allow remote requests via URL to save GEDCOM files to the server"
 msgstr ""
 "Remote-Anfragen mittels URL zum Speichern von GEDCOM-Dateien auf dem Server "
 "erlauben"
 
-#: resources/views/settings.phtml:142
+#: resources/views/settings.phtml:141
 msgid ""
 "By selecting this option, it is possible to activate remote requests to save "
 "GEDCOM files on the server via calling an URL."
@@ -663,11 +670,11 @@ msgstr ""
 "Durch Auswahl dieser Option, ist es möglich, Remote-Aufrufe mittels URL zum "
 "Speichern von GEDCOM-Dateien auf den Server zu aktivieren."
 
-#: resources/views/settings.phtml:150
+#: resources/views/settings.phtml:149
 msgid "Allow remote requests via URL to upload GEDCOM files"
 msgstr "Remote-Anfragen mittels URL zum Hochladen von GEDCOM-Dateien erlauben"
 
-#: resources/views/settings.phtml:155
+#: resources/views/settings.phtml:154
 msgid ""
 "By selecting this option, it is possible to activate remote uploads via "
 "calling an URL."
@@ -675,13 +682,13 @@ msgstr ""
 "Durch Auswahl dieser Option, ist es möglich, Remote-Uploads mittels Aufruf "
 "über URL zu aktivieren."
 
-#: resources/views/settings.phtml:163
+#: resources/views/settings.phtml:162
 msgid "Allow remote requests via URL to convert GEDCOM files on the server"
 msgstr ""
 "Remote-Anfragen mittels URL zum Konvertieren von GEDCOM-Dateien auf dem "
 "Server erlauben"
 
-#: resources/views/settings.phtml:168
+#: resources/views/settings.phtml:167
 msgid ""
 "By selecting this option, it is possible to activate remote conversion of "
 "GEDCOM files on the server via calling an URL."
@@ -689,11 +696,11 @@ msgstr ""
 "Durch Auswahl dieser Option, ist es möglich, Remote-Aufrufe mittels URL zur "
 "Konvertierung von GEDCOM-Dateien auf den Server zu aktivieren."
 
-#: resources/views/settings.phtml:176
+#: resources/views/settings.phtml:175
 msgid "Settings for the Authorization Key"
 msgstr "Einstellungen für den Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:181
+#: resources/views/settings.phtml:180
 msgid ""
 "Currently, the authorization key is not encrypted. This option is less "
 "secure and should only be used in local environments with limited users. "
@@ -704,7 +711,7 @@ msgstr ""
 "begrenzten Benutzern verwendet werden. Andernfalls, aktivieren sie bitte die "
 "Verschlüsselung des Autorisierungs-Schlüssels."
 
-#: resources/views/settings.phtml:186
+#: resources/views/settings.phtml:185
 msgid ""
 "One of the options remote download/upload/save/convert is activated and the "
 "authorization key is empty or not available"
@@ -712,11 +719,11 @@ msgstr ""
 "Eine der Optionen Remote-Download/-Save/-Upload /-Konvertieren ist aktiviert "
 "und der Autorisierungs-Schlüssel ist leer oder nicht verfügbar"
 
-#: resources/views/settings.phtml:190
+#: resources/views/settings.phtml:189
 msgid "Current authorization key"
 msgstr "Aktueller Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:193
+#: resources/views/settings.phtml:192
 msgid ""
 "The authorization key cannot be shown, because encryption is activated. If "
 "you forgot the key, you have to create a new key."
@@ -725,19 +732,19 @@ msgstr ""
 "Verschlüsselung aktiviert ist. Wenn Sie den Schlüssel vergessen haben, "
 "müssen Sie einen neuen erzeugen."
 
-#: resources/views/settings.phtml:203
+#: resources/views/settings.phtml:202
 msgid "New authorization key"
 msgstr "Neuer Autorisierungs-Schlüssel"
 
-#: resources/views/settings.phtml:212
+#: resources/views/settings.phtml:211
 msgid "Activate encryption of the authorization key"
 msgstr "Verschlüsselung des Autorisierungs-Schlüssel aktivieren"
 
-#: resources/views/settings.phtml:215
+#: resources/views/settings.phtml:214
 msgid "Activate"
 msgstr "Aktivieren"
 
-#: resources/views/settings.phtml:217
+#: resources/views/settings.phtml:216
 msgid ""
 "The encryption of the authorization key is more secure, because the "
 "authorization key is not visible to anyone and also encrypted in the "
@@ -750,15 +757,15 @@ msgstr ""
 "Fall nicht mehr lesbar (z.B. für andere Administratoren) und kann auch nicht "
 "mehr wiederhergestellt werden, wenn er vergessen wurde."
 
-#: resources/views/settings.phtml:225
-msgid "Settings for the Import/Export Folder on the webtrees Server"
-msgstr "Einstellungen für den Import-/Export-Ordner auf dem webtrees Server"
+#: resources/views/settings.phtml:224
+msgid "Setting for the Import/Export Folder on the webtrees Server"
+msgstr "Einstellung für den Import-/Export-Ordner auf dem webtrees Server"
 
-#: resources/views/settings.phtml:229
+#: resources/views/settings.phtml:228
 msgid "Folder name"
 msgstr "Ordnername"
 
-#: resources/views/settings.phtml:242
+#: resources/views/settings.phtml:241
 msgid ""
 "Currently, the folder to save is not a sub-directory of the webtrees data "
 "folder. It is highly recommended to use the webtrees data folder or a sub-"
@@ -774,7 +781,7 @@ msgstr ""
 "wählen, sind abgespeicherte GEDCOM-Dateien möglicherweise nicht gegen "
 "unauthorisierten Zugriff geschützt."
 
-#: resources/views/settings.phtml:248
+#: resources/views/settings.phtml:247
 msgid ""
 "Folder within the webtrees root path, where GEDCOM import/exports are saved. "
 "It is highly recommended to use the webtrees data folder or a sub-directory, "
@@ -789,27 +796,27 @@ msgstr ""
 "Einstellungen (Verwaltung / Einstellungen Webseite) für das Webtrees "
 "Installations- und Daten-Verzeichnis sind:"
 
-#: resources/views/settings.phtml:250
+#: resources/views/settings.phtml:249
 msgid "webtrees root folder"
 msgstr "Webtrees Installations-Verzeichnis"
 
-#: resources/views/settings.phtml:253
+#: resources/views/settings.phtml:252
 msgid "webtrees data folder"
 msgstr "Webtrees Daten-Verzeichnis"
 
-#: resources/views/settings.phtml:256
+#: resources/views/settings.phtml:255
 msgid "webtrees data folder (relative path)"
 msgstr "Webtrees Daten-Verzeichnis (relativer Pfad)"
 
-#: resources/views/settings.phtml:259
+#: resources/views/settings.phtml:258
 msgid "webtrees data folder (setting in the control panel)"
 msgstr "Webtrees Daten-Verzeichnis (Einstellung in der Verwaltung)"
 
-#: resources/views/settings.phtml:265
+#: resources/views/settings.phtml:264
 msgid "Default Settings for Gedcom Export"
 msgstr "Voreinstellungen für den GEDCOM-Export"
 
-#: resources/views/settings.phtml:267
+#: resources/views/settings.phtml:266
 msgid ""
 "These settings are used as default values for exports, e.g. if certain "
 "parameter values are not provided within the URL. By specifying the default "
@@ -822,7 +829,7 @@ msgstr ""
 "es aus, nur den Stammbaun und den Authorisierungs-Schlüssel in der URL zu "
 "übergeben."
 
-#: resources/views/settings.phtml:268
+#: resources/views/settings.phtml:267
 msgid ""
 "Any parameters provided in the URL of a remote download have a higher "
 "priority and will overrule the default settings."
@@ -830,11 +837,11 @@ msgstr ""
 "Parameter, welche über die URL eines Remote-Downloads übergeben werden, "
 "haben eine höhere Priorität und überstimmen die Voreinstellungen."
 
-#: resources/views/settings.phtml:272
+#: resources/views/settings.phtml:271
 msgid "Default privacy level"
 msgstr "Voreinstellung für Datenschutzeinstellung"
 
-#: resources/views/settings.phtml:284
+#: resources/views/settings.phtml:283
 msgid ""
 "Select the default privacy level. This privacy level will be chosen if no "
 "specific privacy level is provided as URL parameter."
@@ -843,15 +850,15 @@ msgstr ""
 "Einstellung wird genutzt, wenn keine spezifische Einstellung in der URL "
 "angegeben wird."
 
-#: resources/views/settings.phtml:292
+#: resources/views/settings.phtml:291
 msgid "Default export format"
 msgstr "Voreinstellung Exportformat"
 
-#: resources/views/settings.phtml:299 resources/views/settings.phtml:300
+#: resources/views/settings.phtml:298 resources/views/settings.phtml:299
 msgid "includes media files"
 msgstr "enthält Mediendateien"
 
-#: resources/views/settings.phtml:304 resources/views/settings.phtml:325
+#: resources/views/settings.phtml:303 resources/views/settings.phtml:324
 msgid ""
 "Select the default export format. This export format will be chosen if no "
 "specific export format is provided as URL parameter."
@@ -859,15 +866,15 @@ msgstr ""
 "Geben Sie die Voreinstellung für das Exportformat an. Dieses Exportformat "
 "wird genutzt, wenn kein spezifisches Exportformat in der URL angegeben wird."
 
-#: resources/views/settings.phtml:312
+#: resources/views/settings.phtml:311
 msgid "Default encoding"
 msgstr "Voreinstellung Zeichencodierung"
 
-#: resources/views/settings.phtml:333
+#: resources/views/settings.phtml:332
 msgid "Default ending"
 msgstr "Voreinstellung Zeilenenden"
 
-#: resources/views/settings.phtml:343
+#: resources/views/settings.phtml:342
 msgid ""
 "Select the default ending. This ending will be chosen if no specific ending "
 "is provided as URL parameter."
@@ -876,24 +883,11 @@ msgstr ""
 "werden genutzt, wenn keine spezifischen Zeilenenden in der URL angegeben "
 "werden.."
 
-#: resources/views/settings.phtml:351
-msgid "Default action"
-msgstr "Voreinstellung Aktion"
-
-#: resources/views/settings.phtml:362
-msgid ""
-"Select the default action. This action will be chosen if no specific action "
-"is provided as URL parameter. If \"both\" is chosen, the file is downloaded "
-"and saved in parallel."
-msgstr ""
-"Geben Sie die Voreinstellung für die Aktion an. Diese Aktion wird "
-"durchgeführt, wenn keine spezifische Aktion in der URL angegeben wird."
-
-#: resources/views/settings.phtml:370
+#: resources/views/settings.phtml:350
 msgid "Default time stamp"
 msgstr "Voreinstellung für Zeitstempel"
 
-#: resources/views/settings.phtml:381
+#: resources/views/settings.phtml:361
 msgid ""
 "Select the default time stamp. This time stamp will be chosen if no specific "
 "time stamp is provided as URL parameter. If \"none\" is chosen, no time "
@@ -902,18 +896,18 @@ msgstr ""
 "Geben Sie die Voreinstellung für den Zeitstempel an. Diese Einstellung wird "
 "genutzt, wenn keine spezifische Einstellung in der URL angegeben wird."
 
-#: resources/views/settings.phtml:388
+#: resources/views/settings.phtml:368
 msgid "Default Settings for GEDCOM Filters"
 msgstr "Voreinstellungen für GEDCOM-Filter"
 
-#: resources/views/settings.phtml:392 resources/views/settings.phtml:407
-#: resources/views/settings.phtml:422
+#: resources/views/settings.phtml:372 resources/views/settings.phtml:387
+#: resources/views/settings.phtml:402
 #, php-format
 msgid "Default GEDCOM filter %s"
 msgstr "Voreinstellung für GEDCOM-Filter %s"
 
-#: resources/views/settings.phtml:402 resources/views/settings.phtml:417
-#: resources/views/settings.phtml:432
+#: resources/views/settings.phtml:382 resources/views/settings.phtml:397
+#: resources/views/settings.phtml:412
 #, php-format
 msgid ""
 "Select a default filter for GEDCOM filter %s. This filter will be chosen if "
@@ -922,13 +916,24 @@ msgstr ""
 "Geben Sie die Voreinstellung für den GEDCOM -Filter %s an. Dieser Filter "
 "wird genutzt, wenn kein spezifischer Filter als URL-Parameter übergeben wird."
 
-#: resources/views/settings.phtml:443
+#: resources/views/settings.phtml:423
 msgid ""
 "In order to use changed settings for a download/upload, the settings need to "
 "be saved first."
 msgstr ""
 "Um geänderte Einstellungen beim Herunterladen/Hochladen zu nutzen, müssen "
 "die Einstellungen zunächst gespeichert werden."
+
+#~ msgid "Default action"
+#~ msgstr "Voreinstellung Aktion"
+
+#~ msgid ""
+#~ "Select the default action. This action will be chosen if no specific "
+#~ "action is provided as URL parameter. If \"both\" is chosen, the file is "
+#~ "downloaded and saved in parallel."
+#~ msgstr ""
+#~ "Geben Sie die Voreinstellung für die Aktion an. Diese Aktion wird "
+#~ "durchgeführt, wenn keine spezifische Aktion in der URL angegeben wird."
 
 #~ msgid "(includes media files)"
 #~ msgstr "(enthält Mediendateien)"

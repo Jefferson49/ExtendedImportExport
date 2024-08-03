@@ -69,7 +69,7 @@ use Illuminate\Support\Collection;
 						<?= e($folder) ?>
 					</span>
 
-					<select name="server_file" class="form-select" dir="ltr" id="import-server-file">
+					<select name="filename" class="form-select" dir="ltr" id="import-server-file">
 						<option selected="selected" value="">&nbsp;</option>
 						<?php foreach ($gedcom_files as $gedcom_file) : ?>
 							<option value="<?= e($gedcom_file) ?>" <?= $gedcom_file === $default_gedcom_file ? 'selected' : '' ?>>
@@ -198,7 +198,7 @@ use Illuminate\Support\Collection;
         }
     });
 	function checkGedcomImportForm (message) {
-		let oldFile = $('#filename').val();
+		let oldFile = $('#gedcom_filename').val();
 		let method = $('input[name=source]:checked').val();
 		let newFile = method === 'server' ? $('#import-server-file').val() : $('#import-client-file').val();
 

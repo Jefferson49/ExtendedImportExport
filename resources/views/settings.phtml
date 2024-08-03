@@ -37,7 +37,6 @@ use function e;
  * @var  string     $default_export_format
  * @var  string     $default_encoding
  * @var  string     $default_ending
- * @var  string     $default_action
  * @var  string     $default_time_stamp
  * @var  bool       $default_gedcom_version
  * @var  bool       $default_gedcom_l_selection
@@ -79,7 +78,6 @@ use function e;
 			<span class="fa-li"><?= view('icons/download') ?></span>
 			<a href="<?= e(route(ExportGedcomPage::class, [
 				'tree_name'              => $default_tree_name,
-				'default_action'         => $default_action,
 				'default_gedcom_filter1' => $default_gedcom_filter1,
 				'default_gedcom_filter2' => $default_gedcom_filter2,
 				'default_gedcom_filter3' => $default_gedcom_filter3,
@@ -223,7 +221,7 @@ use function e;
 	<?php endif ?>	
 
 	<div class="h4">
-		<?= I18N::translate('Settings for the Import/Export Folder on the webtrees Server') ?>	
+		<?= I18N::translate('Setting for the Import/Export Folder on the webtrees Server') ?>	
 	</div>
 	<div class="row mb-3">
 		<label class="col-sm-3 col-form-label wt-page-options-label" for="folder_to_save">
@@ -346,25 +344,6 @@ use function e;
 			</div>
 		</div>
 	</fieldset>
-	<fieldset class="mb-3">
-		<div class="row">
-			<legend class="col-form-label col-sm-3">
-				<?= I18N::translate('Default action') ?>
-			</legend>
-			<div class="col-sm-9">
-				<?= view('components/radios-inline', ['name' => DownloadGedcomWithURL::PREF_DEFAULT_ACTION, 'selected' => $default_action,
-					'options' => [
-						DownloadGedcomWithURL::ACTION_DOWNLOAD => DownloadGedcomWithURL::ACTION_DOWNLOAD . ' (' . MoreI18N::xlate('Download') . ')',
-						DownloadGedcomWithURL::ACTION_SAVE     => DownloadGedcomWithURL::ACTION_SAVE     . ' (' . I18N::translate('Save on the webtrees server') . ')',
-						DownloadGedcomWithURL::ACTION_BOTH     => DownloadGedcomWithURL::ACTION_BOTH     . ' (' . I18N::translate('Both, i.e. download and save in parallel') . ')',
-					]
-				]) ?>
-				<div class="form-text">
-					<?= I18N::translate('Select the default action. This action will be chosen if no specific action is provided as URL parameter. If "both" is chosen, the file is downloaded and saved in parallel.')?>
-				</div>
-			</div>
-		</div>
-	</fieldset>	
 	<fieldset class="mb-3">
 		<div class="row">
 			<legend class="col-form-label col-sm-3">

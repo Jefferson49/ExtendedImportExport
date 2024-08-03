@@ -271,8 +271,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function title(): string
     {
-        //ToDo: Translate title
-        return 'Extended Import/Export';
+        return I18N::translate('Extended Import/Export');
     }
 
     /**

@@ -1164,9 +1164,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	/**
      * Create a list of Gedcom filters from filter names; also handle include structure of the filters
      * 
-     * @param string $gedcom_filter1            Name of Gedcom filter 1
-     * @param string $gedcom_filter2            Name of Gedcom filter 2
-     * @param string $gedcom_filter3            Name of Gedcom filter 3
+     * @param string $gedcom_filter1            Class name of Gedcom filter 1
+     * @param string $gedcom_filter2            Class name of Gedcom filter 2
+     * @param string $gedcom_filter3            Class name of Gedcom filter 3
      *
      * @return array<GedcomFilterInterface> 	A set of Gedcom filters
      */	

@@ -1183,6 +1183,12 @@ class FilteredGedcomExportService extends GedcomExportService
         //Assume Gedcom 7 export, if first item in record list is a Gedcom 7 header
         if ($this->isGedcom7Header($gedcom_structures[0] ?? false)) {
 
+            if (empty($matched_tag_combinations)) {
+
+                //Filter with AllRecordsGedcomFilter in order to get a complete list of tag combinations (returned in $matched_tag_combinations)
+                $this->applyGedcomFilters($gedcom_structures, [new AllRecordsGedcomFilter()], $matched_tag_combinations);
+            }
+
             //Create a list of schemas, which are used for the export
             $schema_uris_for_tags = [];
             $this->addToSchemas($schema_uris_for_tags, self::SCHEMAS);

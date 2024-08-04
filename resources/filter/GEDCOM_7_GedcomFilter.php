@@ -154,7 +154,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
 
         "SharedNotes"				=> ["([\d]) NOTE @([^@)]+)@" => "$1 SNOTE @$2@"],
 
-        "_GODP_WITN"			      => ["2 _(GODP|WITN) (.*)" => "2 ASSO @VOID@\n3 PHRASE $2\n3 ROLE $1"],
+        "_GODP_WITN"			    => ["2 _(GODP|WITN) (.*)" => "2 ASSO @VOID@\n3 PHRASE $2\n3 ROLE $1"],
 	];
 
     private const ENUMSETS = [

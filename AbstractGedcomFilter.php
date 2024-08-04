@@ -130,9 +130,9 @@ class AbstractGedcomFilter implements GedcomFilterInterface
         $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
         $class_name = str_replace($name_space, '', get_class($this));
 
-        //Validate if EXPORT_FILTER contains an array
+        //Validate if GEDCOM_FILTER_RULES is an array
         if (!is_array(static::GEDCOM_FILTER_RULES)) {
-            return I18N::translate('The selected GEDCOM filter (%s) contains an invalid filter definition (%s).', $class_name, 'const GEDCOM_FILTER_RULES');
+            return I18N::translate('The variable type of the filter rules definition (%s) of the GEDCOM filter (%s) does not have the type "array".', 'const GEDCOM_FILTER_RULES', $class_name,);
         }
 
         //Validate if EXPORT_FILTER is empty
@@ -152,11 +152,6 @@ class AbstractGedcomFilter implements GedcomFilterInterface
                 return I18N::translate('The selected GEDCOM filter (%s) contains an invalid definition for the regular expression macro %s.', $class_name, $name) . ' ' .
                        I18N::translate('Invalid definition') . ': ' . (string) $regexps;
             }
-        }
-
-        //Validate if GEDCOM_FILTER_RULES is an array
-        if (!is_array(static::GEDCOM_FILTER_RULES)) {
-            return I18N::translate('The variable type of the filter rules definition (%s) of the GEDCOM filter (%s) does not have the type "array".', 'const GEDCOM_FILTER_RULES', $class_name,);
         }
 
         //Validate GEDCOM_FILTER_RULES

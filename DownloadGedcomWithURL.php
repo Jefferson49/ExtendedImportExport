@@ -1226,6 +1226,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $chunk_data = substr($file_data, 0, $eol_pos + 1);
                 $chunk_data = str_replace("\r\n", "\n", $chunk_data);
 
+                //Remove CONC structures
+                $chunk_data = preg_replace("/\n[\d] CONC /", "", $chunk_data);
+
                 $remaining_string = $this->addToGedcomRecords($gedcom_records, $chunk_data);
 
                 $file_data = $remaining_string . substr($file_data, $eol_pos + 1);
@@ -1242,12 +1245,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         fclose($stream);
 
+        //Remove any byte-order-mark
         if (!empty($gedcom_records)) {
 
             $first_record = reset($gedcom_records);
             $first_key    = key($gedcom_records);
 
-            //Remove any byte-order-mark
             if (str_starts_with($first_record, UTF8::BYTE_ORDER_MARK)) {
                 $first_record = substr($first_record, strlen(UTF8::BYTE_ORDER_MARK));
                 $gedcom_records[$first_key] = $first_record;

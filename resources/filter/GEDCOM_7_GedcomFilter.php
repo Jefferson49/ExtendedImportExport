@@ -166,7 +166,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
     ];
 
     private const NESTED_ENUMSETS = [
-        [ "tags" => ["NAME", "TYPE"], "values" => ["AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL",]],
+        [ "tags" => ["NAME", "TYPE"], "values" => ["AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "OTHER",]],
         [ "tags" => ["FAMC", "STAT"], "values" => ["CHALLENGED", "DISPROVEN", "PROVEN",]],
     ];
 
@@ -292,8 +292,8 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
                             $replace = "2 " . $level2_tag . " " . strtoupper($found_type);
                             $gedcom = str_replace($search, $replace, $gedcom);
                         }
-                        //Use OTHER/PHRASE instead
-                        else {
+                        //Use OTHER/PHRASE instead if OTHER is an allowed enum value for this type
+                        elseif(in_array('OTHER', $enum_values))  {
                             $search =  "2 " . $level2_tag . " " . $found_type;
                             $replace = "2 " . $level2_tag . " OTHER\n3 PHRASE " . $found_type;
                             $gedcom = str_replace($search, $replace, $gedcom);
@@ -306,27 +306,27 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
 
             //Enumsets
 
-            foreach (self::ENUMSETS as $enumset => $values) {
+            foreach (self::ENUMSETS as $tag => $values) {
 
-                preg_match_all("/([\d]) " . $enumset . " (.+)/", $gedcom, $matches, PREG_SET_ORDER);
+                preg_match_all("/([\d]) " . $tag . " (.+)/", $gedcom, $matches, PREG_SET_ORDER);
 
                 foreach ($matches as $match) {
                     $level = (int) $match[1];
 
-                    //If no known ENUM value and phrase is allowed for this enumtype, use phrase instead 
-                    if (!in_array(strtoupper($match[2]), $values) && in_array($enumset, ["ADOP", "MEDI", "PEDI", "ROLE"])) {
-                        $search =  (string) $level . " " . $enumset . " " . $match[2];
+                    //If no known ENUM value, and OTHER is allowed for this enumtype, use OTHER/PHRASE instead 
+                    if (!in_array(strtoupper($match[2]), $values) && in_array('OTHER', $values)) {
+                        $search =  (string) $level . " " . $tag . " " . $match[2];
                         //For specific role descriptions
-                        if ($enumset == "ROLE") {
+                        if ($tag == "ROLE") {
                             $match[2] = str_replace(['(', ')'], ['', ''], $match[2]);  // (<ROLE_DESCRIPTOR>)
                         }
-                        $replace = (string) $level . " " . $enumset . " OTHER\n" . (string) ($level + 1) . " PHRASE " . $match[2];
+                        $replace = (string) $level . " " . $tag . " OTHER\n" . (string) ($level + 1) . " PHRASE " . $match[2];
                         $gedcom = str_replace($search, $replace, $gedcom);
                     }
                     //Anyway, convert to upper case
                     else {
-                        $search =  (string) $level . " " . $enumset . " " . $match[2];
-                        $replace = (string) $level . " " . $enumset . " " . strtoupper($match[2]);
+                        $search =  (string) $level . " " . $tag . " " . $match[2];
+                        $replace = (string) $level . " " . $tag . " " . strtoupper($match[2]);
                         $gedcom = str_replace($search, $replace, $gedcom);
                     }					
                 }

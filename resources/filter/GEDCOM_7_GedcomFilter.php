@@ -36,9 +36,13 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
         //Modify header
         'HEAD'                      => [],
         '!HEAD:GEDC:FORM'           => [],
+        '!HEAD:GEDC:FORM:*'         => [],
         '!HEAD:FILE'                => [],
+        '!HEAD:FILE:*'              => [],
         '!HEAD:CHAR'                => [],
+        '!HEAD:CHAR:*'              => [],
         '!HEAD:SUBN'                => [],
+        '!HEAD:SUBN:*'              => [],
         'HEAD:GEDC:VERS'            => ["2 VERS 5.5.1" => "2 VERS 7.0.14"],
         'HEAD:LANG'                 => ["PHP_function" => "customConvert"],
         'HEAD:*'                    => [],

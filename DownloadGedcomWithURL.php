@@ -48,6 +48,7 @@ use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Exceptions\FileUploadException;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\FlashMessages;
+use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Http\RequestHandlers\ManageTrees;
@@ -1227,6 +1228,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $chunk_data = str_replace("\r\n", "\n", $chunk_data);
 
                 //Remove CONC structures
+                $chunk_data = preg_replace("/\n([\d] " . Gedcom::REGEX_TAG . ")\n[\d] CONC /", "\n$1 ", $chunk_data);
                 $chunk_data = preg_replace("/\n[\d] CONC /", "", $chunk_data);
 
                 $remaining_string = $this->addToGedcomRecords($gedcom_records, $chunk_data);

@@ -40,6 +40,7 @@ use Cissee\WebtreesExt\MoreI18N;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -774,7 +775,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	}
 
 	/**
-     * Get an array [name => title] for all trees 
+     * Get an array [name => title] for all trees, for which the current user is manager
      * 
      * @param Collection $trees The trees, for which the list shall be generated
      *
@@ -785,8 +786,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $tree_list = [];
 
         foreach($trees as $tree) {
-            $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
-        }    
+            if (Auth::isManager($tree)) {
+                $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
+            }
+        }   
 
         return $tree_list;
      }

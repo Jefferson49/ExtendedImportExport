@@ -437,7 +437,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
             FlashMessages::addMessage($ex->getMessage(), 'danger');
         }
         
-        $tree_list = $this->getTreeNameTitleList();
+        //Generate a tree list with all the trees, the user has access to; authorization is checked in tree service
+        $tree_list = $this->getTreeNameTitleList($this->tree_service->all());
 
         //Check the Gedcom filters, which are defined in the prefernces
         $this->checkFilterPreferences(self::PREF_DEFAULT_GEDCOM_FILTER1);
@@ -454,13 +455,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $default_tree_name = array_key_first($tree_list);
         }
 
-        $default_tree      = $this->tree_service->all()[$default_tree_name];
-
         return $this->viewResponse(
             $this->name() . '::settings',
             [
                 'title'                               => $this->title(),
-                self::PREF_DEFAULT_TREE_NAME          => $default_tree->name(),
+                self::PREF_DEFAULT_TREE_NAME          => $default_tree_name,
                 'tree_list'                           => $tree_list,
                 self::VAR_GEDCOM_FILTER_LIST          => $this->getGedcomFilterList(),
 				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
@@ -694,11 +693,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
     /**
-     * All the trees that the current user has permission to access.
+     * All the trees, even if current user has no permission to access
+     * This is a modifyed version of the all method of TreeService (which only returns trees with permission)
      *
      * @return Collection<array-key,Tree>
      */
-    public function all(): Collection
+    public function getAllTrees(): Collection
     {
         return Registry::cache()->array()->remember('all-trees', static function (): Collection {
             // All trees
@@ -723,23 +723,25 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 });
         });
     }
-     /**
+
+    /**
      * Check if tree is a valid tree
      *
      * @return bool
      */ 
-     private function isValidTree(string $tree_name): bool
-	 {
-		$find_tree = $this->all()->first(static function (Tree $tree) use ($tree_name): bool {
-            return $tree->name() === $tree_name;
-        });
-		
-		$is_valid_tree = $find_tree instanceof Tree;
-		
-		return $is_valid_tree;
-	 }
+    private function isValidTree(string $tree_name): bool
+    {
+       $find_tree = $this->getAllTrees()->first(static function (Tree $tree) use ($tree_name): bool {
+           return $tree->name() === $tree_name;
+       });
+       
+       $is_valid_tree = $find_tree instanceof Tree;
+       
+       return $is_valid_tree;
+    }
+
 	 
-	 /**
+	/**
      * Show error message in the front end
      *
      * @return ResponseInterface
@@ -755,7 +757,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		]);	 
 	 }
  
-	 /**
+	/**
      * Show success message in the front end
      *
      * @return ResponseInterface
@@ -771,24 +773,25 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	   ]);	 
 	}
 
-	 /**
+	/**
      * Get an array [name => title] for all trees 
+     * 
+     * @param Collection $trees The trees, for which the list shall be generated
      *
-     * @return array error message
+     * @return array            error message
      */ 
-     public function getTreeNameTitleList(): array {
+     public function getTreeNameTitleList(Collection $trees): array {
 
         $tree_list = [];
-        $all_trees = $this->all();
 
-        foreach($all_trees as $tree) {
+        foreach($trees as $tree) {
             $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
         }    
 
         return $tree_list;
      }
 
-	 /**
+	/**
      * Load classes for Gedcom filters
      *
      * @return string error message
@@ -1199,12 +1202,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
     /**
      * Import data from a gedcom file to an array of Gedcom record strings.
      *
-     * @param StreamInterface      $stream   The GEDCOM file.
-     * @param string               $encoding Override the encoding specified in the header.
+     * @param StreamInterface $stream             The GEDCOM file
+     * @param string          $encoding           Override the encoding specified in the header
+     * @param bool            $word_wrapped_notes Whether a space character shall be added to CONC structures during import
      *
-     * @return array<string>                 A set of Gedcom record strings
+     * @return array<string>                      A set of Gedcom record strings
      */
-    public function importGedcomFile(StreamInterface $stream, string $encoding): array
+    public function importGedcomFileToRecords(StreamInterface $stream, string $encoding, bool $word_wrapped_notes = false): array
     {
         $gedcom_records = [];
 
@@ -1227,9 +1231,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $chunk_data = substr($file_data, 0, $eol_pos + 1);
                 $chunk_data = str_replace("\r\n", "\n", $chunk_data);
 
-                //Remove CONC structures
                 $chunk_data = preg_replace("/\n([\d] " . Gedcom::REGEX_TAG . ")\n[\d] CONC /", "\n$1 ", $chunk_data);
-                $chunk_data = preg_replace("/\n[\d] CONC /", "", $chunk_data);
+                $chunk_data = preg_replace("/\n[\d] CONC /", $word_wrapped_notes ? ' ' : '', $chunk_data);
 
                 $remaining_string = $this->addToGedcomRecords($gedcom_records, $chunk_data);
 
@@ -1302,31 +1305,55 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $this->checkModuleVersionUpdate();
 
         $called_from_control_panel = false;
-        $encodings          = ['' => ''] + Registry::encodingFactory()->list();
+        $encodings = ['' => ''] + Registry::encodingFactory()->list();
+        $tree = null;
+        $word_wrapped_notes = false;
 
-		$action              = Validator::queryParams($request)->string('action', self::ACTION_DOWNLOAD);
-		$key                 = Validator::queryParams($request)->string('key', '');
-		$tree_name           = Validator::queryParams($request)->string('tree', '');
-        $filename            = Validator::queryParams($request)->string('file', $tree_name);
-        $format              = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
-        $privacy             = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
-        $encoding            = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
-        $line_endings        = Validator::queryParams($request)->string('line_endings',  $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'));
-		$time_stamp          = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, self::TIME_STAMP_NONE));
-		$gedcom_filter1      = Validator::queryParams($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
-		$gedcom_filter2      = Validator::queryParams($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
-		$gedcom_filter3      = Validator::queryParams($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
-        $source              = 'server';
-        $import_encoding     = Validator::queryParams($request)->isInArrayKeys($encodings)->string('import_encoding', '');
-        $keep_media          = Validator::queryParams($request)->boolean('keep_media', false);
-        $word_wrapped_notes  = Validator::queryParams($request)->boolean('word_wrapped_notes', false);
-        $gedcom_media_path   = Validator::queryParams($request)->string('gedcom_media_path', '');
+		$action                        = Validator::queryParams($request)->string('action', self::ACTION_DOWNLOAD);
 
-        // If POST requests (from control panel), parse certain parameters accordingly
+        // If GET request
+        if ($request->getMethod() === RequestMethodInterface::METHOD_GET) {
+
+            $tree_name                 = Validator::queryParams($request)->string('tree', '');
+
+            if ($action !== self::ACTION_CONVERT) {
+                $tree = $this->getAllTrees()[$tree_name];
+            }
+
+            $key                       = Validator::queryParams($request)->string('key', '');
+            $filename                  = Validator::queryParams($request)->string('file', $tree_name);
+            $format                    = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
+            $privacy                   = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
+            $encoding                  = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
+            $line_endings              = Validator::queryParams($request)->string('line_endings',  $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'));
+            $time_stamp                = Validator::queryParams($request)->string('time_stamp', $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, self::TIME_STAMP_NONE));
+            $gedcom_filter1            = Validator::queryParams($request)->string('gedcom_filter1', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''));
+            $gedcom_filter2            = Validator::queryParams($request)->string('gedcom_filter2', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''));
+            $gedcom_filter3            = Validator::queryParams($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
+            $source                    = 'server';
+            $import_encoding           = Validator::queryParams($request)->isInArrayKeys($encodings)->string('import_encoding', '');
+
+            if ($action === self::ACTION_UPLOAD) {
+                $keep_media                = Validator::queryParams($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
+                $word_wrapped_notes        = Validator::queryParams($request)->boolean('word_wrapped_notes', boolval($tree->getPreference('WORD_WRAPPED_NOTES', '0')));
+                $gedcom_media_path         = Validator::queryParams($request)->string('gedcom_media_path', $tree->getPreference('GEDCOM_MEDIA_PATH', ''));
+            }
+        }
+
+        // If POST request (from control panel), parse certain parameters accordingly
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
 
-            $called_from_control_panel = Validator::parsedBody($request)->boolean('called_from_control_panel', false);
             $tree_name                 = Validator::parsedBody($request)->string('tree', '');
+
+            if ($action !== self::ACTION_CONVERT) {
+                if (!$this->isValidTree($tree_name)) {
+                    return $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
+                } else {
+                    $tree = $this->tree_service->all()[$tree_name];
+                }
+            }
+
+            $called_from_control_panel = Validator::parsedBody($request)->boolean('called_from_control_panel', false);
             $filename                  = Validator::parsedBody($request)->string('filename', $tree_name);
             $format                    = Validator::parsedBody($request)->string('format', 'gedcom');
             $privacy                   = Validator::parsedBody($request)->string('privacy', 'visitor');
@@ -1338,19 +1365,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $gedcom_filter3            = Validator::parsedBody($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
             $source                    = Validator::parsedBody($request)->isInArray(['client', 'server'])->string('source', '');
             $import_encoding           = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
-            $keep_media                = Validator::parsedBody($request)->boolean('keep_media', false);
-            $word_wrapped_notes        = Validator::parsedBody($request)->boolean('word_wrapped_notes', false);
-            $gedcom_media_path         = Validator::parsedBody($request)->string('gedcom_media_path', '');
+
+            if ($action === self::ACTION_UPLOAD) {
+                $keep_media                = Validator::parsedBody($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
+                $word_wrapped_notes        = Validator::parsedBody($request)->boolean('word_wrapped_notes', boolval($tree->getPreference('WORD_WRAPPED_NOTES', '0')));
+                $gedcom_media_path         = Validator::parsedBody($request)->string('gedcom_media_path', $tree->getPreference('GEDCOM_MEDIA_PATH', ''));
+            }
         }        
-
-        $tree_service  = new TreeService(new GedcomImportService);
-
-        if ($tree_name !== '') {
-            $tree  = $tree_service->all()[$tree_name];
-        }
-        else {
-            $tree = null;
-        }
 
         //Get folder from module settings and file system
         $folder_on_server = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
@@ -1394,10 +1415,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }     
         }
 
-        //Error if tree name is not valid
-        if ($action !== self::ACTION_CONVERT && !$this->isValidTree($tree_name)) {
-			return $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
-		}
         //Error if privacy level is not valid
 		elseif (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {
 			return $this->showErrorMessage(I18N::translate('Privacy level not accepted') . ': ' . $privacy);
@@ -1448,18 +1465,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
 
 		//If no errors, execute the core activities of the module
-
-        //Get the tree
-        if ($action !== self::ACTION_CONVERT) {
-            try {
-                $tree = $this->tree_service->all()[$tree_name];
-                assert($tree instanceof Tree);
-            }
-            catch (Throwable $ex) {
-                $message = I18N::translate('Could not find the requested tree "%s".', $tree_name);
-                return $this->showErrorMessage($message);
-            }             
-        }
 
         //Initialize filters and get filter list
         try {
@@ -1540,9 +1545,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //If upload or convert is requested
         if ($action === self::ACTION_UPLOAD OR $action === self::ACTION_CONVERT) {
 
-            // Save choices as defaults
+            // Save import choices as defaults
             if ($action === self::ACTION_UPLOAD) {
-                $tree  = $tree_service->all()[$tree_name];
                 $tree->setPreference('keep_media', $keep_media ? '1' : '0');
                 $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
                 $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);     
@@ -1592,7 +1596,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             //Import the file to a set of Gedcom records
             try {
-                $gedcom_records = $this->importGedcomFile($stream, $import_encoding);
+                $gedcom_records = $this->importGedcomFileToRecords($stream, $import_encoding, $word_wrapped_notes);
 
                 if (empty($gedcom_records)) {
                     $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename);

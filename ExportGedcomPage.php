@@ -99,7 +99,7 @@ class ExportGedcomPage implements RequestHandlerInterface
         }       
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
-        $tree_list = $download_gedcom_with_url->getTreeNameTitleList();
+        $tree_list = $download_gedcom_with_url->getTreeNameTitleList($tree_service->all());
 
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::export',

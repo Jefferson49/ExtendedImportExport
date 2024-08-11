@@ -65,6 +65,8 @@ use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Module\ModuleDataFixInterface;
 use Fisharebest\Webtrees\Module\ModuleDataFixTrait;
+use Fisharebest\Webtrees\Module\ModuleGlobalInterface;
+use Fisharebest\Webtrees\Module\ModuleGlobalTrait;
 use Fisharebest\Webtrees\Module\ModuleListInterface;
 use Fisharebest\Webtrees\Module\ModuleListTrait;
 use Fisharebest\Webtrees\Registry;
@@ -108,11 +110,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	ModuleConfigInterface,
 	RequestHandlerInterface,
     ModuleDataFixInterface,
+    ModuleGlobalInterface,
     ModuleListInterface
 {
     use ModuleCustomTrait;
     use ModuleConfigTrait;
     use ModuleDataFixTrait;
+    use ModuleGlobalTrait;
     use ModuleListTrait;
 
     //The data fix service
@@ -624,6 +628,19 @@ class DownloadGedcomWithURL extends AbstractModule implements
     /**
      * {@inheritDoc}
      *
+     * @return string
+     *
+     * @see \Fisharebest\Webtrees\Module\ModuleGlobalInterface::headContent()
+     */
+    public function headContent(): string
+    {
+        //Include CSS file in head of webtrees HTML to make sure it is always found
+        return '<link href="' . $this->assetUrl('css/extended-import-export.css') . '" type="text/css" rel="stylesheet" />';
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @param Tree  $tree
      *
      * @return string
@@ -640,6 +657,19 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         return false;
     }    
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return string
+     *
+     * @see \Fisharebest\Webtrees\Module\ModuleListInterface::listMenuClass()
+     */
+    public function listMenuClass(): string
+    {
+        //CSS class for module Icon (included in CSS file) is returned to be shown in the list menu
+        return 'menu-list-extended-import-export';
+    }
 
     /**
      * Check if module version is new and start update activities if needed

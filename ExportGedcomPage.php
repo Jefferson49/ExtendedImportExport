@@ -108,7 +108,7 @@ class ExportGedcomPage implements RequestHandlerInterface
                 'tree'                     => $tree,
                 'tree_list'                => $tree_list,
                 'zip_available'            => extension_loaded('zip'),
-                'default_action'           => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ACTION, DownloadGedcomWithURL::ACTION_DOWNLOAD),
+                'default_action'           => DownloadGedcomWithURL::ACTION_DOWNLOAD,
                 'default_format'           => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
                 'default_encoding'         => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENCODING,  UTF8::NAME),
                 'default_endings'          => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'CRLF'),

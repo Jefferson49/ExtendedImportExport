@@ -50,7 +50,7 @@ require __DIR__ . '/FilteredGedcomExportService.php';
 require __DIR__ . '/ImportGedcomPage.php';
 require __DIR__ . '/Record.php';
 require __DIR__ . '/RemoteImportGedcomAction.php';
-require __DIR__ . '/SettingsPage.php';
+require __DIR__ . '/SelectionPage.php';
 
 $loader = new ClassLoader();
 $loader->addPsr4('Cissee\\WebtreesExt\\', __DIR__ . "/vendor/vesta-webtrees-2-custom-modules/vesta_common/patchedWebtrees");

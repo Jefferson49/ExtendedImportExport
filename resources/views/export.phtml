@@ -44,7 +44,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(SettingsPage::class) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
+<?= view('components/breadcrumbs', ['links' => [route(SelectionPage::class, ['tree' => $tree->name()]) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
 
 <h1><?= $title ?></h1>
 

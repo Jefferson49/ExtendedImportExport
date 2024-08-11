@@ -1,0 +1,91 @@
+<?php
+
+namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+
+use Fisharebest\Webtrees\Http\RequestHandlers\DataFixPage;
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Tree;
+use Fisharebest\Webtrees\View;
+
+use function e;
+
+/**
+ * @var  string	  $title
+ * @var  Tree     $tree
+ * @var  array    $tree_list
+ * @var  string   $default_gedcom_filter1
+ * @var  string   $default_gedcom_filter2
+ * @var  string   $default_gedcom_filter3
+ */
+
+?>
+
+<h1><?=e($title) ?></h1>
+<div class="row mb-3"><?= view('icons/spacer') ?></div>
+
+<form method="post" id="settings-form" action="<?= e(route(SelectionPage::class)) ?>">
+	<?= csrf_field() ?>
+
+	<div class="row mb-3">
+		<label class="col-form-label col-sm-3">
+			<?= I18N::translate('Select a tree') ?>
+		</label>
+		<div class="col-sm-9" id="tree-select">
+			<?= view('components/select', ['name' => 'tree', 'selected' => $tree->name(),
+				'options' => $tree_list]) ?>
+		</div>
+	</div>
+
+	<ul class="fa-ul mx-0">
+		<li>
+			<span class="fa-li"><?= view('icons/upload') ?></span>
+			<a href="<?= e(route(ImportGedcomPage::class, [
+				'tree_name'              => $tree->name(),
+				'default_gedcom_filter1' => $default_gedcom_filter1,
+				'default_gedcom_filter2' => $default_gedcom_filter2,
+				'default_gedcom_filter3' => $default_gedcom_filter3,
+				])) ?>">
+				<?= I18N::translate('GEDCOM Import') ?>
+			</a>
+		</li>				
+		<li>
+			<span class="fa-li"><?= view('icons/download') ?></span>
+			<a href="<?= e(route(ExportGedcomPage::class, [
+				'tree_name'              => $tree->name(),
+				'default_gedcom_filter1' => $default_gedcom_filter1,
+				'default_gedcom_filter2' => $default_gedcom_filter2,
+				'default_gedcom_filter3' => $default_gedcom_filter3,
+				])) ?>">
+				<?= I18N::translate('GEDCOM Export') ?>
+			</a>
+		</li>
+		<li>
+			<span class="fa-li"><?= view('icons/copy') ?></span>
+			<a href="<?= e(route(ConvertGedcomPage::class, [
+				'tree_name'              => $tree->name(),
+				'default_gedcom_filter1' => $default_gedcom_filter1,
+				'default_gedcom_filter2' => $default_gedcom_filter2,
+				'default_gedcom_filter3' => $default_gedcom_filter3,
+				])) ?>">
+				<?= I18N::translate('GEDCOM Conversion') ?>
+			</a>
+		</li>
+		<li>
+			<span class="fa-li"><?= view('icons/data-fix') ?></span>
+			<a href="<?= e(route(DataFixPage::class, [
+					'tree'     => $tree->name(),
+					'data_fix' => DownloadGedcomWithURL::activeModuleName(),
+					])) ?>">
+				<?= I18N::translate('Datafix using GEDCOM filters') ?>
+			</a>
+		</li>
+	</ul>
+</form>	
+
+<?php View::push('javascript') ?>
+<script>
+	$('#tree-select select').change(function () {
+        $('#settings-form').submit();
+    });
+</script>
+<?php View::endpush() ?>

@@ -44,6 +44,11 @@ use function e;
 <?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), e($title)]]) ?>
 
 <h1><?=e($title) ?></h1>
+
+<div class="row mb-3"><?= view('icons/spacer') ?></div>
+<div class="h4">
+	<?= I18N::translate('Usage of GEDCOM filters') ?>	
+</div>
 <a href="<?= e(route(SelectionPage::class)) ?>">
 	<?= I18N::translate('Select GEDOM import/export/conversion/datafix') ?>
 </a>

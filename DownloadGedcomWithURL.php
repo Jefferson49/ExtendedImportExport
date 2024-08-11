@@ -65,6 +65,8 @@ use Fisharebest\Webtrees\Module\ModuleCustomInterface;
 use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Module\ModuleDataFixInterface;
 use Fisharebest\Webtrees\Module\ModuleDataFixTrait;
+use Fisharebest\Webtrees\Module\ModuleListInterface;
+use Fisharebest\Webtrees\Module\ModuleListTrait;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Repository;
 use Fisharebest\Webtrees\Services\DataFixService;
@@ -105,11 +107,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	ModuleCustomInterface, 
 	ModuleConfigInterface,
 	RequestHandlerInterface,
-    ModuleDataFixInterface
+    ModuleDataFixInterface,
+    ModuleListInterface
 {
     use ModuleCustomTrait;
     use ModuleConfigTrait;
     use ModuleDataFixTrait;
+    use ModuleListTrait;
 
     //The data fix service
     private DataFixService $data_fix_service;
@@ -606,6 +610,23 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         return redirect($this->getConfigLink());
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param Tree  $tree
+     * @param array $parameters
+     *
+     * @return string
+     *
+     * @see \Fisharebest\Webtrees\Module\ModuleListInterface::listUrl()
+     */
+
+    public function listUrl(Tree $tree, array $parameters = []): string
+    {
+        $parameters['action']  = 'menu';
+        return route(DownloadGedcomWithURL::class, $parameters);
+    }    
 
     /**
      * Check if module version is new and start update activities if needed
@@ -1313,6 +1334,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $word_wrapped_notes = false;
 
 		$action                        = Validator::queryParams($request)->string('action', self::ACTION_DOWNLOAD);
+
+        if ($action === 'menu') return $this->getAdminAction($request);
 
         // If GET request
         if ($request->getMethod() === RequestMethodInterface::METHOD_GET) {

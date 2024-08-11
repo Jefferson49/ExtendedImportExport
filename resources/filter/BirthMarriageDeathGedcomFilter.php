@@ -10,7 +10,6 @@ use Fisharebest\Webtrees\Tree;
 /**
  * A GEDCOM filter, which includes birth, marriage, and death data only.
  * 
- * All included dates are shortened to include the year only (i.e. 01 JAN 1900 => 1900).
  * The generated GEDCOM also contains links to the related individuals and families in webtrees.
  */
 class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
@@ -29,8 +28,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
 
         //Add a link (as source citation) to the related individual in webtrees
         //Shorten all included dates to years(i.e. 01 JAN 1900 => 1900)
-        'INDI'                      => ["0 @([^@]+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/individual/$1\n",
-                                        "RegExp_macro" => "DateToYear"],
+        'INDI'                      => ["0 @([^@]+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/individual/$1\n"],
 
         'INDI:NAME'                 => [],
         'INDI:NAME:TYPE'            => [],
@@ -60,8 +58,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
 
         //Add a link (as source citation) to the related individual in webtrees
         //Shorten all included dates to years(i.e. 01 JAN 1900 => 1900)
-        'FAM'                       => ["0 @([^@]+)@ FAM\n" => "0 @$1@ FAM\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/family/$1\n",
-                                        "RegExp_macro" => "DateToYear"],
+        'FAM'                       => ["0 @([^@]+)@ FAM\n" => "0 @$1@ FAM\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/family/$1\n"],
 
         'FAM:HUSB'                  => [],
         'FAM:WIFE'                  => [],
@@ -79,13 +76,6 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
         //Add a source to the end of the data. The source is used for links in INDI and FAM (links in souce citations) 
         'TRLR'                      => ["0 TRLR\n" => "0 @S1@ SOUR\n1 TITL https://mysite.info/tree/%TREE%/\n0 TRLR\n"],
     ];
-
-    protected const REGEXP_MACROS = [
-        //Macro Name                => Regular expression to be applied for the chosen GEDCOM tag
-        //                             ["search pattern" => "replace pattern"],
-
-        "DateToYear"                => ["2 DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*\n" => "2 DATE $1$2$3$4$5\n"],
-    ];   
 
     /**
      * Get the name of the GEDCOM filter

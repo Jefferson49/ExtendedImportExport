@@ -624,8 +624,34 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
     public function listUrl(Tree $tree, array $parameters = []): string
     {
-        $parameters['action']  = 'menu';
-        return route(DownloadGedcomWithURL::class, $parameters);
+        $tree_list = $this->getTreeNameTitleList($this->tree_service->all());
+
+        if (sizeof($tree_list) > 0) {
+            $parameters['action']  = 'menu';
+            return route(DownloadGedcomWithURL::class, $parameters);    
+        }
+
+        return '';
+    }    
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param Tree  $tree
+     *
+     * @return string
+     *
+     * @see \Fisharebest\Webtrees\Module\ModuleListInterface::listIsEmpty()
+     */    
+    public function listIsEmpty(Tree $tree): bool
+    {
+        $tree_list = $this->getTreeNameTitleList($this->tree_service->all());
+
+        if (sizeof($tree_list) === 0) {
+            return true;
+        }
+
+        return false;
     }    
 
     /**

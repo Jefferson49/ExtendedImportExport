@@ -3,7 +3,6 @@
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
 use Cissee\WebtreesExt\MoreI18N;
-use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Tree;
@@ -36,13 +35,11 @@ use Illuminate\Support\Collection;
     <?= /* I18N: %s is the name of a family tree */ I18N::translate('Any import will delete all the genealogy data of the tree in the database and replace it with data from a GEDCOM file.') ?>
 </div>
 
-<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-		'action'	=> DownloadGedcomWithURL::ACTION_UPLOAD,
-		])) ?>" enctype="multipart/form-data">
-
+<form method="post" action="<?= e(route(DownloadGedcomWithURL::class)) ?>" enctype="multipart/form-data">
 	<?= csrf_field() ?>
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
+	<input type="hidden" name="action" id="action" value="<?= DownloadGedcomWithURL::ACTION_UPLOAD ?>">	
 	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
 	
 		<div class="h4">

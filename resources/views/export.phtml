@@ -9,9 +9,7 @@ use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
-use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
-use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
 
@@ -47,11 +45,9 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 <?= view('components/breadcrumbs', ['links' => [route(SelectionPage::class, ['tree' => $tree->name()]) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
 
 <h1><?= $title ?></h1>
+<div class="row mb-3"><?= view('icons/spacer') ?></div>
 
-<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-		'action'	                => DownloadGedcomWithURL::ACTION_DOWNLOAD,
-		])) ?>" class="form form-horizontal">
-		
+<form method="post" action="<?= e(route(DownloadGedcomWithURL::class)) ?>" enctype="multipart/form-data">
 	<?= csrf_field() ?>
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">

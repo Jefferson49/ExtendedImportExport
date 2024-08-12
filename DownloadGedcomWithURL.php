@@ -1376,12 +1376,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $tree = null;
         $word_wrapped_notes = false;
 
-		$action                        = Validator::queryParams($request)->string('action', self::ACTION_DOWNLOAD);
-
         // If GET request
         if ($request->getMethod() === RequestMethodInterface::METHOD_GET) {
 
             $tree_name                 = Validator::queryParams($request)->string('tree', '');
+            $action                    = Validator::queryParams($request)->string('action', self::ACTION_DOWNLOAD);
 
             if ($action !== self::ACTION_CONVERT) {
                 if (!$this->isValidTree($tree_name)) {
@@ -1415,6 +1414,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         elseif ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
 
             $tree_name                 = Validator::parsedBody($request)->string('tree', '');
+            $action                    = Validator::parsedBody($request)->string('action', self::ACTION_DOWNLOAD);
 
             if ($action !== self::ACTION_CONVERT) {
                 $tree = $this->getAllTrees()[$tree_name];

@@ -7,7 +7,6 @@ use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
-use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
@@ -35,12 +34,10 @@ use Illuminate\Support\Collection;
 <h1><?=e($title) ?></h1>
 <div class="row mb-3"><?= view('icons/spacer') ?></div>
 
-<form method="post" action="<?= e(route(DownloadGedcomWithURL::class, [
-		'action'	                => DownloadGedcomWithURL::ACTION_CONVERT,
-		])) ?>" enctype="multipart/form-data">
-
+<form method="post" action="<?= e(route(DownloadGedcomWithURL::class)) ?>" enctype="multipart/form-data">
 	<?= csrf_field() ?>
 	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
+	<input type="hidden" name="action" id="action" value="<?= DownloadGedcomWithURL::ACTION_CONVERT ?>">
 	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
 	
 		<div class="h4">

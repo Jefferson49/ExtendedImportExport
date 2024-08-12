@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-08-11 18:53+0200\n"
-"PO-Revision-Date: 2024-08-11 18:53+0200\n"
+"POT-Creation-Date: 2024-08-12 21:20+0200\n"
+"PO-Revision-Date: 2024-08-12 21:21+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -138,8 +138,8 @@ msgstr ""
 msgid "GEDCOM Conversion"
 msgstr "GEDCOM-Konvertierung"
 
-#: DownloadGedcomWithURL.php:282 resources/views/convert.phtml:33
-#: resources/views/export.phtml:47 resources/views/import.phtml:30
+#: DownloadGedcomWithURL.php:282 resources/views/convert.phtml:32
+#: resources/views/export.phtml:45 resources/views/import.phtml:29
 msgid "Extended Import/Export"
 msgstr "Erweiterter Import/Export"
 
@@ -241,11 +241,11 @@ msgid "Please check the include structure of the selected GEDCOM filters."
 msgstr ""
 "Bitte überprüfen Sie die Include-Struktur der ausgewählten Export-Filter."
 
-#: DownloadGedcomWithURL.php:1388 SelectionPage.php:92
+#: DownloadGedcomWithURL.php:1387 SelectionPage.php:93
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:1443 SelectionPage.php:73
+#: DownloadGedcomWithURL.php:1443 SelectionPage.php:74
 msgid "Internal module error: Neither GET nor POST request received."
 msgstr "Interner Modul-Fehler: Weder GET- noch POST-Request empfangen."
 
@@ -301,65 +301,65 @@ msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1580
-#, php-format
-msgid "The family tree \"%s\" was exported to: %s"
-msgstr "Der Stammbaum \"%s\" wurde exportiert nach: %s"
-
-#: DownloadGedcomWithURL.php:1588 DownloadGedcomWithURL.php:1728
+#: DownloadGedcomWithURL.php:1587 DownloadGedcomWithURL.php:1746
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:1593
+#: DownloadGedcomWithURL.php:1591
+#, php-format
+msgid "The family tree \"%s\" was sucessfully exported to: %s"
+msgstr "Der Stammbaum \"%s\" wurde erfolgreich exportiert nach: %s"
+
+#: DownloadGedcomWithURL.php:1602
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu speichern, "
 "sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1594 DownloadGedcomWithURL.php:1611
-#: DownloadGedcomWithURL.php:1736 DownloadGedcomWithURL.php:1761
+#: DownloadGedcomWithURL.php:1603 DownloadGedcomWithURL.php:1620
+#: DownloadGedcomWithURL.php:1753 DownloadGedcomWithURL.php:1778
 msgid "Please check the module settings in the control panel."
 msgstr "Bitte überprüfen Sie die Modul-Einstellungen in der Verwaltung."
 
-#: DownloadGedcomWithURL.php:1610
+#: DownloadGedcomWithURL.php:1619
 msgid ""
 "Remote URL requests to download GEDCOM files from the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien herunterzuladen, sind nicht "
 "erlaubt."
 
-#: DownloadGedcomWithURL.php:1637 DownloadGedcomWithURL.php:1658
+#: DownloadGedcomWithURL.php:1646 DownloadGedcomWithURL.php:1667
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Die Datei \"%s\" konnte nicht eingelesen werden."
 
-#: DownloadGedcomWithURL.php:1672
+#: DownloadGedcomWithURL.php:1681
 #, php-format
 msgid "No data imported from file \"%s\". The file might be empty."
 msgstr ""
 "Es wurden keine Daten aus der Datei \"%s\" importiert. Die Datei ist "
 "möglicherweise leer."
 
-#: DownloadGedcomWithURL.php:1676
+#: DownloadGedcomWithURL.php:1685
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr ""
 "Die Datei \"%s\" für den Stammbaum \"%s\" wurde erfolgreich hochgeladen."
 
-#: DownloadGedcomWithURL.php:1720
+#: DownloadGedcomWithURL.php:1730
 #, php-format
-msgid "The GEDCOM file \"%s\" was converted to: %s"
-msgstr "Die GEDCOM-Datei \"%s\" wurde konvertiert nach: %s"
+msgid "The GEDCOM file \"%s\" was successfully converted to: %s"
+msgstr "Die GEDCOM-Datei \"%s\" wurde erfolgreich konvertiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1735
+#: DownloadGedcomWithURL.php:1752
 msgid ""
 "Remote URL requests to convert GEDCOM files on the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu "
 "konvertieren, sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1760
+#: DownloadGedcomWithURL.php:1777
 msgid ""
 "Remote URL requests to upload GEDCOM files to the server are not allowed."
 msgstr ""
@@ -389,7 +389,7 @@ msgstr ""
 msgid "Extended GEDCOM Import"
 msgstr "Erweiterter GEDCOM-Import"
 
-#: SelectionPage.php:101
+#: SelectionPage.php:102
 msgid "Extended GEDCOM Import/Export"
 msgstr "Erweiterter GEDCOM-Import/Export"
 
@@ -401,7 +401,7 @@ msgstr "Alle Datensätze"
 msgid "Avoid leading spaces for CONC"
 msgstr "Führende Leerzeichen bei CONC vermeiden"
 
-#: resources/filter/BirthMarriageDeathGedcomFilter.php:97
+#: resources/filter/BirthMarriageDeathGedcomFilter.php:87
 msgid "Birth, marriage, death export"
 msgstr "Export für Geburten, Heiraten, Todesfälle"
 
@@ -473,80 +473,80 @@ msgstr "Daten zu webtrees Benutzern (d.h. _WT_USER Tags) entfernen"
 msgid "Custom module"
 msgstr "Benutzerdefiniertes Modul"
 
-#: resources/views/convert.phtml:47
+#: resources/views/convert.phtml:44
 msgid "Select a GEDCOM file"
 msgstr "Wählen Sie eine GEDCOM-Datei"
 
-#: resources/views/convert.phtml:52 resources/views/import.phtml:54
+#: resources/views/convert.phtml:49 resources/views/import.phtml:51
 msgid "A file on your computer"
 msgstr "Eine Datei auf Ihrem Rechner"
 
-#: resources/views/convert.phtml:61 resources/views/import.phtml:63
+#: resources/views/convert.phtml:58 resources/views/import.phtml:60
 msgid "A file on the server"
 msgstr "Eine Datei auf dem Server"
 
-#: resources/views/convert.phtml:87
+#: resources/views/convert.phtml:84
 msgid "Conversion settings"
 msgstr "Einstellungen für Konvertierung"
 
-#: resources/views/convert.phtml:165 resources/views/export.phtml:162
+#: resources/views/convert.phtml:162 resources/views/export.phtml:158
 msgid "Time stamp"
 msgstr "Zeitstempel"
 
-#: resources/views/convert.phtml:170 resources/views/export.phtml:167
+#: resources/views/convert.phtml:167 resources/views/export.phtml:163
 #: resources/views/settings.phtml:326
 msgid "No time stamp"
 msgstr "Kein Zeitstempel"
 
-#: resources/views/convert.phtml:171 resources/views/export.phtml:168
+#: resources/views/convert.phtml:168 resources/views/export.phtml:164
 #: resources/views/settings.phtml:327
 msgid "Prefix time stamp"
 msgstr "Prefix Zeitstempel"
 
-#: resources/views/convert.phtml:172 resources/views/export.phtml:169
+#: resources/views/convert.phtml:169 resources/views/export.phtml:165
 #: resources/views/settings.phtml:328
 msgid "Postfix time stamp"
 msgstr "Postfix Zeitstempel"
 
-#: resources/views/convert.phtml:180 resources/views/export.phtml:197
-#: resources/views/import.phtml:140
+#: resources/views/convert.phtml:177 resources/views/export.phtml:193
+#: resources/views/import.phtml:137
 msgid "Select GEDCOM filters"
 msgstr "Selektieren Sie GEDCOM-Filter"
 
-#: resources/views/convert.phtml:184 resources/views/convert.phtml:196
-#: resources/views/convert.phtml:208 resources/views/export.phtml:201
-#: resources/views/export.phtml:213 resources/views/export.phtml:225
-#: resources/views/import.phtml:144 resources/views/import.phtml:156
-#: resources/views/import.phtml:168
+#: resources/views/convert.phtml:181 resources/views/convert.phtml:193
+#: resources/views/convert.phtml:205 resources/views/export.phtml:197
+#: resources/views/export.phtml:209 resources/views/export.phtml:221
+#: resources/views/import.phtml:141 resources/views/import.phtml:153
+#: resources/views/import.phtml:165
 #, php-format
 msgid "Gedcom filter %s"
 msgstr "GEDCOM-Filter %s"
 
-#: resources/views/convert.phtml:223
+#: resources/views/convert.phtml:220
 msgid "Convert GEDCOM file"
 msgstr "GEDCOM-Datei konvertieren"
 
-#: resources/views/export.phtml:177
+#: resources/views/export.phtml:173
 msgid "Export action"
 msgstr "Export-Aktion"
 
-#: resources/views/export.phtml:182
+#: resources/views/export.phtml:178
 msgid "Action"
 msgstr "Aktion"
 
-#: resources/views/export.phtml:188
+#: resources/views/export.phtml:184
 msgid "Save on the webtrees server"
 msgstr "Auf dem webtrees Server speichern"
 
-#: resources/views/export.phtml:189
+#: resources/views/export.phtml:185
 msgid "Both, i.e. download and save in parallel"
 msgstr "Beides, d.h. Herunterladen und gleichzeitig Speichern"
 
-#: resources/views/export.phtml:241
+#: resources/views/export.phtml:237
 msgid "Export GEDCOM file"
 msgstr "GEDCOM-Datei exportieren"
 
-#: resources/views/import.phtml:36
+#: resources/views/import.phtml:35
 msgid ""
 "Any import will delete all the genealogy data of the tree in the database "
 "and replace it with data from a GEDCOM file."
@@ -554,11 +554,11 @@ msgstr ""
 "Jeder Import wird alle genealogischen Daten des Stammbaums in der Datenbank "
 "löschen und durch die Daten aus der GEDCOM-Datei ersetzen."
 
-#: resources/views/import.phtml:89
+#: resources/views/import.phtml:86
 msgid "Settings for GEDCOM Import"
 msgstr "Einstellungen für den GEDCOM-Import"
 
-#: resources/views/import.phtml:181
+#: resources/views/import.phtml:178
 msgid ""
 "Are you absolutely sure you want to import the selected file into the "
 "specified tree? Please be aware that importing the file will delete all "
@@ -572,7 +572,7 @@ msgstr ""
 "Importieren neuer Dateien auch ein Backup der webtrees Datenbank in Betracht "
 "gezogen werden."
 
-#: resources/views/import.phtml:183
+#: resources/views/import.phtml:180
 msgid "Import GEDCOM file"
 msgstr "GEDCOM-Datei importieren"
 

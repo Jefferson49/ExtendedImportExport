@@ -1577,7 +1577,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 try {
                     $resource = $this->filtered_gedcom_export_service->filteredResource($tree, true, $encoding, $privacy, $line_endings, $export_file_name, $format, $gedcom_filter_set);
                     $this->root_filesystem->writeStream($folder_on_server . $export_file_name, $resource);
-                    $response = $this->showSuccessMessage(I18N::translate('The family tree "%s" was exported to: %s', $tree_name, $folder_on_server . $export_file_name));
                 } 
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
 
@@ -1587,6 +1586,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     else {
                         return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_on_server . $export_file_name));
                     }
+                }
+
+                $message = I18N::translate('The family tree "%s" was sucessfully exported to: %s', $tree_name, $folder_on_server . $export_file_name);
+
+                if ($called_from_control_panel) {
+                    FlashMessages::addMessage($message, 'success');
+                    $response = redirect(route(SelectionPage::class, ['tree' => $tree->name()]));
+                }
+                else {
+                    $response = $this->showSuccessMessage($message);
                 }
             }
             else {
@@ -1717,7 +1726,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
                                 $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], new Collection($gedcom_records));
 
                             $this->root_filesystem->writeStream($export_file_name, $resource);
-                            $response = $this->showSuccessMessage(I18N::translate('The GEDCOM file "%s" was converted to: %s', $filename, $export_file_name));
+
+                            $message = I18N::translate('The GEDCOM file "%s" was successfully converted to: %s', $filename, $export_file_name);
+
+                            if ($called_from_control_panel) {
+                                FlashMessages::addMessage($message, 'success');
+                                $response = redirect(route(SelectionPage::class));
+                            }
+                            else {
+                                $response = $this->showSuccessMessage($message);
+                            }
                         } 
                         catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
         
@@ -1727,8 +1745,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                             else {
                                 return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_on_server . $export_file_name));
                             }
-                        }
-        
+                        }        
                     }
                 }
                 else {

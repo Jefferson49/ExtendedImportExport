@@ -66,6 +66,7 @@ class SelectionPage implements RequestHandlerInterface
         if ($request->getMethod() === RequestMethodInterface::METHOD_GET) {
             $tree_name = Validator::queryParams($request)->string('tree', '');
         }
+        // If POST request
         elseif ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
             $tree_name = Validator::parsedBody($request)->string('tree', '');
         }

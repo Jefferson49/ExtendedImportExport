@@ -1511,6 +1511,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
         if (!in_array($time_stamp, [self::TIME_STAMP_PREFIX, self::TIME_STAMP_POSTFIX, self::TIME_STAMP_NONE])) {
 			return $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
         }
+		//Error if conversion and no file name provided
+        if (!$called_from_control_panel && $action === self::ACTION_CONVERT && $filename === '') {
+			return $this->showErrorMessage(I18N::translate('No file name provided for the requested GEDCOM conversion'));
+        }
         
         if ($gedcom_filter1 !== '' OR $gedcom_filter2 !== '' OR $gedcom_filter3 !== '') {
 
@@ -1631,7 +1635,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
             if ($source === 'server') {
 
                 //If server file has no extension, add .ged
-                if (strpos($filename, '.ged', -4) === false && strpos($filename, '.zip', -4) === false && strpos($filename, '.gdz', -4) === false) {
+                $path_info = pathinfo($filename);
+
+                if (!isset($path_info['extension'])) {
                     $filename .= '.ged';
                 }
 
@@ -1688,8 +1694,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
             } 
 
             //Export file name and extension
-            $extension = pathinfo($filename);
-            $filename  = basename($filename,'.'.$extension['extension']);
+            $path_info = pathinfo($filename);
+            $filename  = basename($filename,'.'.$path_info['extension']);
 
             if ($format === 'gedcom') {
                 $extension = '.ged';
@@ -1724,7 +1730,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                             $this->root_filesystem->writeStream($export_file_name, $resource);
 
-                            $message = I18N::translate('The GEDCOM file "%s" was successfully converted to: %s', $filename, $export_file_name);
+                            $message = I18N::translate('The GEDCOM file "%s" was successfully converted to: %s', $filename . $extension, $export_file_name);
 
                             if ($called_from_control_panel) {
                                 FlashMessages::addMessage($message, 'success');

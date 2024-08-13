@@ -1547,6 +1547,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 return $this->showErrorMessage($ex->getMessage());
             }
         }
+        else {
+            $gedcom_filter_set = [];
+        }
 
         //Add time stamp to file name if requested
         if($time_stamp === self::TIME_STAMP_PREFIX){

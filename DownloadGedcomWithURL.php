@@ -941,12 +941,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Check if Gedcom filter class is valid
         $gedcom_filter_class_name = __NAMESPACE__ . '\\' . $gedcom_filter_name;
 
-        if (!class_exists($gedcom_filter_class_name) OR !(new $gedcom_filter_class_name() instanceof GedcomFilterInterface)) {
+        if (!class_exists($gedcom_filter_class_name) OR !($this->getInstanceOfGedcomFilter($gedcom_filter_class_name) instanceof GedcomFilterInterface)) {
 
             return I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter_name;
         }
 
-        $gedcom_filter_instance = new $gedcom_filter_class_name();
+        $gedcom_filter_instance = $this->getInstanceOfGedcomFilter($gedcom_filter_class_name);
 
         //Validate the content of the Gedcom filter
         $error = $gedcom_filter_instance->validate();
@@ -1223,7 +1223,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
 
         try {
-            $gedcom_filters = $this->createGedcomFilterList($gedcom_filter1, $gedcom_filter2, $gedcom_filter3);
+            $gedcom_filters = $this->createGedcomFilterList([$gedcom_filter1, $gedcom_filter2, $gedcom_filter3]);
         }
         catch (DownloadGedcomWithUrlException $ex) {
             FlashMessages::addMessage($ex->getMessage(), 'danger');
@@ -1235,35 +1235,52 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	/**
      * Create a list of Gedcom filters from filter names; also handle include structure of the filters
      * 
-     * @param string $gedcom_filter1            Class name of Gedcom filter 1
-     * @param string $gedcom_filter2            Class name of Gedcom filter 2
-     * @param string $gedcom_filter3            Class name of Gedcom filter 3
+     * @param array<string> $class_names      An array with Gedcom filter class names
      *
-     * @return array<GedcomFilterInterface> 	A set of Gedcom filters
+     * @return array<GedcomFilterInterface>   A set of Gedcom filters
      */	
-    public function createGedcomFilterList(string $gedcom_filter1, string $gedcom_filter2, string $gedcom_filter3): array    
+    public function createGedcomFilterList(array $class_names): array    
     {
-        //Add namespace to Gedcom filters
-        $gedcom_filter_class_name1 = __NAMESPACE__ . '\\' . $gedcom_filter1;
-        $gedcom_filter_class_name2 = __NAMESPACE__ . '\\' . $gedcom_filter2;
-        $gedcom_filter_class_name3 = __NAMESPACE__ . '\\' . $gedcom_filter3;
+        $gedcom_filter_set = [];
 
-        //Get instances of Gedcom filters
-        $gedcom_filter_instance1 = $gedcom_filter1 !== '' ? new $gedcom_filter_class_name1() : null;
-        $gedcom_filter_instance2 = $gedcom_filter2 !== '' ? new $gedcom_filter_class_name2() : null;
-        $gedcom_filter_instance3 = $gedcom_filter3 !== '' ? new $gedcom_filter_class_name3() : null;
-
-        //Create set of Gedcom filters
-        $filters_to_add = [
-            $gedcom_filter_instance1,
-            $gedcom_filter_instance2,
-            $gedcom_filter_instance3,
-        ];
+        foreach ($class_names as $class_name) {
+            $gedcom_filter_set[] = $this->getInstanceOfGedcomFilter($class_name);
+        }
 
         //Add Gedcom filters, which might also add further Gedcom filters from their include lists
-        $gedcom_filter_set = $this->addIncludedGedcomFilters([], $filters_to_add, []);
+        $gedcom_filter_set = $this->addIncludedGedcomFilters([], $gedcom_filter_set, []);
 
         return $gedcom_filter_set;
+    }
+
+    /**
+     * Get instance of GEDCOM filter
+     * 
+     * @param string $class_name       Class name of Gedcom filter (without namespace)
+     *
+     * @return GedcomFilterInterface   An instance of a  Gedcom filter
+     */	
+    private function getInstanceOfGedcomFilter(string $class_name): ?GedcomFilterInterface {
+
+        if ($class_name === '') {
+            return null;
+        }
+
+        //Add namespace to Gedcom filter
+        $name_space = __NAMESPACE__;
+
+        if (strpos($class_name, $name_space) === false) {
+            $class_name = $name_space . '\\' . $class_name;
+        }
+
+        try {
+            $gedcom_filter_instance = new $class_name();
+        }
+        catch (Throwable $th) {
+            throw new DownloadGedcomWithUrlException(I18N::translate('The GEDCOM filter was not found') . ': ' . $class_name);
+        }
+
+        return $gedcom_filter_instance;
     }
 
     /**
@@ -1446,21 +1463,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Get folder from module settings and file system
         $folder_on_server = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
 
-        //Add namespace to Gedcom filters
-        $gedcom_filter_class_name1 = __NAMESPACE__ . '\\' . $gedcom_filter1;
-        $gedcom_filter_class_name2 = __NAMESPACE__ . '\\' . $gedcom_filter2;
-        $gedcom_filter_class_name3 = __NAMESPACE__ . '\\' . $gedcom_filter3;
-
-        //Load Gedcom filter classes
-        if ($gedcom_filter1 !== '' OR $gedcom_filter2 !== '' OR $gedcom_filter3 !== '') {
-            try {
-                self::loadGedcomFilterClasses();
-            }
-            catch (DownloadGedcomWithUrlException $ex) {
-                return $this->showErrorMessage($ex->getMessage());
-            }    
-        }
-
         //If not called from control panel (i.e. called remotely via URL), evaluate key
         if (!$called_from_control_panel) {
 
@@ -1472,76 +1474,74 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 return $this->showErrorMessage(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
             }
             //Error if secret key is empty
-            elseif ($secret_key === '') {
+            if ($secret_key === '') {
                 return $this->showErrorMessage(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $this->title());
             }
             //Error if no hashing and key is not valid
-            elseif (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && ($key !== $secret_key)) {
+            if (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && ($key !== $secret_key)) {
                 return $this->showErrorMessage(I18N::translate('Key not accepted. Access denied.'));
             }
             //Error if hashing and key does not fit to hash
-            elseif (boolval($this->getPreference(self::PREF_USE_HASH, '0')) && (!password_verify($key, $secret_key))) {
+            if (boolval($this->getPreference(self::PREF_USE_HASH, '0')) && (!password_verify($key, $secret_key))) {
                 return $this->showErrorMessage(I18N::translate('Key (encrypted) not accepted. Access denied.'));
             }     
         }
 
         //Error if privacy level is not valid
-		elseif (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {
+		if (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {
 			return $this->showErrorMessage(I18N::translate('Privacy level not accepted') . ': ' . $privacy);
         }
         //Error if export format is not valid
-        elseif (!in_array($format, ['gedcom', 'zip', 'zipmedia', 'gedzip'])) {
+        if (!in_array($format, ['gedcom', 'zip', 'zipmedia', 'gedzip'])) {
 			return $this->showErrorMessage(I18N::translate('Export format not accepted') . ': ' . $format);
         }       
         //Error if encoding is not valid
-		elseif (!in_array($encoding, ['', UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
+		if (!in_array($encoding, ['', UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
 			return $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
         }       
         //Error action is not valid
-        elseif (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_UPLOAD, self::ACTION_CONVERT])) {
+        if (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_UPLOAD, self::ACTION_CONVERT])) {
 			return $this->showErrorMessage(I18N::translate('Action not accepted') . ': ' . $action);
         }  
 		//Error if line ending is not valid
-        elseif (!in_array($line_endings, ['CRLF', 'LF'])) {
+        if (!in_array($line_endings, ['CRLF', 'LF'])) {
 			return $this->showErrorMessage(I18N::translate('Line endings not accepted') . ': ' . $line_endings);
         } 
 		//Error if time_stamp is not valid
-        elseif (!in_array($time_stamp, [self::TIME_STAMP_PREFIX, self::TIME_STAMP_POSTFIX, self::TIME_STAMP_NONE])) {
+        if (!in_array($time_stamp, [self::TIME_STAMP_PREFIX, self::TIME_STAMP_POSTFIX, self::TIME_STAMP_NONE])) {
 			return $this->showErrorMessage(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
-        } 	
-		//Error if Gedcom filter 1 is not found
-        elseif ($gedcom_filter1 !== '' && (!class_exists($gedcom_filter_class_name1) OR !(new $gedcom_filter_class_name1() instanceof GedcomFilterInterface))) {
-            return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter1);
         }
-		//Error if Gedcom filter 2 is not found
-        elseif ($gedcom_filter2 !== '' && (!class_exists($gedcom_filter_class_name2) OR !(new $gedcom_filter_class_name2() instanceof GedcomFilterInterface))) {
-            return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter2);
-        }
-		//Error if Gedcom filter 3 is not found
-        elseif ($gedcom_filter3 !== '' && (!class_exists($gedcom_filter_class_name3) OR !(new $gedcom_filter_class_name3() instanceof GedcomFilterInterface))) {
-            return $this->showErrorMessage(I18N::translate('The GEDCOM filter was not found') . ': ' . $gedcom_filter3);
-        }
-		//Error if Gedcom filter 1 validation fails
-        elseif ($gedcom_filter1 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter1)) !== '') {
-            return $this->showErrorMessage($error);
-        }
-		//Error if Gedcom filter 2 validation fails
-        elseif ($gedcom_filter2 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter2)) !== '') {
-            return $this->showErrorMessage($error);
-        }
-		//Error if Gedcom filter 3 validation fails
-        elseif ($gedcom_filter3 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter3)) !== '') {
-            return $this->showErrorMessage($error);
-        }
+        
+        if ($gedcom_filter1 !== '' OR $gedcom_filter2 !== '' OR $gedcom_filter3 !== '') {
 
-		//If no errors, execute the core activities of the module
+            //Load Gedcom filter classes
+            try {
+                self::loadGedcomFilterClasses();
+            }
+            catch (DownloadGedcomWithUrlException $ex) {
+                return $this->showErrorMessage($ex->getMessage());
+            }    
 
-        //Initialize filters and get filter list
-        try {
-            $gedcom_filter_set = $this->createGedcomFilterList($gedcom_filter1, $gedcom_filter2, $gedcom_filter3);
-        }
-        catch (DownloadGedcomWithUrlException $ex) {
-            return $this->showErrorMessage($ex->getMessage());
+            //Error if Gedcom filter 1 validation fails
+            if ($gedcom_filter1 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter1)) !== '') {
+                return $this->showErrorMessage($error);
+            }
+            //Error if Gedcom filter 2 validation fails
+            if ($gedcom_filter2 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter2)) !== '') {
+                return $this->showErrorMessage($error);
+            }
+            //Error if Gedcom filter 3 validation fails
+            if ($gedcom_filter3 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter3)) !== '') {
+                return $this->showErrorMessage($error);
+            }
+
+            //Initialize filters and get filter list
+            try {
+                $gedcom_filter_set = $this->createGedcomFilterList([$gedcom_filter1, $gedcom_filter2, $gedcom_filter3]);
+            }
+            catch (DownloadGedcomWithUrlException $ex) {
+                return $this->showErrorMessage($ex->getMessage());
+            }
         }
 
         //Add time stamp to file name if requested
@@ -1569,9 +1569,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 }
 
                 $export_file_name = $filename . $extension;
- 
-                //Get folder from settings
-                $folder_on_server = $this->getPreference(self::PREF_FOLDER_TO_SAVE, '');
 
                 //Create response
                 try {

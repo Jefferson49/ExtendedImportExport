@@ -27,8 +27,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
         'HEAD:CHAR'                 => [],
 
         //Add a link (as source citation) to the related individual in webtrees
-        //Shorten all included dates to years(i.e. 01 JAN 1900 => 1900)
-        'INDI'                      => ["0 @([^@]+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/individual/$1\n"],
+        'INDI'                      => ["0 @([^@]+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE %BASE_URL%/tree/%TREE%/individual/$1\n"],
 
         'INDI:NAME'                 => [],
         'INDI:NAME:TYPE'            => [],
@@ -57,8 +56,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
         'INDI:FAMS'                 => [],
 
         //Add a link (as source citation) to the related individual in webtrees
-        //Shorten all included dates to years(i.e. 01 JAN 1900 => 1900)
-        'FAM'                       => ["0 @([^@]+)@ FAM\n" => "0 @$1@ FAM\n1 SOUR @S1@\n2 PAGE https://mysite.info/tree/%TREE%/family/$1\n"],
+        'FAM'                       => ["0 @([^@]+)@ FAM\n" => "0 @$1@ FAM\n1 SOUR @S1@\n2 PAGE %BASE_URL%/tree/%TREE%/family/$1\n"],
 
         'FAM:HUSB'                  => [],
         'FAM:WIFE'                  => [],
@@ -74,7 +72,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
         'SUBM:NAME'                 => [],
 
         //Add a source to the end of the data. The source is used for links in INDI and FAM (links in souce citations) 
-        'TRLR'                      => ["0 TRLR\n" => "0 @S1@ SOUR\n1 TITL https://mysite.info/tree/%TREE%/\n0 TRLR\n"],
+        'TRLR'                      => ["0 TRLR\n" => "0 @S1@ SOUR\n1 TITL %BASE_URL%/tree/%TREE%/\n0 TRLR\n"],
     ];
 
     /**
@@ -88,32 +86,35 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements Ged
     }    
 
     /**
-     * Get the GEDCOM filter and replace tree name in URLs
+     * Get the Gedcom filter rules
      * 
-     * In this specific case, the GEDCOM filter rules are modified to replace 
-     * %TREE% in the filter rule by the actual tree name in webtrees
-     *
-     * @param Tree $tree
+     * @param array<string> $params   Parameters from remote URL requests 
+     *                                as well as further parameters, e.g. 'tree' and 'base_url'
      *
      * @return array
      */
-    public function getGedcomFilterRules(Tree $tree = null): array {
+    public function getGedcomFilterRules(array $params = []): array {
 
         $gedcom_filter = [];
 
-        foreach(parent::getGedcomFilterRules($tree) as $tag => $regexps) {
-
-        $replaced_regexps = [];
-
-        foreach($regexps as $search => $replace) {
-
-            //Replace %TREE% in the filter rule by the actual tree name in webtrees
-            //This is needed to generated an URL to the records in webtrees
-            $replace = str_replace('%TREE%' , $tree !== null ? $tree->name() : '', $replace);
-            $replaced_regexps[$search] = $replace;
+        if (empty($params)) {
+            $params = ['tree' => 'tree', 'base_url' => 'https://mysite.info'];
         }
 
-        $gedcom_filter[$tag] = $replaced_regexps;
+        foreach(parent::getGedcomFilterRules($params) as $tag => $regexps) {
+
+            $replaced_regexps = [];
+
+            foreach($regexps as $search => $replace) {
+
+                //Replace %TREE% in the filter rule by the actual tree name in webtrees
+                //This is needed to generated an URL to the records in webtrees
+                $replace = str_replace('%BASE_URL%' , $params['base_url'] !== '' ? $params['base_url'] : 'https://MY_SITE', $replace);
+                $replace = str_replace('%TREE%' , $params['tree'] !== '' ? $params['tree'] : 'TREE', $replace);
+                $replaced_regexps[$search] = $replace;
+            }
+
+            $gedcom_filter[$tag] = $replaced_regexps;
         }
 
         return $gedcom_filter;

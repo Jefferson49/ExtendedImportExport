@@ -91,13 +91,14 @@ class AbstractGedcomFilter implements GedcomFilterInterface
     }
 
     /**
-     * Get the GEDCOM filter
+     * Get the Gedcom filter rules
      * 
-     * @param Tree $tree
+     * @param array<string> $params   Parameters from remote URL requests 
+     *                                as well as further parameters, e.g. 'tree' and 'base_url'
      *
      * @return array
      */
-    public function getGedcomFilterRules(Tree $tree = null): array {
+    public function getGedcomFilterRules(array $params = []): array {
 
         $gedcom_filter_rules = $this->replaceMacros(static::GEDCOM_FILTER_RULES, static::REGEXP_MACROS);
         $gedcom_filter_rules = $this->addPregDelimiters($gedcom_filter_rules);
@@ -108,13 +109,14 @@ class AbstractGedcomFilter implements GedcomFilterInterface
     /**
      * Custom conversion of a Gedcom string
      *
-     * @param string $pattern       The pattern of the filter rule, e. g. INDI:*:DATE
-     * @param string $gedcom        The Gedcom to convert
-     * @param array  $records_list  A list with all xrefs and the related records: array <string xref => Record record>
+     * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
+     * @param string        $gedcom          The Gedcom to convert
+     * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * 
-     * @return string               The converted Gedcom
+     * @return string                        The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
+    public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
 
         //As a default, return the un-converted Gedcom
         return $gedcom;

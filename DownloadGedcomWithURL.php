@@ -74,6 +74,7 @@ use Fisharebest\Webtrees\Repository;
 use Fisharebest\Webtrees\Services\DataFixService;
 use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\TreeService;
+use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Source;
 use Fisharebest\Webtrees\Submitter;
 use Fisharebest\Webtrees\Site;
@@ -139,6 +140,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
     //A set of Gedcom filters, which is used in the data fix
     private array $gedcom_filters_in_data_fix;
+
+    //A set of standard parameters to be used for calling Gedcom filter
+    private array $standard_params;
 
 	//Custom module version
 	public const CUSTOM_VERSION = '3.2.4';
@@ -238,14 +242,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $this->gedcom_filters_in_data_fix = [];
         $this->gedcom_filters_loaded_in_data_fix = false;
         $this->root_filesystem = Registry::filesystem()->root();
+        $this->standard_params = [];
 
         $router = Registry::routeFactory()->routeMap();            
 
         //Register a route for remote requests
         $router
-            ->get(static::class, self::ROUTE_REMOTE_ACTION, $this)
-            ->allows(RequestMethodInterface::METHOD_POST);
-            
+        ->get(static::class, self::ROUTE_REMOTE_ACTION, $this)
+        ->allows(RequestMethodInterface::METHOD_POST);            
         //Register a route for the selection view
         $router
             ->get(SelectionPage::class, self::ROUTE_SELECTION_PAGE)
@@ -1142,7 +1146,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         if ($this->gedcom_filters_in_data_fix === []) return false;
 
         $gedcom = $record->gedcom();
-        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $record->tree());
+        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $this->standard_params);
 
         $old = $gedcom . "\n";
         $new = $filtered_records[0] ?? $gedcom;
@@ -1163,7 +1167,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public function previewUpdate(GedcomRecord $record, array $params): string
     {
         $gedcom = $record->gedcom();
-        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $record->tree());
+        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $this->standard_params);
 
         $old = $gedcom;
         $new = $filtered_records[0] ?? '';
@@ -1184,7 +1188,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public function updateRecord(GedcomRecord $record, array $params): void
     {
         $gedcom = $record->gedcom();
-        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $record->tree());
+        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $this->standard_params);
 
         $new = $filtered_records[0] ?? $gedcom;  
         $record->updateRecord($new, false);
@@ -1377,6 +1381,38 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
 	/**
+     * Get params from request 
+     * 
+     * @param ServerRequestInterface $request
+     *
+     * @return array<string>
+     */	
+    public function getParamsFromRequest(ServerRequestInterface $request): array
+    {    
+        $params = [];
+        $params['base_url'] = Validator::attributes($request)->string('base_url');
+
+        // If GET request
+        if ($request->getMethod() === RequestMethodInterface::METHOD_GET) {
+            $params['tree'] = Validator::queryParams($request)->string('tree', '');
+            $this->standard_params = $params;
+
+            $query_params = $request->getQueryParams();
+
+            foreach ($query_params as $name => $value) {
+                $params[$name] = Validator::queryParams($request)->string($name, '');
+            }
+        }     
+        // If POST request (from control panel)
+        elseif ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
+            $params['tree'] = Validator::parsedBody($request)->string('tree', '');
+            $this->standard_params = $params;
+        }
+
+        return $params;
+    }
+
+	/**
      * Execute the request (from URL or from control panel) to download or save 
      * 
      * @param ServerRequestInterface $request
@@ -1392,6 +1428,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $encodings = ['' => ''] + Registry::encodingFactory()->list();
         $tree = null;
         $word_wrapped_notes = false;
+        $params = $this->getParamsFromRequest($request);
 
         // If GET request
         if ($request->getMethod() === RequestMethodInterface::METHOD_GET) {
@@ -1613,7 +1650,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, '0'))) {
                 try {
                     //Create response
-                    $response = $this->filtered_gedcom_export_service->filteredDownloadResponse($tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set);
+                    $response = $this->filtered_gedcom_export_service->filteredDownloadResponse($tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params);
                 }
                 catch (DownloadGedcomWithUrlException $ex) {
                     return $this->showErrorMessage($ex->getMessage());
@@ -1712,14 +1749,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             //Apply Gedcom filters
             $matched_tag_combinations = [];
-            $gedcom_records = $this->filtered_gedcom_export_service->applyGedcomFilters($gedcom_records, $gedcom_filter_set, $matched_tag_combinations, $tree);
+            $gedcom_records = $this->filtered_gedcom_export_service->applyGedcomFilters($gedcom_records, $gedcom_filter_set, $matched_tag_combinations, $params);
             
             if ($action === self::ACTION_CONVERT) {
                 if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_CONVERT, '0'))) {
                     if ($source === 'client') {
                         //Create a response from the filtered data
                         return $this->filtered_gedcom_export_service->filteredDownloadResponse(
-                            $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], new Collection($gedcom_records));
+                            $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], $params, new Collection($gedcom_records));
                     }
                     else {
                         //Download to the server
@@ -1729,7 +1766,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         try {
                             //Create a stream from the filtered data
                             $resource = $this->filtered_gedcom_export_service->filteredResource(
-                                $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], new Collection($gedcom_records));
+                                $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], [], new Collection($gedcom_records));
 
                             $this->root_filesystem->writeStream($export_file_name, $resource);
 
@@ -1765,7 +1802,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     //Create a stream from the filtered data
                     $resource = $this->filtered_gedcom_export_service->filteredResource(
-                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], new Collection($gedcom_records));
+                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], [], new Collection($gedcom_records));
                     $stream = $this->stream_factory->createStreamFromResource($resource);
 
                     //Import the stream into the database

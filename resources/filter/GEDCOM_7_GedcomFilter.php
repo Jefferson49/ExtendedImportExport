@@ -204,13 +204,14 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
     /**
      * Custom conversion of a Gedcom string
      *
-     * @param string $pattern       The pattern of the filter rule, e. g. INDI:*:DATE
-     * @param string $gedcom        The Gedcom to convert
-     * @param array  $records_list  A list with all xrefs and the related records: array <string xref => Record record>
+     * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
+     * @param string        $gedcom          The Gedcom to convert
+     * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * 
-     * @return string               The converted Gedcom
+     * @return string                        The converted Gedcom
      */
-    public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
+    public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
 
         if (strpos($pattern, ':DATE') > 0) {
 

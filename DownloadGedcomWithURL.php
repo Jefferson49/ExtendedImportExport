@@ -1413,6 +1413,47 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
 	/**
+     * Evaluate filename and extension 
+     * 
+     * @param string $filename
+     * @param string $action
+     * @param string $format
+     *
+     * @return array<string>     ['filename' => file name, 'extension' => extension]
+     */	
+    private function evaluateFilename(string $filename, string $action, string $format): array
+    {
+        $path_info = pathinfo($filename);
+        $extension = $path_info['extension'] ?? '';
+        $extension = $extension !== '' ? '.' . $extension : '';
+        $filename  = basename($filename, $extension);
+    
+        //For downloads, overrule extensions by format settings
+        if (in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH])) {
+            if ($format === 'gedcom') {
+                $extension = '.ged';
+            } 
+            elseif ($format === 'gedzip') {
+                $extension = '.gdz';
+            }
+            elseif ($format === 'zip') {
+                $extension = '.zip';
+            }
+            elseif ($format === 'zipmedia') {
+                $extension = '.zip';
+            }
+        }
+        //For reading files from the server, add .ged extension
+        elseif (in_array($action, [self::ACTION_UPLOAD, self::ACTION_CONVERT])) {
+            if ($extension === '') {
+                $extension = '.ged';
+            }
+        }
+        
+        return ['filename' => $filename, 'extension' => $extension];
+    }
+
+	/**
      * Execute the request (from URL or from control panel) to download or save 
      * 
      * @param ServerRequestInterface $request
@@ -1446,6 +1487,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             $key                       = Validator::queryParams($request)->string('key', '');
             $filename                  = Validator::queryParams($request)->string('file', $tree_name);
+            $filename_converted        = Validator::queryParams($request)->string('file_converted', '');
             $format                    = Validator::queryParams($request)->string('format',  $this->getPreference(self::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
             $privacy                   = Validator::queryParams($request)->string('privacy',  $this->getPreference(self::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
             $encoding                  = Validator::queryParams($request)->string('encoding',  $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME));
@@ -1476,6 +1518,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             $called_from_control_panel = Validator::parsedBody($request)->boolean('called_from_control_panel', false);
             $filename                  = Validator::parsedBody($request)->string('filename', $tree_name);
+            $filename_converted        = Validator::parsedBody($request)->string('filename_converted', '');
             $format                    = Validator::parsedBody($request)->string('format', 'gedcom');
             $privacy                   = Validator::parsedBody($request)->string('privacy', 'visitor');
             $encoding                  = Validator::parsedBody($request)->string('encoding', UTF8::NAME);
@@ -1529,7 +1572,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			return $this->showErrorMessage(I18N::translate('Privacy level not accepted') . ': ' . $privacy);
         }
         //Error if export format is not valid
-        if (!in_array($format, ['gedcom', 'zip', 'zipmedia', 'gedzip'])) {
+        if (!in_array($format, ['gedcom', 'zip', 'zipmedia', 'gedzip', 'other'])) {
 			return $this->showErrorMessage(I18N::translate('Export format not accepted') . ': ' . $format);
         }       
         //Error if encoding is not valid
@@ -1588,6 +1631,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $gedcom_filter_set = [];
         }
 
+        //Evaluate download filename
+        $file_info = $this->evaluateFilename($filename, $action, $format);
+        $filename = $file_info['filename'];
+        $extension = $file_info['extension'];
+
         //Add time stamp to file name if requested
         if($time_stamp === self::TIME_STAMP_PREFIX){
             $filename = date('Y-m-d_H-i-s_') . $filename;
@@ -1601,22 +1649,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_SAVE, '0'))) {
 
-                // File extension
-                if ($format === 'gedcom') {
-                    $extension = '.ged';
-                } 
-                elseif ($format === 'gedzip') {
-                    $extension = '.gdz';
-                }
-                else {
-                    $extension = '.zip';
-                }
-
                 $export_file_name = $filename . $extension;
 
                 //Create response
                 try {
-                    $resource = $this->filtered_gedcom_export_service->filteredResource($tree, true, $encoding, $privacy, $line_endings, $export_file_name, $format, $gedcom_filter_set);
+                    $resource = $this->filtered_gedcom_export_service->filteredResource(
+                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set);
                     $this->root_filesystem->writeStream($folder_on_server . $export_file_name, $resource);
                 } 
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
@@ -1650,7 +1688,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, '0'))) {
                 try {
                     //Create response
-                    $response = $this->filtered_gedcom_export_service->filteredDownloadResponse($tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params);
+                    $response = $this->filtered_gedcom_export_service->filteredDownloadResponse($tree, true, $encoding, $privacy, $line_endings, $filename, $extension, $format, $gedcom_filter_set, $params);
                 }
                 catch (DownloadGedcomWithUrlException $ex) {
                     return $this->showErrorMessage($ex->getMessage());
@@ -1674,19 +1712,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             if ($source === 'server') {
 
-                //If server file has no extension, add .ged
-                $path_info = pathinfo($filename);
-
-                if (!isset($path_info['extension'])) {
-                    $filename .= '.ged';
-                }
-
                 try {
-                    $resource = $this->root_filesystem->readStream($folder_on_server . $filename);
+                    $resource = $this->root_filesystem->readStream($folder_on_server . $filename . $extension);
                     $stream = $this->stream_factory->createStreamFromResource($resource);
                 }
                 catch (Throwable $ex) {
-                    $message = I18N::translate('Unable to read file "%s".', $folder_on_server . $filename);
+                    $message = I18N::translate('Unable to read file "%s".', $folder_on_server . $filename . $extension);
                     return $this->showErrorMessage($message);
                 }
             }
@@ -1704,7 +1735,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
     
                 try {
                     $stream = $client_file->getStream(); 
-                    $filename = basename($client_file->getClientFilename());                    
+                    $path_info = pathinfo($client_file->getClientFilename());
+                    $extension = $path_info['extension'] ?? '';
+                    $extension = $extension !== '' ? '.' . $extension : '';
+                    $filename  = basename($client_file->getClientFilename(), $extension);
                 }
                 catch (Throwable $ex) {
                     $message = I18N::translate('Unable to read file "%s".', $client_file);
@@ -1721,11 +1755,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $gedcom_records = $this->importGedcomFileToRecords($stream, $import_encoding, $word_wrapped_notes);
 
                 if (empty($gedcom_records)) {
-                    $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename);
+                    $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename . $extension);
                     return $this->showErrorMessage($message);
                 }
                 elseif ($action === self::ACTION_UPLOAD) {
-                    $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename, $tree_name);
+                    $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename . $extension, $tree_name);
                     FlashMessages::addMessage($message, 'success');
                 }
             }
@@ -1733,44 +1767,48 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 return $this->showErrorMessage($ex->getMessage());
             } 
 
-            //Export file name and extension
-            $path_info = pathinfo($filename);
-            $filename  = basename($filename,'.'.$path_info['extension']);
-
-            if ($format === 'gedcom') {
-                $extension = '.ged';
-            } 
-            elseif ($format === 'gedzip') {
-                $extension = '.gdz';
-            }
-            else {
-                $extension = '.zip';
-            }
-
             //Apply Gedcom filters
             $matched_tag_combinations = [];
             $gedcom_records = $this->filtered_gedcom_export_service->applyGedcomFilters($gedcom_records, $gedcom_filter_set, $matched_tag_combinations, $params);
             
             if ($action === self::ACTION_CONVERT) {
-                if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_CONVERT, '0'))) {
+                if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_CONVERT, '0'))) {                 
+
+                    //Evaluate converted filename
+                    if ($filename_converted === '') {
+                        //Default, if no value received
+                        $extension_converted =  $extension;                                
+                        if ($source === 'client') {
+                            $filename_converted = $filename;
+                        }
+                        else {
+                            $filename_converted = $filename . '_converted';
+                        }
+                    }
+                    else {
+                        $file_info = $this->evaluateFilename($filename_converted, $action, $format);
+                        $filename_converted = $file_info['filename'];
+                        $extension_converted = $file_info['extension'];    
+                    }   
+
                     if ($source === 'client') {
                         //Create a response from the filtered data
                         return $this->filtered_gedcom_export_service->filteredDownloadResponse(
-                            $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], $params, new Collection($gedcom_records));
+                            $tree, true, $encoding, $privacy, $line_endings, $filename_converted, $extension_converted, $format, [], $params, new Collection($gedcom_records));
                     }
                     else {
                         //Download to the server
-                
+
                         //Create response
-                        $export_file_name = $folder_on_server . $filename . '_converted' . $extension;
+                        $export_filename = $folder_on_server . $filename_converted . $extension_converted;
                         try {
                             //Create a stream from the filtered data
                             $resource = $this->filtered_gedcom_export_service->filteredResource(
-                                $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], [], new Collection($gedcom_records));
+                                $tree, true, $encoding, $privacy, $line_endings, $filename_converted, $format, [], [], new Collection($gedcom_records));
 
-                            $this->root_filesystem->writeStream($export_file_name, $resource);
+                            $this->root_filesystem->writeStream($export_filename, $resource);
 
-                            $message = I18N::translate('The GEDCOM file "%s" was successfully converted to: %s', $filename . $extension, $export_file_name);
+                            $message = I18N::translate('The GEDCOM file "%s" was successfully converted to: %s', $filename . $extension, $export_filename);
 
                             if ($called_from_control_panel) {
                                 FlashMessages::addMessage($message, 'success');
@@ -1786,7 +1824,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                                 return $this->showErrorMessage($ex->getMessage());
                             }
                             else {
-                                return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_on_server . $export_file_name));
+                                return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $folder_on_server . $export_filename));
                             }
                         }        
                     }

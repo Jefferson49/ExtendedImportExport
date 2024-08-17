@@ -190,7 +190,7 @@ class FilteredGedcomExportService extends GedcomExportService
     ) {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
-        if ($format === 'gedcom') {
+        if ($format === 'gedcom' OR $format === 'other') {
             //Create export
             return $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_filters, $params, $records);
         }
@@ -231,6 +231,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param string                       $privacy        Filter records by role
      * @param string                       $line_endings
      * @param string                       $filename       Name of download file, without an extension
+     * @param string                             Extension for export file, e.g. ged, zip, gzd
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
@@ -247,6 +248,7 @@ class FilteredGedcomExportService extends GedcomExportService
         string $privacy,
         string $line_endings,
         string $filename,
+        string $extension,
         string $format,
         array $gedcom_filters = null,
         array $params = [],
@@ -255,7 +257,7 @@ class FilteredGedcomExportService extends GedcomExportService
         ?string $media_path = null        
     ): ResponseInterface {
 
-        if ($format === 'gedcom') {
+        if ($format === 'gedcom' OR $format === 'other') {
             //Create export
             $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filters, $params, $records);
             $stream = $this->stream_factory->createStreamFromResource($resource);
@@ -263,7 +265,7 @@ class FilteredGedcomExportService extends GedcomExportService
             return $this->response_factory->createResponse()
                 ->withBody($stream)
                 ->withHeader('content-type', 'text/x-gedcom; charset=' . UTF8::NAME)
-                ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . '.ged"');
+                ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . $extension .'"');
         }
         
         //Create export

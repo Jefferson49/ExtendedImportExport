@@ -91,6 +91,13 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 					<?= MoreI18N::xlate('(includes media files)') ?>
 				</label>
 			</div>
+
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="format" id="format-other" value="other" <?= $default_format === 'other' ? 'checked="checked"' : '' ?> data-wt-extension=""'?>
+				<label class="form-check-label" for="format-other">
+					<?= I18N::translate('Other format (i.e. use extension of filename)') ?>
+				</label>
+			</div>
 		</div>
 	</div>
 
@@ -103,6 +110,9 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			<div class="input-group">
 				<input class="form-control" id="filename" name="filename" type="text" value="<?= $export_file_name ?>">
 				<span class="input-group-text" id="extension">.ged</span>
+				</div>
+			<div class="form-text">
+				<?= I18N::translate('The file extension will be added (or overruled) according to the selected format. Select "Other format" to use the extension, which is provided within the filename.'); ?>
 			</div>
 		</div>
 	</div>

@@ -112,10 +112,10 @@ class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter impl
         if ($xref !== '') {
             $record = $records_list[$xref];
 
-            //If record is empty, or not referenced by other records, or minimal individual, remove Gedcom
+            //If record is empty, or not referenced by other records remove Gedcom
             //However, we keep INDI records, which are not referenced
-            if  (   ($remove_empty && $record->isEmpty()) 
-                 OR ($pattern !== 'INDI' && $remove_unlinked && !$record->isReferenced())) {
+            if (   ($remove_empty && $record->isEmpty()) 
+                OR ($pattern !== 'INDI' && $remove_unlinked && !$record->isReferenced())) {
 
                 $gedcom = '';
             }   

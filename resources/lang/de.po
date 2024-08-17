@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-08-16 21:49+0200\n"
-"PO-Revision-Date: 2024-08-16 21:50+0200\n"
+"POT-Creation-Date: 2024-08-16 18:00+0200\n"
+"PO-Revision-Date: 2024-08-16 18:02+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -459,6 +459,12 @@ msgstr "Leere oder unverknüpfte Datensätze entfernen"
 #: resources/filter/RemoveEmptyRecordsGedcomFilter.php:21
 msgid "Remove empty records"
 msgstr "Leere Datensätze entfernen"
+
+#: resources/filter/RemoveMinimalIndividualsGedcomFilter.php:21
+msgid "Remove minimal INDI records with SEX, FAMC, FAMS or less"
+msgstr ""
+"INDI Datensätze mit minimalem Inhalt (d.h. SEX, FAMC FAMS oder weniger) "
+"entfernen"
 
 #: resources/filter/RemoveRestrictionsGedcomFilter.php:34
 msgid "Remove restrictions (i.e. RESN tags)"

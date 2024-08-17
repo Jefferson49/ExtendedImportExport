@@ -79,42 +79,54 @@ class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter impl
     */
     public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
-        $gedcom = $this->removeEmptyOrUnlinkedRecords($pattern, $gedcom, $records_list, true, true);
+        $gedcom = $this->removeEmptyOrUnlinkedRecords($pattern, $gedcom, $records_list, true, true, true, false);
         return $gedcom;
     }   
 
     /**
     * Analyze a Gedcom record, if it is empty or unlinked (i.e. not referenced) by other records. If yes, return empty Gedcom.
     *
-    * @param string $pattern          The pattern of the filter rule, e. g. INDI:BIRT:DATE
-    * @param string $gedcom           The Gedcom to convert
-    * @param array  $records_list     A list with all xrefs and the related records: array <string xref => Record record>
-    * @param bool   $remove_empty     Whether empty records shall be removed
-    * @param bool   $remove_unlinked  Whether empty records shall be removed
+    * @param string $pattern                     The pattern of the filter rule, e. g. INDI:BIRT:DATE
+    * @param string $gedcom                      The Gedcom to convert
+    * @param array  $records_list                A list with all xrefs and the related records: array <string xref => Record record>
+    * @param bool   $remove_empty                Whether empty records shall be removed
+    * @param bool   $remove_unlinked             Whether empty records shall be removed
+    * @param bool   $remove_references_to_void   Remove references, which point to empty records
+    * @param bool   $remove_minimal_individuals  Whether minimal individual records shall be removed
     * 
-    * @return string                  The converted Gedcom
+    * @return string                             The converted Gedcom
     */
-    public function removeEmptyOrUnlinkedRecords(string $pattern, string $gedcom, array &$records_list, bool $remove_empty, bool $remove_unlinked): string {
+    public function removeEmptyOrUnlinkedRecords(
+        string  $pattern,
+        string  $gedcom,
+        array  &$records_list,
+        bool    $remove_empty,
+        bool    $remove_unlinked,
+        bool    $remove_references_to_void,
+        bool    $remove_minimal_individuals): string {
 
         //Remove empty records and records without a reference
         preg_match('/0 @(' . Gedcom::REGEX_XREF  . ')@ (' . Gedcom::REGEX_TAG  . ')/', $gedcom, $match);
         $xref = $match[1] ?? '';
 
         if ($xref !== '') {
-
             $record = $records_list[$xref];
 
-            //If record is empty or not referenced by other records, remove Gedcom
+            //If record is empty, or not referenced by other records, or minimal individual, remove Gedcom
             //However, we keep INDI records, which are not referenced
-            if (   ($remove_empty && $record->isEmpty()) 
-                OR ($pattern !== 'INDI' && $remove_unlinked && !$record->isReferenced())) {
+            if  (   ($remove_empty && $record->isEmpty()) 
+                 OR ($pattern !== 'INDI' && $remove_unlinked && !$record->isReferenced())) {
 
                 $gedcom = '';
             }   
+            //If record is a minimal individual, reduce Gedcom to empty INDI
+            else if ($pattern === 'INDI' && $remove_minimal_individuals && $record->isMinimalIndividual()) {
+                $gedcom = "0 @" . $xref . "@ INDI\n";
+            }
         }
 
         //Remove references, which point to empty records
-        elseif (in_array($pattern, [
+        elseif ($remove_references_to_void && in_array($pattern, [
 
             'FAM:CHIL',
             'FAM:HUSB',

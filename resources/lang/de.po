@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-08-13 19:21+0200\n"
-"PO-Revision-Date: 2024-08-14 05:57+0200\n"
+"POT-Creation-Date: 2024-08-16 21:49+0200\n"
+"PO-Revision-Date: 2024-08-16 21:50+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -304,65 +304,65 @@ msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 msgid "No file name provided for the requested GEDCOM conversion"
 msgstr "Kein Dateiname für die angeforderte GEDCOM-Konvertierung übergeben"
 
-#: DownloadGedcomWithURL.php:1588 DownloadGedcomWithURL.php:1749
+#: DownloadGedcomWithURL.php:1591 DownloadGedcomWithURL.php:1752
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:1592
+#: DownloadGedcomWithURL.php:1595
 #, php-format
 msgid "The family tree \"%s\" was sucessfully exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde erfolgreich exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1603
+#: DownloadGedcomWithURL.php:1606
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu speichern, "
 "sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1604 DownloadGedcomWithURL.php:1621
-#: DownloadGedcomWithURL.php:1756 DownloadGedcomWithURL.php:1781
+#: DownloadGedcomWithURL.php:1607 DownloadGedcomWithURL.php:1624
+#: DownloadGedcomWithURL.php:1759 DownloadGedcomWithURL.php:1784
 msgid "Please check the module settings in the control panel."
 msgstr "Bitte überprüfen Sie die Modul-Einstellungen in der Verwaltung."
 
-#: DownloadGedcomWithURL.php:1620
+#: DownloadGedcomWithURL.php:1623
 msgid ""
 "Remote URL requests to download GEDCOM files from the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien herunterzuladen, sind nicht "
 "erlaubt."
 
-#: DownloadGedcomWithURL.php:1649 DownloadGedcomWithURL.php:1670
+#: DownloadGedcomWithURL.php:1652 DownloadGedcomWithURL.php:1673
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Die Datei \"%s\" konnte nicht eingelesen werden."
 
-#: DownloadGedcomWithURL.php:1684
+#: DownloadGedcomWithURL.php:1687
 #, php-format
 msgid "No data imported from file \"%s\". The file might be empty."
 msgstr ""
 "Es wurden keine Daten aus der Datei \"%s\" importiert. Die Datei ist "
 "möglicherweise leer."
 
-#: DownloadGedcomWithURL.php:1688
+#: DownloadGedcomWithURL.php:1691
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr ""
 "Die Datei \"%s\" für den Stammbaum \"%s\" wurde erfolgreich hochgeladen."
 
-#: DownloadGedcomWithURL.php:1733
+#: DownloadGedcomWithURL.php:1736
 #, php-format
 msgid "The GEDCOM file \"%s\" was successfully converted to: %s"
 msgstr "Die GEDCOM-Datei \"%s\" wurde erfolgreich konvertiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1755
+#: DownloadGedcomWithURL.php:1758
 msgid ""
 "Remote URL requests to convert GEDCOM files on the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu "
 "konvertieren, sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1780
+#: DownloadGedcomWithURL.php:1783
 msgid ""
 "Remote URL requests to upload GEDCOM files to the server are not allowed."
 msgstr ""
@@ -381,7 +381,7 @@ msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
 msgid "Error during a regular expression replacement."
 msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
 
-#: FilteredGedcomExportService.php:1110
+#: FilteredGedcomExportService.php:1132
 msgid ""
 "Fatal error: Too many iterations while removing empty and unlinked records."
 msgstr ""
@@ -440,13 +440,13 @@ msgstr "Optimierung des webtrees Exports für GEDCOM 5.5.1"
 msgid "Reduce dates to years"
 msgstr "Datumsangaben auf Jahre reduzieren"
 
-#: resources/filter/ReduceMinimalIndividualsGedcomFilter.php:38
+#: resources/filter/ReduceMinimalIndividualsGedcomFilter.php:26
 msgid ""
-"Reduce minimal individuals (e.g. created by privacy settings) to empty "
+"Reduce minimal INDI records (with SEX, FAMC, FAMS or less) to empty INDI "
 "records"
 msgstr ""
-"Personen mit minimalen Angaben (z.B. erzeugt durch Datenschutz-"
-"Einstellungen) in leere Datensätze umwandeln"
+"INDI Datensätze mit minimalem Inhalt (d.h. SEX, FAMC FAMS oder weniger) auf "
+"leere INDI Datensätze reduzieren"
 
 #: resources/filter/RemoveChangeDataGedcomFilter.php:33
 msgid "Remove change data (i.e. CHAN structures)"
@@ -958,6 +958,13 @@ msgid ""
 msgstr ""
 "Um geänderte Einstellungen beim Herunterladen/Hochladen zu nutzen, müssen "
 "die Einstellungen zunächst gespeichert werden."
+
+#~ msgid ""
+#~ "Reduce minimal individuals (e.g. created by privacy settings) to empty "
+#~ "records"
+#~ msgstr ""
+#~ "Personen mit minimalen Angaben (z.B. erzeugt durch Datenschutz-"
+#~ "Einstellungen) in leere Datensätze umwandeln"
 
 #, php-format
 #~ msgid "GEDCOM filter not found:  %s"

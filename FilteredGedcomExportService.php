@@ -1057,6 +1057,28 @@ class FilteredGedcomExportService extends GedcomExportService
             $record->setEmpty();
         }
 
+        //Analyse whether the record is a minimal individual, i.e. INDI record with SEX, FAMC, FAMS or less
+        if ($record_type === 'INDI') {
+
+            $sub_structures = $this->parseGedcomSubstructures($gedcom, 1);
+            $minimal = true;
+
+            foreach ($sub_structures as $sub_structure) {
+                if (preg_match('/1 (' . Gedcom::REGEX_TAG . ') /', $sub_structure, $match)) {
+                    $tag = $match[1];
+
+                    if (!in_array($tag, ['SEX', 'FAMC', 'FAMS'])) {
+                        $minimal = false;
+                        break;
+                    }    
+                }
+            }
+
+            if ($minimal) {
+                $record->setMinimalIndividual();
+            }
+        }
+
         //Match <XREF:*> references
         preg_match_all('/[\d] '. Gedcom::REGEX_TAG . ' @(' . Gedcom::REGEX_XREF . ')@/', $gedcom, $matches);
 

@@ -4,30 +4,20 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+require_once __DIR__ . '/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php';
+
 use Fisharebest\Webtrees\I18N;
 
 /**
- * A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS only, and removes their data
+ * A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS or less and removes their data
  * 
  * This filter is intended to be used if webtrees data shall be exported with privacy settings, which might create
  * INDI records with minimal data (i.e. SEX/FAMC/FAMS only). After applying this filter, the related INDI records 
  * will be empty and can be removed with the RemoveEmptyRecords GEDCOM filter.
+
  */
-class ReduceMinimalIndividualsGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class ReduceMinimalIndividualsGedcomFilter extends RemoveEmptyOrUnlinkedRecordsGedcomFilter implements GedcomFilterInterface
 {
-    protected const GEDCOM_FILTER_RULES = [
-      
-        //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
-        //                             ["search pattern" => "replace pattern"],
-
-        'INDI'                      => ["0 @([A-Za-z0-9:_.-]{1,20})@ INDI\n1 SEX [\w]\n$" => "0 @$1@ INDI\n",
-                                        "0 @([A-Za-z0-9:_.-]{1,20})@ INDI\n1 (FAMC|FAMS) @[A-Za-z0-9:_.-]{1,20}@\n1 SEX [\w]\n$" => "0 @$1@ INDI\n",
-                                        "0 @([A-Za-z0-9:_.-]{1,20})@ INDI\n1 (FAMC|FAMS) @[A-Za-z0-9:_.-]{1,20}@\n1 (FAMC|FAMS) @[A-Za-z0-9:_.-]{1,20}@\n1 SEX [\w]\n$" => "0 @$1@ INDI\n",],
-        
-        //Export other structures      
-        '*'                         => [],        
-    ];
-
     /**
      * Get the name of the GEDCOM filter
      * 
@@ -35,6 +25,23 @@ class ReduceMinimalIndividualsGedcomFilter extends AbstractGedcomFilter implemen
      */
     public function name(): string {
 
-        return I18N::translate('Reduce minimal individuals (e.g. created by privacy settings) to empty records');
+        return I18N::translate('Reduce minimal INDI records (with SEX, FAMC, FAMS or less) to empty INDI records');
     } 
+
+    /**
+    * Custom conversion of a Gedcom string
+    *
+    * @param string $pattern       The pattern of the filter rule, e. g. INDI:BIRT:DATE
+    * @param string $gedcom        The Gedcom to convert
+    * @param array  $records_list  A list with all xrefs and the related records: array <string xref => Record record>
+    * 
+    * @return string               The converted Gedcom
+    */
+    public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
+
+        //Call parent method for emtpy records only 
+        $gedcom = parent::removeEmptyOrUnlinkedRecords($pattern, $gedcom, $records_list, false, false, false, true);
+        
+        return $gedcom;
+    }   
 }

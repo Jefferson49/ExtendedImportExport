@@ -47,6 +47,9 @@ class Record
     //Whether the record is empty, i.e. does not contain a Gedcom substructure
     private bool $is_empty;
 
+    //Whether the record is a minimal individual, i.e. INDI record with SEX, FAMC, FAMS or less
+    private bool $is_minimal_individual;
+
 
     /**
      * Constructor
@@ -62,6 +65,7 @@ class Record
         $this->other_records_referencing_record = [];
         $this->other_records_referenced_by_record = [];
         $this->is_empty = false;
+        $this->is_minimal_individual = false;
     }
     
     /**
@@ -124,6 +128,27 @@ class Record
 
         return $this->is_empty;
     }
+
+    /**
+     * Set record as minimal individual
+     *
+     * @return void
+     */
+    public function setMinimalIndividual(): void {
+
+        $this->is_minimal_individual = true;
+        return;
+    }
+    
+    /**
+     * Whether the records is a minimal individual, i.e. INDI record with SEX, FAMC, FAMS or less
+     *
+     * @return bool
+     */
+    public function isMinimalIndividual(): bool {
+
+        return $this->is_minimal_individual;
+    }    
 
     /**
      * Add other record, which points to the record

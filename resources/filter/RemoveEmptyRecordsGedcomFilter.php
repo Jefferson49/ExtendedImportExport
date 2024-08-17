@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
 
+require_once __DIR__ . '/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php';
+
 use Fisharebest\Webtrees\I18N;
 
 /**
@@ -33,7 +35,7 @@ class RemoveEmptyRecordsGedcomFilter extends RemoveEmptyOrUnlinkedRecordsGedcomF
     public function customConvert(string $pattern, string $gedcom, array &$records_list): string {
 
         //Call parent method for emtpy records only 
-        $gedcom = parent::removeEmptyOrUnlinkedRecords($pattern, $gedcom, $records_list, true, false);
+        $gedcom = parent::removeEmptyOrUnlinkedRecords($pattern, $gedcom, $records_list, true, false, true, false);
         
         return $gedcom;
     }   

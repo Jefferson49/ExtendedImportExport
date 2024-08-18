@@ -246,10 +246,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
             ->get(static::class, self::ROUTE_REMOTE_ACTION, $this)
             ->allows(RequestMethodInterface::METHOD_POST);            
 
-        //Register a route for old type of remote requests
-        //$router
-        //    ->get(static::class, self::ROUTE_REMOTE_ACTION_OLD, $this)
-        //    ->allows(RequestMethodInterface::METHOD_POST);            
+        //Register the old route of the former DownloadGedcomWithURL module
+        $router
+            ->get('DownloadGedcomWithURL', self::ROUTE_REMOTE_ACTION_OLD, $this)
+            ->allows(RequestMethodInterface::METHOD_POST);            
             
         //Register a route for the selection view
         $router

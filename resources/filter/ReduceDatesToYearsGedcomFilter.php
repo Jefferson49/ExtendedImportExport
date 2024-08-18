@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fisharebest\Webtrees\I18N;
-use Fisharebest\Webtrees\Tree;
 
 /**
  * A GEDCOM filter, which reduces all dates to years only

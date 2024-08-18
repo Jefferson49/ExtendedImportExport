@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 require_once __DIR__ . '/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php';
 

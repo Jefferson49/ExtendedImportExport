@@ -9,7 +9,7 @@
  * Copyright (C) 2022 Carmen Just
  *                    <https://justcarmen.nl>
  *
- * DownloadGedcomWithURL (webtrees custom module):
+ * ExtendedImportExport (webtrees custom module):
  * Copyright (C) 2024 Markus Hemprich
  *                    <http://www.familienforschung-hemprich.de>
  *
@@ -25,16 +25,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  * 
- * DownloadGedcomWithURL
+ * ExtendedImportExport
  *
- * A weebtrees(https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests 
- * with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
+ * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, export
+ * and filter operations. The module also supports remote downloads/uploads via URL requests.
  * 
  */
 
 declare(strict_types=1);
 
-namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fig\Http\Message\RequestMethodInterface;
 use Fisharebest\Webtrees\I18N;

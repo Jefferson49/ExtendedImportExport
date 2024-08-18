@@ -2,15 +2,15 @@
 
 /**
  * webtrees: online genealogy
- * Copyright (C) 2023 webtrees development team
+ * Copyright (C) 2024 webtrees development team
  *                    <http://webtrees.net>
  *
  * Fancy Research Links (webtrees custom module):
  * Copyright (C) 2022 Carmen Just
  *                    <https://justcarmen.nl>
  *
- * DownloadGedcomWithURL (webtrees custom module):
- * Copyright (C) 2023 Markus Hemprich
+ * ExtendedImportExport (webtrees custom module):
+ * Copyright (C) 2024 Markus Hemprich
  *                    <http://www.familienforschung-hemprich.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,16 +25,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  * 
- * DownloadGedcomWithURL
+ * ExtendedImportExport
  *
- * A weebtrees(https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests 
- * with the tree name, GEDCOM file name and authorization provided as parameters within the URL.
+ * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, export
+ * and filter operations. The module also supports remote downloads/uploads via URL requests.
  * 
  */
 
 declare(strict_types=1);
 
-namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Cissee\WebtreesExt\MoreI18N;
 use Fig\Http\Message\RequestMethodInterface;
@@ -74,7 +74,6 @@ use Fisharebest\Webtrees\Repository;
 use Fisharebest\Webtrees\Services\DataFixService;
 use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\TreeService;
-use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Source;
 use Fisharebest\Webtrees\Submitter;
 use Fisharebest\Webtrees\Site;
@@ -145,17 +144,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
     private array $standard_params;
 
 	//Custom module version
-	public const CUSTOM_VERSION = '3.2.4';
+	public const CUSTOM_VERSION = '4.0.0';
 
 	//Routes
-	protected const ROUTE_REMOTE_ACTION = '/DownloadGedcomWithURL';
+	protected const ROUTE_REMOTE_ACTION_OLD = '/DownloadGedcomWithURL';
+	protected const ROUTE_REMOTE_ACTION = '/ExtendedImportExport';
 	protected const ROUTE_EXPORT_PAGE   = '/ExtendedGedcomExport';
 	protected const ROUTE_IMPORT_PAGE   = '/ExtendedGedcomImport';
 	protected const ROUTE_CONVERT_PAGE  = '/ExtendedGedcomConvert';
 	protected const ROUTE_SELECTION_PAGE = '/ExtendedImportExportSelection';
 
 	//Github repository
-	public const GITHUB_REPO = 'Jefferson49/DownloadGedcomWithURL';
+	public const GITHUB_REPO = 'Jefferson49/ExtendedImportExport';
 
 	//Github API URL to get the information about the latest releases
 	public const GITHUB_API_LATEST_VERSION = 'https://api.github.com/repos/'. self::GITHUB_REPO . '/releases/latest';
@@ -209,14 +209,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //Maximum level of includes for Gedcom filters
     private const MAXIMUM_FILTER_INCLUDE_LEVELS = 10;
 
-    //Old preferences    
-	public const PREF_ALLOW_DOWNLOAD = "allow_download";
-    public const PREF_DEFAULT_FiLE_NAME = 'default_file_name';
-    public const PREF_CONTROL_PANEL_SECRET_KEY = 'control_panel_secret_key';
-    public const PREF_DEFAULT_ACTION = 'default_action';
-    public const PREF_DEFAULT_GEDCOM_VERSION = 'default_gedcom_version';
-    public const PREF_DEFAULT_GEDCOM_L_SELECTION = 'default_gedcom_l_selection';
-
 
    /**
      * DownloadGedcomWithURL constructor.
@@ -237,6 +229,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function boot(): void
     {
+        //Check update of module version
+        $this->checkModuleVersionUpdate();
+
         //Initialize variables
         $this->matched_pattern_for_tag_combination_in_data_fix = [];
         $this->gedcom_filters_in_data_fix = [];
@@ -248,8 +243,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         //Register a route for remote requests
         $router
-        ->get(static::class, self::ROUTE_REMOTE_ACTION, $this)
-        ->allows(RequestMethodInterface::METHOD_POST);            
+            ->get(static::class, self::ROUTE_REMOTE_ACTION, $this)
+            ->allows(RequestMethodInterface::METHOD_POST);            
+
+        //Register a route for old type of remote requests
+        //$router
+        //    ->get(static::class, self::ROUTE_REMOTE_ACTION_OLD, $this)
+        //    ->allows(RequestMethodInterface::METHOD_POST);            
+            
         //Register a route for the selection view
         $router
             ->get(SelectionPage::class, self::ROUTE_SELECTION_PAGE)
@@ -437,9 +438,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function getAdminAction(ServerRequestInterface $request): ResponseInterface
     {
-        //Check update of module version
-        $this->checkModuleVersionUpdate();
-        
         $this->layout = 'layouts/administration';       
 
         //Load Gedcom filters
@@ -469,7 +467,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 'tree_list'                           => $tree_list,
                 self::VAR_GEDCOM_FILTER_LIST          => $this->getGedcomFilterList(),
 				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
-				self::PREF_CONTROL_PANEL_SECRET_KEY   => $this->getPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, ''),
 				self::PREF_USE_HASH                   => boolval($this->getPreference(self::PREF_USE_HASH, '1')),
 				self::PREF_ALLOW_REMOTE_DOWNLOAD      => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, '0')),
 				self::PREF_ALLOW_REMOTE_UPLOAD        => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_UPLOAD, '0')),
@@ -485,8 +482,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 self::PREF_DEFAULT_ENCODING           => $this->getPreference(self::PREF_DEFAULT_ENCODING, UTF8::NAME),
                 self::PREF_DEFAULT_ENDING             => $this->getPreference(self::PREF_DEFAULT_ENDING, 'CRLF'),
                 self::PREF_DEFAULT_TIME_STAMP         => $this->getPreference(self::PREF_DEFAULT_TIME_STAMP, self::TIME_STAMP_NONE),
-                self::PREF_DEFAULT_GEDCOM_VERSION     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_VERSION, '0'),
-                self::PREF_DEFAULT_GEDCOM_L_SELECTION => $this->getPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0'),
             ]
         );
     }
@@ -518,8 +513,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $default_encoding           = Validator::parsedBody($request)->string(self::PREF_DEFAULT_ENCODING, UTF8::NAME);
         $default_ending             = Validator::parsedBody($request)->string(self::PREF_DEFAULT_ENDING, 'CRLF');
         $default_time_stamp         = Validator::parsedBody($request)->string(self::PREF_DEFAULT_TIME_STAMP, self::TIME_STAMP_NONE);
-        $default_gedcom_version     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_VERSION, '0');
-        $default_gedcom_l_selection = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '0');
         
         //Save the received settings to the user preferences
         if ($save === '1') {
@@ -602,8 +595,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $this->setPreference(self::PREF_DEFAULT_ENCODING, $default_encoding);
             $this->setPreference(self::PREF_DEFAULT_ENDING, $default_ending);
             $this->setPreference(self::PREF_DEFAULT_TIME_STAMP, $default_time_stamp);
-            $this->setPreference(self::PREF_DEFAULT_GEDCOM_VERSION, $default_gedcom_version);
-            $this->setPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, $default_gedcom_l_selection);
 
             //Finally, show a success message
 			$message = I18N::translate('The preferences for the module "%s" were updated.', $this->title());
@@ -682,42 +673,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function checkModuleVersionUpdate(): void
     {
-        $sucessful_update = false;
+        $updated = false;
 
-        //If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1) 
-        if($this->getPreference(self::PREF_SECRET_KEY, '') !== '' && $this->getPreference(self::PREF_USE_HASH, '') === '') {
-
-			//Set secret key hashing to false
-			$this->setPreference(self::PREF_USE_HASH, '0');
-
-            $sucessful_update = true;
-		}
-
-        //Update remote preferences
-        if ($this->getPreference(self::PREF_ALLOW_DOWNLOAD, '') !== '') {
-
-            //Migrate old preference value to new preferences
-            $this->setPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, self::PREF_ALLOW_DOWNLOAD);
-            $this->setPreference(self::PREF_ALLOW_REMOTE_SAVE, self::PREF_ALLOW_DOWNLOAD);
-
-            //Delete old preference value, i.e. set to ''
-            $this->setPreference(self::PREF_CONTROL_PANEL_SECRET_KEY, '');      
-            $this->setPreference(self::PREF_ALLOW_DOWNLOAD, '');      
-            $sucessful_update = true;      
+        //If started for the very first time, try to migrate preferences of former module
+        if ($this->getPreference(self::PREF_MODULE_VERSION, '') === '') {
+            $this->migratePreferencesFromFormerModule();
+            $updated = true;
         }
-
-        //Remove old preferences
-        $this->setPreference(self::PREF_DEFAULT_FiLE_NAME, '');
-        $this->setPreference(self::PREF_DEFAULT_ACTION, '');
-        $this->setPreference(self::PREF_DEFAULT_GEDCOM_VERSION, '');
-        $this->setPreference(self::PREF_DEFAULT_GEDCOM_L_SELECTION, '');            
-
+       
         //Update custom module version if changed
         if($this->getPreference(self::PREF_MODULE_VERSION, '') !== self::CUSTOM_VERSION) {
             $this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
+            $updated = true;
         }
 
-        if ($sucessful_update) {
+        if ($updated) {
             //Show flash message for update of preferences
             $message = I18N::translate('The preferences for the custom module "%s" were sucessfully updated to the new module version %s.', $this->title(), self::CUSTOM_VERSION);
             FlashMessages::addMessage($message, 'success');	
@@ -725,7 +695,76 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
     /**
-     * Check if an Gedcom filter is available. If not, reset Gedcom filter to none
+     * Migration from former module DownloadGedcomWith URL to current module ExtendedImportExport
+     *
+     * @return void
+     */
+    public function migratePreferencesFromFormerModule(): void {
+
+        //If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1) 
+        if(     $this->getPreferenceForModule('_download_gedcom_with_url_', self::PREF_SECRET_KEY, '') !== '' 
+            &&  $this->getPreferenceForModule('_download_gedcom_with_url_', self::PREF_USE_HASH, '') === '') {
+
+            //Set secret key hashing to false
+            $this->setPreference(self::PREF_USE_HASH, '0');
+            $sucessful_update = true;
+        }
+
+        $preferences = [
+            self::PREF_SECRET_KEY,
+            self::PREF_USE_HASH,
+            self::PREF_ALLOW_REMOTE_DOWNLOAD,
+            self::PREF_ALLOW_REMOTE_UPLOAD,
+            self::PREF_ALLOW_REMOTE_SAVE,
+            self::PREF_ALLOW_REMOTE_CONVERT,
+            self::PREF_SHOW_MENU_LIST_ITEM,
+            self::PREF_FOLDER_TO_SAVE,
+            self::PREF_DEFAULT_GEDCOM_FILTER1,
+            self::PREF_DEFAULT_GEDCOM_FILTER2,
+            self::PREF_DEFAULT_GEDCOM_FILTER3,
+            self::PREF_DEFAULT_PRIVACY_LEVEL,
+            self::PREF_DEFAULT_EXPORT_FORMAT,
+            self::PREF_DEFAULT_ENCODING,
+            self::PREF_DEFAULT_ENDING,
+            self::PREF_DEFAULT_TIME_STAMP,
+        ];   
+
+        foreach($preferences as $preference) {
+            $setting_value = $this->getPreferenceForModule('_download_gedcom_with_url_', $preference, '');
+
+            if ($setting_value !== '') {
+                $this->setPreference($preference, $setting_value);
+                $sucessful_update = true;
+            } 
+        }
+
+        if ($sucessful_update) {
+            //Show flash message for update of preferences
+            $message = I18N::translate('The preferences for the custom module %s were imported from the earlier custom module version %s.', $this->title(), 'DownloadGedcomWithURL');
+            FlashMessages::addMessage($message, 'success');	
+        }  
+    }
+
+    /**
+     * Get a module setting for a module. Return a default if the setting is not set.
+     *
+     * @param string $module_name
+     * @param string $setting_name
+     * @param string $default
+     *
+     * @return string
+     */
+    final public function getPreferenceForModule(string $module_name, string $setting_name, string $default = ''): string
+    {
+        //Code from: webtrees AbstractModule->getPreference
+        return DB::table('module_setting')
+            ->where('module_name', '=', $module_name)
+            ->where('setting_name', '=', $setting_name)
+            ->value('setting_value') ?? $default;
+    }
+
+    /**
+     * Check if a Gedcom filter is available. If not, reset Gedcom filter to none
      *
      * @param string          $preference_name     The preference name of an Gedcom filter
      * 
@@ -953,7 +992,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $gedcom_filter_instance = $this->getInstanceOfGedcomFilter($gedcom_filter_class_name);
 
         //Validate the content of the Gedcom filter
-        $error = $gedcom_filter_instance->validate();
+        $error = $gedcom_filter_instance !== null ? $gedcom_filter_instance->validate() : '';
 
         if ($error !== '') {
             return $error;
@@ -1462,9 +1501,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */	
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        //Check update of module version
-        $this->checkModuleVersionUpdate();
-
         $called_from_control_panel = false;
         $encodings = ['' => ''] + Registry::encodingFactory()->list();
         $tree = null;

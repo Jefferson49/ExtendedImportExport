@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-08-17 17:51+0200\n"
-"PO-Revision-Date: 2024-08-17 17:52+0200\n"
+"POT-Creation-Date: 2024-08-18 18:02+0200\n"
+"PO-Revision-Date: 2024-08-18 18:02+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: AbstractGedcomFilter.php:137
+#: AbstractGedcomFilter.php:136
 #, php-format
 msgid ""
 "The variable type of the filter rules definition (%s) of the GEDCOM filter "
@@ -24,12 +24,12 @@ msgstr ""
 "Der Variablen-Typ der Filterregel-Definition (%s) für den GEDCOM -Filter "
 "(%s) hat nicht den erforderliche Typ \"array\"."
 
-#: AbstractGedcomFilter.php:142
+#: AbstractGedcomFilter.php:141
 #, php-format
 msgid "The selected GEDCOM filter (%s) does not contain any filter rules."
 msgstr "Der ausgewählte GEDCOM -Filter (%s) enthält keine Filter Regeln."
 
-#: AbstractGedcomFilter.php:147
+#: AbstractGedcomFilter.php:146
 #, php-format
 msgid ""
 "The selected GEDCOM filter (%s) contains an invalid definition for regular "
@@ -38,7 +38,7 @@ msgstr ""
 "Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Definition für "
 "Macros von regulären Ausdrücken (%s)."
 
-#: AbstractGedcomFilter.php:154
+#: AbstractGedcomFilter.php:153
 #, php-format
 msgid ""
 "The selected GEDCOM filter (%s) contains an invalid definition for the "
@@ -47,11 +47,11 @@ msgstr ""
 "Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Definition für "
 "das Macro %s."
 
-#: AbstractGedcomFilter.php:155 AbstractGedcomFilter.php:165
+#: AbstractGedcomFilter.php:154 AbstractGedcomFilter.php:164
 msgid "Invalid definition"
 msgstr "Ungültige Definition"
 
-#: AbstractGedcomFilter.php:164
+#: AbstractGedcomFilter.php:163
 #, php-format
 msgid ""
 "The selected GEDCOM filter (%s) contains an invalid filter definition for "
@@ -60,13 +60,13 @@ msgstr ""
 "Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Filter-Definition "
 "für das Tag-Muster %s."
 
-#: AbstractGedcomFilter.php:172
+#: AbstractGedcomFilter.php:171
 #, php-format
 msgid "The selected GEDCOM filter (%s) contains an invalid tag definition"
 msgstr ""
 "Der ausgewählte GEDCOM -Filter (%s) enthält eine ungültige Tag-Definition"
 
-#: AbstractGedcomFilter.php:184
+#: AbstractGedcomFilter.php:183
 #, php-format
 msgid ""
 "The used GEDCOM filter (%s) contains a %s command with a method (%s), which "
@@ -76,7 +76,7 @@ msgstr ""
 "Methode (%s), die nicht verfügbar ist. Momentan ist es nur erlaubt, \"%s\" "
 "als Methode einzusetzen."
 
-#: AbstractGedcomFilter.php:194
+#: AbstractGedcomFilter.php:193
 #, php-format
 msgid ""
 "The used GEDCOM filter (%s) contains a %s command with a method (%s), but "
@@ -85,7 +85,7 @@ msgstr ""
 "Der ausgewählte GEDCOM -Filter (%s) enthält einen %s Befehl mit einer "
 "Methode (%s), aber die Filter-Klasse enthält keine \"%s\" Methode."
 
-#: AbstractGedcomFilter.php:204
+#: AbstractGedcomFilter.php:203
 #, php-format
 msgid ""
 "The used GEDCOM filter (%s) contains a macro command (%s) for a regular "
@@ -94,18 +94,18 @@ msgstr ""
 "Der ausgewählte GEDCOM -Filter (%s) enthält einen Macro-Befehl (%s) für "
 "einen regulären Ausdruck, aber das Macro ist im Filter nicht definiert."
 
-#: AbstractGedcomFilter.php:213 AbstractGedcomFilter.php:220
+#: AbstractGedcomFilter.php:212 AbstractGedcomFilter.php:219
 #, php-format
 msgid "The selected GEDCOM filter (%s) contains an invalid regular expression"
 msgstr ""
 "Der ausgewählte GEDCOM -Filter (%s) enthält einen ungültigen regulären "
 "Ausdruck"
 
-#: AbstractGedcomFilter.php:213
+#: AbstractGedcomFilter.php:212
 msgid "Error message"
 msgstr "Fehlermeldung"
 
-#: AbstractGedcomFilter.php:230
+#: AbstractGedcomFilter.php:229
 #, php-format
 msgid ""
 "The selected GEDCOM filter (%s) contains a black list filter rule (%s) with "
@@ -116,7 +116,7 @@ msgstr ""
 "(%s) mit einem regulären Ausdruck, welcher niemals ausgeführt wird, weil die "
 "Black-List Filter-Regel die zugehörige GEDCOM-Zeile löschen wird."
 
-#: AbstractGedcomFilter.php:251
+#: AbstractGedcomFilter.php:250
 #, php-format
 msgid ""
 "The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
@@ -127,32 +127,32 @@ msgstr ""
 "dominiert und wird daher niemals ausgeführt werden. Bitte entfernen Sie die "
 "Filter-Regel oder ändern Sie die Reihenfolge der Filter-Regeln."
 
-#: AbstractGedcomFilter.php:262 AbstractGedcomFilter.php:271
-#: AbstractGedcomFilter.php:279
+#: AbstractGedcomFilter.php:261 AbstractGedcomFilter.php:270
+#: AbstractGedcomFilter.php:278
 #, php-format
 msgid "The %s method of the used GEDCOM filter (%s) throws a PHP error"
 msgstr ""
 "Die %s Methode des genutzten GEDCOM -Filters (%s) erzeugt einen PHP-Fehler"
 
-#: ConvertGedcomPage.php:112 resources/views/selection.phtml:70
+#: ConvertGedcomPage.php:110 resources/views/selection.phtml:70
 msgid "GEDCOM Conversion"
 msgstr "GEDCOM-Konvertierung"
 
-#: DownloadGedcomWithURL.php:286 resources/views/convert.phtml:32
+#: DownloadGedcomWithURL.php:287 resources/views/convert.phtml:32
 #: resources/views/export.phtml:45 resources/views/import.phtml:29
 msgid "Extended Import/Export"
 msgstr "Erweiterter Import/Export"
 
-#: DownloadGedcomWithURL.php:299
+#: DownloadGedcomWithURL.php:300
 msgid ""
 "A custom module for advanced GEDCOM import, export, and filter operations. "
 "The module also supports remote downloads/uploads/filters via URL requests."
 msgstr ""
-"Ein benutzerspezifisches Modul für einen erweiterte GEDCOM-Import/-Export "
-"und -Filter Operationen. Das Modul unterstützt außerdem Remote-Downloads/-"
+"Ein benutzerspezifisches Modul für einen erweiterten GEDCOM-Import/-Export "
+"sowie Filter Operationen. Das Modul unterstützt zusätzlich Remote-Downloads/-"
 "Uploads/-Filter mittels URL-Aufrufen."
 
-#: DownloadGedcomWithURL.php:545
+#: DownloadGedcomWithURL.php:538
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -160,7 +160,7 @@ msgstr ""
 "Der angegebene Autorisierungs-Schlüssel ist zu kurz. Bitte geben Sie "
 "mindestens eine Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:551
+#: DownloadGedcomWithURL.php:544
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -169,7 +169,7 @@ msgstr ""
 "nicht akzeptiert werden. Bitte geben Sie einen anderen Autorisierungs-"
 "Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:581
+#: DownloadGedcomWithURL.php:574
 #, php-format
 msgid ""
 "The folder settings could not be saved, because the folder “%s” does not "
@@ -178,12 +178,12 @@ msgstr ""
 "Die Einstellungen für den Ordner konnten nicht gespeichert werden, weil der "
 "Ordner \"%s\" nicht existiert."
 
-#: DownloadGedcomWithURL.php:609
+#: DownloadGedcomWithURL.php:600
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:722
+#: DownloadGedcomWithURL.php:692
 #, php-format
 msgid ""
 "The preferences for the custom module \"%s\" were sucessfully updated to the "
@@ -192,7 +192,16 @@ msgstr ""
 "Die Einstellungen für das benutzerdefinierte Modul \"%s\" wurden für die "
 "neue Modul-Version %s aktualisiert."
 
-#: DownloadGedcomWithURL.php:749
+#: DownloadGedcomWithURL.php:743
+#, php-format
+msgid ""
+"The preferences for the custom module %s were imported from the earlier "
+"custom module version %s."
+msgstr ""
+"Die Einstellungen für das benutzerdefinierte Modul %s wurden von der "
+"früheren Modul-Version %s importiert."
+
+#: DownloadGedcomWithURL.php:788
 #, php-format
 msgid ""
 "The preferences for the default GEDCOM filter were reset to \"none\", "
@@ -201,23 +210,23 @@ msgstr ""
 "Die Voreinstellung für den GEDCOM-Filter wurden auf \"keine\" zurückgesetzt, "
 "weil der ausgewählte GEDCOM-Filter %s nicht gefunden wurde"
 
-#: DownloadGedcomWithURL.php:891
+#: DownloadGedcomWithURL.php:930
 msgid "A compilation error was detected in the following GEDCOM filter"
 msgstr "In folgendem Export-Filter wurde ein Kompilierungs-Fehler erkannt"
 
-#: DownloadGedcomWithURL.php:892
+#: DownloadGedcomWithURL.php:931
 msgid "line"
 msgstr "Zeile"
 
-#: DownloadGedcomWithURL.php:892
+#: DownloadGedcomWithURL.php:931
 msgid "error message"
 msgstr "Fehlermeldung"
 
-#: DownloadGedcomWithURL.php:950 DownloadGedcomWithURL.php:1284
+#: DownloadGedcomWithURL.php:989 DownloadGedcomWithURL.php:1323
 msgid "The GEDCOM filter was not found"
 msgstr "Der GEDCOM-Filter wurde nicht gefunden"
 
-#: DownloadGedcomWithURL.php:988
+#: DownloadGedcomWithURL.php:1027
 #, php-format
 msgid ""
 "The include hierarchy for GEDCOM filters exceeds the maximum level of %s "
@@ -226,7 +235,7 @@ msgstr ""
 "Die Include-Hierarchie für Export-Filter überschreitet die maximale Schwelle "
 "von %s Includes."
 
-#: DownloadGedcomWithURL.php:992
+#: DownloadGedcomWithURL.php:1031
 msgid ""
 "The following GEDCOM filter might cause a loop in the include structure, "
 "because it was detected more than once in the include hierarchy"
@@ -235,20 +244,20 @@ msgstr ""
 "Include-Struktur, weil der Filter mehr als einmal in der Include-Hierarchie "
 "detektiert wurde"
 
-#: DownloadGedcomWithURL.php:995
+#: DownloadGedcomWithURL.php:1034
 msgid "Please check the include structure of the selected GEDCOM filters."
 msgstr ""
 "Bitte überprüfen Sie die Include-Struktur der ausgewählten Export-Filter."
 
-#: DownloadGedcomWithURL.php:1482 SelectionPage.php:93
+#: DownloadGedcomWithURL.php:1518 SelectionPage.php:93
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:1540 SelectionPage.php:74
+#: DownloadGedcomWithURL.php:1576 SelectionPage.php:74
 msgid "Internal module error: Neither GET nor POST request received."
 msgstr "Interner Modul-Fehler: Weder GET- noch POST-Request empfangen."
 
-#: DownloadGedcomWithURL.php:1554
+#: DownloadGedcomWithURL.php:1590
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -257,7 +266,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:1558
+#: DownloadGedcomWithURL.php:1594
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -266,129 +275,129 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:1562
+#: DownloadGedcomWithURL.php:1598
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:1566
+#: DownloadGedcomWithURL.php:1602
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:1572
+#: DownloadGedcomWithURL.php:1608
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1576
+#: DownloadGedcomWithURL.php:1612
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1580
+#: DownloadGedcomWithURL.php:1616
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1584
+#: DownloadGedcomWithURL.php:1620
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1588
+#: DownloadGedcomWithURL.php:1624
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1592
+#: DownloadGedcomWithURL.php:1628
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:1596
+#: DownloadGedcomWithURL.php:1632
 msgid "No file name provided for the requested GEDCOM conversion"
 msgstr "Kein Dateiname für die angeforderte GEDCOM-Konvertierung übergeben"
 
-#: DownloadGedcomWithURL.php:1666 DownloadGedcomWithURL.php:1827
+#: DownloadGedcomWithURL.php:1702 DownloadGedcomWithURL.php:1863
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:1670
+#: DownloadGedcomWithURL.php:1706
 #, php-format
 msgid "The family tree \"%s\" was sucessfully exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde erfolgreich exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1681
+#: DownloadGedcomWithURL.php:1717
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu speichern, "
 "sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1682 DownloadGedcomWithURL.php:1699
-#: DownloadGedcomWithURL.php:1834 DownloadGedcomWithURL.php:1859
+#: DownloadGedcomWithURL.php:1718 DownloadGedcomWithURL.php:1735
+#: DownloadGedcomWithURL.php:1870 DownloadGedcomWithURL.php:1895
 msgid "Please check the module settings in the control panel."
 msgstr "Bitte überprüfen Sie die Modul-Einstellungen in der Verwaltung."
 
-#: DownloadGedcomWithURL.php:1698
+#: DownloadGedcomWithURL.php:1734
 msgid ""
 "Remote URL requests to download GEDCOM files from the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien herunterzuladen, sind nicht "
 "erlaubt."
 
-#: DownloadGedcomWithURL.php:1720 DownloadGedcomWithURL.php:1744
+#: DownloadGedcomWithURL.php:1756 DownloadGedcomWithURL.php:1780
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Die Datei \"%s\" konnte nicht eingelesen werden."
 
-#: DownloadGedcomWithURL.php:1758
+#: DownloadGedcomWithURL.php:1794
 #, php-format
 msgid "No data imported from file \"%s\". The file might be empty."
 msgstr ""
 "Es wurden keine Daten aus der Datei \"%s\" importiert. Die Datei ist "
 "möglicherweise leer."
 
-#: DownloadGedcomWithURL.php:1762
+#: DownloadGedcomWithURL.php:1798
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr ""
 "Die Datei \"%s\" für den Stammbaum \"%s\" wurde erfolgreich hochgeladen."
 
-#: DownloadGedcomWithURL.php:1811
+#: DownloadGedcomWithURL.php:1847
 #, php-format
 msgid "The GEDCOM file \"%s\" was successfully converted to: %s"
 msgstr "Die GEDCOM-Datei \"%s\" wurde erfolgreich konvertiert nach: %s"
 
-#: DownloadGedcomWithURL.php:1833
+#: DownloadGedcomWithURL.php:1869
 msgid ""
 "Remote URL requests to convert GEDCOM files on the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu "
 "konvertieren, sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:1858
+#: DownloadGedcomWithURL.php:1894
 msgid ""
 "Remote URL requests to upload GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien hochzuladen, sind nicht "
 "erlaubt."
 
-#: ExportGedcomPage.php:107
+#: ExportGedcomPage.php:106
 msgid "Extended GEDCOM Export"
 msgstr "Erweiterter GEDCOM-Export"
 
-#: FilteredGedcomExportService.php:797
+#: FilteredGedcomExportService.php:808
 msgid "The following GEDCOM structure could not be matched"
 msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
 
-#: FilteredGedcomExportService.php:971
+#: FilteredGedcomExportService.php:982
 msgid "Error during a regular expression replacement."
 msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
 
-#: FilteredGedcomExportService.php:1142
+#: FilteredGedcomExportService.php:1153
 msgid ""
 "Fatal error: Too many iterations while removing empty and unlinked records."
 msgstr ""
 "Schwerwiegender Fehler: Zu viele Iterationen beim Entfernen von leeren oder "
 "unverknüpften Datensätzen."
 
-#: ImportGedcomPage.php:110
+#: ImportGedcomPage.php:109
 msgid "Extended GEDCOM Import"
 msgstr "Erweiterter GEDCOM-Import"
 
@@ -404,7 +413,7 @@ msgstr "Alle Datensätze"
 msgid "Avoid leading spaces for CONC"
 msgstr "Führende Leerzeichen bei CONC vermeiden"
 
-#: resources/filter/BirthMarriageDeathGedcomFilter.php:85
+#: resources/filter/BirthMarriageDeathGedcomFilter.php:84
 msgid "Birth, marriage, death export"
 msgstr "Export für Geburten, Heiraten, Todesfälle"
 
@@ -436,7 +445,7 @@ msgstr "Optimierung des webtrees Exports für GEDCOM 7"
 msgid "Optimization of webtrees export for GEDCOM 5.5.1"
 msgstr "Optimierung des webtrees Exports für GEDCOM 5.5.1"
 
-#: resources/filter/ReduceDatesToYearsGedcomFilter.php:59
+#: resources/filter/ReduceDatesToYearsGedcomFilter.php:58
 msgid "Reduce dates to years"
 msgstr "Datumsangaben auf Jahre reduzieren"
 

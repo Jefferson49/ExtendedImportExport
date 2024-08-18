@@ -2,11 +2,15 @@
 
 /**
  * webtrees: online genealogy
- * Copyright (C) 2023 webtrees development team
+ * Copyright (C) 2024 webtrees development team
  *                    <http://webtrees.net>
-
- * DownloadGedcomWithURL (webtrees custom module):
- * Copyright (C) 2023 Markus Hemprich
+ *
+ * Fancy Research Links (webtrees custom module):
+ * Copyright (C) 2022 Carmen Just
+ *                    <https://justcarmen.nl>
+ *
+ * ExtendedImportExport (webtrees custom module):
+ * Copyright (C) 2024 Markus Hemprich
  *                    <http://www.familienforschung-hemprich.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,11 +23,18 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * 
+ * ExtendedImportExport
+ *
+ * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, export
+ * and filter operations. The module also supports remote downloads/uploads via URL requests.
+ * 
  */
 
 declare(strict_types=1);
 
-namespace Jefferson49\Webtrees\Module\DownloadGedcomWithURL;
+namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;

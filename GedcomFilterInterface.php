@@ -57,7 +57,7 @@ interface GedcomFilterInterface
     /**
      * Validate the Gedcom filter
      *
-     * @return bool   Validation error; empty, if successful validation
+     * @return string   Validation error; empty, if successful validation
      */
     public function validate(): string;
 

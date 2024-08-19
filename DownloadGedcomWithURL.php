@@ -948,10 +948,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
      public function getGedcomFilterList(): array {
 
-        $gedcom_filter_list =[
-            ''             => MoreI18N::xlate('None'),
-        ];
-
         foreach (get_declared_classes() as $class_name) {
 
             $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
@@ -960,15 +956,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                 if (in_array($name_space . 'GedcomFilterInterface', class_implements($class_name))) {
 
-                    $object = new $class_name();
+                    $filter = new $class_name();
                     $class_name = str_replace($name_space, '', $class_name);
 
-                    if ($class_name !== 'AbstractGedcomFilter') $gedcom_filter_list[$class_name] = $object->name();
+                    if ($class_name !== 'AbstractGedcomFilter') $gedcom_filter_list[$class_name] = $filter->name();
                 }
             }
         }
 
-        return $gedcom_filter_list;
+        sort($gedcom_filter_list, SORT_STRING);
+        $no_filter =['' => I18N::translate('No filter')];
+
+        return $no_filter + $gedcom_filter_list;
     }
 
 	/**

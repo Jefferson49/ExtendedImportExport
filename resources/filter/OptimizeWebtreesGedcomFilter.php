@@ -9,7 +9,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard
  */
-class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
 {
     protected const WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES = true;
     
@@ -96,6 +96,7 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements Gedco
      * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
      * @param string        $gedcom          The Gedcom to convert
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * 
      * @return string                        The converted Gedcom

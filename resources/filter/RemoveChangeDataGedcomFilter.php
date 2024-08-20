@@ -9,7 +9,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter, which removes CHAN structures
  */
-class RemoveChangeDataGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class RemoveChangeDataGedcomFilter extends AbstractGedcomFilter
 {    
     protected const GEDCOM_FILTER_RULES = [
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag

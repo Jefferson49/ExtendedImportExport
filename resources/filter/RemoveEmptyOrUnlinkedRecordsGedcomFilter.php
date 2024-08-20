@@ -10,7 +10,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter to remove empty and unlinked records (FAM, NOTE, OBJE, REPO, SOUR, _LOC)
  */
-class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter
 {
     protected const USES_REFERENCES_ANALYSIS = true;
     protected const GEDCOM_FILTER_RULES = [
@@ -74,6 +74,7 @@ class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter impl
      * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
      * @param string        $gedcom          The Gedcom to convert
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * 
      * @return string                        The converted Gedcom

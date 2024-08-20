@@ -9,12 +9,14 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter, which includes all records (i.e. everything)
  */
-class AllRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class AllRecordsGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
       
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
+
+        //You might want to insert some filter rules here, e.g. to remove or convert certain tag structures
 
         //Export all
         '*'                         => [],

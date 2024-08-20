@@ -11,7 +11,7 @@ use Fisharebest\Webtrees\I18N;
  * 
  * Note: Trailing spaces will already be removed by the core webtrees export
  */
-class AvoidLeadingSpacesForCONC_GedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class AvoidLeadingSpacesForCONC_GedcomFilter extends AbstractGedcomFilter
 {
     //Switch on wrapping without leading/trailing spaces
     protected const WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES = true;

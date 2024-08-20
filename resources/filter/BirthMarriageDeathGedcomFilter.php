@@ -11,7 +11,7 @@ use Fisharebest\Webtrees\I18N;
  * 
  * The generated GEDCOM also contains links to the related individuals and families in webtrees.
  */
-class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
       

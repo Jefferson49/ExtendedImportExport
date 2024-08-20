@@ -10,7 +10,7 @@ use Fisharebest\Webtrees\I18N;
  * A GEDCOM filter, which removes asterisk characters (i.e. '*') from names.
  * Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.
  */
-class RemoveAsteriskCharactersFromNamesGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class RemoveAsteriskCharactersFromNamesGedcomFilter extends AbstractGedcomFilter
 {    
     protected const GEDCOM_FILTER_RULES = [
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
@@ -39,6 +39,7 @@ class RemoveAsteriskCharactersFromNamesGedcomFilter extends AbstractGedcomFilter
      * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
      * @param string        $gedcom          The Gedcom to convert
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * 
      * @return string                        The converted Gedcom

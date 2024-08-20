@@ -953,13 +953,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $name_space = str_replace('\\\\', '\\',__NAMESPACE__ ) .'\\';
 
             if (strpos($class_name, $name_space) !==  false) {
-
                 if (in_array($name_space . 'GedcomFilterInterface', class_implements($class_name))) {
-
-                    $filter = new $class_name();
-                    $class_name = str_replace($name_space, '', $class_name);
-
-                    if ($class_name !== 'AbstractGedcomFilter') $gedcom_filter_list[$class_name] = $filter->name();
+                    if ($class_name !== $name_space . 'AbstractGedcomFilter') {
+                        $filter = new $class_name();
+                        $class_name = str_replace($name_space, '', $class_name);    
+                        $gedcom_filter_list[$class_name] = $filter->name();
+                    }
                 }
             }
         }

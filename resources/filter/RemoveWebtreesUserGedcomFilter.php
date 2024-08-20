@@ -9,7 +9,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter, which removes webtrees user structures (_WT_USER)
  */
-class RemoveWebtreesUserGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class RemoveWebtreesUserGedcomFilter extends AbstractGedcomFilter
 {    
     protected const GEDCOM_FILTER_RULES = [
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag

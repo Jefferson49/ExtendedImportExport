@@ -12,7 +12,7 @@ use Fisharebest\Webtrees\I18N;
  * In this example the filters are included "Before" the current GEDCOM filter.
  * An alternative method 'getIncludedFiltersAfter' can be used to include filters 'After' the current filter.
  */
-class CombinedGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class CombinedGedcomFilter extends AbstractGedcomFilter
 {
     /**
      * Get the name of the GEDCOM filter

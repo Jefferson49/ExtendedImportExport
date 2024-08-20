@@ -9,7 +9,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter, which converts GEDCOM 5.5.1 to GEDCOM 7.0
  */
-class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
 {
     //Mapping table of languages to IANA language tags
     private array $language_to_code_table;
@@ -207,6 +207,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilter
      * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
      * @param string        $gedcom          The Gedcom to convert
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * 
      * @return string                        The converted Gedcom

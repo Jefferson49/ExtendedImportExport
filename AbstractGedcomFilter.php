@@ -45,7 +45,7 @@ use Throwable;
 /**
  * Abstract Gedcom filter, which contains basic Gedcom filter rules for the mandatory HEAD, SUBM, TRLR structures only
  */
-class AbstractGedcomFilter implements GedcomFilterInterface
+abstract class AbstractGedcomFilter implements GedcomFilterInterface
 {    
     //A switch, whether the filter uses a references analysis between the records
     protected const USES_REFERENCES_ANALYSIS = false;
@@ -110,7 +110,8 @@ class AbstractGedcomFilter implements GedcomFilterInterface
      *
      * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
      * @param string        $gedcom          The Gedcom to convert
-     * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>.
+     *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * 
      * @return string                        The converted Gedcom

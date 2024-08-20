@@ -10,7 +10,7 @@ use Fisharebest\Webtrees\I18N;
  * A GEDCOM filter, which reduces all dates to years only
  * 
  */
-class ReduceDatesToYearsGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class ReduceDatesToYearsGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
       

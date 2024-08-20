@@ -10,7 +10,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * An example GEDCOM filter, which demonstrates the different options, which can be used in GEDCOM filters
  */
-class ExampleGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class ExampleGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
 
@@ -61,6 +61,7 @@ class ExampleGedcomFilter extends AbstractGedcomFilter implements GedcomFilterIn
      * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
      * @param string        $gedcom          The Gedcom to convert
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * 
      * @return string                        The converted Gedcom

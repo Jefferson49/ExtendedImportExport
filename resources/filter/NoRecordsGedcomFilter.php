@@ -9,7 +9,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter, which includes no records; only HEAD, SUBM, TRLR
  */
-class NoRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class NoRecordsGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
         

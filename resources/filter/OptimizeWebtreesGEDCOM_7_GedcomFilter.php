@@ -9,7 +9,7 @@ use Fisharebest\Webtrees\I18N;
 /**
  * A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard
  */
-class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
+class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
         

@@ -20,6 +20,8 @@ class NoRecordsGedcomFilter extends AbstractGedcomFilter implements GedcomFilter
         'HEAD'                      => [],
         'HEAD:*'                    => [],
 
+        //You might want to insert some filter rules here
+
         'SUBM'                      => [],      
         'SUBM:*'                    => [],      
 

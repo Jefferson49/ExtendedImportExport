@@ -19,9 +19,6 @@ class IndividualNamesCsvGedcomFilter extends AbstractGedcomFilter implements Ged
         //Create the first line of the CSV file with column names (Surname, Given names)
         'HEAD'                      => [".*\n" => "\"Surname\",\"Given names\"\n"],
 
-        //Remove all INDI records
-        'INDI'                      => ["0 @([^@].+)@ INDI\n" => ""],
-
         //Replace certain characters (*,") by a custom conversion, i.e. call method $this->customConvert(...)
         //Generate CSV data from the individuals name
         'INDI:NAME'                 => ["PHP_function" => "customConvert",

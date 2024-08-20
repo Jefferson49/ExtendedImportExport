@@ -7,7 +7,7 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 use Fisharebest\Webtrees\I18N;
 
 /**
- * A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to be compliant to the GEDCOM 7.0 standard
+ * A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard
  */
 class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
@@ -16,9 +16,6 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements Gedco
     protected const GEDCOM_FILTER_RULES = [
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
-
-        //Remove * from names (indicates first name underlined by webtrees)
-        'INDI:NAME'                 => ["PHP_function" => "customConvert"],
 
         //Capitalize languages, because some other progams do not understand capital languages
         '*:LANG'                    => ["PHP_function" => "customConvert"],
@@ -30,7 +27,7 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements Gedco
         'INDI:ASSO:RELA'            => ["RegExp_macro" => "Godparent"],
         '*:*:_ASSO:RELA'            => ["RegExp_macro" => "Godparent"],
 
-        //Convert certain structures to lower case, because some other progams do not understand capital forms
+        //Convert certain structures to lower case, because some other progams do not understand capital
         //INDI:RESN, FAM:RESN is converted below
         'INDI:NAME:TYPE'            => ["PHP_function" => "customConvert"],
         'INDI:FAMC:STAT'            => ["PHP_function" => "customConvert"],   
@@ -62,12 +59,6 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements Gedco
         '!*:RESN'                   => [],
         '!*:*:RESN'                 => [],
         '!*:*:*:RESN'               => [],
-
-        //Remove CHAN and _WT_USER structures
-        '!*:CHAN'                   => [],
-        '!*:CHAN:*'                 => [],
-        '!FAM:_TODO:_WT_USER'       => [],
-        '!INDI:_TODO:_WT_USER'      => [],
 
         //Export other structures      
         '*'                         => [],
@@ -111,12 +102,7 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter implements Gedco
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
 
-        if ($pattern === 'INDI:NAME') {
-
-            //Remove all * characters from INDI:NAME
-            $gedcom = str_replace('*' , '', $gedcom);
-        }
-        elseif (in_array($pattern, ['*:LANG', '*:*:LANG'])) {
+        if (in_array($pattern, ['*:LANG', '*:*:LANG'])) {
 
             //Convert languages to capitalized string
             preg_match_all("/([\d]) LANG (.)(.*)/", $gedcom, $matches, PREG_SET_ORDER);

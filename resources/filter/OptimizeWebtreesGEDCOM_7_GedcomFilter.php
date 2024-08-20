@@ -7,7 +7,7 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 use Fisharebest\Webtrees\I18N;
 
 /**
- * A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to be compliant to the GEDCOM 7.0 standard
+ * A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard
  */
 class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter implements GedcomFilterInterface
 {
@@ -16,9 +16,6 @@ class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter impleme
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
-        //Remove * from names (indicates first name underlined by webtrees)
-        'INDI:NAME'                 => ["PHP_function" => "customConvert"],
-        
         //Allow RESN for INDI, FAM, OBJE
         //However, remove RESN none structures, because 'none' is not allowed by the standard
         'INDI:RESN'                 => ["1 RESN (?i)NONE\n" => ""],
@@ -40,12 +37,6 @@ class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter impleme
         '!*:*:RESN'                 => [],
         '!*:*:*:RESN'               => [],
 
-        //Remove CHAN, _TODO, and _WT_USER structures
-        '!*:CHAN'                   => [],
-        '!*:CHAN:*'                 => [],
-        '!FAM:_TODO:_WT_USER'       => [],
-        '!INDI:_TODO:_WT_USER'      => [],
-
     //Export other structures      
         '*'                         => [],
     ];
@@ -59,25 +50,4 @@ class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter impleme
 
         return I18N::translate('Optimization of webtrees export for GEDCOM 7');
     } 
-
-    /**
-     * Custom conversion of a Gedcom string
-     *
-     * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
-     * @param string        $gedcom          The Gedcom to convert
-     * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
-     * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
-     * @return string                        The converted Gedcom
-     */
-    public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
-
-        if ($pattern === 'INDI:NAME') {
-
-            //Remove all * characters from INDI:NAME
-            $gedcom = str_replace('*' , '', $gedcom);
-        }
-
-        return $gedcom;
-    }
 }

@@ -41,7 +41,7 @@ class ExampleGedcomFilter extends AbstractGedcomFilter implements GedcomFilterIn
         //The methd is implemented in the PHP code below
         'SUBM'                      => ["PHP_function" => "customConvert"],
 
-        //Export other structures      
+        //Export all other GEDCOM structures      
         '*'                         => [],
     ];
 

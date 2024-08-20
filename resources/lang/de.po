@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-08-20 05:10+0200\n"
-"PO-Revision-Date: 2024-08-20 05:11+0200\n"
+"POT-Creation-Date: 2024-08-20 05:23+0200\n"
+"PO-Revision-Date: 2024-08-20 05:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -513,6 +513,10 @@ msgstr "Einstellungen für Konvertierung"
 msgid "Other format (i.e. use extension of filename)"
 msgstr ""
 "Anderes Format (d.h. die Dateierweiterung aus dem Dateinamen wird genutzt)"
+
+#: resources/views/convert.phtml:138
+msgid "Filename (converted)"
+msgstr "Dateiname (konvertiert)"
 
 #: resources/views/convert.phtml:147 resources/views/export.phtml:115
 msgid ""

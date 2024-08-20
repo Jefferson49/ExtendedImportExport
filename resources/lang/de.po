@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
 "POT-Creation-Date: 2024-08-19 07:01+0200\n"
-"PO-Revision-Date: 2024-08-19 07:01+0200\n"
+"PO-Revision-Date: 2024-08-19 07:09+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -419,7 +419,7 @@ msgstr "Führende Leerzeichen bei CONC vermeiden"
 
 #: resources/filter/BirthMarriageDeathGedcomFilter.php:84
 msgid "Birth, marriage, death export"
-msgstr "Export für Geburten, Heiraten, Todesfälle"
+msgstr "Geburten, Heiraten, Todesfälle exportieren"
 
 #: resources/filter/CombinedGedcomFilter.php:24
 msgid "Combined GEDCOM filter"

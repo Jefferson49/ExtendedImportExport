@@ -1,1 +1,1 @@
-wget --timeout=60 --tries=1 "http://MY_URL/webtrees/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&file=export&time_stamp=postfix&privacy=gedadmin&action=save&key=hYHBiZM9" &
+wget --timeout=60 --tries=1 "http://MY_URL/webtrees/index.php?route=/webtrees/ExtendedImportExport&tree=tree1&file=export&time_stamp=postfix&privacy=gedadmin&action=save&key=hYHBiZM9" &

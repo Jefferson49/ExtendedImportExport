@@ -50,7 +50,7 @@ print("Started: " + executed_file )
 logging.info("Started: " + executed_file)
    
 local_path = 'c:/temp/gedcom/'
-url = 'http://BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL'
+url = 'http://BASE_URL/index.php?route=/webtrees/ExtendedImportExport'
 
 print("Downloading: " + url)
 filename = 'export'

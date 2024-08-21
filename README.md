@@ -1,7 +1,8 @@
 [![Latest Release](https://img.shields.io/github/v/release/Jefferson49/DownloadGedcomWithURL?display_name=tag)](https://github.com/Jefferson49/DownloadGedcomWithURL/releases/latest)
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)](https://webtrees.net/download)
 
-## DownloadGedcomWithURL
+# Extended Import/Export
+### (Earlier name: DownloadGedcomWithURL)
 A [webtrees](https://webtrees.net) 2.1 custom module to download or store GEDCOM files on URL requests with the tree name, GEDCOM file name, and authorization provided as parameters within the URL.
 
 ## What are the benefits of this module?

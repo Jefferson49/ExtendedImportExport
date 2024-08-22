@@ -8,7 +8,8 @@ use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\I18N;
 
 /**
- * A GEDCOM filter to remove empty and unlinked records (FAM, NOTE, OBJE, REPO, SOUR, _LOC)
+ * A GEDCOM filter to remove empty and unlinked records. 
+ * Applied to: FAM, NOTE, OBJE, REPO, SOUR, _LOC. For INDI, only empty records are removed.
  */
 class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter
 {

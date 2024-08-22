@@ -9,7 +9,8 @@ require_once __DIR__ . '/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php';
 use Fisharebest\Webtrees\I18N;
 
 /**
- * A GEDCOM filter to remove empty records (FAM, NOTE, OBJE, REPO, SOUR)
+ * A GEDCOM filter to remove empty records. 
+ * Applied to: FAM, INDI, NOTE, OBJE, REPO, SOUR, _LOC
  */
 class RemoveEmptyRecordsGedcomFilter extends RemoveEmptyOrUnlinkedRecordsGedcomFilter
 {

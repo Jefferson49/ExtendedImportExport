@@ -112,23 +112,24 @@ Further insights about GEDCOM filters can be gained by refering to the following
 |Filter Name|Description|
 |:----------|:----------|
 |[All records](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/AllRecordsGedcomFilter.php)|A template, which exports all records, as a starting point to create your own GEDCOM filter|
-|Avoid leading spaces for CONC|Modifies CONC structure in order to avoids leading spaces|
-|Birth, marriage, death export|Exports INDI and FAM data and only include limited facts about birth marriage, and death|
-|Combined GEDCOM filter|An example how several filters can be combined to a filter, which executes a sequence of filters|
-|Example GEDCOM filter|An example filter, which demonstrates the principle features of GEDCOM filters|
-|GEDCOM 7 conversion|A filter, which converts the GEDCOM export to the GEDCOM 7 standard|
-|Individual names CSV list|An example, how GEDCOM filters can be used to generate alternative formats, e.g. CSV, JSON, etc.|
-|No records|A template, which only exports HEAD/SUBM/TRLR, as a starting point to create your own GEDCOM filter|
-|Optimization of webtrees export for GEDCOM 7|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard|
-|Optimization of webtrees export for GEDCOM 5.5.1|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard|
-|Reduce dates to years|A GEDCOM filter, which reduces all dates to years only|
-|Remove minimal individuals|A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS or less and removes their data|
-|Remove asterisk characters from names|A GEDCOM filter, which removes asterisk characters (i.e. '*') from names. Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.|
-|Remove change data (i.e. CHAN structures)|A GEDCOM filter, which removes CHAN structures|
-|Remove empty or unlinked records|A GEDCOM filter to remove empty and unlinked records (FAM, NOTE, OBJE, REPO, SOUR, _LOC)|
-|Remove restrictions (i.e. RESN tags)|A GEDCOM filter, which removes RESN structures|
-|Remove ToDo data (i.e. _TODO structures)|A GEDCOM filter, which removes _TODO structures|
-|Remove webtrees user data (i.e. _WT_USER tags)|A GEDCOM filter, which removes webtrees user structures (_WT_USER)|
+|[Avoid leading spaces for CONC](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/AvoidLeadingSpacesForCONC_GedcomFilter.php)|Modifies CONC structure in order to avoids leading spaces|
+|[Birth, marriage, death export](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/BirthMarriageDeathGedcomFilter.php)|Exports INDI and FAM data and only include limited facts about birth marriage, and death|
+|[Combined GEDCOM filter](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/CombinedGedcomFilter.php)|An example how several filters can be combined to a filter, which executes a sequence of filters|
+|[Example GEDCOM filter](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/ExampleGedcomFilter.php)|An example filter, which demonstrates the principle features of GEDCOM filters|
+|[GEDCOM 7 conversion](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/GEDCOM_7_GedcomFilter.php)|A filter, which converts the GEDCOM export to the GEDCOM 7 standard|
+|[Individual names CSV list](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/IndividualNamesCsvGedcomFilter.php)|An example, how GEDCOM filters can be used to generate alternative formats, e.g. CSV, JSON, etc.|
+|[No records](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/NoRecordsGedcomFilter.php)|A template, which only exports HEAD/SUBM/TRLR, as a starting point to create your own GEDCOM filter|
+|[Optimization of webtrees export for GEDCOM 7](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/OptimizeWebtreesGEDCOM_7_GedcomFilter.php)|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard|
+|[Optimization of webtrees export for GEDCOM 5.5.1](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/OptimizeWebtreesGedcomFilter.php)|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard|
+|[Reduce dates to years](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/ReduceDatesToYearsGedcomFilter.php)|A GEDCOM filter, which reduces all dates to years only|
+|[Remove minimal individuals](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/ReduceMinimalIndividualsGedcomFilter.php)|A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS or less and removes their data|
+|[Remove asterisk characters from names](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveAsteriskCharactersFromNamesGedcomFilter.php)|A GEDCOM filter, which removes asterisk characters (i.e. '*') from names. Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.|
+|[Remove change data (i.e. CHAN structures)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveChangeDataGedcomFilter.php)|A GEDCOM filter, which removes CHAN structures|
+|[Remove empty or unlinked records](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php)|A GEDCOM filter to remove empty and unlinked records. Applied to: FAM, NOTE, OBJE, REPO, SOUR, _LOC. For INDI, only empty records are removed.|
+|[Remove empty records](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveEmptyRecordsGedcomFilter.php)|A GEDCOM filter to remove empty records. Applied to: FAM, INDI, NOTE, OBJE, REPO, SOUR, _LOC|
+|[Remove restrictions (i.e. RESN tags)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveRestrictionsGedcomFilter.php)|A GEDCOM filter, which removes RESN structures|
+|[Remove ToDo data (i.e. _TODO structures)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveToDoDataGedcomFilter.php)|A GEDCOM filter, which removes _TODO structures|
+|[Remove webtrees user data (i.e. _WT_USER tags)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveWebtreesUserGedcomFilter.php)|A GEDCOM filter, which removes webtrees user structures, i.e. _WT_USER|
 
 ### How to use GEDCOM filters
 

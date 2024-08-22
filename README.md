@@ -97,7 +97,7 @@ The module was developed and tested with [webtrees 2.1.20](https://webtrees.net/
 + Optimization of webtrees export for GEDCOM 7
 + Optimization of webtrees export for GEDCOM 5.5.1
 + Reduce dates to years
-+ Reduce minimal individuals (e.g. created by privacy settings) to empty records
++ Remove minimal individuals (with SEX, FAMC, FAMS or less), e.g. created by privacy settings
 + Remove change data (i.e. CHAN structures)
 + Remove empty or unlinked records
 + Remove restrictions (i.e. RESN tags)
@@ -131,7 +131,7 @@ To create a first example for a simple GEDCOM filter, the following steps can be
 #### Further example filters
 Further insights about GEDCOM filters can be gained by refering to the following GEDCOM filters:
 + **Example GEDCOM filter** ([ExampleGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/ExampleGedcomFilter.php)): This filter contains some examples for filter rules with tag combinations and regular expressions for GEDCOM conversion.
-+ **Birth, marriage, death export** ([BirthMarriageDeathGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/BirthMarriageDeathGedcomFilter.php)): This filter contains a typical filter example. The filter includes birth, marriage, and death data only. All included dates are shortened to include the year only (i.e. 01 JAN 1900 => 1900). The generated GEDCOM also contains links to the related individuals and families in webtrees. 
++ **Birth, marriage, death export** ([BirthMarriageDeathGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/BirthMarriageDeathGedcomFilter.php)): This filter contains a typical filter example. The filter includes birth, marriage, and death data only. The generated GEDCOM also contains links to the related individuals and families in webtrees.
 + **Combined export filter** ([CombinedGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/CombinedGedcomFilter.php)): Shows how several filters can be combined to a single filter, which executes a sequence of the combined filters.
 
 #### Regular Expression Macros

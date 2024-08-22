@@ -5,7 +5,7 @@
 ### (Earlier name: Extended Import/Export Overview)
 A [webtrees](https://webtrees.net) 2.1 custom module for **advanced GEDCOM import, export and filter operations**. The module also supports **remote downloads/uploads via URL requests**.
 
-The module provides a framework for **customizable GEDCOM filters**, which allow to modify the GEDCOM data during an import/export. A set of pre-configured GECCOM filters is provided and supports GEDCOM 7 conversion and a variety of other GEDCOM filtering operations. The GEDCOM filters can be triggered remotely as well as by the user in the control panel or with a data fix.
+The module provides a framework for **customizable GEDCOM filters**, which allow to modify the GEDCOM data during an import/export. A set of pre-configured GECCOM filters is provided and supports GEDCOM 7 conversion as well as a variety of other GEDCOM filtering operations. The GEDCOM filters can be triggered remotely as well as by the user in specific import/export/conversion/datafix views.
 
 ##  Table of contents
 This README file contains the following main sections:
@@ -16,12 +16,12 @@ This README file contains the following main sections:
 +   [Installation](#installation)
 +   [Webtrees Version](#webtrees-version)
 +   [GEDCOM filters](#gedcom-filters)
-    +   [Concept]()
+    +   [Concept](#concept)
+    +   [Example filters](#example-filters)
     +   [List of included GEDCOM filters](#list-of-included-gedcom-filters)
     +   [How to use GEDCOM filters](#how-to-use-gedcom-filters)
     +   [How to add additional GEDCOM filters](#how-to-add-additional-gedcom-filters)
         + [A first example filter](#a-first-example-filter)
-        + [Further example filters](#further-example-filters)
         + [Regular Expression Macros](#regular-expression-macros)
         + [PHP function customConvert](#php-function-customconvert)
         + [Additional switches](#additional-switches)
@@ -85,24 +85,51 @@ The module was developed and tested with [webtrees 2.1.20](https://webtrees.net/
 
 ### Concept
 
+The principle concept of GEDCOM filters is shown in the screenshot below. A GEDCOM filter contains of several filter rules, which are defined as follows:
+1. GEDCOM tag combinations can be selected to be included to the GEDCOM export
+2. A replacement rule can be applied to the selected tag combination by using a search/replace pattern with [regular expressions](https://en.wikipedia.org/wiki/Regular_expression).
+
+![Screenshot](resources/img/basic_filter_rules1.jpg)
+
+Further details about filter rules are shown in the following screenshot:
++ Un-Selecting tag combinations: This will remove the related GEDCOM structures from the export.
++ Applying several search/replace patterns to a single tag combination
++ Apply no replacement/conversion. In this case, the existing GEDCOM string of the tag combination will be included in the export.
++ Using placeholders (i.e. asterisk, '*') for tags in tag combinations
++ Using overall placeholder '*' to select any tag combination, i.e. all GEDCOM structures
++ Perform a custom conversion of a GEDCOM structure by calling the PHP method $this->customConvert(...), which can be added to the filter code.
+
+![Screenshot](resources/img/basic_filter_rules2.jpg)
+
+### Example filters
+Further insights about GEDCOM filters can be gained by refering to the following GEDCOM filters:
++ **Example GEDCOM filter** ([ExampleGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/ExampleGedcomFilter.php)): This filter contains some examples for filter rules with tag combinations and regular expressions for GEDCOM conversion.
++ **Birth, marriage, death export** ([BirthMarriageDeathGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/BirthMarriageDeathGedcomFilter.php)): This filter contains a typical filter example. The filter includes birth, marriage, and death data only. The generated GEDCOM also contains links to the related individuals and families in webtrees.
++ **Combined export filter** ([CombinedGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/CombinedGedcomFilter.php)): Shows how several filters can be combined to a single filter, which executes a sequence of the combined filters.
+
+![Screenshot](resources/img/example_filter.jpg)
+
 ### List of included GEDCOM filters
-+ All records
-+ Avoid leading spaces for CONC
-+ Birth, marriage, death export
-+ Combined GEDCOM filter
-+ Example GEDCOM filter
-+ GEDCOM 7 conversion
-+ Individual names CSV list
-+ No records
-+ Optimization of webtrees export for GEDCOM 7
-+ Optimization of webtrees export for GEDCOM 5.5.1
-+ Reduce dates to years
-+ Remove minimal individuals (with SEX, FAMC, FAMS or less), e.g. created by privacy settings
-+ Remove change data (i.e. CHAN structures)
-+ Remove empty or unlinked records
-+ Remove restrictions (i.e. RESN tags)
-+ Remove ToDo data (i.e. _TODO structures)
-+ Remove webtrees user data (i.e. _WT_USER tags)
+|Filter Name|Description|
+|:----------|:----------|
+|[All records](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/AllRecordsGedcomFilter.php)|A template, which exports all records, as a starting point to create your own GEDCOM filter|
+|Avoid leading spaces for CONC|Modifies CONC structure in order to avoids leading spaces|
+|Birth, marriage, death export|Exports INDI and FAM data and only include limited facts about birth marriage, and death|
+|Combined GEDCOM filter|An example how several filters can be combined to a filter, which executes a sequence of filters|
+|Example GEDCOM filter|An example filter, which demonstrates the principle features of GEDCOM filters|
+|GEDCOM 7 conversion|A filter, which converts the GEDCOM export to the GEDCOM 7 standard|
+|Individual names CSV list|An example, how GEDCOM filters can be used to generate alternative formats, e.g. CSV, JSON, etc.|
+|No records|A template, which only exports HEAD/SUBM/TRLR, as a starting point to create your own GEDCOM filter|
+|Optimization of webtrees export for GEDCOM 7|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard|
+|Optimization of webtrees export for GEDCOM 5.5.1|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard|
+|Reduce dates to years|A GEDCOM filter, which reduces all dates to years only|
+|Remove minimal individuals|A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS or less and removes their data|
+|Remove asterisk characters from names|A GEDCOM filter, which removes asterisk characters (i.e. '*') from names. Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.|
+|Remove change data (i.e. CHAN structures)|A GEDCOM filter, which removes CHAN structures|
+|Remove empty or unlinked records|A GEDCOM filter to remove empty and unlinked records (FAM, NOTE, OBJE, REPO, SOUR, _LOC)|
+|Remove restrictions (i.e. RESN tags)|A GEDCOM filter, which removes RESN structures|
+|Remove ToDo data (i.e. _TODO structures)|A GEDCOM filter, which removes _TODO structures|
+|Remove webtrees user data (i.e. _WT_USER tags)|A GEDCOM filter, which removes webtrees user structures (_WT_USER)|
 
 ### How to use GEDCOM filters
 
@@ -123,16 +150,10 @@ To create a first example for a simple GEDCOM filter, the following steps can be
 + Navigate to the filter directory in your webtrees installation: **\modules_v4\download_gedcom_with_url\resources\filter**
 + Copy the existing filter **AllRecordsGedcomFilter.php** filter to a new file, e.g. MyNewGedcomFilter.php in the same directory
 + Open the newly created .php file and substitue "class **AllRecordsGedcomFilter**" by a new class name, e.g. "class MyNewGedcomFilter"
-+ Substitute the filter name in "I18N::translate('**All records**')" by a new filter name, e.g. "I18N::translate('My new filter')"
-+ Add a new filter rule after **//Export all**, e.g. '!INDI:BAPM' => []
++ Substitute the filter name in "I18N::translate('**All records**')" by a new filter name, e.g. 'My new filter'"
++ Add new filter rules after **//Export all**, e.g. '!INDI:BAPM' => []
 
 ![Creating a new GEDCOM filter](resources/img/creating_a_new_GEDCOM_filter.jpg)
-
-#### Further example filters
-Further insights about GEDCOM filters can be gained by refering to the following GEDCOM filters:
-+ **Example GEDCOM filter** ([ExampleGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/ExampleGedcomFilter.php)): This filter contains some examples for filter rules with tag combinations and regular expressions for GEDCOM conversion.
-+ **Birth, marriage, death export** ([BirthMarriageDeathGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/BirthMarriageDeathGedcomFilter.php)): This filter contains a typical filter example. The filter includes birth, marriage, and death data only. The generated GEDCOM also contains links to the related individuals and families in webtrees.
-+ **Combined export filter** ([CombinedGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/CombinedGedcomFilter.php)): Shows how several filters can be combined to a single filter, which executes a sequence of the combined filters.
 
 #### Regular Expression Macros
 If the same regular expression replacement shall be used in several filter rules, a macro can be defined, which allows to define a regular expression replacement once and use it several times. 

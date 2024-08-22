@@ -213,6 +213,7 @@ The full URL format, which contains all possible parameters is defined as follow
 &emsp;**&tree**=[MY_TREE](#MY_TREE)  
 &emsp;**&key**=[MY_KEY](#MY_KEY)  
 &emsp;**&file**=[MY_FILENAME](#MY_FILENAME)  
+&emsp;**&file_converted**=[MY_FILENAME_CONVERTED](#MY_FILENAME_CONVERTED)  
 &emsp;**&format**=[MY_EXPORT_FORMAT](#MY_EXPORT_FORMAT)  
 &emsp;**&privacy**=[MY_PRIVACY_LEVEL](#MY_PRIVACY_LEVEL)  
 &emsp;**&encoding**=[MY_ENCODING](#MY_ENCODING)  
@@ -252,11 +253,14 @@ BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&action=both&tree=tree1&
 * **<a name="MY_KEY">MY_KEY</a>** specifies a authorization key, which restricts the access to the download
   * This is a mandatory parameter. If it is not provided in the URL, the remote request will be denied.
 
-* **<a name="MY_FILENAME">MY_FILENAME</a>** has to be provided without .ged extension, i.e. use this_file instead of this_file.ged
+* **<a name="MY_FILENAME">MY_FILENAME</a>** can be provided with or without file extension, i.e. use this_file instead of this_file.ged
   * The tree name (MY_TREE) is taken as default if MY_FILENAME is not provided
 
+* **<a name="MY_FILENAME_CONVERTED">MY_FILENAME_CONVERTED</a>** can be provided with or without file extension. 
+  * The file name (before conversion) is taken as default if MY_FILENAME_CONVERTED is not provided
+
 * **<a name="MY_EXPORT_FORMAT">MY_EXPORT_FORMAT</a>** specifies the file format for the export
-  * Accepted values: **gedcom** (default), zip, zipmedia, gedzip
+  * Accepted values: **gedcom** (default), zip, zipmedia, gedzip, other
 
 * **<a name="MY_PRIVACY_LEVEL">MY_PRIVACY_LEVEL</a>** specifies the user role, in which the GEDCOM export is executed
   * Accepted values: **none** (default), gedadmin, user, visitor

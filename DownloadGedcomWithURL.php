@@ -164,6 +164,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	//Author of custom module
 	public const CUSTOM_AUTHOR = 'Markus Hemprich';
 
+    //Old module name (based on the installation folder)
+	public const OLD_MODULE_NAME_FOR_PREFERENCES = '_download_gedcom_with_url_';
+
     //Strings cooresponding to variable names
     public const VAR_GEDOCM_FILTER = 'gedcom_filter';
     public const VAR_GEDCOM_FILTER_LIST = 'gedcom_filter_list';
@@ -701,13 +704,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function migratePreferencesFromFormerModule(): void {
 
-        //If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1) 
-        if(     $this->getPreferenceForModule('_download_gedcom_with_url_', self::PREF_SECRET_KEY, '') !== '' 
-            &&  $this->getPreferenceForModule('_download_gedcom_with_url_', self::PREF_USE_HASH, '') === '') {
+        $updated_settings = false;
+
+        //If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1)
+        if(     $this->getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_SECRET_KEY, '') !== '' 
+            &&  $this->getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_USE_HASH, '') === '') {
 
             //Set secret key hashing to false
             $this->setPreference(self::PREF_USE_HASH, '0');
-            $sucessful_update = true;
+            $updated_settings = true;
         }
 
         $preferences = [
@@ -730,15 +735,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
         ];   
 
         foreach($preferences as $preference) {
-            $setting_value = $this->getPreferenceForModule('_download_gedcom_with_url_', $preference, '');
+            $setting_value = $this->getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, $preference, '');
 
             if ($setting_value !== '') {
                 $this->setPreference($preference, $setting_value);
-                $sucessful_update = true;
+                $updated_settings = true;
             } 
         }
 
-        if ($sucessful_update) {
+        if ($updated_settings) {
             //Show flash message for update of preferences
             $message = I18N::translate('The preferences for the custom module %s were imported from the earlier custom module version %s.', $this->title(), 'DownloadGedcomWithURL');
             FlashMessages::addMessage($message, 'success');	

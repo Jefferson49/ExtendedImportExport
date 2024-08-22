@@ -76,7 +76,7 @@ use function e;
 	</fieldset>		
 
 	<div class="h4">
-		<?= I18N::translate('Settings for Remote Import/Export') ?>	
+		<?= I18N::translate('Settings for Remote Requests via URL') ?>	
 	</div>
 	<?php if ($allow_remote_download) : ?>
 		<div class="alert alert-warning">
@@ -141,55 +141,54 @@ use function e;
 		</div>
 	</fieldset>		
 
-	<?php if ($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert OR $secret_key !== '') : ?>
-		<div class="h4">
-			<?= I18N::translate('Settings for the Authorization Key') ?>
+	<div class="h4">
+		<?= I18N::translate('Settings for the Authorization Key') ?>
+	</div>
+	<p><?= I18N::translate('An authorization key is needed if remote requests via URL shall be used.') ?></p>
+	<div class="row mb-3">
+		<?php if ($secret_key !== '' && !$use_hash) : ?>
+			<div class="alert alert-warning">
+				<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
+			</div>  
+		<?php endif ?>
+		<?php if (($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert) && $secret_key === '') : ?>
+			<div class="alert alert-danger">
+				<p><?= I18N::translate('One of the options remote download/upload/save/convert is activated and the authorization key is empty or not available') ?></p>
+			</div>  
+		<?php endif ?>		
+		<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
+			<?= I18N::translate('Current authorization key') ?>
+		</label>
+		<?php if ($use_hash && ($secret_key !== '')) : ?>
+			<?php $text_shown_for_secret_key = I18N::translate('The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.')  ?>
+		<?php else : ?>
+			<?php $text_shown_for_secret_key = $secret_key  ?>
+		<?php endif ?>
+		<div class="col-sm-9 wt-page-options-value">
+			<input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($text_shown_for_secret_key) ?>">
 		</div>
-		<div class="row mb-3">
-			<?php if ($secret_key !== '' && !$use_hash) : ?>
-				<div class="alert alert-warning">
-					<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
-				</div>  
-			<?php endif ?>
-			<?php if (($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert) && $secret_key === '') : ?>
-				<div class="alert alert-danger">
-					<p><?= I18N::translate('One of the options remote download/upload/save/convert is activated and the authorization key is empty or not available') ?></p>
-				</div>  
-			<?php endif ?>		
-			<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
-				<?= I18N::translate('Current authorization key') ?>
-			</label>
-			<?php if ($use_hash && ($secret_key !== '')) : ?>
-				<?php $text_shown_for_secret_key = I18N::translate('The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.')  ?>
-			<?php else : ?>
-				<?php $text_shown_for_secret_key = $secret_key  ?>
-			<?php endif ?>
-			<div class="col-sm-9 wt-page-options-value">
-				<input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($text_shown_for_secret_key) ?>">
-			</div>
-		</div>				
-		<div class="row mb-3">
-			<label class="col-sm-3 col-form-label wt-page-options-label" for="new_secret_key">
-				<?= I18N::translate('New authorization key') ?>
-			</label>
-			<div class="col-sm-9 wt-page-options-value">
-				<input class="form-control" id="new_secret_key" name="new_secret_key" type="text">
-			</div>
+	</div>				
+	<div class="row mb-3">
+		<label class="col-sm-3 col-form-label wt-page-options-label" for="new_secret_key">
+			<?= I18N::translate('New authorization key') ?>
+		</label>
+		<div class="col-sm-9 wt-page-options-value">
+			<input class="form-control" id="new_secret_key" name="new_secret_key" type="text">
 		</div>
-		<fieldset class="mb-3">
-			<div class="row">
-				<legend class="col-form-label col-sm-3">
-					<?= I18N::translate('Activate encryption of the authorization key') ?>
-				</legend>
-				<div class="col-sm-9">
-				<?= view('components/checkbox', ['label' => I18N::translate('Activate'), 'name' => DownloadGedcomWithURL::PREF_USE_HASH, 'checked' => $use_hash]) ?>
-					<div class="form-text">
-						<?= I18N::translate('The encryption of the authorization key is more secure, because the authorization key is not visible to anyone and also encrypted in the database. However, the authorization key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.'); ?>
-					</div>
+	</div>
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('Activate encryption of the authorization key') ?>
+			</legend>
+			<div class="col-sm-9">
+			<?= view('components/checkbox', ['label' => I18N::translate('Activate'), 'name' => DownloadGedcomWithURL::PREF_USE_HASH, 'checked' => $use_hash]) ?>
+				<div class="form-text">
+					<?= I18N::translate('The encryption of the authorization key is more secure, because the authorization key is not visible to anyone and also encrypted in the database. However, the authorization key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten.'); ?>
 				</div>
 			</div>
-		</fieldset>		
-	<?php endif ?>	
+		</div>
+	</fieldset>		
 
 	<div class="h4">
 		<?= I18N::translate('Setting for the Import/Export Folder on the webtrees Server') ?>	

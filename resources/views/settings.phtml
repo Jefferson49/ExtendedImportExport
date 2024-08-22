@@ -156,16 +156,18 @@ use function e;
 				<p><?= I18N::translate('One of the options remote download/upload/save/convert is activated and the authorization key is empty or not available') ?></p>
 			</div>  
 		<?php endif ?>		
-		<label class="col-sm-3 col-form-label wt-page-options-label" for="secret_key">
+		<label class="col-sm-3 col-form-label wt-page-options-label">
 			<?= I18N::translate('Current authorization key') ?>
 		</label>
 		<?php if ($use_hash && ($secret_key !== '')) : ?>
 			<?php $text_shown_for_secret_key = I18N::translate('The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key.')  ?>
+		<?php elseif ($secret_key === '') : ?>
+			<?php $text_shown_for_secret_key = I18N::translate('Authorization key has not been set yet')  ?>
 		<?php else : ?>
 			<?php $text_shown_for_secret_key = $secret_key  ?>
 		<?php endif ?>
 		<div class="col-sm-9 wt-page-options-value">
-			<input class="form-control" id="secret_key" name="secret_key" type="text" value="<?= e($text_shown_for_secret_key) ?>">
+			<span class="input-group-text"><?= e($text_shown_for_secret_key) ?></span>
 		</div>
 	</div>				
 	<div class="row mb-3">

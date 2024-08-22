@@ -55,9 +55,10 @@ url = 'http://BASE_URL/index.php?route=/webtrees/ExtendedImportExport'
 print("Downloading: " + url)
 filename = 'export'
 params = {
-    'tree': 'tree1', 
-    'key': 'hYHBiZM9',
-    'file': filename,
+    'action' : 'download',
+    'tree'   : 'tree1', 
+    'key'    : 'hYHBiZM9',
+    'file'   : filename,
     'privacy': 'user',  
 }
 downloadFile(url, params, local_path + filename + '.ged')

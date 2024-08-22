@@ -10,10 +10,23 @@ The module provides a framework for **customizable GEDCOM filters**, which allow
 ##  Table of contents
 This README file contains the following main sections:
 +   [Overview](#extended-importexport-overview)
-+   [What are the benefits of using this module?](#what-are-the-benefits-of-this-module)
++   [What are the benefits of this module?](#what-are-the-benefits-of-this-module)
++   [IMPORTANT SECURITY NOTES](#important-security-notes)
 +   [Screenshot](#screenshot)
 +   [Installation](#installation)
 +   [Webtrees Version](#webtrees-version)
++   [GEDCOM filters](#gedcom-filters)
+    +   [Concept]()
+    +   [List of included GEDCOM filters](#list-of-included-gedcom-filters)
+    +   [How to use GEDCOM filters](#how-to-use-gedcom-filters)
+    +   [How to add additional GEDCOM filters](#how-to-add-additional-gedcom-filters)
+        + [A first example filter](#a-first-example-filter)
+        + [Further example filters](#further-example-filters)
+        + [Regular Expression Macros](#regular-expression-macros)
+        + [PHP function customConvert](#php-function-customconvert)
+        + [Additional switches](#additional-switches)
+    +   [Details about GEDCOM Filter Execution](#details-about-gedcom-filter-execution)
+    +   [GEDCOM Filter Validation](#gedcom-filter-validation)
 +   [Remote API](#remote-api)
     + [URL Format for Remote Requests](#url-format-for-remote-requests)
     + [Example URLs for Remote Requests](#example-urls-for-remote-requests)
@@ -67,6 +80,128 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 
 ## Webtrees Version
 The module was developed and tested with [webtrees 2.1.20](https://webtrees.net/download), but should also run with any other 2.1 version.
+
+## GEDCOM filters
+
+### Concept
+
+### List of included GEDCOM filters
++ All records
++ Avoid leading spaces for CONC
++ Birth, marriage, death export
++ Combined GEDCOM filter
++ Example GEDCOM filter
++ GEDCOM 7 conversion
++ Individual names CSV list
++ No records
++ Optimization of webtrees export for GEDCOM 7
++ Optimization of webtrees export for GEDCOM 5.5.1
++ Reduce dates to years
++ Reduce minimal individuals (e.g. created by privacy settings) to empty records
++ Remove change data (i.e. CHAN structures)
++ Remove empty or unlinked records
++ Remove restrictions (i.e. RESN tags)
++ Remove ToDo data (i.e. _TODO structures)
++ Remove webtrees user data (i.e. _WT_USER tags)
+
+### How to use GEDCOM filters
+
+In the module settings (control panel), four different views are offered to use the GEDCOM filter:
+  
+![Screenshot](resources/img/screenshot_control_panel.jpg)
+
+In the corresponding views (e.g. GEDCOM Export), the GEDCOM filters can be selected and applied:
+  
+![Usage of GEDCOM filters](resources/img/usage_of_gedcom_filters.jpg)
+  
+Additionally, GEDCOM filter can be applied via the [Remote API](#remote-api), which is described in a separate section.
+
+### How to add additional GEDCOM filters
+
+#### A first example filter
+To create a first example for a simple GEDCOM filter, the following steps can be taken:
++ Navigate to the filter directory in your webtrees installation: **\modules_v4\download_gedcom_with_url\resources\filter**
++ Copy the existing filter **AllRecordsGedcomFilter.php** filter to a new file, e.g. MyNewGedcomFilter.php in the same directory
++ Open the newly created .php file and substitue "class **AllRecordsGedcomFilter**" by a new class name, e.g. "class MyNewGedcomFilter"
++ Substitute the filter name in "I18N::translate('**All records**')" by a new filter name, e.g. "I18N::translate('My new filter')"
++ Add a new filter rule after **//Export all**, e.g. '!INDI:BAPM' => []
+
+![Creating a new GEDCOM filter](resources/img/creating_a_new_GEDCOM_filter.jpg)
+
+#### Further example filters
+Further insights about GEDCOM filters can be gained by refering to the following GEDCOM filters:
++ **Example GEDCOM filter** ([ExampleGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/ExampleGedcomFilter.php)): This filter contains some examples for filter rules with tag combinations and regular expressions for GEDCOM conversion.
++ **Birth, marriage, death export** ([BirthMarriageDeathGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/BirthMarriageDeathGedcomFilter.php)): This filter contains a typical filter example. The filter includes birth, marriage, and death data only. All included dates are shortened to include the year only (i.e. 01 JAN 1900 => 1900). The generated GEDCOM also contains links to the related individuals and families in webtrees. 
++ **Combined export filter** ([CombinedGedcomFilter.php](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/CombinedGedcomFilter.php)): Shows how several filters can be combined to a single filter, which executes a sequence of the combined filters.
+
+#### Regular Expression Macros
+If the same regular expression replacement shall be used in several filter rules, a macro can be defined, which allows to define a regular expression replacement once and use it several times. 
+
+Macros can be defined within the "const **REGEXP_MACROS**" structure:
+  
+![Definiton of a regular expression macros](resources/img/definition_of_regular_expression_macros.jpg)
+
+In filter rules, the macro name can be used instead of regular expression replacements:
++ Use "RegExp_macro" as "search pattern"
++ Use the macro name as "replace pattern"
+  
+![Usage of regular expression macro](resources/img/usage_of_regular_expression_macros.jpg)
+
+#### PHP function customConvert
+The general idea of the GEDCOM filter is to apply regular expression replacements. However, for certain purposes, regular expression replacements are not powerful enough to provide the necessary functionality. In these cases, a PHP function can be called, which allows to make use of the full PHP programming language functionality.
+
+In order to use the PHP function call, a customConvert function needs to be inserted to the code of the GEDCOM filter class. The interface of the customConvert function is defined in the [GedcomFilterInterface](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/GedcomFilterInterface.php#L53).
+
+![PHP function customConvert interface](resources/img/php_function_custom_convert_interface.jpg)
+
+In filter rules, the PHP customConvert function can be used instead of regular expression replacements:
++ Use "PHP_function" as "search pattern"
++ Use "customConvert" as "replace pattern"
+
+![Usage of PHP function customConvert](resources/img/usage_of_php_function_custom_convert.jpg)
+
+#### Additional switches
+Additional switched can be used for some specific purposes:
++   USES_REFERENCES_ANALYSIS (default: false) 
+    + If set to true, the filter will execute an analysis of references in the GEDCOM structures, which will identify empty records and records without references. The result of this analysis can be used by GEDCOM filters. An example can be found in the removeEmptyOrUnlinkedRecords function of the[RemoveEmptyOrUnlinkedRecordsGedcomFilter](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php#L97). 
++   USES_SCHEMA_TAG_ANALYSIS (default: true)
+    + If set to true, a SCHMA structure for known custom tags will be included if GEDCOM 7 is detected in the header.
++   WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES (default: false)
+    + If set to true, leading spaces for CONC structures are avoided.
+
+### Details about GEDCOM Filter Execution
++ The initial GEDCOM structure is parsed for GEDCOM records.
++ The hierarchical structure of the GEDCOM record is analyzed, e.g.
+    + INDI
+        + NAME
+        + BIRT
+            + DATE
+        + DEAT
+            + DATE        
++ **Inner** GEDCOM structures are filtered **before outer** structures.
+    + In the example above, the order of the executed filter rules will be: "INDI:BIRT:DATE" before "INDI:BIRT", and finally "INDI".
++ Replacements of filter rules will always be applyed to the full GEDCOM structure below, i.e. a filter rule replacement for "INDI" will also affect the data in "INDI:BIRT".
++ For each part of the identifyed GEDCOM structure, the corresponding GEDCOM tag combination (e.g. INDI:BIRT:DATE) is determined.
++ The GEDCOM filter is searched for a filter rule, which matches with the identifyed tag combination.
++ The first matched filter rule is executed.
++ After one filter rule has been matched, the filter execution is terminated. Further filter rules, which might also match will NOT be executed.
+
+### GEDCOM Filter Validation
+The class [AbstractGedcomFilter](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/AbstractGedcomFilter.php#L128) contains a set of validation rules for GEDCOM filters. Everytime a GEDCOM filter is selected in the control panel or before a filter execution, the validation routines are run. 
+
+The validation includes the following checks:
++ Validate the structure and content of the filter rules (in EXPORT_FILTER)
++ Validate the structure and content of regular expression macros (in REGEXP_MACROS)
++ Validate the tag definitions of the filter rules
++ Check if a filter rule is dominated by another rule, which is of higher priority (i.e. earlier entry in the GEDCOM filter list)
++ Validate the regular expressions of the filter rules, whether they contain valid regular expression definitions
++ Validate whether the customConvert method is available in the PHP code if customConvert is used in the filter rules
++ Validate whether regular expression macros are available if used in the filter rules
++ Check if black list filter rules have regular expressions and create a warning that they are never executed
++ Validate, whether the getGedcomFilterRules() method creates a PHP error
++ Validate, whether getIncludedFiltersBefore() and ~After() methods creates a PHP error
+
+There is also a check included, whether GEDCOM filter classes create PHP compilation errors. This check is performed if selecting or executing GEDCOM filters.
 
 ## Remote API
 

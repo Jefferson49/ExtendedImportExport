@@ -9,7 +9,6 @@ The module provides a framework for **customizable GEDCOM filters**, which allow
 
 ##  Table of contents
 This README file contains the following main sections:
-+   [Overview](#extended-importexport-overview)
 +   [What are the benefits of this module?](#what-are-the-benefits-of-this-module)
 +   [IMPORTANT SECURITY NOTES](#important-security-notes)
 +   [Screenshot](#screenshot)

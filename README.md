@@ -72,7 +72,7 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 + Copy the folder "download_gedcom_with_url" into the "module_v4" folder of your webtrees installation
 + Check if the module is activated in the control panel:
   + Login to webtrees as an administrator
-	+ Go to "Control Panel/All Modules", and find the module called "DownloadGedcomWithURL"
+	+ Go to "Control Panel/All Modules", and find the module called "ExtendedImportExport"
 	+ Check if it has a tick for "Enabled"
 + If remote download/upload/saving of GEDCOM files shall be used, activate the related options in the control panel, see chapter below.
 + If remote options are activated, provide an authorization key in the module settings, see chapter below.
@@ -229,7 +229,7 @@ There is also a check included, whether GEDCOM filter classes create PHP compila
 ### URL Format for Remote Requests
 The full URL format, which contains all possible parameters is defined as follows:
 
-**BASE_URL**/index.php?route=/webtrees/**DownloadGedcomWithURL**  
+**BASE_URL**/index.php?route=/webtrees/**ExtendedImportExport**  
 &emsp;**&action**=[MY_ACTION](#MY_ACTION)  
 &emsp;**&tree**=[MY_TREE](#MY_TREE)  
 &emsp;**&key**=[MY_KEY](#MY_KEY)  
@@ -257,11 +257,11 @@ Most of the parameters match 1:1 to the webtrees import/xport settings in the co
 It is not mandatory to provide all parameters. The only mandatory parameters are the tree and the authorization key. If any of the other parameters is not provided as URL parameter, the default value, which is specified in the control panel, is used. The tree name is used as default value for the file name. Download is used as default action.
 
 ### Example URLs for Remote Requests
-BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9
+BASE_URL/index.php?route=/webtrees/ExtendedImportExport&tree=tree1&key=hYHBiZM9
 
-BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&tree=tree1&key=hYHBiZM9file=export
+BASE_URL/index.php?route=/webtrees/ExtendedImportExport&tree=tree1&key=hYHBiZM9file=export
 
-BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_ExportFilter
+BASE_URL/index.php?route=/webtrees/ExtendedImportExport&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_ExportFilter
 
 ### Values for URL Parameters  
 * **<a name="MY_ACTION">MY_ACTION</a>** specifies whether the GEDCOM file will be uploaded, converted, downloaded, saved on the server, or both (downloaded and saved)
@@ -315,11 +315,11 @@ BASE_URL/index.php?route=/webtrees/DownloadGedcomWithURL&action=both&tree=tree1&
   * If the file path contains slashes, the value needs to be included in brackets 
 
 ### Example URLs for Download/Saving
-+ BASE_URL/index.php?route=/webtrees/**DownloadGedcomWithURL**&tree=tree1&key=hYHBiZM9
++ BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&tree=tree1&key=hYHBiZM9
 
-+ BASE_URL/index.php?route=/webtrees/**DownloadGedcomWithURL**&tree=tree1&key=hYHBiZM9file=export
++ BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&tree=tree1&key=hYHBiZM9file=export
 
-+ BASE_URL/index.php?route=/webtrees/**DownloadGedcomWithURL**&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_GedcomFilter
++ BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_GedcomFilter
 
 ### Folder for Files to Import/Export/Convert
 The files to be imported or converted must be placed in a folder on the webtrees server. The folder specified in the settings for the download/upload folder in the control panel settings.
@@ -339,7 +339,7 @@ Any parameters provided in the URL have a higher priority and will overrule the 
 ![Screenshot: Default value settings in the control panel](resources/img/screenshot_control_panel_default_settings.jpg)
 
 ### Example Scripts 
-The release ZIP file of the DownloadGedcomWithURL module also contains 3 example scripts for automatic download of GEDCOM files or storage on the server:
+The release ZIP file of the ExtendedImportExport module also contains 3 example scripts for automatic download of GEDCOM files or storage on the server:
 + [ExampleBashScript\.sh](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/ExampleBashScript.sh) contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
 + [ExamplePythonScript\.py](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/ExamplePythonScript.py) contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windows PC
 + [ExamplePythonScript2\.py](https://github.com/Jefferson49/DownloadGedcomWithURL/blob/main/ExamplePyhtonScript2.py) contains a more advanced example for an automatic download with a Python script, which allows to store the downloaded file to a specific folder and also includes some logging output
@@ -353,7 +353,7 @@ In order to test systematically and have some control about the effects, the fol
 + If everything works fine, choose larger trees etc.
 
 ### GEDCOM 7 Conversion
-DownloadGedcomWithURL contains a GEDCOM filter, which performs a GEDCOM 7 conversion. The GEDCOM 7 filter can be used during import/export, in a datafix, and for conversion of GEDCOM files.
+ExtendedImportExport contains a GEDCOM filter, which performs a GEDCOM 7 conversion. The GEDCOM 7 filter can be used during import/export, in a datafix, and for conversion of GEDCOM files.
 
 The GEDCOM 7 export also includes a further option to use the German GEDCOM-L standard.
 

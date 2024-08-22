@@ -13,6 +13,7 @@ This README file contains the following main sections:
 +   [IMPORTANT SECURITY NOTES](#important-security-notes)
 +   [Screenshot](#screenshot)
 +   [Installation](#installation)
+    +    [Upgrading from the former DownloadGedcomWithURL module](#upgrading-from-the-former-downloadgedcomwithurl-module)
 +   [Webtrees Version](#webtrees-version)
 +   [GEDCOM filters](#gedcom-filters)
     +   [Concept](#concept)
@@ -68,7 +69,7 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 
 ## Installation
 + Download the [latest release](https://github.com/Jefferson49/ExtendedImportExport/releases/latest) of the module
-+ Copy the folder "download_gedcom_with_url" into the "module_v4" folder of your webtrees installation
++ Copy the folder "extended_import_export" into the "module_v4" folder of your webtrees installation
 + Check if the module is activated in the control panel:
   + Login to webtrees as an administrator
 	+ Go to "Control Panel/All Modules", and find the module called "ExtendedImportExport"
@@ -76,6 +77,12 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 + If remote download/upload/saving of GEDCOM files shall be used, activate the related options in the control panel, see chapter below.
 + If remote options are activated, provide an authorization key in the module settings, see chapter below.
 + Optionally, specify default settings in the control panel, which might reduce the number of parameters to be provided within the URL.
+
+### Upgrading from the former DownloadGedcomWithURL module
++ Do NOT delete the module settings of the former DownloadGedcomWithURL module before the installation of ExtendedImportExport.
++ Install the ExtendedImportExport module, like described in chapter [Installation](#installation).
++ During the first boot within webtrees, ExtendedImportExport will takeover the existing settings from DownloadGedcomWithURL.
++ After ExtendedImportExport has migrated the settings, DownloadGedcomWithURL can be removed and the related settings can be deleted (follow the message in the control panel after deletion of the module).
 
 ## Webtrees Version
 The module was developed and tested with [webtrees 2.1.20](https://webtrees.net/download), but should also run with any other 2.1 version.

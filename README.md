@@ -78,7 +78,7 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 
 ### Upgrading from the former DownloadGedcomWithURL module
 + Do NOT delete the module settings of the former DownloadGedcomWithURL module before the installation of ExtendedImportExport.
-+ Install the ExtendedImportExport module, like described in chapter [Installation](#installation).
++ Install the ExtendedImportExport module like described in chapter [Installation](#installation).
 + During the first boot within webtrees, ExtendedImportExport will takeover the existing settings from DownloadGedcomWithURL.
 + After ExtendedImportExport has migrated the settings, DownloadGedcomWithURL can be removed and the related settings can be deleted (follow the message in the control panel after deletion of the module).
 

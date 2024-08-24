@@ -63,12 +63,13 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         //Media types
         //Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
         //GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
-        'OBJE:FILE:FORM'            => ["2 FORM (?i)(BMP)" => "2 FORM image/bmp",
-                                        "2 FORM (?i)(GIF)" => "2 FORM image/gif",
+        'OBJE:FILE:FORM'            => ["2 FORM (?i)(BMP)"      => "2 FORM image/bmp",
+                                        "2 FORM (?i)(GIF)"      => "2 FORM image/gif",
                                         "2 FORM (?i)(JPG|JPEG)" => "2 FORM image/jpeg",
-                                        "2 FORM (?i)(TIF|TIFF)" => "2 FORM image/tiff",
-                                        "2 FORM (?i)(PDF)" => "2 FORM application/pdf",
-                                        "2 FORM (?i)(EMF)" => "2 FORM image/emf",
+                                        "2 FORM (?i)(TIFF)"     => "2 FORM image/tiff",
+                                        "2 FORM (?i)(TIF)"      => "2 FORM image/tiff",
+                                        "2 FORM (?i)(PDF)"      => "2 FORM application/pdf",
+                                        "2 FORM (?i)(EMF)"      => "2 FORM image/emf",
                                         "2 FORM (?i)(HTM|HTML)" => "2 FORM text/html",],
 
         //Shared notes (SNOTE)

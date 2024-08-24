@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-08-22 07:19+0200\n"
-"PO-Revision-Date: 2024-08-22 07:19+0200\n"
+"POT-Creation-Date: 2024-08-24 20:22+0200\n"
+"PO-Revision-Date: 2024-08-24 20:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -429,7 +429,7 @@ msgstr "Kombinierter GEDCOM-Filter"
 msgid "Example GEDCOM filter"
 msgstr "Beispiel für GEDCOM-Filter"
 
-#: resources/filter/GEDCOM_7_GedcomFilter.php:201
+#: resources/filter/GEDCOM_7_GedcomFilter.php:202
 msgid "GEDCOM 7 conversion"
 msgstr "GEDCOM 7 Konvertierung"
 
@@ -469,11 +469,11 @@ msgstr "Stern-Zeichen aus Namen entfernen"
 msgid "Remove change data (i.e. CHAN structures)"
 msgstr "Änderungsdaten (d.h. CHAN Strukturen) entfernen"
 
-#: resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php:68
+#: resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php:69
 msgid "Remove empty or unlinked records"
 msgstr "Leere oder unverknüpfte Datensätze entfernen"
 
-#: resources/filter/RemoveEmptyRecordsGedcomFilter.php:23
+#: resources/filter/RemoveEmptyRecordsGedcomFilter.php:24
 msgid "Remove empty records"
 msgstr "Leere Datensätze entfernen"
 
@@ -664,7 +664,7 @@ msgid "Usage of GEDCOM filters"
 msgstr "Einsatz von GEDCOM-Filtern"
 
 #: resources/views/settings.phtml:53
-msgid "Select GEDOM import/export/conversion/datafix"
+msgid "Select GEDCOM import/export/conversion/datafix"
 msgstr "Auswahl von GEDCOM Import/Export/Konvertierung/Datenkorrektur"
 
 #: resources/views/settings.phtml:62

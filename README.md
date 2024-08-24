@@ -5,7 +5,7 @@
 ### (Earlier name: DownloadGedcomWithURL)
 A [webtrees](https://webtrees.net) 2.1 custom module for **advanced GEDCOM import, export and filter operations**. The module also supports **remote downloads/uploads via URL requests**.
 
-The module provides a framework for **customizable GEDCOM filters**, which allow to modify the GEDCOM data during an import/export. A set of pre-configured GECCOM filters is provided and supports GEDCOM 7 conversion as well as a variety of other GEDCOM filtering operations. The GEDCOM filters can be triggered remotely as well as by the user in specific import/export/conversion/datafix views.
+The module provides a framework for **customizable GEDCOM filters**, which allow to modify the GEDCOM data during an import/export. **A set of pre-configured GECCOM filters is provided** and supports GEDCOM 7 conversion as well as a variety of other GEDCOM filtering operations. The GEDCOM filters can be triggered remotely as well as by the user in specific import/export/conversion/datafix views.
 
 ##  Table of contents
 This README file contains the following main sections:
@@ -31,6 +31,7 @@ This README file contains the following main sections:
     + [URL Format for Remote Requests](#url-format-for-remote-requests)
     + [Example URLs for Remote Requests](#example-urls-for-remote-requests)
     + [Values for URL Parameters](#values-for-url-parameters)
+    + [Extending the Remote API with further parameters](#extending-the-remote-api-with-further-parameters)
 +   [Folder for Files to Import/Export/Convert](#folder-for-files-to-importexportconvert)
 +   [Authorization Key Settings](#authorization-key-settings)
 +   [Default Values in the Module Settings (Control Panel)](#default-values-in-the-module-settings-control-panel))
@@ -63,9 +64,6 @@ This README file contains the following main sections:
 **It is highly recommended to use the HTTPS protocol** (i.e. URLs with https://...) in order to encrypt the URL parameters, especially the authorization key.
 
 Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authorization key**. This means that installing these module versions enables everyone, who can reach the webtrees URL, to download GEDCOM files from webtrees. **Therefore, it is highly recommended to uprade to a module version v3.0.0 or later**.
-
-##  Screenshot
-![Screenshot](resources/img/screenshot_control_panel.jpg)
 
 ## Installation
 + Download the [latest release](https://github.com/Jefferson49/ExtendedImportExport/releases/latest) of the module
@@ -139,10 +137,19 @@ Further insights about GEDCOM filters can be gained by refering to the following
 |[Remove webtrees user data (i.e. _WT_USER tags)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveWebtreesUserGedcomFilter.php)|A GEDCOM filter, which removes webtrees user structures, i.e. _WT_USER|
 
 ### How to use GEDCOM filters
+There are 2 options to open the user views for GEDCOM filter:
+1. Open user views from list menu
+2. Open user views from control panel settings
 
-In the module settings (control panel), four different views are offered to use the GEDCOM filter:
+The list menu entry can be hidden by an option in the module settings (control panel).
+
+[<img src="resources/img/screenshot_open_user_views_from_list_menu.jpg" width="300"/>](resources/img/screenshot_open_user_views_from_list_menu.jpg)
+
+[<img src="resources/img/screenshot_open_user_views_from_settings.jpg" width="500"/>](resources/img/screenshot_open_user_views_from_settings.jpg)
+
+After opening the user view of the module, four different views are offered to use GEDCOM filters:
   
-![Screenshot](resources/img/screenshot_control_panel.jpg)
+[<img src="resources/img/screenshot_user_view_selection.jpg" width="500"/>](resources/img/screenshot_user_view_selection.jpg)
 
 In the corresponding views (e.g. GEDCOM Export), the GEDCOM filters can be selected and applied:
   
@@ -327,6 +334,11 @@ BASE_URL/index.php?route=/webtrees/ExtendedImportExport&action=both&tree=tree1&k
 + BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&tree=tree1&key=hYHBiZM9file=export
 
 + BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_GedcomFilter
+
+### Extending the Remote API with further parameters
+It is possible to add further parameters and values to the remote URL. The full set of parameters - either like described above or any freely added parameters - will be handed over to the GEDCOM filter in the **$param** variable of the **function customConvert**:
+
+![Screenshot: URL parameters in PHP function custom convert](resources/img/URL_parameters_in_PHP_function_custom_convert.jpg)
 
 ### Folder for Files to Import/Export/Convert
 The files to be imported or converted must be placed in a folder on the webtrees server. The folder specified in the settings for the download/upload folder in the control panel settings.

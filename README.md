@@ -14,6 +14,7 @@ This README file contains the following main sections:
 +   [Screenshot](#screenshot)
 +   [Installation](#installation)
     +    [Upgrading from the former DownloadGedcomWithURL module](#upgrading-from-the-former-downloadgedcomwithurl-module)
+    +    [Upgrading remote URL requests from the former DownloadGedcomWithURL module](#upgrading-remote-url-requests-from-the-former-downloadgedcomwithurl-module)
 +   [Webtrees Version](#webtrees-version)
 +   [GEDCOM filters](#gedcom-filters)
     +   [Concept](#concept)
@@ -81,6 +82,13 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 + Install the ExtendedImportExport module like described in chapter [Installation](#installation).
 + During the first boot within webtrees, ExtendedImportExport will takeover the existing settings from DownloadGedcomWithURL.
 + After ExtendedImportExport has migrated the settings, DownloadGedcomWithURL can be removed and the related settings can be deleted (follow the message in the control panel after deletion of the module).
+
+### Upgrading remote URL requests from the former DownloadGedcomWithURL module
++ URL requests with old routes (BASE_URL/index.php?route=/webtrees/**DownloadGedcomWithURL**) are still supported.
++ Old routes and new routes (BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**) can be used in parallel.
++ The **parameter** "**&tree**" **has become mandatory** in ExtendedImportExport. URL requests without "&tree" need to be changed and the mandatory parameter need to be added.
++ **Default settings for** "**&action**" and "**&tree**" in the control panel, which were available in In DownloadGedcomWithURL, are **not supported any more**.
++ The **parameter** "**&action**" **will default to "&action=download"** if "&action" is not included in the URL. In DownloadGedcomWithURL, the default was chosen from the control panel settings. URL requests without "&action" might need to be changed and the parameter might need to be added.
 
 ## Webtrees Version
 The module was developed and tested with [webtrees 2.1.20](https://webtrees.net/download), but should also run with any other 2.1 version.
@@ -271,11 +279,14 @@ Most of the parameters match 1:1 to the webtrees import/xport settings in the co
 It is not mandatory to provide all parameters. The only mandatory parameters are the tree and the authorization key. If any of the other parameters is not provided as URL parameter, the default value, which is specified in the control panel, is used. The tree name is used as default value for the file name. Download is used as default action.
 
 ### Example URLs for Remote Requests
-BASE_URL/index.php?route=/webtrees/ExtendedImportExport&tree=tree1&key=hYHBiZM9
++ **Save** an export file on the webtrees server:
+    + BASE_URL/index.php?route=/webtrees/ExtendedImportExport&tree=tree&**action=save**&key=hYHBiZM9
 
-BASE_URL/index.php?route=/webtrees/ExtendedImportExport&tree=tree1&key=hYHBiZM9file=export
++ **Import** a file from the webtrees server:
+    + BASE_URL/index.php?route=/webtrees/ExtendedImportExport&tree=tree1&**action=import**&key=hYHBiZM9&file=filename
 
-BASE_URL/index.php?route=/webtrees/ExtendedImportExport&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_ExportFilter
++ **Downlaod** a file with applying certain settings and a GEDCOM filter during export:
+    + BASE_URL/index.php?route=/webtrees/ExtendedImportExport&**action=download**&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_ExportFilter
 
 ### Values for URL Parameters  
 * **<a name="MY_ACTION">MY_ACTION</a>** specifies whether the GEDCOM file will be uploaded, converted, downloaded, saved on the server, or both (downloaded and saved)
@@ -328,7 +339,7 @@ BASE_URL/index.php?route=/webtrees/ExtendedImportExport&action=both&tree=tree1&k
   * Accepted values: A file path used in the GEDCOM import file, e.g. "C:\Documents\"
   * If the file path contains slashes, the value needs to be included in brackets 
 
-### Example URLs for Download/Saving
+### Example URLs for Remote URL Requests
 + BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&tree=tree1&key=hYHBiZM9
 
 + BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&tree=tree1&key=hYHBiZM9file=export

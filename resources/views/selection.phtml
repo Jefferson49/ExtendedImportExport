@@ -4,6 +4,7 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fisharebest\Webtrees\Http\RequestHandlers\DataFixPage;
 use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
 
@@ -17,6 +18,9 @@ use function e;
  * @var  string   $default_gedcom_filter2
  * @var  string   $default_gedcom_filter3
  */
+
+$module_service           = New ModuleService();
+$download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
 ?>
 
@@ -77,6 +81,15 @@ use function e;
 					'data_fix' => DownloadGedcomWithURL::activeModuleName(),
 					])) ?>">
 				<?= I18N::translate('Datafix using GEDCOM filters') ?>
+			</a>
+		</li>
+		<li>
+			<div class="row mb-3"><?= view('icons/spacer') ?></div>
+		</li>
+		<li>
+			<span class="fa-li"><?= view('icons/preferences') ?></span>			
+			<a href="<?= e($download_gedcom_with_url->getConfigLink()) ?>" title="<?= I18N::translate('Preferences') ?>">
+				<?= I18N::translate('Preferences') ?>
 			</a>
 		</li>
 	</ul>

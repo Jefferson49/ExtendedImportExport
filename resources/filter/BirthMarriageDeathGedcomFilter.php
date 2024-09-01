@@ -26,7 +26,8 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
         'HEAD:CHAR'                 => [],
 
         //Add a link (as source citation) to the related individual in webtrees
-        'INDI'                      => ["0 @([^@]+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE %BASE_URL%/tree/%TREE%/individual/$1\n"],
+        'INDI'                      => ["0 @([^@]+)@ INDI\n" => "0 @$1@ INDI\n1 SOUR @S1@\n2 PAGE %BASE_URL%/tree/%TREE%/individual/$1\n",
+                                        "PHP_function" => "customConvert"],
 
         'INDI:NAME'                 => [],
         'INDI:NAME:TYPE'            => [],
@@ -49,6 +50,21 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
         'INDI:DEAT'                 => ["1 DEAT\n$" => "1 DEAT Y\n"],
         'INDI:DEAT:DATE'            => [],
         'INDI:DEAT:PLAC'            => [],
+
+        'INDI:BURI'                 => [],
+        'INDI:BURI:DATE'            => [],
+        'INDI:BURI:PLAC'            => [],
+
+        'INDI:CREM'                 => [],
+        'INDI:CREM:DATE'            => [],
+        'INDI:CREM:PLAC'            => [],
+
+        'INDI:OCCU'                 => [],
+        'INDI:OCCU:DATE'            => [],
+        'INDI:OCCU:PLAC'            => [],
+
+        'INDI:RELI'                 => [],
+
         'INDI:FAMC'                 => [],
         '!INDI:FAMC:NOTE'           => [],
         'INDI:FAMC:*'               => [],
@@ -118,4 +134,63 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
 
         return $gedcom_filter;
     }
+
+    /**
+     * Custom conversion of a Gedcom string
+     *
+     * @param string        $pattern         The pattern of the filter rule, e. g. INDI:*:DATE
+     * @param string        $gedcom          The Gedcom to convert
+     * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
+     *                                       Records offer methods to be checked whether they are empty, referenced, etc.
+     * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
+     * 
+     * @return string                        The converted Gedcom
+     */
+    public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
+
+        $structures_found = [];
+        $tags = [
+            'BIRT', 
+            'BAPM',
+            'CHR',
+            'DEAT',
+            'BURI',
+            'CREM', 
+        ];
+
+        foreach($tags as $tag) {
+            $structures_found[$tag] = preg_match("/\n1 " . $tag . "/", $gedcom);
+        }
+
+        //Delete CHR/BAPM if BIRT was found
+        if(($structures_found['BIRT'] ?? 0) === 1) {
+            $gedcom = preg_replace("/\n1 CHR(?s).*?\n1/", "\n1", $gedcom);
+            $gedcom = preg_replace("/\n1 BAPM(?s).*?\n1/", "\n1", $gedcom);
+            //At end of Gedcom string
+            $gedcom = preg_replace("/\n1 CHR(?s).*?$/", "", $gedcom);
+            $gedcom = preg_replace("/\n1 BAPM(?s).*?$/", "", $gedcom);
+        }
+
+        //Delete BAPM if CHR was found
+        if(($structures_found['CHR'] ?? 0) === 1) {
+            $gedcom = preg_replace("/\n1 BAPM(?s).*?\n1/", "\n1", $gedcom);
+            $gedcom = preg_replace("/\n1 BAPM(?s).*?$/", "", $gedcom);
+        }
+
+        //Delete BURI/CREM if DEAT was found
+        if(($structures_found['DEAT'] ?? 0) === 1) {
+            $gedcom = preg_replace("/\n1 BURI(?s).*?\n1/", "\n1", $gedcom);
+            $gedcom = preg_replace("/\n1 BURI(?s).*?$/", "", $gedcom);
+            $gedcom = preg_replace("/\n1 CREM(?s).*?\n1/", "\n1", $gedcom);
+            $gedcom = preg_replace("/\n1 CREM(?s).*?$/", "", $gedcom);
+        }
+
+        //Delete CREM if BURI was found
+        if(($structures_found['BURI'] ?? 0) === 1) {
+            $gedcom = preg_replace("/\n1 CREM(?s).*?\n1/", "\n1", $gedcom);
+            $gedcom = preg_replace("/\n1 CREM(?s).*?$/", '', $gedcom);
+        }
+
+        return $gedcom;
+    }    
 }

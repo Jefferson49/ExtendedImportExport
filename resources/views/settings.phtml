@@ -20,6 +20,7 @@ use function e;
  * @var  string		$title
  * @var  bool		$use_hash
  * @var  string		$secret_key
+ * @var  string     $base_url
  * @var  bool       $show_menu_list_item
  * @var  bool       $allow_remote_download
  * @var  bool       $allow_remote_upload
@@ -38,6 +39,10 @@ use function e;
  * @var  bool       $default_gedcom_version
  * @var  bool       $default_gedcom_l_selection
  */
+
+$any_remote_access_allowed = $allow_remote_download OR $allow_remote_upload OR $allow_remote_save OR $allow_remote_convert;
+
+$uses_https = strpos(Strtoupper($base_url), 'HTTPS://') === false ? false : true;
 
 ?>
 
@@ -146,6 +151,11 @@ use function e;
 	</div>
 	<p><?= I18N::translate('An authorization key is needed if remote requests via URL shall be used.') ?></p>
 	<div class="row mb-3">
+		<?php if ($any_remote_access_allowed && !$uses_https) : ?>
+			<div class="alert alert-danger">
+				<p><?= I18N::translate('Currently, webtrees does not use the HTTPS protocol. It is urgently recommended to use HTTPS in order to ensure the encrpytion of the authorization key within URL remote requests. HTTPS can be activated by changing "base_url" in the "config.ini.php". Currently, "base_url" does not start with "https://". ') ?></p>
+			</div>
+		<?php endif ?>
 		<?php if ($secret_key !== '' && !$use_hash) : ?>
 			<div class="alert alert-warning">
 				<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>

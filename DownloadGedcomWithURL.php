@@ -443,6 +443,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         $this->layout = 'layouts/administration';       
 
+        $base_url      = Validator::attributes($request)->string('base_url');
+
         //Load Gedcom filters
         try {
             self::loadGedcomFilterClasses();
@@ -468,6 +470,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             [
                 'title'                               => $this->title(),
                 'tree_list'                           => $tree_list,
+                'base_url'                            => $base_url,
                 self::VAR_GEDCOM_FILTER_LIST          => $this->getGedcomFilterList(),
 				self::PREF_SECRET_KEY                 => $this->getPreference(self::PREF_SECRET_KEY, ''),
 				self::PREF_USE_HASH                   => boolval($this->getPreference(self::PREF_USE_HASH, '1')),

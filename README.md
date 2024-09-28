@@ -406,8 +406,7 @@ If you experience any bugs or have a feature request for this webtrees custom mo
 + webtrees
     + webtrees: online genealogy
     + Copyright (C) 2024 [webtrees development team](http://webtrees.net)
-+ Extended Import/Export+   [License](#license)
- (webtrees custom module)
++ Extended Import/Export (webtrees custom module)
     + Copyright (C) 2024 [Jefferson49](https://github.com/Jefferson49)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

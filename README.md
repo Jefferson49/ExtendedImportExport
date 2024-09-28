@@ -40,6 +40,7 @@ This README file contains the following main sections:
 +   [GEDCOM 7 Conversion](#gedcom-7-conversion)
 +   [Translation](#translation)
 +   [Bugs and Feature Requests](#bugs-and-feature-requests)
++   [License](#license)
 +   [Github Repository](#github-repository)
 
 ## What are the benefits of this module?
@@ -115,34 +116,34 @@ Further details about filter rules are shown in the following screenshot:
 
 ### Example filters
 Further insights about GEDCOM filters can be gained by refering to the following GEDCOM filters:
-+ **Example GEDCOM filter** ([ExampleGedcomFilter.php](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/ExampleGedcomFilter.php)): This filter contains some examples for filter rules with tag combinations and regular expressions for GEDCOM conversion.
-+ **Birth, marriage, death export** ([BirthMarriageDeathGedcomFilter.php](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/BirthMarriageDeathGedcomFilter.php)): This filter contains a typical filter example. The filter includes birth, marriage, and death data only. The generated GEDCOM also contains links to the related individuals and families in webtrees.
-+ **Combined export filter** ([CombinedGedcomFilter.php](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/CombinedGedcomFilter.php)): Shows how several filters can be combined to a single filter, which executes a sequence of the combined filters.
++ **Example GEDCOM filter** ([ExampleGedcomFilter.php](resources/filter/ExampleGedcomFilter.php)): This filter contains some examples for filter rules with tag combinations and regular expressions for GEDCOM conversion.
++ **Birth, marriage, death export** ([BirthMarriageDeathGedcomFilter.php](resources/filter/BirthMarriageDeathGedcomFilter.php)): This filter contains a typical filter example. The filter includes birth, marriage, and death data only. The generated GEDCOM also contains links to the related individuals and families in webtrees.
++ **Combined export filter** ([CombinedGedcomFilter.php](resources/filter/CombinedGedcomFilter.php)): Shows how several filters can be combined to a single filter, which executes a sequence of the combined filters.
 
 ![Screenshot](resources/img/example_filter.jpg)
 
 ### List of included GEDCOM filters
 |Filter Name|Description|
 |:----------|:----------|
-|[All records](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/AllRecordsGedcomFilter.php)|A template, which exports all records, as a starting point to create your own GEDCOM filter|
-|[Avoid leading spaces for CONC](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/AvoidLeadingSpacesForCONC_GedcomFilter.php)|Modifies CONC structure in order to avoids leading spaces|
-|[Birth, marriage, death export](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/BirthMarriageDeathGedcomFilter.php)|Exports INDI and FAM data and only include limited facts about birth marriage, and death|
-|[Combined GEDCOM filter](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/CombinedGedcomFilter.php)|An example how several filters can be combined to a filter, which executes a sequence of filters|
-|[Example GEDCOM filter](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/ExampleGedcomFilter.php)|An example filter, which demonstrates the principle features of GEDCOM filters|
-|[GEDCOM 7 conversion](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/GEDCOM_7_GedcomFilter.php)|A filter, which converts the GEDCOM export to the GEDCOM 7 standard|
-|[Individual names CSV list](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/IndividualNamesCsvGedcomFilter.php)|An example, how GEDCOM filters can be used to generate alternative formats, e.g. CSV, JSON, etc.|
-|[No records](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/NoRecordsGedcomFilter.php)|A template, which only exports HEAD/SUBM/TRLR, as a starting point to create your own GEDCOM filter|
-|[Optimization of webtrees export for GEDCOM 7](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/OptimizeWebtreesGEDCOM_7_GedcomFilter.php)|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard|
-|[Optimization of webtrees export for GEDCOM 5.5.1](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/OptimizeWebtreesGedcomFilter.php)|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard|
-|[Reduce dates to years](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/ReduceDatesToYearsGedcomFilter.php)|A GEDCOM filter, which reduces all dates to years only|
-|[Remove minimal individuals](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/ReduceMinimalIndividualsGedcomFilter.php)|A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS or less and removes their data|
-|[Remove asterisk characters from names](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveAsteriskCharactersFromNamesGedcomFilter.php)|A GEDCOM filter, which removes asterisk characters (i.e. '*') from names. Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.|
-|[Remove change data (i.e. CHAN structures)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveChangeDataGedcomFilter.php)|A GEDCOM filter, which removes CHAN structures|
-|[Remove empty or unlinked records](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php)|A GEDCOM filter to remove empty and unlinked records. Applied to: FAM, NOTE, OBJE, REPO, SOUR, _LOC. For INDI, only empty records are removed.|
-|[Remove empty records](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveEmptyRecordsGedcomFilter.php)|A GEDCOM filter to remove empty records. Applied to: FAM, INDI, NOTE, OBJE, REPO, SOUR, _LOC|
-|[Remove restrictions (i.e. RESN tags)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveRestrictionsGedcomFilter.php)|A GEDCOM filter, which removes RESN structures|
-|[Remove ToDo data (i.e. _TODO structures)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveToDoDataGedcomFilter.php)|A GEDCOM filter, which removes _TODO structures|
-|[Remove webtrees user data (i.e. _WT_USER tags)](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveWebtreesUserGedcomFilter.php)|A GEDCOM filter, which removes webtrees user structures, i.e. _WT_USER|
+|[All records](resources/filter/AllRecordsGedcomFilter.php)|A template, which exports all records, as a starting point to create your own GEDCOM filter|
+|[Avoid leading spaces for CONC](resources/filter/AvoidLeadingSpacesForCONC_GedcomFilter.php)|Modifies CONC structure in order to avoids leading spaces|
+|[Birth, marriage, death export](resources/filter/BirthMarriageDeathGedcomFilter.php)|Exports INDI and FAM data and only include limited facts about birth marriage, and death|
+|[Combined GEDCOM filter](resources/filter/CombinedGedcomFilter.php)|An example how several filters can be combined to a filter, which executes a sequence of filters|
+|[Example GEDCOM filter](resources/filter/ExampleGedcomFilter.php)|An example filter, which demonstrates the principle features of GEDCOM filters|
+|[GEDCOM 7 conversion](resources/filter/GEDCOM_7_GedcomFilter.php)|A filter, which converts the GEDCOM export to the GEDCOM 7 standard|
+|[Individual names CSV list](resources/filter/IndividualNamesCsvGedcomFilter.php)|An example, how GEDCOM filters can be used to generate alternative formats, e.g. CSV, JSON, etc.|
+|[No records](resources/filter/NoRecordsGedcomFilter.php)|A template, which only exports HEAD/SUBM/TRLR, as a starting point to create your own GEDCOM filter|
+|[Optimization of webtrees export for GEDCOM 7](resources/filter/OptimizeWebtreesGEDCOM_7_GedcomFilter.php)|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard|
+|[Optimization of webtrees export for GEDCOM 5.5.1](resources/filter/OptimizeWebtreesGedcomFilter.php)|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard|
+|[Reduce dates to years](resources/filter/ReduceDatesToYearsGedcomFilter.php)|A GEDCOM filter, which reduces all dates to years only|
+|[Remove minimal individuals](resources/filter/ReduceMinimalIndividualsGedcomFilter.php)|A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS or less and removes their data|
+|[Remove asterisk characters from names](resources/filter/RemoveAsteriskCharactersFromNamesGedcomFilter.php)|A GEDCOM filter, which removes asterisk characters (i.e. '*') from names. Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.|
+|[Remove change data (i.e. CHAN structures)](resources/filter/RemoveChangeDataGedcomFilter.php)|A GEDCOM filter, which removes CHAN structures|
+|[Remove empty or unlinked records](resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php)|A GEDCOM filter to remove empty and unlinked records. Applied to: FAM, NOTE, OBJE, REPO, SOUR, _LOC. For INDI, only empty records are removed.|
+|[Remove empty records](resources/filter/RemoveEmptyRecordsGedcomFilter.php)|A GEDCOM filter to remove empty records. Applied to: FAM, INDI, NOTE, OBJE, REPO, SOUR, _LOC|
+|[Remove restrictions (i.e. RESN tags)](resources/filter/RemoveRestrictionsGedcomFilter.php)|A GEDCOM filter, which removes RESN structures|
+|[Remove ToDo data (i.e. _TODO structures)](resources/filter/RemoveToDoDataGedcomFilter.php)|A GEDCOM filter, which removes _TODO structures|
+|[Remove webtrees user data (i.e. _WT_USER tags)](resources/filter/RemoveWebtreesUserGedcomFilter.php)|A GEDCOM filter, which removes webtrees user structures, i.e. _WT_USER|
 
 ### How to use GEDCOM filters
 There are 2 options to open the user views for GEDCOM filter:
@@ -193,7 +194,7 @@ In filter rules, the macro name can be used instead of regular expression replac
 #### PHP function customConvert
 The general idea of the GEDCOM filter is to apply regular expression replacements. However, for certain purposes, regular expression replacements are not powerful enough to provide the necessary functionality. In these cases, a PHP function can be called, which allows to make use of the full PHP programming language functionality.
 
-In order to use the PHP function call, a customConvert function needs to be inserted to the code of the GEDCOM filter class. The interface of the customConvert function is defined in the [GedcomFilterInterface](https://github.com/Jefferson49/ExtendedImportExport/blob/main/GedcomFilterInterface.php#L53).
+In order to use the PHP function call, a customConvert function needs to be inserted to the code of the GEDCOM filter class. The interface of the customConvert function is defined in the [GedcomFilterInterface](GedcomFilterInterface.php#L53).
 
 ![PHP function customConvert interface](resources/img/php_function_custom_convert_interface.jpg)
 
@@ -206,7 +207,7 @@ In filter rules, the PHP customConvert function can be used instead of regular e
 #### Additional switches
 Additional switched can be used for some specific purposes:
 +   USES_REFERENCES_ANALYSIS (default: false) 
-    + If set to true, the filter will execute an analysis of references in the GEDCOM structures, which will identify empty records and records without references. The result of this analysis can be used by GEDCOM filters. An example can be found in the removeEmptyOrUnlinkedRecords function of the[RemoveEmptyOrUnlinkedRecordsGedcomFilter](https://github.com/Jefferson49/ExtendedImportExport/blob/main/resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php#L97). 
+    + If set to true, the filter will execute an analysis of references in the GEDCOM structures, which will identify empty records and records without references. The result of this analysis can be used by GEDCOM filters. An example can be found in the removeEmptyOrUnlinkedRecords function of the[RemoveEmptyOrUnlinkedRecordsGedcomFilter](resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php#L97). 
 +   USES_SCHEMA_TAG_ANALYSIS (default: true)
     + If set to true, a SCHMA structure for known custom tags will be included if GEDCOM 7 is detected in the header.
 +   WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES (default: false)
@@ -230,7 +231,7 @@ Additional switched can be used for some specific purposes:
 + After one filter rule has been matched, the filter execution is terminated. Further filter rules, which might also match will NOT be executed.
 
 ### GEDCOM Filter Validation
-The class [AbstractGedcomFilter](https://github.com/Jefferson49/ExtendedImportExport/blob/main/AbstractGedcomFilter.php#L128) contains a set of validation rules for GEDCOM filters. Everytime a GEDCOM filter is selected in the control panel or before a filter execution, the validation routines are run. 
+The class [AbstractGedcomFilter](AbstractGedcomFilter.php#L128) contains a set of validation rules for GEDCOM filters. Everytime a GEDCOM filter is selected in the control panel or before a filter execution, the validation routines are run. 
 
 The validation includes the following checks:
 + Validate the structure and content of the filter rules (in EXPORT_FILTER)
@@ -370,9 +371,9 @@ Any parameters provided in the URL have a higher priority and will overrule the 
 
 ### Example Scripts 
 The release ZIP file of the ExtendedImportExport module also contains 3 example scripts for automatic download of GEDCOM files or storage on the server:
-+ [ExampleBashScript\.sh](https://github.com/Jefferson49/ExtendedImportExport/blob/main/ExampleBashScript.sh) contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
-+ [ExamplePythonScript\.py](https://github.com/Jefferson49/ExtendedImportExport/blob/main/ExamplePythonScript.py) contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windows PC
-+ [ExamplePythonScript2\.py](https://github.com/Jefferson49/ExtendedImportExport/blob/main/ExamplePyhtonScript2.py) contains a more advanced example for an automatic download with a Python script, which allows to store the downloaded file to a specific folder and also includes some logging output
++ [ExampleBashScript\.sh](ExampleBashScript.sh) contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
++ [ExamplePythonScript\.py](ExamplePythonScript.py) contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windows PC
++ [ExamplePythonScript2\.py](ExamplePyhtonScript2.py) contains a more advanced example for an automatic download with a Python script, which allows to store the downloaded file to a specific folder and also includes some logging output
 
 ### Recommended Steps to Test the Module
 In order to test systematically and have some control about the effects, the following steps are recommend. Only proceed to the next step if the prior step was successful:
@@ -391,7 +392,7 @@ The GEDCOM 7 filter were successfully valdidated with [GEDCOM Validator](https:/
 [Gedcom Structure Analysis](https://ofb.hesmer.name/main_gsp_e.html#Analyse). Gedcom Structure Analysis also validates against the [GEDCOM-L standard](https://genealogy.net/GEDCOM/).
 
 ## Translation
-You can help to translate this module. The translation is based on [gettext](https://en.wikipedia.org/wiki/Gettext) and uses .po files, which can be found in [/resources/lang/](https://github.com/Jefferson49/ExtendedImportExport/tree/main/resources/lang). You can use a local editor like [Poedit](https://poedit.net/) or notepad++ to work on translations and provide them in the [Github repository](https://github.com/Jefferson49/ExtendedImportExport) of the module. You can do this via a pull request (if you know how to do), or by opening a new issue and attaching a .po file. Updated translations will be included in the next release of this module.
+You can help to translate this module. The translation is based on [gettext](https://en.wikipedia.org/wiki/Gettext) and uses .po files, which can be found in [/resources/lang/](resources/lang). You can use a local editor like [Poedit](https://poedit.net/) or notepad++ to work on translations and provide them in the [Github repository](https://github.com/Jefferson49/ExtendedImportExport) of the module. You can do this via a pull request (if you know how to do), or by opening a new issue and attaching a .po file. Updated translations will be included in the next release of this module.
 
 Currently, the following languages are already available:
 + English
@@ -399,6 +400,21 @@ Currently, the following languages are already available:
 
 ## Bugs and Feature Requests
 If you experience any bugs or have a feature request for this webtrees custom module, you can [create a new issue](https://github.com/Jefferson49/ExtendedImportExport/issues).
+
+## License
++ [GNU General Public License, Version 3](LICENSE.md)
++ webtrees
+    + webtrees: online genealogy
+    + Copyright (C) 2024 [webtrees development team](http://webtrees.net)
++ Extended Import/Export+   [License](#license)
+ (webtrees custom module)
+    + Copyright (C) 2024 [Jefferson49](https://github.com/Jefferson49)
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/.
 
 ## Github Repository
 https://github.com/Jefferson49/ExtendedImportExport

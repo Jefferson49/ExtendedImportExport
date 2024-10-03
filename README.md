@@ -126,7 +126,7 @@ Further insights about GEDCOM filters can be gained by refering to the following
 |Filter Name|Description|
 |:----------|:----------|
 |[All records](resources/filter/AllRecordsGedcomFilter.php)|A template, which exports all records, as a starting point to create your own GEDCOM filter|
-|[Avoid leading spaces for CONC](resources/filter/AvoidLeadingSpacesForCONC_GedcomFilter.php)|Modifies CONC structure in order to avoids leading spaces|
+|[Avoid leading spaces for CONC](resources/filter/AvoidLeadingSpacesForCONC_GedcomFilter.php)|Modifies CONC structure in order to avoid leading spaces|
 |[Birth, marriage, death export](resources/filter/BirthMarriageDeathGedcomFilter.php)|Exports INDI and FAM data and only include limited facts about birth marriage, and death|
 |[Combined GEDCOM filter](resources/filter/CombinedGedcomFilter.php)|An example how several filters can be combined to a filter, which executes a sequence of filters|
 |[Example GEDCOM filter](resources/filter/ExampleGedcomFilter.php)|An example filter, which demonstrates the principle features of GEDCOM filters|

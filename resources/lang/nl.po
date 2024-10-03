@@ -1,0 +1,779 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: DownloadGedcomWithURL\n"
+"POT-Creation-Date: 2024-08-22 07:19+0200\n"
+"PO-Revision-Date: 2024-10-03 17:24+0200\n"
+"Last-Translator: TheDutchJewel <thedutchjewel@gmail.com>\n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.5\n"
+"X-Poedit-Basepath: ../..\n"
+"X-Poedit-KeywordsList: translate\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid ""
+"The variable type of the filter rules definition (%s) of the GEDCOM filter "
+"(%s) does not have the type \"array\"."
+msgstr ""
+"Het variabelentype van de definitie van de filterregels (%s) van het GEDCOM-"
+"filter (%s) heeft niet het type \"array\"."
+
+msgid "The selected GEDCOM filter (%s) does not contain any filter rules."
+msgstr "Het geselecteerde GEDCOM-filter (%s) bevat geen filterregels."
+
+msgid ""
+"The selected GEDCOM filter (%s) contains an invalid definition for regular "
+"expression macros (%s)."
+msgstr ""
+"Het geselecteerde GEDCOM-filter (%s) bevat een ongeldige definitie voor "
+"reguliere-expressiemacro's (%s)."
+
+msgid ""
+"The selected GEDCOM filter (%s) contains an invalid definition for the "
+"regular expression macro %s."
+msgstr ""
+"Het geselecteerde GEDCOM-filter (%s) bevat een ongeldige definitie voor de "
+"reguliere-expressiemacro %s."
+
+msgid "Invalid definition"
+msgstr "Ongeldige definitie"
+
+msgid ""
+"The selected GEDCOM filter (%s) contains an invalid filter definition for "
+"tag pattern %s."
+msgstr ""
+"Het geselecteerde GEDCOM-filter (%s) bevat een ongeldige filterdefinitie "
+"voor labelpatroon %s."
+
+msgid "The selected GEDCOM filter (%s) contains an invalid tag definition"
+msgstr ""
+"Het geselecteerde GEDCOM-filter (%s) bevat een ongeldige labeldefinitie"
+
+msgid ""
+"The used GEDCOM filter (%s) contains a %s command with a method (%s), which "
+"is not available. Currently, only \"%s\" is allowed to be used as a method."
+msgstr ""
+"Het gebruikte GEDCOM-filter (%s) bevat een %s opdracht met een methode (%s) "
+"die niet beschikbaar is. Momenteel mag alleen \"%s\" worden gebruikt als "
+"methode."
+
+msgid ""
+"The used GEDCOM filter (%s) contains a %s command with a method (%s), but "
+"the filter class does not contain a \"%s\" method."
+msgstr ""
+"Het gebruikte GEDCOM-filter (%s) bevat een opdracht %s met een methode (%s), "
+"maar de filterklasse bevat geen methode \"%s\"."
+
+msgid ""
+"The used GEDCOM filter (%s) contains a macro command (%s) for a regular "
+"expression, but the macro is not defined in the filter."
+msgstr ""
+"Het gebruikte GEDCOM-filter (%s) bevat een macro-opdracht (%s) voor een "
+"reguliere expressie, maar de macro is niet gedefinieerd in het filter."
+
+msgid "The selected GEDCOM filter (%s) contains an invalid regular expression"
+msgstr ""
+"Het geselecteerde GEDCOM-filter (%s) bevat een ongeldige reguliere expressie"
+
+msgid "Error message"
+msgstr "Foutmelding"
+
+msgid ""
+"The selected GEDCOM filter (%s) contains a black list filter rule (%s) with "
+"a regular expression, which will never be executed, because the black list "
+"filter rule will delete the related GEDCOM line."
+msgstr ""
+"Het geselecteerde GEDCOM-filter (%s) bevat een filterregel voor de zwarte "
+"lijst (%s) met een reguliere expressie die nooit zal worden uitgevoerd, "
+"omdat de filterregel voor de zwarte lijst de gerelateerde GEDCOM-regel zal "
+"verwijderen."
+
+msgid ""
+"The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
+"will never be executed. Please remove the rule or change the order of the "
+"filter rules."
+msgstr ""
+"De filterregel \"%s\" wordt gedomineerd door de eerdere filterregel \"%s\" "
+"en zal nooit worden uitgevoerd. Verwijder de regel of wijzig de volgorde van "
+"de filterregels."
+
+msgid "The %s method of the used GEDCOM filter (%s) throws a PHP error"
+msgstr ""
+"De methode %s van het gebruikte GEDCOM-filter (%s) geeft een PHP-foutmelding"
+
+msgid "GEDCOM Conversion"
+msgstr "GEDCOM-conversie"
+
+msgid "Extended Import/Export"
+msgstr "Uitgebreide import/export"
+
+msgid ""
+"A custom module for advanced GEDCOM import, export, and filter operations. "
+"The module also supports remote downloads/uploads/filters via URL requests."
+msgstr ""
+"Een aangepaste module voor geavanceerde GEDCOM importeren, exporteren en "
+"filteren. De module ondersteunt ook downloaden/uploaden/filteren op afstand "
+"via URL-verzoeken."
+
+msgid ""
+"The provided secret key is too short. Please provide a minimum length of 8 "
+"characters."
+msgstr ""
+"De opgegeven geheime sleutel is te kort. Geef een minimale lengte van 8 "
+"tekens op."
+
+msgid ""
+"The provided secret key contains characters, which are not accepted. Please "
+"provide a different key."
+msgstr ""
+"De opgegeven geheime sleutel bevat tekens die niet worden geaccepteerd. Geef "
+"een andere sleutel op."
+
+msgid ""
+"The folder settings could not be saved, because the folder “%s” does not "
+"exist."
+msgstr ""
+"De mapinstellingen konden niet worden opgeslagen omdat de map \"%s\" niet "
+"bestaat."
+
+msgid "The preferences for the module \"%s\" were updated."
+msgstr "De voorkeuren voor de module \"%s\" zijn bijgewerkt."
+
+msgid ""
+"The preferences for the custom module \"%s\" were sucessfully updated to the "
+"new module version %s."
+msgstr ""
+"De voorkeuren voor de aangepaste module \"%s\" zijn bijgewerkt naar de "
+"nieuwe moduleversie %s."
+
+msgid ""
+"The preferences for the custom module %s were imported from the earlier "
+"custom module version %s."
+msgstr ""
+"De voorkeuren voor de aangepaste module %s werden geïmporteerd uit de "
+"eerdere aangepaste module versie %s."
+
+msgid ""
+"The preferences for the default GEDCOM filter were reset to \"none\", "
+"because the selected GEDCOM filter %s could not be found"
+msgstr ""
+"De voorkeuren voor het standaard GEDCOM-filter zijn teruggezet naar "
+"\"geen\", omdat het geselecteerde GEDCOM-filter %s niet kon worden gevonden."
+
+msgid "A compilation error was detected in the following GEDCOM filter"
+msgstr "Er is een compilatiefout gedetecteerd in het volgende GEDCOM-filter"
+
+msgid "line"
+msgstr "regel"
+
+msgid "error message"
+msgstr "foutmelding"
+
+msgid "No filter"
+msgstr "Geen filter"
+
+msgid "The GEDCOM filter was not found"
+msgstr "Het GEDCOM-filter is niet gevonden"
+
+msgid ""
+"The include hierarchy for GEDCOM filters exceeds the maximum level of %s "
+"includes."
+msgstr ""
+"De inclusief-hiërarchie voor GEDCOM filters overschrijdt het maximale niveau "
+"van %s inclusieven."
+
+msgid ""
+"The following GEDCOM filter might cause a loop in the include structure, "
+"because it was detected more than once in the include hierarchy"
+msgstr ""
+"Het volgende GEDCOM-filter kan een lus veroorzaken in de inclusief-"
+"structuur, omdat het meer dan één keer is gedetecteerd in de inclusief-"
+"hiërarchie"
+
+msgid "Please check the include structure of the selected GEDCOM filters."
+msgstr "Controleer de inclusiefstructuur van de geselecteerde GEDCOM-filters."
+
+msgid "Tree not found"
+msgstr "Stamboom niet gevonden"
+
+msgid "Internal module error: Neither GET nor POST request received."
+msgstr "Interne module fout: Noch GET- noch POST-verzoek ontvangen."
+
+msgid ""
+"No key provided. For checking of the access rights, it is mandatory to "
+"provide a key as parameter in the URL."
+msgstr ""
+"Geen sleutel opgegeven. Voor het controleren van de toegangsrechten is het "
+"verplicht om een sleutel op te geven als parameter in de URL."
+
+msgid ""
+"No secret key defined. Please define secret key in the module settings: "
+"Control Panel / Modules / All Modules / "
+msgstr ""
+"Geen geheime sleutel gedefinieerd. Definieer de geheime sleutel in de module-"
+"instellingen: Controlepaneel / Modules / Alle modules / "
+
+msgid "Key not accepted. Access denied."
+msgstr "Sleutel niet geaccepteerd. Toegang geweigerd."
+
+msgid "Key (encrypted) not accepted. Access denied."
+msgstr "Sleutel (versleuteld) niet geaccepteerd. Toegang geweigerd."
+
+msgid "Privacy level not accepted"
+msgstr "Privacyniveau niet geaccepteerd"
+
+msgid "Export format not accepted"
+msgstr "Exportformaat niet geaccepteerd"
+
+msgid "Encoding not accepted"
+msgstr "Codering niet geaccepteerd"
+
+msgid "Action not accepted"
+msgstr "Actie niet geaccepteerd"
+
+msgid "Line endings not accepted"
+msgstr "Regeleinden niet geaccepteerd"
+
+msgid "Time stamp setting not accepted"
+msgstr "Tijdstempelinstelling niet geaccepteerd"
+
+msgid "No file name provided for the requested GEDCOM conversion"
+msgstr "Geen bestandsnaam opgegeven voor de gevraagde GEDCOM-conversie"
+
+msgid "The file %s could not be created."
+msgstr "Het bestand %s kon niet worden aangemaakt."
+
+msgid "The family tree \"%s\" was sucessfully exported to: %s"
+msgstr "De stamboom \"%s\" is geëxporteerd naar: %s"
+
+msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
+msgstr ""
+"URL-verzoeken op afstand om GEDCOM-bestanden op te slaan op de server zijn "
+"niet toegestaan."
+
+msgid "Please check the module settings in the control panel."
+msgstr "Controleer de module-instellingen in het bedieningspaneel."
+
+msgid ""
+"Remote URL requests to download GEDCOM files from the server are not allowed."
+msgstr ""
+"URL-verzoeken op afstand om GEDCOM-bestanden te downloaden van de server "
+"zijn niet toegestaan."
+
+msgid "Unable to read file \"%s\"."
+msgstr "Kan bestand \"%s\" niet lezen."
+
+msgid "No data imported from file \"%s\". The file might be empty."
+msgstr ""
+"Geen gegevens geïmporteerd uit bestand \"%s\". Het bestand kan leeg zijn."
+
+msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
+msgstr "Het bestand \"%s\" is geüpload voor de stamboom \"%s\"."
+
+msgid "The GEDCOM file \"%s\" was successfully converted to: %s"
+msgstr "Het GEDCOM-bestand \"%s\" is geconverteerd naar: %s"
+
+msgid ""
+"Remote URL requests to convert GEDCOM files on the server are not allowed."
+msgstr ""
+"URL-verzoeken op afstand om GEDCOM-bestanden op de server te converteren "
+"zijn niet toegestaan."
+
+msgid ""
+"Remote URL requests to upload GEDCOM files to the server are not allowed."
+msgstr ""
+"URL-verzoeken op afstand om GEDCOM-bestanden te uploaden naar de server zijn "
+"niet toegestaan."
+
+msgid "Extended GEDCOM Export"
+msgstr "Uitgebreide GEDCOM-export"
+
+msgid "The following GEDCOM structure could not be matched"
+msgstr "De volgende GEDCOM-structuur kon niet worden gevonden"
+
+msgid "Error during a regular expression replacement."
+msgstr "Fout tijdens het vervangen van een reguliere expressie."
+
+msgid ""
+"Fatal error: Too many iterations while removing empty and unlinked records."
+msgstr ""
+"Fatale fout: Te veel iteraties tijdens het verwijderen van lege en "
+"ongelinkte records."
+
+msgid "Extended GEDCOM Import"
+msgstr "Uitgebreide GEDCOM-import"
+
+msgid "Extended GEDCOM Import/Export"
+msgstr "Uitgebreide GEDCOM-import/export"
+
+msgid "All records"
+msgstr "Alle records"
+
+msgid "Avoid leading spaces for CONC"
+msgstr "Vermijd voorloopspaties voor CONC"
+
+msgid "Birth, marriage, death export"
+msgstr "Geboorte, huwelijk, overlijden exporteren"
+
+msgid "Combined GEDCOM filter"
+msgstr "Gecombineerd GEDCOM-filter"
+
+msgid "Example GEDCOM filter"
+msgstr "Voorbeeld GEDCOM-filter"
+
+msgid "GEDCOM 7 conversion"
+msgstr "GEDCOM 7-conversie"
+
+msgid "Individual names CSV list"
+msgstr "CSV-lijst met persoonsnamen"
+
+msgid "No records"
+msgstr "Geen records"
+
+msgid "Optimization of webtrees export for GEDCOM 7"
+msgstr "Optimalisatie van webtrees-export voor GEDCOM 7"
+
+msgid "Optimization of webtrees export for GEDCOM 5.5.1"
+msgstr "Optimalisatie van de webtrees-export voor GEDCOM 5.5.1"
+
+msgid "Reduce dates to years"
+msgstr "Reduceer datums tot jaren"
+
+msgid ""
+"Reduce minimal INDI records (with SEX, FAMC, FAMS or less) to empty INDI "
+"records"
+msgstr ""
+"Reduceer minimale INDI-records (met SEX, FAMC, FAMS of minder) tot lege INDI-"
+"records"
+
+msgid "Remove asterisk characters from names"
+msgstr "Verwijder ster-tekens uit namen"
+
+msgid "Remove change data (i.e. CHAN structures)"
+msgstr "Verwijder wijzigingsgegevens (d.w.z. CHAN-structuren)"
+
+msgid "Remove empty or unlinked records"
+msgstr "Verwijderen lege of ongelinkte records"
+
+msgid "Remove empty records"
+msgstr "Verwijder lege records"
+
+msgid "Remove restrictions (i.e. RESN tags)"
+msgstr "Verwijder beperkingen (bijv. RESN-labels)"
+
+msgid "Remove ToDo data (i.e. _TODO structures)"
+msgstr "Verwijder ToDo-gegevens (d.w.z. _TODO-structuren)"
+
+msgid "Remove webtrees user data (i.e. _WT_USER tags)"
+msgstr "Verwijder webtrees-gebruikersgegevens (d.w.z. _WT_USER-labels)"
+
+msgid "Custom module"
+msgstr "Aangepaste module"
+
+msgid "Select a GEDCOM file"
+msgstr "Selecteer een GEDCOM-bestand"
+
+msgid "A file on your computer"
+msgstr "Een bestand op uw computer"
+
+msgid "A file on the server"
+msgstr "Een bestand op de server"
+
+msgid "Conversion settings"
+msgstr "Conversie-instellingen"
+
+msgid "Other format (i.e. use extension of filename)"
+msgstr "Ander formaat (bijv. gebruik extensie van bestandsnaam)"
+
+msgid "Filename (converted)"
+msgstr "Bestandsnaam (geconverteerd)"
+
+msgid ""
+"The file extension will be added (or overruled) according to the selected "
+"format. Select \"Other format\" to use the extension, which is provided "
+"within the filename."
+msgstr ""
+"De bestandsextensie wordt toegevoegd (of overschreven) volgens het "
+"geselecteerde formaat. Selecteer \"Ander formaat\" om de extensie te "
+"gebruiken die is opgegeven in de bestandsnaam."
+
+msgid "Time stamp"
+msgstr "Tijdstempel"
+
+msgid "No time stamp"
+msgstr "Geen tijdstempel"
+
+msgid "Prefix time stamp"
+msgstr "Tijdstempelvoorvoegsel"
+
+msgid "Postfix time stamp"
+msgstr "Ttijdstempelachtervoegsel"
+
+msgid "Select GEDCOM filters"
+msgstr "Selecteer GEDCOM-filters"
+
+msgid "Gedcom filter %s"
+msgstr "GEDCOM-filter %s"
+
+msgid "Convert GEDCOM file"
+msgstr "Converteer GEDCOM-bestand"
+
+msgid "Export action"
+msgstr "Exportactie"
+
+msgid "Action"
+msgstr "Actie"
+
+msgid "Save on the webtrees server"
+msgstr "Opslaan op de webtrees-server"
+
+msgid "Both, i.e. download and save in parallel"
+msgstr "Beide, d.w.z. downloaden en opslaan tegelijk"
+
+msgid "Export GEDCOM file"
+msgstr "Exporteer GEDCOM-bestand"
+
+msgid ""
+"Any import will delete all the genealogy data of the tree in the database "
+"and replace it with data from a GEDCOM file."
+msgstr ""
+"Bij het importeren worden alle genealogische gegevens van de stamboom in de "
+"database verwijderd en vervangen door gegevens uit een GEDCOM-bestand."
+
+msgid "Settings for GEDCOM Import"
+msgstr "Instellingen voor GEDCOM-import"
+
+msgid ""
+"Are you absolutely sure you want to import the selected file into the "
+"specified tree? Please be aware that importing the file will delete all "
+"existing data in the tree without possibility to recover! Therefore, also "
+"consider to backup the webtrees database before importing new files."
+msgstr ""
+"Weet u absoluut zeker dat u het geselecteerde bestand wilt importeren in de "
+"opgegeven stamboom? Houd er rekening mee dat het importeren van het bestand "
+"alle bestaande gegevens in de stamboom verwijdert zonder mogelijkheid tot "
+"herstel! Overweeg daarom ook om een back-up te maken van de webtrees-"
+"database voordat u nieuwe bestanden importeert."
+
+msgid "Import GEDCOM file"
+msgstr "Importeer GEDCOM-bestand"
+
+msgid "Datafix using GEDCOM filters"
+msgstr "Gegevenscorrecties met behulp van GEDCOM-filters"
+
+msgid ""
+"You can select up to 3 GEDCOM filters, which will be applied as a data fix."
+msgstr ""
+"U kunt maximaal 3 GEDCOM-filters selecteren, die worden toegepast als een "
+"gegevenscorrectie."
+
+msgid "It is strongly recommended to backup your tree or your database first."
+msgstr ""
+"Het is sterk aanbevolen om eerst een back-up te maken van de stamboom of "
+"database."
+
+msgid "GEDCOM filter %s"
+msgstr "GEDCOM-filter %s"
+
+msgid "Select a GEDCOM filter"
+msgstr "Selecteer een GEDCOM-filter"
+
+msgid "Select a tree"
+msgstr "Selecteer een stamboom"
+
+msgid "GEDCOM Import"
+msgstr "GEDCOM-import"
+
+msgid "GEDCOM Export"
+msgstr "GEDCOM-export"
+
+msgid "Control panel"
+msgstr "Controlepaneel"
+
+msgid "Usage of GEDCOM filters"
+msgstr "Gebruik van GEDCOM-filters"
+
+msgid "Select GEDOM import/export/conversion/datafix"
+msgstr "Selecteer GEDOM import/export/conversie/gegevenscorrecties"
+
+msgid "Settings for List Menu"
+msgstr "Instellingen voor Lijstenmenu"
+
+msgid "Show menu item in list menu"
+msgstr "Menu-item in Lijstenmenu tonen"
+
+msgid ""
+"If this option is selected, a link to the %s page will be shown as a list "
+"menu item."
+msgstr ""
+"Als deze optie is geselecteerd, wordt een link naar de pagina %s weergegeven "
+"als een item in het Lijstenmenu."
+
+msgid "Settings for Remote Requests via URL"
+msgstr "Instellingen voor aanvragen op afstand via URL"
+
+msgid ""
+"Currently, remote downloading of GEDCOM files is allowed. Please note that "
+"everyone with access to the authorization key, can download/upload/save "
+"GEDCOM files from/to your webtrees installation."
+msgstr ""
+"Momenteel is downloaden van GEDCOM-bestanden op afstand toegestaan. Houd er "
+"rekening mee dat iedereen met toegang tot de autorisatiesleutel GEDCOM-"
+"bestanden kan downloaden/uploaden/opslaan van/naar uw webtrees-installatie."
+
+msgid "Allow remote requests via URL to download GEDCOM files"
+msgstr ""
+"Verzoeken op afstand via URL toestaan om GEDCOM-bestanden te downloaden"
+
+msgid "Allow"
+msgstr "Toestaan"
+
+msgid ""
+"By selecting this option, it is possible to activate remote downloads by "
+"calling an URL."
+msgstr ""
+"Door deze optie te selecteren is het mogelijk om downloads op afstand te "
+"activeren door een URL op te roepen."
+
+msgid "Allow remote requests via URL to save GEDCOM files to the server"
+msgstr ""
+"Verzoeken op afstand via URL toestaan om GEDCOM-bestanden op de server op te "
+"slaan"
+
+msgid ""
+"By selecting this option, it is possible to activate remote requests to save "
+"GEDCOM files on the server via calling an URL."
+msgstr ""
+"Door deze optie te selecteren, is het mogelijk om verzoeken op afstand te "
+"activeren om GEDCOM-bestanden op de server op te slaan door een URL op te "
+"roepen."
+
+msgid ""
+"Currently, remote uploading of GEDCOM files is allowed. Please note that "
+"everyone with access to the authorization key, can download/upload/save "
+"GEDCOM files from/to your webtrees installation."
+msgstr ""
+"Momenteel is het uploaden van GEDCOM-bestanden op afstand toegestaan. Houd "
+"er rekening mee dat iedereen met toegang tot de autorisatiesleutel GEDCOM-"
+"bestanden kan downloaden/uploaden/opslaan van/naar uw webtrees-installatie."
+
+msgid "Allow remote requests via URL to upload GEDCOM files"
+msgstr "Verzoeken op afstand via URL toestaan om GEDCOM-bestanden te uploaden"
+
+msgid ""
+"By selecting this option, it is possible to activate remote uploads via "
+"calling an URL."
+msgstr ""
+"Door deze optie te selecteren, is het mogelijk om uploads op afstand te "
+"activeren door een URL op te roepen."
+
+msgid "Allow remote requests via URL to convert GEDCOM files on the server"
+msgstr ""
+"Verzoeken op afstand via URL toestaan om GEDCOM-bestanden op de server te "
+"converteren"
+
+msgid ""
+"By selecting this option, it is possible to activate remote conversion of "
+"GEDCOM files on the server via calling an URL."
+msgstr ""
+"Door deze optie te selecteren, is het mogelijk om GEDCOM-bestanden op de "
+"server op afstand te converteren via een URL."
+
+msgid "Settings for the Authorization Key"
+msgstr "Instellingen voor de autorisatiesleutel"
+
+msgid ""
+"An authorization key is needed if remote requests via URL shall be used."
+msgstr ""
+"Een autorisatiesleutel is nodig als verzoeken op afstand via een URL worden "
+"gebruikt."
+
+msgid ""
+"Currently, the authorization key is not encrypted. This option is less "
+"secure and should only be used in local environments with limited users. "
+"Otherwise, please activate encrpytion of the authorization key."
+msgstr ""
+"Momenteel is de autorisatiesleutel niet versleuteld. Deze optie is minder "
+"veilig en zou alleen gebruikt moeten worden in lokale omgevingen met "
+"beperkte gebruikers. Activeer anders de versleuteling van de "
+"autorisatiesleutel."
+
+msgid ""
+"One of the options remote download/upload/save/convert is activated and the "
+"authorization key is empty or not available"
+msgstr ""
+"Een van de opties downloaden/uploaden/opslaan/converteren op afstand is "
+"geactiveerd en de autorisatiesleutel is leeg of niet beschikbaar"
+
+msgid "Current authorization key"
+msgstr "Huidige autorisatiesleutel"
+
+msgid ""
+"The authorization key cannot be shown, because encryption is activated. If "
+"you forgot the key, you have to create a new key."
+msgstr ""
+"De autorisatiesleutel kan niet worden weergegeven omdat versleuteling is "
+"geactiveerd. Als u de sleutel vergeten bent, moet u een nieuwe sleutel "
+"aanmaken."
+
+msgid "Authorization key has not been set yet"
+msgstr "Autorisatiesleutel is nog niet ingesteld"
+
+msgid "New authorization key"
+msgstr "Nieuwe autorisatiesleutel"
+
+msgid "Activate encryption of the authorization key"
+msgstr "Versleuteling van de autorisatiesleutel activeren"
+
+msgid "Activate"
+msgstr "Activeren"
+
+msgid ""
+"The encryption of the authorization key is more secure, because the "
+"authorization key is not visible to anyone and also encrypted in the "
+"database. However, the authorization key is not readible any more (e.g. for "
+"other administrators) and cannot be recovered if it is forgotten."
+msgstr ""
+"De versleuteling van de autorisatiesleutel is veiliger, omdat de "
+"autorisatiesleutel voor niemand zichtbaar is en ook versleuteld is in de "
+"database. De autorisatiesleutel is echter niet meer leesbaar (bijvoorbeeld "
+"voor andere beheerders) en kan niet worden teruggevonden als deze wordt "
+"vergeten."
+
+msgid "Setting for the Import/Export Folder on the webtrees Server"
+msgstr "Instelling voor de map Import/Export op de webtrees-server"
+
+msgid "Folder name"
+msgstr "Mapnaam"
+
+msgid ""
+"Currently, the folder to save is not a sub-directory of the webtrees data "
+"folder. It is highly recommended to use the webtrees data folder or a sub-"
+"directory, because webtrees protects unauthorized access to this folder. If "
+"you choose a folder outside of the webtrees data folder, the saved GEDCOM "
+"file might be unprotected against unauthorized access."
+msgstr ""
+"Op dit moment is de map om op te slaan geen submap van de webtrees-"
+"gegevensmap. Het wordt sterk aangeraden om de webtrees-gegevensmap of een "
+"submap te gebruiken, omdat webtrees onbevoegde toegang tot deze map "
+"beschermt. Als u een map buiten de webtrees-gegevensmap kiest, kan het "
+"opgeslagen GEDCOM-bestand onbeveiligd zijn tegen onbevoegde toegang."
+
+msgid ""
+"Relative path to a folder within the webtrees root path, where GEDCOM import/"
+"exports are saved. It is highly recommended to use the webtrees data folder "
+"or a sub-directory, because webtrees protects unauthorized access to the "
+"data folder. The current settings (Control panel / Website preferences) for "
+"the webtrees root and data folder are:"
+msgstr ""
+"Relatief pad naar een map binnen het webtrees-hoofdpad, waar GEDCOM-import/"
+"exports worden opgeslagen. Het wordt sterk aangeraden om de webtrees-"
+"gegevensmap of een submap te gebruiken, omdat webtrees onbevoegde toegang "
+"tot de gegevensmap beschermt. De huidige instellingen (Controlepaneel / "
+"Websitevoorkeuren) voor de webtrees-hoofd- en gegevensmap zijn:"
+
+msgid "webtrees root folder"
+msgstr "webtrees-hoofdmap"
+
+msgid "webtrees data folder"
+msgstr "webtrees-gegevensmap"
+
+msgid "webtrees data folder (relative path)"
+msgstr "webtrees-gegevensmap (relatief pad)"
+
+msgid "webtrees data folder (setting in the control panel)"
+msgstr "webtrees-gegevensmap (instelling in het controlepaneel)"
+
+msgid "Default Settings for Gedcom Export"
+msgstr "Standaardinstellingen voor GEDCOM-export"
+
+msgid ""
+"These settings are used as default values for exports, e.g. if certain "
+"parameter values are not provided within the URL. By specifying the default "
+"values, the URLs can be simplified. In the most extreme case, it is "
+"sufficient to provide the tree and the authorization key parameter only."
+msgstr ""
+"Deze instellingen worden gebruikt als standaardwaarden voor export, "
+"bijvoorbeeld als bepaalde parameterwaarden niet zijn opgegeven in de URL. "
+"Door de standaardwaarden op te geven, kunnen de URL's vereenvoudigd worden. "
+"In het meest extreme geval is het voldoende om alleen de stamboom en de "
+"autorisatiesleutelparameter op te geven."
+
+msgid ""
+"Any parameters provided in the URL of a remote download have a higher "
+"priority and will overrule the default settings."
+msgstr ""
+"Parameters in de URL van een download op afstand hebben een hogere "
+"prioriteit en overschrijven de standaardinstellingen."
+
+msgid "Default privacy level"
+msgstr "Standaard privacyniveau"
+
+msgid ""
+"Select the default privacy level. This privacy level will be chosen if no "
+"specific privacy level is provided as URL parameter."
+msgstr ""
+"Selecteer het standaard privacyniveau. Dit privacyniveau wordt gekozen als "
+"er geen specifiek privacyniveau is opgegeven als URL-parameter."
+
+msgid "Default export format"
+msgstr "Standaard exportformaat"
+
+msgid "includes media files"
+msgstr "inclusief mediabestanden"
+
+msgid ""
+"Select the default export format. This export format will be chosen if no "
+"specific export format is provided as URL parameter."
+msgstr ""
+"Selecteer het standaard exportformaat. Dit exportformaat wordt gekozen als "
+"er geen specifiek exportformaat is opgegeven als URL-parameter."
+
+msgid "Default encoding"
+msgstr "Standaardcodering"
+
+msgid "Default ending"
+msgstr "Standaard regeleinden"
+
+msgid ""
+"Select the default ending. This ending will be chosen if no specific ending "
+"is provided as URL parameter."
+msgstr ""
+"Selecteer de standaard regeleinde. Dit regeleinde wordt gekozen als er geen "
+"specifiek regeleinde is opgegeven als URL-parameter."
+
+msgid "Default time stamp"
+msgstr "Standaardtijdstempel"
+
+msgid ""
+"Select the default time stamp. This time stamp will be chosen if no specific "
+"time stamp is provided as URL parameter. If \"none\" is chosen, no time "
+"stamp will be used."
+msgstr ""
+"Selecteer de standaard tijdstempel. Deze tijdstempel wordt gekozen als er "
+"geen specifiek tijdstempel is opgegeven als URL-parameter. Als \"geen\" "
+"wordt gekozen, wordt er geen tijdstempel gebruikt."
+
+msgid "Default Settings for GEDCOM Filters"
+msgstr "Standaardinstellingen voor GEDCOM-filters"
+
+msgid "Default GEDCOM filter %s"
+msgstr "Standaard GEDCOM-filter %s"
+
+msgid ""
+"Select a default filter for GEDCOM filter %s. This filter will be chosen if "
+"no specific filter is provided as URL parameter."
+msgstr ""
+"Selecteer een standaardfilter voor GEDCOM-filter %s. Dit filter wordt "
+"gekozen als er geen specifiek filter is opgegeven als URL-parameter."
+
+msgid ""
+"In order to use changed settings for a download/upload, the settings need to "
+"be saved first."
+msgstr ""
+"Om gewijzigde instellingen te gebruiken voor een download/upload, moeten de "
+"instellingen eerst worden opgeslagen."

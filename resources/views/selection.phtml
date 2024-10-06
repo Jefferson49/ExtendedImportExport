@@ -2,6 +2,7 @@
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
+use Cissee\WebtreesExt\MoreI18N;
 use Fisharebest\Webtrees\Http\RequestHandlers\DataFixPage;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Services\ModuleService;
@@ -88,8 +89,8 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 		</li>
 		<li>
 			<span class="fa-li"><?= view('icons/preferences') ?></span>			
-			<a href="<?= e($download_gedcom_with_url->getConfigLink()) ?>" title="<?= I18N::translate('Preferences') ?>">
-				<?= I18N::translate('Preferences') ?>
+			<a href="<?= e($download_gedcom_with_url->getConfigLink()) ?>" title="<?= MoreI18N::xlate('Preferences') ?>">
+				<?= MoreI18N::xlate('Preferences') ?>
 			</a>
 		</li>
 	</ul>

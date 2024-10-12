@@ -259,7 +259,7 @@ The Remote URL depends on the installation path of webtrees and can be found in 
 
 ![Remote URL in the module setting](resources/img/url_for_remote_requests.jpg)
 
-The Remote URL might look like the following example:
+The Remote URL might look like the following example:  
 http://mysite.net/webtrees/index.php?route=%2Fwebtrees/ExtendedImportExport
 
 ### URL Format for Remote Requests

@@ -59,7 +59,7 @@ $request = app(ServerRequestInterface::class);
 assert($request instanceof ServerRequestInterface);
 
 $base_url   = Validator::attributes($request)->string('base_url');
-$path       = parse_url($base_url, PHP_URL_PATH);
+$path       = parse_url($base_url, PHP_URL_PATH) ?? '';
 $parameters = ['route' => $path];
 $url        = $base_url . '/index.php';
 

@@ -9,10 +9,13 @@ use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\Html;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Site;
+use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
+use Psr\Http\Message\ServerRequestInterface;
 
 use function e;
 
@@ -43,6 +46,24 @@ use function e;
 $any_remote_access_allowed = $allow_remote_download OR $allow_remote_upload OR $allow_remote_save OR $allow_remote_convert;
 
 $uses_https = strpos(Strtoupper($base_url), 'HTTPS://') === false ? false : true;
+
+if ($use_hash OR ($secret_key === '')) {
+	$text_shown_for_secret_key = '';
+}
+else {
+	$text_shown_for_secret_key = $secret_key;
+}
+
+// Create an ugly URL for the route to the module; to be used for remote requests via URL
+$request = app(ServerRequestInterface::class);
+assert($request instanceof ServerRequestInterface);
+
+$base_url   = Validator::attributes($request)->string('base_url');
+$path       = parse_url($base_url, PHP_URL_PATH);
+$parameters = ['route' => $path];
+$url        = $base_url . '/index.php';
+
+$remote_url = Html::url($url, $parameters) . DownloadGedcomWithURL::ROUTE_REMOTE_ACTION;
 
 ?>
 
@@ -79,6 +100,29 @@ $uses_https = strpos(Strtoupper($base_url), 'HTTPS://') === false ? false : true
 			</div>
 		</div>
 	</fieldset>		
+
+	<div class="h4">
+		<?= I18N::translate('URL for Remote Requests') ?>	
+	</div>
+	<div class="row">
+		<label class="col-sm-3 col-form-label wt-page-options-label">
+			<?= I18N::translate('Remote URL') ?>
+		</label>
+		<div class="col-sm-9 wt-page-options-value">
+			<span class="input-group-text"><?= e($remote_url) ?></span>
+		</div>		
+	</div>
+	<?= view('icons/spacer') ?>
+	<?php if ($text_shown_for_secret_key !== '') : ?>
+		<div class="row">
+		<label class="col-sm-3 col-form-label wt-page-options-label">
+			<?= I18N::translate('Remote URL with authorization key') ?>
+		</label>
+		<div class="col-sm-9 wt-page-options-value">
+			<span class="input-group-text"><?= e($remote_url . '&key=' . $text_shown_for_secret_key) ?></span>
+		</div>		
+	<?php endif ?>
+	<?= view('icons/spacer') ?>
 
 	<div class="h4">
 		<?= I18N::translate('Settings for Remote Requests via URL') ?>	
@@ -153,7 +197,7 @@ $uses_https = strpos(Strtoupper($base_url), 'HTTPS://') === false ? false : true
 	<div class="row mb-3">
 		<?php if ($any_remote_access_allowed && !$uses_https) : ?>
 			<div class="alert alert-danger">
-				<p><?= I18N::translate('Currently, webtrees does not use the HTTPS protocol. It is urgently recommended to use HTTPS in order to ensure the encrpytion of the authorization key within URL remote requests. HTTPS can be activated by changing "base_url" in the "config.ini.php". Currently, "base_url" does not start with "https://". ') ?></p>
+				<p><?= I18N::translate('Currently, webtrees does not use the HTTPS protocol. It is urgently recommended to use HTTPS in order to ensure the encrpytion of the authorization key within URL remote requests. HTTPS can be activated by changing "base_url" in the "config.ini.php". Currently, "base_url" does not start with "https://".') ?></p>
 			</div>
 		<?php endif ?>
 		<?php if ($secret_key !== '' && !$use_hash) : ?>
@@ -399,7 +443,7 @@ $uses_https = strpos(Strtoupper($base_url), 'HTTPS://') === false ? false : true
 			<p></p>
 			<button type="submit" class="btn btn-primary">
 				<?= view('icons/save') ?>
-				<?= MoreI18N::xlate('Save') ?>
+				<?= MoreI18N::xlate('save') ?>
 			</button>
 			<div class="form-text">
 				<?= I18N::translate('In order to use changed settings for a download/upload, the settings need to be saved first.')?>

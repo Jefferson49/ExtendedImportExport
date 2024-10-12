@@ -29,6 +29,7 @@ This README file contains the following main sections:
     +   [Details about GEDCOM Filter Execution](#details-about-gedcom-filter-execution)
     +   [GEDCOM Filter Validation](#gedcom-filter-validation)
 +   [Remote API](#remote-api)
+    + [Remote URL](#remote-url)
     + [URL Format for Remote Requests](#url-format-for-remote-requests)
     + [Example URLs for Remote Requests](#example-urls-for-remote-requests)
     + [Values for URL Parameters](#values-for-url-parameters)
@@ -85,11 +86,13 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 + After ExtendedImportExport has migrated the settings, DownloadGedcomWithURL can be removed and the related settings can be deleted (follow the message in the control panel after deletion of the module).
 
 ### Upgrading remote URL requests from the former DownloadGedcomWithURL module
-+ URL requests with old routes (BASE_URL/index.php?route=/webtrees/**DownloadGedcomWithURL**) are still supported.
-+ Old routes and new routes (BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**) can be used in parallel.
++ URL requests with old routes (WEBTREES_BASE_URL/index.php?route=/webtrees/**DownloadGedcomWithURL**) are still supported.
++ Old routes (/**DownloadGedcomWithURL**) and new routes (/**ExtendedImportExport**) can be used in parallel.
 + The **parameter** "**&tree**" **has become mandatory** in ExtendedImportExport. URL requests without "&tree" need to be changed and the mandatory parameter need to be added.
 + **Default settings for** "**&action**" and "**&tree**" in the control panel, which were available in In DownloadGedcomWithURL, are **not supported any more**.
 + The **parameter** "**&action**" **will default to "&action=download"** if "&action" is not included in the URL. In DownloadGedcomWithURL, the default was chosen from the control panel settings. URL requests without "&action" might need to be changed and the parameter might need to be added.
+
+Note: **WEBTREES_BASE_URL** stands for the "base_url" in the webtress config.ini.php file.
 
 ## Webtrees Version
 The module was developed and tested with [webtrees 2.1.20](https://webtrees.net/download), but should also run with any other 2.1 version.
@@ -249,10 +252,20 @@ There is also a check included, whether GEDCOM filter classes create PHP compila
 
 ## Remote API
 
+### Remote URL
+For calling the remote API, you need to identify the remote URL of the Extended Import/Export module, which is a specific webtrees route. 
+
+The Remote URL depends on the installation path of webtrees and can be found in the module settings in the control panel. You might want to copy/paste the URL to your browser or to a script.
+
+![Remote URL in the module setting](resources/img/url_for_remote_requests.jpg)
+
+The Remote URL might look like the following example:
+http://mysite.net/webtrees/index.php?route=%2Fwebtrees/ExtendedImportExport
+
 ### URL Format for Remote Requests
 The full URL format, which contains all possible parameters is defined as follows:
 
-**BASE_URL**/index.php?route=/webtrees/**ExtendedImportExport**  
+**REMOTE_URL**  
 &emsp;**&action**=[MY_ACTION](#MY_ACTION)  
 &emsp;**&tree**=[MY_TREE](#MY_TREE)  
 &emsp;**&key**=[MY_KEY](#MY_KEY)  
@@ -271,7 +284,7 @@ The full URL format, which contains all possible parameters is defined as follow
 &emsp;**&word_wrapped_notes**=[MY_WORD_WRAPPED_NOTES](#MY_WORD_WRAPPED_NOTES)  
 &emsp;**&gedcom_media_path**=[MY_GEDCOM_MEDIA_PATH](#MY_GEDCOM_MEDIA_PATH)
 
-**BASE_URL** is the webtrees base URL, which is defined in the config.ini.php file, e.g. base_url="https://dev.webtrees.net/demo-stable".
+**REMOTE_URL** is the webtrees route to call the remote API of the Extended Import/Export module, see chapter [Remote URL](#remote-url).
 
 The "MY_XXX" place holders need to be replaced by the specific parameter values, which shall be used for the upload/download/conversion. The possible values for the URL parameters are described below. 
 
@@ -281,13 +294,15 @@ It is not mandatory to provide all parameters. The only mandatory parameters are
 
 ### Example URLs for Remote Requests
 + **Save** an export file on the webtrees server:
-    + BASE_URL/index.php?route=/webtrees/ExtendedImportExport&tree=tree&**action=save**&key=hYHBiZM9
+    + REMOTE_URL&tree=tree&**action=save**&key=hYHBiZM9
 
 + **Import** a file from the webtrees server:
-    + BASE_URL/index.php?route=/webtrees/ExtendedImportExport&tree=tree1&**action=import**&key=hYHBiZM9&file=filename
+    + REMOTE_URL&tree=tree1&**action=import**&key=hYHBiZM9&file=filename
 
 + **Downlaod** a file with applying certain settings and a GEDCOM filter during export:
-    + BASE_URL/index.php?route=/webtrees/ExtendedImportExport&**action=download**&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_ExportFilter
+    + REMOTE_URL&**action=download**&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_ExportFilter
+
+For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
 ### Values for URL Parameters  
 * **<a name="MY_ACTION">MY_ACTION</a>** specifies whether the GEDCOM file will be uploaded, converted, downloaded, saved on the server, or both (downloaded and saved)
@@ -341,11 +356,13 @@ It is not mandatory to provide all parameters. The only mandatory parameters are
   * If the file path contains slashes, the value needs to be included in brackets 
 
 ### Example URLs for Remote URL Requests
-+ BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&tree=tree1&key=hYHBiZM9
++ REMOTE_URL&tree=tree1&key=hYHBiZM9
 
-+ BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&tree=tree1&key=hYHBiZM9file=export
++ REMOTE_URL&tree=tree1&key=hYHBiZM9file=export
 
-+ BASE_URL/index.php?route=/webtrees/**ExtendedImportExport**&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_GedcomFilter
++ REMOTE_URL&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_GedcomFilter
+
+For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
 ### Extending the Remote API with further parameters
 It is possible to add further parameters and values to the remote URL. The full set of parameters - either like described above or any freely added parameters - will be handed over to the GEDCOM filter in the **$param** variable of the **function customConvert**:

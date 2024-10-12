@@ -148,11 +148,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	//Routes
 	protected const ROUTE_REMOTE_ACTION_OLD = '/DownloadGedcomWithURL';
-	protected const ROUTE_REMOTE_ACTION = '/ExtendedImportExport';
-	protected const ROUTE_EXPORT_PAGE   = '/ExtendedGedcomExport';
-	protected const ROUTE_IMPORT_PAGE   = '/ExtendedGedcomImport';
-	protected const ROUTE_CONVERT_PAGE  = '/ExtendedGedcomConvert';
-	protected const ROUTE_SELECTION_PAGE = '/ExtendedImportExportSelection';
+	public const    ROUTE_REMOTE_ACTION     = '/ExtendedImportExport';
+	protected const ROUTE_EXPORT_PAGE       = '/ExtendedGedcomExport';
+	protected const ROUTE_IMPORT_PAGE       = '/ExtendedGedcomImport';
+	protected const ROUTE_CONVERT_PAGE      = '/ExtendedGedcomConvert';
+	protected const ROUTE_SELECTION_PAGE    = '/ExtendedImportExportSelection';
 
 	//Github repository
 	public const GITHUB_REPO = 'Jefferson49/ExtendedImportExport';

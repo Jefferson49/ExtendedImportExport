@@ -197,12 +197,12 @@ $remote_url = Html::url($url, $parameters) . DownloadGedcomWithURL::ROUTE_REMOTE
 	<div class="row mb-3">
 		<?php if ($any_remote_access_allowed && !$uses_https) : ?>
 			<div class="alert alert-danger">
-				<p><?= I18N::translate('Currently, webtrees does not use the HTTPS protocol. It is urgently recommended to use HTTPS in order to ensure the encrpytion of the authorization key within URL remote requests. HTTPS can be activated by changing "base_url" in the "config.ini.php". Currently, "base_url" does not start with "https://".') ?></p>
+				<p><?= I18N::translate('Currently, webtrees does not use the HTTPS protocol. It is urgently recommended to use HTTPS in order to ensure the encryption of the authorization key within URL remote requests. HTTPS can be activated by changing "base_url" in the "config.ini.php". Currently, "base_url" does not start with "https://".') ?></p>
 			</div>
 		<?php endif ?>
 		<?php if ($secret_key !== '' && !$use_hash) : ?>
 			<div class="alert alert-warning">
-				<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encrpytion of the authorization key.') ?></p>
+				<p><?= I18N::translate('Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encryption of the authorization key.') ?></p>
 			</div>  
 		<?php endif ?>
 		<?php if (($allow_remote_download OR $allow_remote_save OR $allow_remote_upload OR $allow_remote_convert) && $secret_key === '') : ?>

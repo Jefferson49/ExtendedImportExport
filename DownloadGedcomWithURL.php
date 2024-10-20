@@ -1699,7 +1699,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 //Create response
                 try {
                     $resource = $this->filtered_gedcom_export_service->filteredResource(
-                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set);
+                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params);
                     $this->root_filesystem->writeStream($folder_on_server . $export_file_name, $resource);
                 } 
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
 "POT-Creation-Date: 2024-10-13 11:48+0200\n"
-"PO-Revision-Date: 2024-10-13 11:48+0200\n"
+"PO-Revision-Date: 2024-11-17 10:18+0100\n"
 "Last-Translator: TheDutchJewel <thedutchjewel@gmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -289,7 +289,7 @@ msgstr "Privacyniveau niet geaccepteerd"
 
 #: DownloadGedcomWithURL.php:1621
 msgid "Export format not accepted"
-msgstr "Exportformaat niet geaccepteerd"
+msgstr "Exportindeling niet geaccepteerd"
 
 #: DownloadGedcomWithURL.php:1625
 msgid "Encoding not accepted"
@@ -503,7 +503,7 @@ msgstr "Conversie-instellingen"
 
 #: resources/views/convert.phtml:130 resources/views/export.phtml:98
 msgid "Other format (i.e. use extension of filename)"
-msgstr "Ander formaat (bijv. gebruik extensie van bestandsnaam)"
+msgstr "Andere indeling (bijv. gebruik extensie van bestandsnaam)"
 
 #: resources/views/convert.phtml:138
 msgid "Filename (converted)"
@@ -515,8 +515,8 @@ msgid ""
 "format. Select \"Other format\" to use the extension, which is provided "
 "within the filename."
 msgstr ""
-"De bestandsextensie wordt toegevoegd (of overschreven) volgens het "
-"geselecteerde formaat. Selecteer \"Ander formaat\" om de extensie te "
+"De bestandsextensie wordt toegevoegd (of overschreven) volgens de "
+"geselecteerde indeling. Selecteer \"Andere indeling\" om de extensie te "
 "gebruiken die is opgegeven in de bestandsnaam."
 
 #: resources/views/convert.phtml:185 resources/views/export.phtml:168
@@ -946,7 +946,7 @@ msgstr ""
 
 #: resources/views/settings.phtml:317
 msgid "Default export format"
-msgstr "Standaard exportformaat"
+msgstr "Standaard exportindeling"
 
 #: resources/views/settings.phtml:324 resources/views/settings.phtml:325
 msgid "includes media files"
@@ -957,12 +957,12 @@ msgid ""
 "Select the default export format. This export format will be chosen if no "
 "specific export format is provided as URL parameter."
 msgstr ""
-"Selecteer het standaard exportformaat. Dit exportformaat wordt gekozen als "
-"er geen specifiek exportformaat is opgegeven als URL-parameter."
+"Selecteer de standaard exportindeling. Deze exportindeling wordt gekozen als "
+"er geen specifieke exportindeling is opgegeven als URL-parameter."
 
 #: resources/views/settings.phtml:337
 msgid "Default encoding"
-msgstr "Standaardcodering"
+msgstr "Standaard codering"
 
 #: resources/views/settings.phtml:358
 msgid "Default ending"
@@ -973,12 +973,12 @@ msgid ""
 "Select the default ending. This ending will be chosen if no specific ending "
 "is provided as URL parameter."
 msgstr ""
-"Selecteer de standaard regeleinde. Dit regeleinde wordt gekozen als er geen "
+"Selecteer het standaard regeleinde. Dit regeleinde wordt gekozen als er geen "
 "specifiek regeleinde is opgegeven als URL-parameter."
 
 #: resources/views/settings.phtml:376
 msgid "Default time stamp"
-msgstr "Standaardtijdstempel"
+msgstr "Standaard tijdstempel"
 
 #: resources/views/settings.phtml:387
 msgid ""
@@ -986,7 +986,7 @@ msgid ""
 "time stamp is provided as URL parameter. If \"none\" is chosen, no time "
 "stamp will be used."
 msgstr ""
-"Selecteer de standaard tijdstempel. Deze tijdstempel wordt gekozen als er "
+"Selecteer het standaard tijdstempel. Dit tijdstempel wordt gekozen als er "
 "geen specifiek tijdstempel is opgegeven als URL-parameter. Als \"geen\" "
 "wordt gekozen, wordt er geen tijdstempel gebruikt."
 

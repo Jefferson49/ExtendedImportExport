@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2024-10-13 11:47+0200\n"
-"PO-Revision-Date: 2024-10-13 11:48+0200\n"
+"POT-Creation-Date: 2024-11-16 07:49+0100\n"
+"PO-Revision-Date: 2024-11-16 07:49+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -436,6 +436,10 @@ msgstr "GEDCOM 7 Konvertierung"
 #: resources/filter/IndividualNamesCsvGedcomFilter.php:35
 msgid "Individual names CSV list"
 msgstr "CSV Liste für Personen-Namen"
+
+#: resources/filter/MultipleSurnamesToOneGedcomFilter.php:33
+msgid "Convert multiple surnames to a single surname"
+msgstr "Mehrere Nachnamen in einen einzigen Nachnamen umwandeln"
 
 #: resources/filter/NoRecordsGedcomFilter.php:38
 msgid "No records"

@@ -85,6 +85,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
+use Jefferson49\Webtrees\Helpers\Functions;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToWriteFile;
@@ -218,7 +219,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function __construct()
     {
-	    $response_factory = app(ResponseFactoryInterface::class);
+        $response_factory = Functions::getInterfaceFromContainer(ResponseFactoryInterface::class);
         $this->stream_factory = new Psr17Factory();
         $this->data_fix_service = New DataFixService();
         $this->tree_service   = new TreeService(new GedcomImportService);

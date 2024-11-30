@@ -4,7 +4,7 @@
 
 # Extended Import/Export
 ### (Earlier name: DownloadGedcomWithURL)
-A [webtrees](https://webtrees.net) 2.1 custom module for **advanced GEDCOM import, export and filter operations**. The module also supports **remote downloads/uploads via URL requests**.
+A [webtrees](https://webtrees.net) 2.1/2.2 custom module for **advanced GEDCOM import, export and filter operations**. The module also supports **remote downloads/uploads via URL requests**.
 
 The module provides a framework for **customizable GEDCOM filters**, which allow to modify the GEDCOM data during an import/export. **A set of pre-configured GECCOM filters is provided**, which support GEDCOM 7 conversion as well as a variety of other GEDCOM filtering operations. The GEDCOM filters can be triggered remotely as well as by the user in specific import/export/conversion/datafix views.
 
@@ -96,7 +96,7 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 Note: **WEBTREES_BASE_URL** stands for the "base_url" in the webtress config.ini.php file.
 
 ## Webtrees Version
-The module was developed and tested with [webtrees 2.1.20](https://webtrees.net/download), but should also run with any other 2.1 version.
+The module was developed and tested with [webtrees 2.1.21 and 2.2.0](https://webtrees.net/download), but should also run with any other 2.1 or 2.2 version.
 
 ## GEDCOM filters
 

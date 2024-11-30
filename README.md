@@ -1,5 +1,6 @@
 [![Latest Release](https://img.shields.io/github/v/release/Jefferson49/ExtendedImportExport?display_name=tag)](https://github.com/Jefferson49/ExtendedImportExport/releases/latest)
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)](https://webtrees.net/download)
+[![webtrees major version](https://img.shields.io/badge/webtrees-v2.2.x-green)](https://webtrees.net/download)
 
 # Extended Import/Export
 ### (Earlier name: DownloadGedcomWithURL)

@@ -55,7 +55,7 @@ else {
 	$text_shown_for_secret_key = $secret_key;
 }
 
-$request = Functions::getInterfaceFromContainer(ServerRequestInterface::class);
+$request = Functions::getFromContainer(ServerRequestInterface::class);
 assert($request instanceof ServerRequestInterface);
 
 $base_url   = Validator::attributes($request)->string('base_url');

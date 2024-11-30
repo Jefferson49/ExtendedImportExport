@@ -42,7 +42,7 @@ class Functions
      *
      * @return mixed
      */
-    public static function getInterfaceFromContainer(string $id): mixed {
+    public static function getFromContainer(string $id): mixed {
 
         if (version_compare(Webtrees::VERSION, '2.2.0', '>=')) {
             return Registry::container()->get($id);

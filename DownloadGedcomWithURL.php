@@ -219,7 +219,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function __construct()
     {
-        $response_factory = Functions::getInterfaceFromContainer(ResponseFactoryInterface::class);
+        $response_factory = Functions::getFromContainer(ResponseFactoryInterface::class);
         $this->stream_factory = new Psr17Factory();
         $this->data_fix_service = New DataFixService();
         $this->tree_service   = new TreeService(new GedcomImportService);

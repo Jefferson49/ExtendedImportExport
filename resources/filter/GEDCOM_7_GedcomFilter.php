@@ -181,7 +181,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
      */      
     public function __construct() {
 
-        $iana_language_registry_file_name = __DIR__ . '/../../vendor/iana/iana_languages.txt';
+        $iana_language_registry_file_name = __DIR__ . '/../../resources/iana/iana_languages.txt';
         $iana_language_registry = file_get_contents($iana_language_registry_file_name);
         
         //Create language table

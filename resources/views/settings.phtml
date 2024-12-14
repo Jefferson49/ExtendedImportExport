@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
-use Cissee\WebtreesExt\MoreI18N;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -16,6 +17,7 @@ use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
 use Jefferson49\Webtrees\Helpers\Functions;
+use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Psr\Http\Message\ServerRequestInterface;
 
 use function e;

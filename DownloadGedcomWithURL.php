@@ -219,11 +219,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function __construct()
     {
-        $response_factory = Functions::getFromContainer(ResponseFactoryInterface::class);
-        $this->stream_factory = new Psr17Factory();
-        $this->data_fix_service = New DataFixService();
-        $this->tree_service   = new TreeService(new GedcomImportService);
-        $this->filtered_gedcom_export_service = new FilteredGedcomExportService($response_factory, $this->stream_factory);
+        //Caution: Do not use the shared library jefferson47/webtrees-common within __construct(), 
+        //         because it might result in wrong autoload behavior        
     }
 
     /**
@@ -235,6 +232,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         //Check update of module version
         $this->checkModuleVersionUpdate();
+
+        //Initialize services etc.
+        $response_factory = Functions::getFromContainer(ResponseFactoryInterface::class);
+        $this->stream_factory = new Psr17Factory();
+        $this->data_fix_service = New DataFixService();
+        $this->tree_service   = new TreeService(new GedcomImportService);
+        $this->filtered_gedcom_export_service = new FilteredGedcomExportService($response_factory, $this->stream_factory);
 
         //Initialize variables
         $this->matched_pattern_for_tag_combination_in_data_fix = [];

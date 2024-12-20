@@ -694,8 +694,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
        
         //Update custom module version if changed
         if($this->getPreference(self::PREF_MODULE_VERSION, '') !== self::CUSTOM_VERSION) {
-            $this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
-            $updated = true;
+
+            //Update module files
+            if (require __DIR__ . '/update_module_files.php') {
+                $this->setPreference(self::PREF_MODULE_VERSION, self::CUSTOM_VERSION);
+                $updated = true;    
+            }
         }
 
         if ($updated) {

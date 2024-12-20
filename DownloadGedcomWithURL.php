@@ -145,7 +145,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     private array $standard_params;
 
 	//Custom module version
-	public const CUSTOM_VERSION = '4.1.0';
+	public const CUSTOM_VERSION = '4.2.0';
 
 	//Routes
 	protected const ROUTE_REMOTE_ACTION_OLD = '/DownloadGedcomWithURL';

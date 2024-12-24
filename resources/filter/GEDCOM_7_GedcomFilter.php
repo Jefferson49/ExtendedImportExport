@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fisharebest\Webtrees\I18N;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 
 /**
  * A GEDCOM filter, which converts GEDCOM 5.5.1 to GEDCOM 7.0
@@ -33,6 +35,10 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         '*:*:AGE'                 	=> ["RegExp_macro" => "AgeConversion"],
         '*:*:*:AGE'                	=> ["RegExp_macro" => "AgeConversion"],
 
+        //Language conversion
+        '*:LANG' 	           		=> ["RegExp_macro" => "LanguageConversion"],		
+        '*:*:LANG'     	   			=> ["RegExp_macro" => "LanguageConversion"],		        
+
         //Modify header
         'HEAD'                      => [],
         '!HEAD:GEDC:FORM'           => [],
@@ -44,7 +50,6 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         '!HEAD:SUBN'                => [],
         '!HEAD:SUBN:*'              => [],
         'HEAD:GEDC:VERS'            => ["2 VERS 5.5.1" => "2 VERS 7.0.14"],
-        'HEAD:LANG'                 => ["PHP_function" => "customConvert"],
         'HEAD:*'                    => [],
 
         //External IDs (EXID)
@@ -77,10 +82,6 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         '*:*:NOTE'					=> ["RegExp_macro" => "SharedNotes"],
         '*:*:*:NOTE'				=> ["RegExp_macro" => "SharedNotes"],
         'NOTE'  					=> ["0 @([^@)]+)@ NOTE( ?)(.+)" => "0 @$1@ SNOTE$2$3"],
-
-        //Language conversion
-        '*:LANG' 	           		=> ["RegExp_macro" => "LanguageConversion"],		
-        '*:*:LANG'     	   			=> ["RegExp_macro" => "LanguageConversion"],		
 
         //GEDCOM-L
         'INDI:*:_GODP'             	=> ["RegExp_macro" => "_GODP_WITN"],
@@ -181,8 +182,8 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
      */      
     public function __construct() {
 
-        $iana_language_registry_file_name = __DIR__ . '/../../resources/iana/iana_languages.txt';
-        $iana_language_registry = file_get_contents($iana_language_registry_file_name);
+        $file_system = new Filesystem(new LocalFilesystemAdapter(__DIR__ . '/../iana/'));        
+        $iana_language_registry = $file_system->read('iana_languages.txt');
         
         //Create language table
         preg_match_all("/Type: language\nSubtag: ([^\n]+)\nDescription: ([^\n]+)\n/", $iana_language_registry, $matches, PREG_SET_ORDER);

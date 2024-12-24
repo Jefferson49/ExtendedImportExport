@@ -1,0 +1,2 @@
+# Linux line-endings for txt files (i.e. iana language files)
+*.txt text eol=lf

@@ -1085,7 +1085,7 @@ class FilteredGedcomExportService extends GedcomExportService
             $minimal = true;
 
             foreach ($sub_structures as $sub_structure) {
-                if (preg_match('/1 (' . Gedcom::REGEX_TAG . ') /', $sub_structure, $match)) {
+                if (preg_match('/1 (' . Gedcom::REGEX_TAG . ').*/', $sub_structure, $match)) {
                     $tag = $match[1];
 
                     if (!in_array($tag, ['SEX', 'FAMC', 'FAMS'])) {

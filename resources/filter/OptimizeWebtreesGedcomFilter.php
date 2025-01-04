@@ -131,4 +131,16 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
         }
         return $gedcom;
     }
+
+    /**
+     * Include a set of other filters, which shall be executed after the current filter
+     *
+     * @return array<GedcomFilterInterface>    A set of included GEDCOM filters
+     */
+    public function getIncludedFiltersAfter(): array {
+
+        return [
+            new AvoidLeadingSpacesForCONC_GedcomFilter(),
+        ];
+    }    
 }

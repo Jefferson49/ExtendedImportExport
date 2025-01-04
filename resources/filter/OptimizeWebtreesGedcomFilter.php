@@ -30,8 +30,9 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
         //Convert certain structures to lower case, because some other progams do not understand capital
         //INDI:RESN, FAM:RESN is converted below
         'INDI:NAME:TYPE'            => ["PHP_function" => "customConvert"],
-        'INDI:FAMC:STAT'            => ["PHP_function" => "customConvert"],   
-        'INDI:FAMC:PEDI'            => ["PHP_function" => "customConvert"],   
+        'INDI:FAMC:STAT'            => ["PHP_function" => "customConvert"],
+        'INDI:FAMC:PEDI'            => ["PHP_function" => "customConvert"],
+        'OBJE:FILE:FORM'            => ["PHP_function" => "customConvert"],
         'OBJE:FILE:FORM:TYPE'       => ["PHP_function" => "customConvert"],
         '*:OBJE:FILE:FORM:MEDI'     => ["PHP_function" => "customConvert"],
         '*:*:OBJE:FILE:FORM:MEDI'   => ["PHP_function" => "customConvert"],
@@ -73,11 +74,12 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
     ];
 
     protected const ENUMSET_VALUES = [
-        "AUDIO", "BOOK","CARD", "ELECTRONIC", "FICHE", "FILM", "MAGAZINE", "MANUSCRIPT", "MAP", "NEWSPAPER", "PHOTO", "TOMBSTONE", "VIDEO",
+        "AUDIO", "BOOK","CARD", "ELECTRONIC", "FICHE", "FILM", "MAGAZINE", "MANUSCRIPT", "MAP", "NEWSPAPER", "PHOTO", "TOMBSTONE", "VIDEO", "DOCUMENT", "CERTIFICATE", "OTHER",
         "ADOPTED", "BIRTH", "FOSTER", "SEALING",
         "CONFIDENTIAL", "LOCKED", "PRIVACY",
         "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED",
         "CHALLENGED", "DISPROVEN", "PROVEN",
+        "BMP", "GIF", "JPG", "OLE", "PCX", "TIF", "WAV", "PDF",
     ];      
 
     /**

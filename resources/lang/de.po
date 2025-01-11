@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2025-01-10 05:44+0100\n"
-"PO-Revision-Date: 2025-01-10 05:45+0100\n"
+"POT-Creation-Date: 2025-01-11 13:22+0100\n"
+"PO-Revision-Date: 2025-01-11 13:22+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -386,15 +386,15 @@ msgstr ""
 msgid "Extended GEDCOM Export"
 msgstr "Erweiterter GEDCOM-Export"
 
-#: FilteredGedcomExportService.php:808
+#: FilteredGedcomExportService.php:807
 msgid "The following GEDCOM structure could not be matched"
 msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
 
-#: FilteredGedcomExportService.php:982
+#: FilteredGedcomExportService.php:981
 msgid "Error during a regular expression replacement."
 msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
 
-#: FilteredGedcomExportService.php:1153
+#: FilteredGedcomExportService.php:1152
 msgid ""
 "Fatal error: Too many iterations while removing empty and unlinked records."
 msgstr ""
@@ -496,6 +496,10 @@ msgstr "ToDo-Daten (i.e. _TODO Strukturen) entfernen"
 #: resources/filter/RemoveWebtreesUserGedcomFilter.php:33
 msgid "Remove webtrees user data (i.e. _WT_USER tags)"
 msgstr "Daten zu webtrees Benutzern (d.h. _WT_USER Tags) entfernen"
+
+#: resources/filter/ReplaceXrefsInNotesAndText.php:60
+msgid "Replace XREFs by names in notes and text"
+msgstr "XREFs in Notizen und Text durch Namen ersetzen"
 
 #: resources/views/alert.phtml:22
 msgid "Custom module"

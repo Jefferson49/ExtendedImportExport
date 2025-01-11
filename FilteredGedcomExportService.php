@@ -242,7 +242,6 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param string                       $privacy        Filter records by role
      * @param string                       $line_endings
      * @param string                       $filename       Name of download file, without an extension
-     * @param string                             Extension for export file, e.g. ged, zip, gzd
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'

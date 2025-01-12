@@ -45,6 +45,7 @@ use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Validator;
+use Jefferson49\Webtrees\Helpers\Functions;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -98,7 +99,7 @@ class ExportGedcomPage implements RequestHandlerInterface
         }       
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
-        $tree_list = $download_gedcom_with_url->getTreeNameTitleList($tree_service->all());
+        $tree_list = Functions::getTreeNameTitleList($tree_service->all());
 
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::export',

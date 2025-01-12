@@ -41,6 +41,7 @@ use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Validator;
+use Jefferson49\Webtrees\Helpers\Functions;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -76,18 +77,18 @@ class SelectionPage implements RequestHandlerInterface
 
         $module_service = new ModuleService();
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
-        $tree_list = $download_gedcom_with_url->getTreeNameTitleList($download_gedcom_with_url->getAllTrees());
+        $tree_list = Functions::getTreeNameTitleList(Functions::getAllTrees());
         $default_tree = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, '');
 
-        if ($download_gedcom_with_url->isValidTree($tree_name) && array_key_exists($tree_name, $tree_list)) {
-            $tree = $download_gedcom_with_url->getAllTrees()[$tree_name];
+        if (Functions::isValidTree($tree_name) && array_key_exists($tree_name, $tree_list)) {
+            $tree = Functions::getAllTrees()[$tree_name];
         }
-        elseif ($download_gedcom_with_url->isValidTree($default_tree) && array_key_exists($default_tree, $tree_list)) {
-            $tree = $download_gedcom_with_url->getAllTrees()[$default_tree];
+        elseif (Functions::isValidTree($default_tree) && array_key_exists($default_tree, $tree_list)) {
+            $tree = Functions::getAllTrees()[$default_tree];
         }
         elseif (sizeof($tree_list) > 0) {
             $tree_name = array_key_first($tree_list);
-            $tree = $download_gedcom_with_url->getAllTrees()[$tree_name];
+            $tree = Functions::getAllTrees()[$tree_name];
         }
         else {
             return $download_gedcom_with_url->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);

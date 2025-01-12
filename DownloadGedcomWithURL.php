@@ -39,7 +39,6 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
-use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -82,7 +81,6 @@ use Fisharebest\Webtrees\View;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Capsule\Manager as DB;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Jefferson49\Webtrees\Helpers\Functions;
@@ -459,7 +457,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
         
         //Generate a tree list with all the trees, the user has access to; authorization is checked in tree service
-        $tree_list = $this->getTreeNameTitleList($this->tree_service->all());
+        $tree_list = Functions::getTreeNameTitleList($this->tree_service->all());
 
         //Check the Gedcom filters, which are defined in the prefernces
         $this->checkFilterPreferences(self::PREF_DEFAULT_GEDCOM_FILTER1);
@@ -655,7 +653,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */    
     public function listIsEmpty(Tree $tree): bool
     {
-        $tree_list = $this->getTreeNameTitleList($this->tree_service->all());
+        $tree_list = Functions::getTreeNameTitleList($this->tree_service->all());
 
         if (sizeof($tree_list) === 0 OR !boolval($this->getPreference(self::PREF_SHOW_MENU_LIST_ITEM, '0'))) {
             return true;
@@ -719,8 +717,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $updated_settings = false;
 
         //If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1)
-        if(     $this->getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_SECRET_KEY, '') !== '' 
-            &&  $this->getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_USE_HASH, '') === '') {
+        if(     Functions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_SECRET_KEY, '') !== '' 
+            &&  Functions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_USE_HASH, '') === '') {
 
             //Set secret key hashing to false
             $this->setPreference(self::PREF_USE_HASH, '0');
@@ -747,7 +745,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         ];   
 
         foreach($preferences as $preference) {
-            $setting_value = $this->getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, $preference, '');
+            $setting_value = Functions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, $preference, '');
 
             if ($setting_value !== '') {
                 $this->setPreference($preference, $setting_value);
@@ -760,24 +758,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $message = I18N::translate('The preferences for the custom module %s were imported from the earlier custom module version %s.', $this->title(), 'DownloadGedcomWithURL');
             FlashMessages::addMessage($message, 'success');	
         }  
-    }
-
-    /**
-     * Get a module setting for a module. Return a default if the setting is not set.
-     *
-     * @param string $module_name
-     * @param string $setting_name
-     * @param string $default
-     *
-     * @return string
-     */
-    final public function getPreferenceForModule(string $module_name, string $setting_name, string $default = ''): string
-    {
-        //Code from: webtrees AbstractModule->getPreference
-        return DB::table('module_setting')
-            ->where('module_name', '=', $module_name)
-            ->where('setting_name', '=', $setting_name)
-            ->value('setting_value') ?? $default;
     }
 
     /**
@@ -817,54 +797,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return $gedcom_filter_class_name;
     }
 
-    /**
-     * All the trees, even if current user has no permission to access
-     * This is a modifyed version of the all method of TreeService (which only returns trees with permission)
-     *
-     * @return Collection<array-key,Tree>
-     */
-    public function getAllTrees(): Collection
-    {
-        return Registry::cache()->array()->remember('all-trees', static function (): Collection {
-            // All trees
-            $query = DB::table('gedcom')
-                ->leftJoin('gedcom_setting', static function (JoinClause $join): void {
-                    $join->on('gedcom_setting.gedcom_id', '=', 'gedcom.gedcom_id')
-                        ->where('gedcom_setting.setting_name', '=', 'title');
-                })
-                ->where('gedcom.gedcom_id', '>', 0)
-                ->select([
-                    'gedcom.gedcom_id AS tree_id',
-                    'gedcom.gedcom_name AS tree_name',
-                    'gedcom_setting.setting_value AS tree_title',
-                ])
-                ->orderBy('gedcom.sort_order')
-                ->orderBy('gedcom_setting.setting_value');
-
-            return $query
-                ->get()
-                ->mapWithKeys(static function (object $row): array {
-                    return [$row->tree_name => Tree::rowMapper()($row)];
-                });
-        });
-    }
-
-    /**
-     * Check if tree is a valid tree
-     *
-     * @return bool
-     */ 
-    public function isValidTree(string $tree_name): bool
-    {
-       $find_tree = $this->getAllTrees()->first(static function (Tree $tree) use ($tree_name): bool {
-           return $tree->name() === $tree_name;
-       });
-       
-       $is_valid_tree = $find_tree instanceof Tree;
-       
-       return $is_valid_tree;
-    }
-
 	 
 	/**
      * Show error message in the front end
@@ -897,26 +829,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		   'text'  	   	    => $text,
 	   ]);	 
 	}
-
-	/**
-     * Get an array [name => title] for all trees, for which the current user is manager
-     * 
-     * @param Collection $trees The trees, for which the list shall be generated
-     *
-     * @return array            error message
-     */ 
-     public function getTreeNameTitleList(Collection $trees): array {
-
-        $tree_list = [];
-
-        foreach($trees as $tree) {
-            if (Auth::isManager($tree)) {
-                $tree_list[$tree->name()] = $tree->name() . ' (' . $tree->title() . ')';
-            }
-        }   
-
-        return $tree_list;
-     }
 
 	/**
      * Load classes for Gedcom filters
@@ -1532,10 +1444,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $action                    = Validator::queryParams($request)->string('action', self::ACTION_DOWNLOAD);
 
             if ($action !== self::ACTION_CONVERT) {
-                if (!$this->isValidTree($tree_name)) {
+                if (!Functions::isValidTree($tree_name)) {
                     return $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
                 } else {
-                    $tree = $this->getAllTrees()[$tree_name];
+                    $tree = Functions::getAllTrees()[$tree_name];
                 }                
             }
 
@@ -1567,7 +1479,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $action                    = Validator::parsedBody($request)->string('action', self::ACTION_DOWNLOAD);
 
             if ($action !== self::ACTION_CONVERT) {
-                $tree = $this->getAllTrees()[$tree_name];
+                $tree = Functions::getAllTrees()[$tree_name];
             }
 
             $called_from_control_panel = Validator::parsedBody($request)->boolean('called_from_control_panel', false);

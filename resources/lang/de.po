@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2025-01-12 06:04+0100\n"
-"PO-Revision-Date: 2025-01-12 06:04+0100\n"
+"POT-Creation-Date: 2025-01-12 06:55+0100\n"
+"PO-Revision-Date: 2025-01-12 06:55+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -464,6 +464,10 @@ msgid ""
 msgstr ""
 "INDI Datensätze mit minimalem Inhalt (d.h. SEX, FAMC FAMS oder weniger) auf "
 "leere INDI Datensätze reduzieren"
+
+#: resources/filter/RemoveAllMediaObjectsGedcomFilter.php:41
+msgid "Remove all media objects"
+msgstr "Alle Medienobjekte entfernen"
 
 #: resources/filter/RemoveAllNotesGedcomFilter.php:41
 msgid "Remove all notes"

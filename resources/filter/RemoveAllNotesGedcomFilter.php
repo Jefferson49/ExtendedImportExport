@@ -7,9 +7,9 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 use Fisharebest\Webtrees\I18N;
 
 /**
- * A GEDCOM filter, which includes all records (i.e. everything)
+ * A GEDCOM filter, which removes all notes and their references
  */
-class DeleteNotesGedcomFilter extends AbstractGedcomFilter
+class RemoveAllNotesGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
       

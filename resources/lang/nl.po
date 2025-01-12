@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
 "POT-Creation-Date: 2024-11-30 07:11+0100\n"
-"PO-Revision-Date: 2024-11-30 07:13+0100\n"
+"PO-Revision-Date: 2025-01-12 18:42+0100\n"
 "Last-Translator: TheDutchJewel <thedutchjewel@gmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -457,6 +457,18 @@ msgstr ""
 "Reduceer minimale INDI-records (met SEX, FAMC, FAMS of minder) tot lege INDI-"
 "records"
 
+#: resources/filter/RemoveAllMediaObjectsGedcomFilter.php:41
+msgid "Remove all media objects"
+msgstr "Verwijder alle mediaobjecten"
+
+#: resources/filter/RemoveAllNotesGedcomFilter.php:41
+msgid "Remove all notes"
+msgstr "Verwijder alle notities"
+
+#: resources/filter/RemoveAllSourcesGedcomFilter.php:46
+msgid "Remove all sources"
+msgstr "Verwijder alle bronnen"
+
 #: resources/filter/RemoveAsteriskCharactersFromNamesGedcomFilter.php:33
 msgid "Remove asterisk characters from names"
 msgstr "Verwijder ster-tekens uit namen"
@@ -484,6 +496,10 @@ msgstr "Verwijder ToDo-gegevens (d.w.z. _TODO-structuren)"
 #: resources/filter/RemoveWebtreesUserGedcomFilter.php:33
 msgid "Remove webtrees user data (i.e. _WT_USER tags)"
 msgstr "Verwijder webtrees-gebruikersgegevens (d.w.z. _WT_USER-labels)"
+
+#: resources/filter/ReplaceXrefsInNotesAndText.php:60
+msgid "Replace XREFs by names in notes and text"
+msgstr "Vervang XREF's door namen in notities en tekst"
 
 #: resources/views/alert.phtml:22
 msgid "Custom module"

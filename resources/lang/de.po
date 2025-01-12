@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DownloadGedcomWithURL\n"
-"POT-Creation-Date: 2025-01-11 13:22+0100\n"
-"PO-Revision-Date: 2025-01-11 13:22+0100\n"
+"POT-Creation-Date: 2025-01-12 06:04+0100\n"
+"PO-Revision-Date: 2025-01-12 06:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -468,6 +468,10 @@ msgstr ""
 #: resources/filter/RemoveAllNotesGedcomFilter.php:41
 msgid "Remove all notes"
 msgstr "Alle Notizen entfernen"
+
+#: resources/filter/RemoveAllSourcesGedcomFilter.php:46
+msgid "Remove all sources"
+msgstr "Alle Quellen entfernen"
 
 #: resources/filter/RemoveAsteriskCharactersFromNamesGedcomFilter.php:33
 msgid "Remove asterisk characters from names"

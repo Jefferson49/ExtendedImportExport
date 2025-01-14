@@ -7,7 +7,7 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 use Fisharebest\Webtrees\I18N;
 
 /**
- * A GEDCOM filter, which converts NAME patterns with multiple to one single surname
+ * A GEDCOM filter, which converts NAME patterns with multiple names to one single surname
  */
 class MultipleSurnamesToOneGedcomFilter extends AbstractGedcomFilter
 {    

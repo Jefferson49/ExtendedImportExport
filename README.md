@@ -134,20 +134,25 @@ Further insights about GEDCOM filters can be gained by refering to the following
 |[Birth, marriage, death export](resources/filter/BirthMarriageDeathGedcomFilter.php)|Exports INDI and FAM data and only include limited facts about birth marriage, and death|
 |[Combined GEDCOM filter](resources/filter/CombinedGedcomFilter.php)|An example how several filters can be combined to a filter, which executes a sequence of filters|
 |[Example GEDCOM filter](resources/filter/ExampleGedcomFilter.php)|An example filter, which demonstrates the principle features of GEDCOM filters|
-|[GEDCOM 7 conversion](resources/filter/GEDCOM_7_GedcomFilter.php)|A filter, which converts the GEDCOM export to the GEDCOM 7 standard|
+|[GEDCOM 7 conversion](resources/filter/GEDCOM_7_GedcomFilter.php)|Converts the GEDCOM export to the GEDCOM 7 standard|
 |[Individual names CSV list](resources/filter/IndividualNamesCsvGedcomFilter.php)|An example, how GEDCOM filters can be used to generate alternative formats, e.g. CSV, JSON, etc.|
+|[Multiple surnames to one](resources/filter/MultipleSurnamesToOneGedcomFilter.php)|Converts NAME patterns with multiple names to one single surname|
 |[No records](resources/filter/NoRecordsGedcomFilter.php)|A template, which only exports HEAD/SUBM/TRLR, as a starting point to create your own GEDCOM filter|
-|[Optimization of webtrees export for GEDCOM 7](resources/filter/OptimizeWebtreesGEDCOM_7_GedcomFilter.php)|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard|
-|[Optimization of webtrees export for GEDCOM 5.5.1](resources/filter/OptimizeWebtreesGedcomFilter.php)|A GEDCOM filter, which changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard|
-|[Reduce dates to years](resources/filter/ReduceDatesToYearsGedcomFilter.php)|A GEDCOM filter, which reduces all dates to years only|
-|[Remove minimal individuals](resources/filter/ReduceMinimalIndividualsGedcomFilter.php)|A GEDCOM filter, which identifys individuals with SEX/FAMC/FAMS or less and removes their data|
-|[Remove asterisk characters from names](resources/filter/RemoveAsteriskCharactersFromNamesGedcomFilter.php)|A GEDCOM filter, which removes asterisk characters (i.e. '*') from names. Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.|
-|[Remove change data (i.e. CHAN structures)](resources/filter/RemoveChangeDataGedcomFilter.php)|A GEDCOM filter, which removes CHAN structures|
-|[Remove empty or unlinked records](resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php)|A GEDCOM filter to remove empty and unlinked records. Applied to: FAM, NOTE, OBJE, REPO, SOUR, _LOC. For INDI, only empty records are removed.|
-|[Remove empty records](resources/filter/RemoveEmptyRecordsGedcomFilter.php)|A GEDCOM filter to remove empty records. Applied to: FAM, INDI, NOTE, OBJE, REPO, SOUR, _LOC|
-|[Remove restrictions (i.e. RESN tags)](resources/filter/RemoveRestrictionsGedcomFilter.php)|A GEDCOM filter, which removes RESN structures|
-|[Remove ToDo data (i.e. _TODO structures)](resources/filter/RemoveToDoDataGedcomFilter.php)|A GEDCOM filter, which removes _TODO structures|
-|[Remove webtrees user data (i.e. _WT_USER tags)](resources/filter/RemoveWebtreesUserGedcomFilter.php)|A GEDCOM filter, which removes webtrees user structures, i.e. _WT_USER|
+|[Optimization of webtrees export for GEDCOM 7](resources/filter/OptimizeWebtreesGEDCOM_7_GedcomFilter.php)|Changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 7.0 standard|
+|[Optimization of webtrees export for GEDCOM 5.5.1](resources/filter/OptimizeWebtreesGedcomFilter.php)|Changes some of the webtrees GEDCOM structures in order to improve complicance to the GEDCOM 5.5.1 standard|
+|[Reduce dates to years](resources/filter/ReduceDatesToYearsGedcomFilter.php)|Reduces all dates to years only|
+|[Remove minimal individuals](resources/filter/ReduceMinimalIndividualsGedcomFilter.php)|Identifys individuals with SEX/FAMC/FAMS or less and removes their data|
+|[Remove all media objects](resources/filter/RemoveAllMediaObjectsGedcomFilter.php)|Removes all notes and their references|
+|[Remove all notes](resources/filter/RemoveAllNotesGedcomFilter.php)|Removes all notes and their references|
+|[Remove all sources](resources/filter/RemoveAllSouresGedcomFilter.php)|Removes all sources and their references|
+|[Remove asterisk characters from names](resources/filter/RemoveAsteriskCharactersFromNamesGedcomFilter.php)|Removes asterisk characters (i.e. '*') from names. Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.|
+|[Remove change data (i.e. CHAN structures)](resources/filter/RemoveChangeDataGedcomFilter.php)|Removes CHAN structures|
+|[Remove empty or unlinked records](resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php)|Removes empty and unlinked records. Applied to: FAM, NOTE, OBJE, REPO, SOUR, _LOC. For INDI, only empty records are removed.|
+|[Remove empty records](resources/filter/RemoveEmptyRecordsGedcomFilter.php)|Removes empty records. Applied to: FAM, INDI, NOTE, OBJE, REPO, SOUR, _LOC|
+|[Remove restrictions (i.e. RESN tags)](resources/filter/RemoveRestrictionsGedcomFilter.php)|Removes RESN structures|
+|[Remove ToDo data (i.e. _TODO structures)](resources/filter/RemoveToDoDataGedcomFilter.php)|Removes _TODO structures|
+|[Remove webtrees user data (i.e. _WT_USER tags)](resources/filter/RemoveWebtreesUserGedcomFilter.php)|Removes webtrees user structures, i.e. _WT_USER|
+|[Remove webtrees user data (i.e. _WT_USER tags)](resources/filter/ReplaceXrefsInNotesAndText.php)|Replaces XREFs in notes and text|
 
 ### How to use GEDCOM filters
 There are 2 options to open the user views for GEDCOM filter:

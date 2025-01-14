@@ -14,7 +14,7 @@ use Fisharebest\Webtrees\Tree;
 
 
 /**
- * A GEDCOM filter, which includes all records (i.e. everything)
+ * A GEDCOM filter, which replaces XREFs in notes and text
  */
 class ReplaceXrefsInNotesAndText extends AbstractGedcomFilter
 {

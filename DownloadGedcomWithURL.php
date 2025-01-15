@@ -80,7 +80,6 @@ use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Support\Collection;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Jefferson49\Webtrees\Helpers\Functions;
@@ -143,7 +142,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     private array $standard_params;
 
 	//Custom module version
-	public const CUSTOM_VERSION = '4.2.1';
+	public const CUSTOM_VERSION = '4.2.2';
 
 	//Routes
 	protected const ROUTE_REMOTE_ACTION_OLD = '/DownloadGedcomWithURL';

@@ -152,7 +152,7 @@ Further insights about GEDCOM filters can be gained by refering to the following
 |[Remove restrictions (i.e. RESN tags)](resources/filter/RemoveRestrictionsGedcomFilter.php)|Removes RESN structures|
 |[Remove ToDo data (i.e. _TODO structures)](resources/filter/RemoveToDoDataGedcomFilter.php)|Removes _TODO structures|
 |[Remove webtrees user data (i.e. _WT_USER tags)](resources/filter/RemoveWebtreesUserGedcomFilter.php)|Removes webtrees user structures, i.e. _WT_USER|
-|[Remove webtrees user data (i.e. _WT_USER tags)](resources/filter/ReplaceXrefsInNotesAndText.php)|Replaces XREFs in notes and text|
+|[Replace XREFs in notes and text](resources/filter/ReplaceXrefsInNotesAndText.php)|Replaces XREFs in notes and text|
 
 ### How to use GEDCOM filters
 There are 2 options to open the user views for GEDCOM filter:

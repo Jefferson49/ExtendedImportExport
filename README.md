@@ -316,8 +316,8 @@ It is not mandatory to provide all parameters. The only mandatory parameters are
 For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
 ### Values for URL Parameters  
-* **<a name="MY_ACTION">MY_ACTION</a>** specifies whether the GEDCOM file will be uploaded, converted, downloaded, saved on the server, or both (downloaded and saved)
-  * Accepted values: **download** (default), save, both, upload, convert, renumber_tree, merge_trees
+* **<a name="MY_ACTION">MY_ACTION</a>** specifies whether the GEDCOM file will be uploaded, converted, downloaded, saved on the server, or both (downloaded and saved); or if a tree shall be created, renumbered or merged with another tree.
+  * Accepted values: **download** (default), save, both, upload, convert, create_tree, renumber_tree, merge_trees
   * The folder within the webtrees root path to save GEDCOM files can be specified in the module settings in the control panel
 
 * **<a name="MY_TREE">MY_TREE</a>** specifies the webtrees tree name

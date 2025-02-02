@@ -51,6 +51,7 @@ use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Http\RequestHandlers\ManageTrees;
+use Fisharebest\Webtrees\Http\RequestHandlers\MergeTreesAction;
 use Fisharebest\Webtrees\Http\RequestHandlers\RenumberTreeAction;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Individual;
@@ -194,12 +195,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const PREF_DEFAULT_TIME_STAMP = 'default_time_stamp';
     
     //Actions
-    public const ACTION_DOWNLOAD = 'download';
-    public const ACTION_SAVE     = 'save';
-    public const ACTION_BOTH     = 'both';
-    public const ACTION_UPLOAD   = 'upload';
-    public const ACTION_CONVERT  = 'convert';
-    public const ACTION_RENUMBER_XREF  = 'renumber_tree';    
+    public const ACTION_DOWNLOAD      = 'download';
+    public const ACTION_SAVE          = 'save';
+    public const ACTION_BOTH          = 'both';
+    public const ACTION_UPLOAD        = 'upload';
+    public const ACTION_CONVERT       = 'convert';
+    public const ACTION_RENUMBER_XREF = 'renumber_tree';
+    public const ACTION_MERGE_TREES   = 'merge_trees';
     public const CALLED_FROM_CONTROL_PANEL = "called_from_control_panel";
 
     //Time stamp values
@@ -1444,6 +1446,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         if ($request->getMethod() === RequestMethodInterface::METHOD_GET) {
 
             $tree_name                 = Validator::queryParams($request)->string('tree', '');
+            $tree_to_merge_name        = Validator::queryParams($request)->string('tree_to_merge', '');
             $action                    = Validator::queryParams($request)->string('action', self::ACTION_DOWNLOAD);
 
             if ($action !== self::ACTION_CONVERT) {
@@ -1451,6 +1454,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     return $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
                 } else {
                     $tree = Functions::getAllTrees()[$tree_name];
+                }                
+            }
+            if ($action === self::ACTION_MERGE_TREES) {
+                if (!Functions::isValidTree($tree_to_merge_name)) {
+                    return $this->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_to_merge_name);
+                } else {
+                    $tree_to_merge = Functions::getAllTrees()[$tree_to_merge_name];
                 }                
             }
 
@@ -1549,7 +1559,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			return $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
         }       
         //Error action is not valid
-        if (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_UPLOAD, self::ACTION_CONVERT, self::ACTION_RENUMBER_XREF])) {
+        if (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_UPLOAD, self::ACTION_CONVERT, self::ACTION_RENUMBER_XREF, self::ACTION_MERGE_TREES])) {
 			return $this->showErrorMessage(I18N::translate('Action not accepted') . ': ' . $action);
         }  
 		//Error if line ending is not valid
@@ -1569,12 +1579,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             //Generate a request for the RenumberTreeAction
             $request         = Functions::getFromContainer(ServerRequestInterface::class);
-            $request         = $request->withAttribute('tree', $tree instanceof Tree ? $tree: null);
-            $request         = $request->withParsedBody(['tree' => $tree]);
+            $request         = $request->withAttribute('tree', $tree instanceof Tree ? $tree : null);
 
             $request_handler = new RenumberTreeAction(new AdminService, new TimeoutService);
         
-            return $request_handler->handle($request);            
+            return $request_handler->handle($request);
+        }
+        elseif ($action === self::ACTION_MERGE_TREES) {
+
+            //Generate a request for the MergeTreesAction
+            $request         = Functions::getFromContainer(ServerRequestInterface::class);
+            $request         = $request->withParsedBody(['tree1_name' => $tree_to_merge->name(), 'tree2_name' => $tree->name()]);
+
+            $request_handler = new MergeTreesAction(new AdminService, new TreeService(new GedcomImportService));
+        
+            return $request_handler->handle($request);
         }
         
         if ($gedcom_filter1 !== '' OR $gedcom_filter2 !== '' OR $gedcom_filter3 !== '') {

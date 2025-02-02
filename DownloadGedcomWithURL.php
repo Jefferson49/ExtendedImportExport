@@ -51,6 +51,7 @@ use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Http\RequestHandlers\ManageTrees;
+use Fisharebest\Webtrees\Http\RequestHandlers\RenumberTreeAction;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Individual;
 use Fisharebest\Webtrees\Location;
@@ -69,9 +70,11 @@ use Fisharebest\Webtrees\Module\ModuleListInterface;
 use Fisharebest\Webtrees\Module\ModuleListTrait;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Repository;
+use Fisharebest\Webtrees\Services\AdminService;
 use Fisharebest\Webtrees\Services\DataFixService;
 use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\TreeService;
+use Fisharebest\Webtrees\Services\TimeoutService;
 use Fisharebest\Webtrees\Source;
 use Fisharebest\Webtrees\Submitter;
 use Fisharebest\Webtrees\Site;
@@ -195,7 +198,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const ACTION_SAVE     = 'save';
     public const ACTION_BOTH     = 'both';
     public const ACTION_UPLOAD   = 'upload';
-    public const ACTION_CONVERT  = 'convert';    
+    public const ACTION_CONVERT  = 'convert';
+    public const ACTION_RENUMBER_XREF  = 'renumber_tree';    
     public const CALLED_FROM_CONTROL_PANEL = "called_from_control_panel";
 
     //Time stamp values
@@ -1545,7 +1549,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			return $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
         }       
         //Error action is not valid
-        if (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_UPLOAD, self::ACTION_CONVERT])) {
+        if (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_UPLOAD, self::ACTION_CONVERT, self::ACTION_RENUMBER_XREF])) {
 			return $this->showErrorMessage(I18N::translate('Action not accepted') . ': ' . $action);
         }  
 		//Error if line ending is not valid
@@ -1559,6 +1563,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		//Error if conversion and no file name provided
         if (!$called_from_control_panel && $action === self::ACTION_CONVERT && $filename === '') {
 			return $this->showErrorMessage(I18N::translate('No file name provided for the requested GEDCOM conversion'));
+        }
+
+        if ($action === self::ACTION_RENUMBER_XREF) {
+
+            //Generate a request for the RenumberTreeAction
+            $request         = Functions::getFromContainer(ServerRequestInterface::class);
+            $request         = $request->withAttribute('tree', $tree instanceof Tree ? $tree: null);
+            $request         = $request->withParsedBody(['tree' => $tree]);
+
+            $request_handler = new RenumberTreeAction(new AdminService, new TimeoutService);
+        
+            return $request_handler->handle($request);            
         }
         
         if ($gedcom_filter1 !== '' OR $gedcom_filter2 !== '' OR $gedcom_filter3 !== '') {

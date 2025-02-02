@@ -274,6 +274,7 @@ The full URL format, which contains all possible parameters is defined as follow
 **REMOTE_URL**  
 &emsp;**&action**=[MY_ACTION](#MY_ACTION)  
 &emsp;**&tree**=[MY_TREE](#MY_TREE)  
+&emsp;**&tree_to_merge**=[TREE_TO_MERGE](#TREE_TO_MERGE)  
 &emsp;**&key**=[MY_KEY](#MY_KEY)  
 &emsp;**&file**=[MY_FILENAME](#MY_FILENAME)  
 &emsp;**&file_converted**=[MY_FILENAME_CONVERTED](#MY_FILENAME_CONVERTED)  
@@ -308,15 +309,22 @@ It is not mandatory to provide all parameters. The only mandatory parameters are
 + **Downlaod** a file with applying certain settings and a GEDCOM filter during export:
     + REMOTE_URL&**action=download**&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_ExportFilter
 
++ **Merge a tree into another tree**:
+    + REMOTE_URL&**action=merge_trees**&tree_to_merge=tree1&tree=tree2&key=hYHBiZM9
+
+
 For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
 ### Values for URL Parameters  
 * **<a name="MY_ACTION">MY_ACTION</a>** specifies whether the GEDCOM file will be uploaded, converted, downloaded, saved on the server, or both (downloaded and saved)
-  * Accepted values: **download** (default), save, both, upload, convert
+  * Accepted values: **download** (default), save, both, upload, convert, renumber_tree, merge_trees
   * The folder within the webtrees root path to save GEDCOM files can be specified in the module settings in the control panel
 
 * **<a name="MY_TREE">MY_TREE</a>** specifies the webtrees tree name
   * This is a mandatory parameter. If it is not provided in the URL, the remote request will be denied.
+
+* **<a name="TREE_TO_MERGE">TREE_TO_MERGE</a>** specifies the tree name, which shall be merged into tree
+  * This is an optional parameter, which is only relevant if the action parameter ([MY_ACTION](#MY_ACTION)) has the value "merge_trees". In this case, [TREE_TO_MERGE](#TREE_TO_MERGE) will be merged into [MY_TREE](#MY_TREE).
 
 * **<a name="MY_KEY">MY_KEY</a>** specifies a authorization key, which restricts the access to the download
   * This is a mandatory parameter. If it is not provided in the URL, the remote request will be denied.
@@ -360,15 +368,6 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 * **<a name="MY_GEDCOM_MEDIA_PATH">MY_GEDCOM_MEDIA_PATH</a>** specifies a part of the media file path, which shall be removed from file names during the GEDCOM import
   * Accepted values: A file path used in the GEDCOM import file, e.g. "C:\Documents\"
   * If the file path contains slashes, the value needs to be included in brackets 
-
-### Example URLs for Remote URL Requests
-+ REMOTE_URL&tree=tree1&key=hYHBiZM9
-
-+ REMOTE_URL&tree=tree1&key=hYHBiZM9file=export
-
-+ REMOTE_URL&action=both&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_GedcomFilter
-
-For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
 ### Extending the Remote API with further parameters
 It is possible to add further parameters and values to the remote URL. The full set of parameters - either like described above or any freely added parameters - will be handed over to the GEDCOM filter in the **$param** variable of the **function customConvert**:
@@ -430,9 +429,9 @@ If you experience any bugs or have a feature request for this webtrees custom mo
 + [GNU General Public License, Version 3](LICENSE.md)
 + webtrees
     + webtrees: online genealogy
-    + Copyright (C) 2024 [webtrees development team](http://webtrees.net)
+    + Copyright (C) 2025 [webtrees development team](http://webtrees.net)
 + Extended Import/Export (webtrees custom module)
-    + Copyright (C) 2024 [Jefferson49](https://github.com/Jefferson49)
+    + Copyright (C) 2025 [Jefferson49](https://github.com/Jefferson49)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

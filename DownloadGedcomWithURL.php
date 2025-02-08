@@ -587,7 +587,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			if (is_dir($folder_to_save)) {
 				$this->setPreference(self::PREF_FOLDER_TO_SAVE, $folder_to_save);
 			} else {
-				FlashMessages::addMessage(I18N::translate('The folder settings could not be saved, because the folder “%s” does not exist.', e($folder_to_save)), 'danger');
+				FlashMessages::addMessage(I18N::translate('The folder settings could not be saved, because the folder "%s" does not exist.', e($folder_to_save)), 'danger');
 			}
 
             //Save settings to preferences

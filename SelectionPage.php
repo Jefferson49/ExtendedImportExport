@@ -48,7 +48,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 
 /**
- * View the settings page
+ * View the selection page
  */
 class SelectionPage implements RequestHandlerInterface
 {

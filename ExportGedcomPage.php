@@ -79,10 +79,11 @@ class ExportGedcomPage implements RequestHandlerInterface
     {
         $this->layout = 'layouts/administration';
 
-        $tree_name               = Validator::queryParams($request)->string('tree_name');
-        $default_gedcom_filter1  = Validator::queryParams($request)->string('default_gedcom_filter1', MoreI18N::xlate('None'));
-        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter2', MoreI18N::xlate('None'));
-        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter3', MoreI18N::xlate('None'));
+        $tree_name              = Validator::queryParams($request)->string('tree_name');
+        $export_clippings_cart  = Validator::queryParams($request)->boolean('export_clippings_cart', false);
+        $default_gedcom_filter1 = Validator::queryParams($request)->string('default_gedcom_filter1', MoreI18N::xlate('None'));
+        $default_gedcom_filter2 = Validator::queryParams($request)->string('default_gedcom_filter2', MoreI18N::xlate('None'));
+        $default_gedcom_filter3 = Validator::queryParams($request)->string('default_gedcom_filter3', MoreI18N::xlate('None'));
 
         $tree_service = new TreeService(new GedcomImportService());
         $tree = $tree_service->all()[$tree_name];
@@ -99,14 +100,16 @@ class ExportGedcomPage implements RequestHandlerInterface
         }       
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
-        $tree_list = Functions::getTreeNameTitleList($tree_service->all());
+
+        $title = $export_clippings_cart ? I18N::translate('Clippings Cart') . ' — ' : '';
+        $title .= e($tree->title());
 
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::export',
             [
-                'title'                    => I18N::translate('Extended GEDCOM Export') . ' — ' . e($tree->title()),
+                'title'                    => I18N::translate('Extended GEDCOM Export') . ' — ' . $title,
                 'tree'                     => $tree,
-                'tree_list'                => $tree_list,
+                'export_clippings_cart'    => $export_clippings_cart,
                 'zip_available'            => extension_loaded('zip'),
                 'default_action'           => DownloadGedcomWithURL::ACTION_DOWNLOAD,
                 'default_format'           => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
@@ -117,7 +120,7 @@ class ExportGedcomPage implements RequestHandlerInterface
                 'gedcom_filter_list'       => $gedcom_filter_list,
                 'default_gedcom_filter1'   => $default_gedcom_filter1,
                 'default_gedcom_filter2'   => $default_gedcom_filter2,
-                'default_gedcom_filter3'   => $default_gedcom_filter2,
+                'default_gedcom_filter3'   => $default_gedcom_filter3,
             ]
         );
     }

@@ -45,6 +45,7 @@ use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Exceptions\FileUploadException;
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Gedcom;
@@ -77,6 +78,7 @@ use Fisharebest\Webtrees\Services\DataFixService;
 use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Services\TimeoutService;
+use Fisharebest\Webtrees\Session;
 use Fisharebest\Webtrees\Source;
 use Fisharebest\Webtrees\Submitter;
 use Fisharebest\Webtrees\Site;
@@ -279,7 +281,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             ->get(ExportGedcomPage::class, self::ROUTE_EXPORT_PAGE)
             ->allows(RequestMethodInterface::METHOD_POST);
 
-            //Register a route for the convert view
+        //Register a route for the convert view
         $router
             ->get(ConvertGedcomPage::class, self::ROUTE_CONVERT_PAGE)
             ->allows(RequestMethodInterface::METHOD_POST);
@@ -1430,6 +1432,72 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
 	/**
+     * Get the records stored in the clippings cart
+     * Code from: ClippingsCartModule, function postDownloadAction
+     *
+     * @param  Tree       $tree
+     * @param  string     $privacy
+     * @return Collection
+     */	
+    private function getClippingsCartRecords(Tree $tree, string $privacy): Collection
+    {    
+        $cart = Session::get('cart');
+        $cart = is_array($cart) ? $cart : [];
+
+        $xrefs = array_keys($cart[$tree->name()] ?? []);
+        $xrefs = array_map('strval', $xrefs); // PHP converts numeric keys to integers.
+
+        $records = new Collection();
+
+        switch ($privacy) {
+            case 'gedadmin':
+                $access_level = Auth::PRIV_NONE;
+                break;
+            case 'user':
+                $access_level = Auth::PRIV_USER;
+                break;
+            case 'visitor':
+                $access_level = Auth::PRIV_PRIVATE;
+                break;
+            case 'none':
+            default:
+                $access_level = Auth::PRIV_HIDE;
+                break;
+        }        
+
+        foreach ($xrefs as $xref) {
+            $object = Registry::gedcomRecordFactory()->make($xref, $tree);
+            // The object may have been deleted since we added it to the cart....
+            if ($object instanceof GedcomRecord && $object->canShow($access_level)) {
+                $gedcom = $object->privatizeGedcom($access_level);
+
+                // Remove links to objects that aren't in the cart
+                $patterns = [
+                    '/\n1 ' . Gedcom::REGEX_TAG . ' @(' . Gedcom::REGEX_XREF . ')@(?:\n[2-9].*)*/',
+                    '/\n2 ' . Gedcom::REGEX_TAG . ' @(' . Gedcom::REGEX_XREF . ')@(?:\n[3-9].*)*/',
+                    '/\n3 ' . Gedcom::REGEX_TAG . ' @(' . Gedcom::REGEX_XREF . ')@(?:\n[4-9].*)*/',
+                    '/\n4 ' . Gedcom::REGEX_TAG . ' @(' . Gedcom::REGEX_XREF . ')@(?:\n[5-9].*)*/',
+                ];
+
+                foreach ($patterns as $pattern) {
+                    preg_match_all($pattern, $gedcom, $matches, PREG_SET_ORDER);
+
+                    foreach ($matches as $match) {
+                        if (!in_array($match[1], $xrefs, true)) {
+                            // Remove the reference to any object that isn't in the cart
+                            $gedcom = str_replace($match[0], '', $gedcom);
+                        }
+                    }
+                }
+
+                $records->add($gedcom);
+            }
+        }
+
+        return $records;
+    }
+
+	/**
      * Execute the request (from URL or from control panel) to download or save 
      * 
      * @param ServerRequestInterface $request
@@ -1498,6 +1566,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }
 
             $called_from_control_panel = Validator::parsedBody($request)->boolean('called_from_control_panel', false);
+            $export_clippings_cart     = Validator::parsedBody($request)->boolean('export_clippings_cart', false);
             $filename                  = Validator::parsedBody($request)->string('filename', $tree_name);
             $filename_converted        = Validator::parsedBody($request)->string('filename_converted', '');
             $format                    = Validator::parsedBody($request)->string('format', 'gedcom');
@@ -1515,6 +1584,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $keep_media                = Validator::parsedBody($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
                 $word_wrapped_notes        = Validator::parsedBody($request)->boolean('word_wrapped_notes', boolval($tree->getPreference('WORD_WRAPPED_NOTES', '0')));
                 $gedcom_media_path         = Validator::parsedBody($request)->string('gedcom_media_path', $tree->getPreference('GEDCOM_MEDIA_PATH', ''));
+            }
+
+            if ($export_clippings_cart) {
+                $clippings_cart_records = $this->getClippingsCartRecords($tree, $privacy);
+                // If export of clippings cart, privacy rules are already handled in $this->getClippingsCartRecords; for further export, privacy is 'none' 
+                $privacy = 'none';
+            }
+            else {
+                $clippings_cart_records = null;
             }
         }
         else {
@@ -1667,7 +1745,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 //Create response
                 try {
                     $resource = $this->filtered_gedcom_export_service->filteredResource(
-                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params);
+                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params, $clippings_cart_records, $export_clippings_cart);
                     $this->root_filesystem->writeStream($folder_on_server . $export_file_name, $resource);
                 } 
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
@@ -1701,7 +1779,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_DOWNLOAD, '0'))) {
                 try {
                     //Create response
-                    $response = $this->filtered_gedcom_export_service->filteredDownloadResponse($tree, true, $encoding, $privacy, $line_endings, $filename, $extension, $format, $gedcom_filter_set, $params);
+                    $response = $this->filtered_gedcom_export_service->filteredDownloadResponse($tree, true, $encoding, $privacy, $line_endings, $filename, $extension, $format, $gedcom_filter_set, $params, $clippings_cart_records, $export_clippings_cart);
                 }
                 catch (DownloadGedcomWithUrlException $ex) {
                     return $this->showErrorMessage($ex->getMessage());

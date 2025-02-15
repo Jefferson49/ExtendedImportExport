@@ -59,14 +59,26 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 			<span class="fa-li"><?= view('icons/download') ?></span>
 			<a href="<?= e(route(ExportGedcomPage::class, [
 				'tree_name'              => $tree->name(),
+                'export_clippings_cart'  => false,
 				'default_gedcom_filter1' => $default_gedcom_filter1,
 				'default_gedcom_filter2' => $default_gedcom_filter2,
 				'default_gedcom_filter3' => $default_gedcom_filter3,
 				])) ?>">
-				<?= I18N::translate('GEDCOM Export') ?>
+				<?= I18N::translate('GEDCOM Export Tree') ?>
 			</a>
 		</li>
 		<li>
+			<span class="fa-li"><?= view('icons/download') ?></span>
+			<a href="<?= e(route(ExportGedcomPage::class, [
+                'tree_name'              => $tree->name(),
+                'export_clippings_cart'  => true,
+				'default_gedcom_filter1' => $default_gedcom_filter1,
+				'default_gedcom_filter2' => $default_gedcom_filter2,
+				'default_gedcom_filter3' => $default_gedcom_filter3,
+				])) ?>">
+				<?= I18N::translate('GEDCOM Export Clippings Cart') ?>
+			</a>
+		</li>		<li>
 			<span class="fa-li"><?= view('icons/copy') ?></span>
 			<a href="<?= e(route(ConvertGedcomPage::class, [
 				'tree_name'              => $tree->name(),

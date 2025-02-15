@@ -174,12 +174,13 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
      * @param string                       $encoding       Convert from UTF-8 to other encoding
      * @param string                       $privacy        Filter records by role
-     * @param string                       $line_endings
+     * @param string                       $line_endings   CRLF or LF
      * @param string                       $filename       Name of download file, without an extension
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param Collection<int,string|object|GedcomRecord>|null $records
+     * @param bool                         $head_and_trlr  Whether to add HEAD and TRKR if just a collection of records is exported     
      * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
      * @param string|null                  $media_path     Location within the zip filesystem
      *
@@ -195,7 +196,8 @@ class FilteredGedcomExportService extends GedcomExportService
         string $format,
         array $gedcom_filters = null,
         array $params = [],
-        Collection $records = null,
+        ?Collection $records = null,
+        ?bool $head_and_trlr = false,        
         ?FilesystemOperator $zip_filesystem = null,
         ?string $media_path = null        
     ) {
@@ -203,7 +205,7 @@ class FilteredGedcomExportService extends GedcomExportService
 
         if ($format === 'gedcom' OR $format === 'other') {
             //Create export
-            return $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_filters, $params, $records);
+            return $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_filters, $params, $records, $head_and_trlr);
         }
 
         // Create a new/empty .ZIP file
@@ -222,7 +224,7 @@ class FilteredGedcomExportService extends GedcomExportService
         }
 
         //Create export
-        $resource = $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_filters, $params, $records, $zip_filesystem, $media_path);
+        $resource = $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_filters, $params, $records, $head_and_trlr, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
             $zip_filesystem->writeStream('gedcom.ged', $resource);
@@ -240,12 +242,13 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
      * @param string                       $encoding       Convert from UTF-8 to other encoding
      * @param string                       $privacy        Filter records by role
-     * @param string                       $line_endings
+     * @param string                       $line_endings   CRLF or LF
      * @param string                       $filename       Name of download file, without an extension
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * @param Collection|null              $records
+     * @param Collection|null              $records        Just export these records
+     * @param bool                         $head_and_trlr  Whether to add HEAD and TRKR if just a collection of records is exported     
      * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
      * @param string|null                  $media_path     Location within the zip filesystem     
      *
@@ -263,13 +266,14 @@ class FilteredGedcomExportService extends GedcomExportService
         array $gedcom_filters = null,
         array $params = [],
         ?Collection $records = null,
+        ?bool $head_and_trlr = false,        
         ?FilesystemOperator $zip_filesystem = null,
         ?string $media_path = null        
     ): ResponseInterface {
 
         if ($format === 'gedcom' OR $format === 'other') {
             //Create export
-            $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filters, $params, $records);
+            $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filters, $params, $records, $head_and_trlr);
             $stream = $this->stream_factory->createStreamFromResource($resource);
 
             return $this->response_factory->createResponse()
@@ -279,7 +283,7 @@ class FilteredGedcomExportService extends GedcomExportService
         }
         
         //Create export
-        $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filters, $params, $records, $zip_filesystem, $media_path);
+        $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filters, $params, $records, $head_and_trlr, $zip_filesystem, $media_path);
         $stream = $this->stream_factory->createStreamFromResource($resource);
 
         if ($format === 'gedzip') {
@@ -305,6 +309,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<GedcomFilterInterface>                    $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                                   $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
+     * @param bool                                            $head_and_trlr  Whether to add HEAD and TRKR if just a collection of records is exported     
      * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
      * 
@@ -319,6 +324,7 @@ class FilteredGedcomExportService extends GedcomExportService
         array $gedcom_filters = [],
         array $params = [],
         ?Collection $records = null,
+        ?bool $head_and_trlr = false,
         ?FilesystemOperator $zip_filesystem = null,
         ?string $media_path = null
     ) {
@@ -336,10 +342,17 @@ class FilteredGedcomExportService extends GedcomExportService
 
         if ($records instanceof Collection) {
             // Export just these records - e.g. from clippings cart.
-            $data = [
-                $records,
-            ];
-
+            if ($head_and_trlr) {
+                $data = [
+                    new Collection([$this->createHeader($tree, $encoding, false)]),
+                    $records,
+                    new Collection(['0 TRLR']),
+                    ];    
+            } else {
+                $data = [
+                    $records,
+                ];    
+            }
         } elseif ($access_level === Auth::PRIV_HIDE) {
             // If we will be applying privacy filters, then we will need the GEDCOM record objects.
             $data = [
@@ -477,7 +490,7 @@ class FilteredGedcomExportService extends GedcomExportService
      *
      * @param Tree   $tree
      * @param string $encoding
-     * @param bool   $include_sub
+     * @param bool   $include_sub   Include SUBM or SUBN
      *
      * @return string
      */

@@ -55,6 +55,15 @@ class ConvertOldCensusMarkupGedcomFilter extends AbstractGedcomFilter
             return $gedcom;
         }
 
+        $table_header = preg_replace("/1 CONT \.start_formatted_area\.\n1 CONT (.*)\n/", "$1", $gedcom);
+        $table_columns = substr_count($table_header, '|');
+        $line = '-';
+
+        while ($table_columns > 0) {
+            $line .= '|-';
+            $table_columns --;
+        }
+
         //RegExp search => replace pairs
         $replace_pairs = [
             "/1 CONT \.start_formatted_area\.\n1 CONT (.*)\n/" => "1 CONT\n1 CONT $1\n1 CONT -|-|-|-|-\n",

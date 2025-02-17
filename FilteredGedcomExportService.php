@@ -180,7 +180,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param Collection<int,string|object|GedcomRecord>|null $records
-     * @param bool                         $head_and_trlr  Whether to add HEAD and TRKR if just a collection of records is exported     
+     * @param bool                         $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
      * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
      * @param string|null                  $media_path     Location within the zip filesystem
      *
@@ -248,7 +248,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param Collection|null              $records        Just export these records
-     * @param bool                         $head_and_trlr  Whether to add HEAD and TRKR if just a collection of records is exported     
+     * @param bool                         $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
      * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
      * @param string|null                  $media_path     Location within the zip filesystem     
      *
@@ -309,7 +309,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<GedcomFilterInterface>                    $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                                   $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
-     * @param bool                                            $head_and_trlr  Whether to add HEAD and TRKR if just a collection of records is exported     
+     * @param bool                                            $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
      * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
      * 

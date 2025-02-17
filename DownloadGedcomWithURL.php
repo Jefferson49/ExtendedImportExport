@@ -46,6 +46,7 @@ use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Exceptions\FileUploadException;
 use Fisharebest\Webtrees\Auth;
+use Fisharebest\Webtrees\Factories\GedcomRecordFactory;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Gedcom;
@@ -1014,6 +1015,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Reset matched patterns at the start of the data fix 
         $this->matched_pattern_for_tag_combination_in_data_fix = [];
 
+        //Reset stored gedcom filters and records to fix
+        Session::forget('gedcom_filters');
+        Session::forget('records_to_fix');
+
         //Load Gedcom filters
         try {
             self::loadGedcomFilterClasses();
@@ -1044,6 +1049,25 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function recordsToFix(Tree $tree, array $params): Collection
     {
+        $current_gedcom_filters = [
+            $params['gedcom_filter1'], 
+            $params['gedcom_filter2'], 
+            $params['gedcom_filter3'],
+        ];
+
+        //If filters have changed, save filters to session and reset cached records to fix
+        if ($current_gedcom_filters !== Session::get('gedcom_filters')) {
+
+            Session::put('gedcom_filters',  $current_gedcom_filters);
+            Session::forget('records_to_fix');
+        }
+
+        $cached_records_to_fix = Session::get('records_to_fix');
+
+        if ($cached_records_to_fix !== null) {
+            return $cached_records_to_fix;
+        }
+
         $families     = $this->familiesToFixQuery($tree, $params)->pluck('f_id');
         $individuals  = $this->individualsToFixQuery($tree, $params)->pluck('i_id');
         $locations    = $this->locationsToFixQuery($tree, $params)->pluck('o_id');
@@ -1053,11 +1077,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $sources      = $this->sourcesToFixQuery($tree, $params)->pluck('s_id');
         $submitters   = $this->submittersToFixQuery($tree, $params)->pluck('o_id');
 
+        $records = new Collection();
+
+        //Add HEAD
         $header = new stdClass;
         $header->xref = 'HEAD';
         $header->type = 'HEAD';
-
-        $records = new Collection([$header]);
+        
+        $records = $records->concat([$header]);
         
         if ($families !== null) {
             $records = $records->concat($this->mergePendingRecords($families, $tree, Family::RECORD_TYPE));
@@ -1091,17 +1118,41 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $records = $records->concat($this->mergePendingRecords($submitters, $tree, Submitter::RECORD_TYPE));
         }
 
+        //Add TRLR
         $trailer = new stdClass;
         $trailer->xref = 'TRLR';
         $trailer->type = 'TRLR';
 
         $records = $records->concat([$trailer]);
 
-        return $records
+        //Sort records
+        $records = $records
             ->unique()
             ->sort(static function (object $x, object $y) {
                 return $x->xref <=> $y->xref;
             });
+
+        $records_to_fix = new Collection();
+        $gedcom_factory = new GedcomRecordFactory();
+
+        //Get filters
+        $this->gedcom_filters_in_data_fix = $this->getGedcomFiltersFromParams($params);
+
+        //Identify records, which are modified by the used filters
+        foreach ($records as $record) {
+
+            $gedcom_record = $gedcom_factory->make($record->xref, $tree, null);
+  
+            if ($this->isRecordCModifiedByFilters($gedcom_record, $this->gedcom_filters_in_data_fix)) {
+
+                $records_to_fix->add($record);
+            }
+        }
+
+        //Save found records to session to prevent re-calculation in list views
+        Session::put('records_to_fix', $records_to_fix);
+
+        return $records_to_fix;
     }
 
     /**
@@ -1125,6 +1176,25 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         $gedcom = $record->gedcom();
         $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $this->gedcom_filters_in_data_fix, $this->matched_pattern_for_tag_combination_in_data_fix, $this->standard_params);
+
+        $old = $gedcom . "\n";
+        $new = $filtered_records[0] ?? $gedcom;
+
+        return $new !== $old;
+    }
+
+    /**
+     * Will a GEDCOM record be modified by a set of GEDCOM filters 
+     *
+     * @param GedcomRecord                 $record
+     * @param array<GedcomFilterInterface> $gedcom_filters
+     *
+     * @return bool
+     */
+    public function isRecordCModifiedByFilters(GedcomRecord $record, array $gedcom_filters): bool
+    {
+        $gedcom = $record->gedcom();
+        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $gedcom_filters, $this->matched_pattern_for_tag_combination_in_data_fix, $this->standard_params);
 
         $old = $gedcom . "\n";
         $new = $filtered_records[0] ?? $gedcom;

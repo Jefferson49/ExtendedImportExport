@@ -45,7 +45,6 @@ use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Validator;
-use Jefferson49\Webtrees\Helpers\Functions;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -101,7 +100,7 @@ class ExportGedcomPage implements RequestHandlerInterface
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
 
-        $title = $export_clippings_cart ? I18N::translate('Clippings Cart') . ' — ' : '';
+        $title = $export_clippings_cart ? MoreI18N::xlate('Clippings cart') . ' — ' : '';
         $title .= e($tree->title());
 
         return $this->viewResponse(

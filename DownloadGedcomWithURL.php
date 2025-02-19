@@ -39,13 +39,13 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Exceptions\FileUploadException;
-use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Factories\GedcomRecordFactory;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\FlashMessages;
@@ -177,6 +177,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const VAR_GEDOCM_FILTER = 'gedcom_filter';
     public const VAR_GEDCOM_FILTER_LIST = 'gedcom_filter_list';
     public const VAR_DATA_FIX_TYPES = 'types';
+    public const VAR_DATA_FIX_DEFAULT_TYPE = 'default_type';
 
     //Prefences, Settings
 	public const PREF_MODULE_VERSION = 'module_version';
@@ -214,6 +215,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const TIME_STAMP_POSTFIX = 'postfix';
     public const TIME_STAMP_NONE    = 'none';
 
+    //Session values
+    public const SESSION_GEDCOM_FILTERS = 'gedcom_filters';
+    public const SESSION_RECORD_TYPE = 'record_type';
+    public const SESSION_RECORDS_TO_FIX = 'records_to_fix';
+
 	//Alert tpyes
 	public const ALERT_DANGER = 'alert_danger';
 	public const ALERT_SUCCESS = 'alert_success';
@@ -221,6 +227,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //Maximum level of includes for Gedcom filters
     private const MAXIMUM_FILTER_INCLUDE_LEVELS = 10;
 
+    //All GEDCOM records (for record selection in datafix)
+    private const ALL_RECORDS = 'ALL';
+    private const HEAD = 'HEAD';
 
    /**
      * DownloadGedcomWithURL constructor.
@@ -1027,6 +1036,19 @@ class DownloadGedcomWithURL extends AbstractModule implements
             FlashMessages::addMessage($ex->getMessage(), 'danger');
         }
 
+        $types = [
+            self::ALL_RECORDS       => MoreI18N::xlate('All'),
+            self::HEAD              => MoreI18N::xlate('Header'),
+            Family::RECORD_TYPE     => MoreI18N::xlate('Families'),
+            Individual::RECORD_TYPE => MoreI18N::xlate('Individuals'),
+            Location::RECORD_TYPE   => MoreI18N::xlate('Locations'),
+            Media::RECORD_TYPE      => MoreI18N::xlate('Media objects'),
+            Note::RECORD_TYPE       => MoreI18N::xlate('Notes'),
+            Repository::RECORD_TYPE => MoreI18N::xlate('Repositories'),
+            Source::RECORD_TYPE     => MoreI18N::xlate('Sources'),
+            Submitter::RECORD_TYPE  => MoreI18N::xlate('Submitters'),
+        ];        
+
         return view(
             self::viewsNamespace() . '::options',
             [
@@ -1034,6 +1056,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 self::VAR_GEDOCM_FILTER . '1'   => '',
                 self::VAR_GEDOCM_FILTER . '2'   => '',
                 self::VAR_GEDOCM_FILTER . '3'   => '',
+                self::VAR_DATA_FIX_TYPES        => $types,
+                self::VAR_DATA_FIX_DEFAULT_TYPE => self::ALL_RECORDS,
             ]
         );
     }
@@ -1050,19 +1074,22 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public function recordsToFix(Tree $tree, array $params): Collection
     {
         $current_gedcom_filters = [
-            $params['gedcom_filter1'], 
-            $params['gedcom_filter2'], 
-            $params['gedcom_filter3'],
+            $params[self::VAR_GEDOCM_FILTER . '1'], 
+            $params[self::VAR_GEDOCM_FILTER . '2'], 
+            $params[self::VAR_GEDOCM_FILTER . '3'], 
         ];
 
-        //If filters have changed, save filters to session and reset cached records to fix
-        if ($current_gedcom_filters !== Session::get('gedcom_filters')) {
+        $record_type = $params['type'];
 
-            Session::put('gedcom_filters',  $current_gedcom_filters);
-            Session::forget('records_to_fix');
+        //If filters or types have changed, save to session and reset cached records to fix
+        if ($current_gedcom_filters !== Session::get(self::SESSION_GEDCOM_FILTERS) OR $record_type  !== Session::get(self::SESSION_RECORD_TYPE)) {
+
+            Session::put(self::SESSION_GEDCOM_FILTERS,  $current_gedcom_filters);
+            Session::put(self::SESSION_RECORD_TYPE,  $record_type);
+            Session::forget(self::SESSION_RECORDS_TO_FIX);
         }
 
-        $cached_records_to_fix = Session::get('records_to_fix');
+        $cached_records_to_fix = Session::get(self::SESSION_RECORDS_TO_FIX);
 
         if ($cached_records_to_fix !== null) {
             return $cached_records_to_fix;
@@ -1079,42 +1106,44 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         $records = new Collection();
 
-        //Add HEAD
+        //Header
         $header = new stdClass;
         $header->xref = 'HEAD';
         $header->type = 'HEAD';
+
+        if ($record_type === self::HEAD OR $record_type === self::ALL_RECORDS) {
+            $records = $records->concat([$header]);
+        }
         
-        $records = $records->concat([$header]);
-        
-        if ($families !== null) {
+        if ($families !== null && ($record_type === Family::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
             $records = $records->concat($this->mergePendingRecords($families, $tree, Family::RECORD_TYPE));
         }
 
-        if ($individuals !== null) {
+        if ($individuals !== null && ($record_type === Individual::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
             $records = $records->concat($this->mergePendingRecords($individuals, $tree, Individual::RECORD_TYPE));
         }
 
-        if ($locations !== null) {
+        if ($locations !== null && ($record_type === Location::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
             $records = $records->concat($this->mergePendingRecords($locations, $tree, Location::RECORD_TYPE));
         }
 
-        if ($media !== null) {
+        if ($media !== null && ($record_type === Media::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
             $records = $records->concat($this->mergePendingRecords($media, $tree, Media::RECORD_TYPE));
         }
 
-        if ($notes !== null) {
+        if ($notes !== null && ($record_type === Note::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
             $records = $records->concat($this->mergePendingRecords($notes, $tree, Note::RECORD_TYPE));
         }
 
-        if ($repositories !== null) {
+        if ($repositories !== null && ($record_type === Repository::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
             $records = $records->concat($this->mergePendingRecords($repositories, $tree, Repository::RECORD_TYPE));
         }
 
-        if ($sources !== null) {
+        if ($sources !== null && ($record_type === Source::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
             $records = $records->concat($this->mergePendingRecords($sources, $tree, Source::RECORD_TYPE));
         }
 
-        if ($submitters !== null) {
+        if ($submitters !== null && ($record_type === Submitter::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
             $records = $records->concat($this->mergePendingRecords($submitters, $tree, Submitter::RECORD_TYPE));
         }
 
@@ -1184,25 +1213,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
     /**
-     * Will a GEDCOM record be modified by a set of GEDCOM filters 
-     *
-     * @param GedcomRecord                 $record
-     * @param array<GedcomFilterInterface> $gedcom_filters
-     *
-     * @return bool
-     */
-    public function isRecordCModifiedByFilters(GedcomRecord $record, array $gedcom_filters): bool
-    {
-        $gedcom = $record->gedcom();
-        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $gedcom_filters, $this->matched_pattern_for_tag_combination_in_data_fix, $this->standard_params);
-
-        $old = $gedcom . "\n";
-        $new = $filtered_records[0] ?? $gedcom;
-
-        return $new !== $old;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @param GedcomRecord $record
@@ -1242,7 +1252,26 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $record->updateRecord($new, false);
 
         return;
-    }    
+    }
+
+    /**
+     * Will a GEDCOM record be modified by a set of GEDCOM filters 
+     *
+     * @param GedcomRecord                 $record
+     * @param array<GedcomFilterInterface> $gedcom_filters
+     *
+     * @return bool
+     */
+    public function isRecordCModifiedByFilters(GedcomRecord $record, array $gedcom_filters): bool
+    {
+        $gedcom = $record->gedcom();
+        $filtered_records = $this->filtered_gedcom_export_service->applyGedcomFilters([$gedcom], $gedcom_filters, $this->matched_pattern_for_tag_combination_in_data_fix, $this->standard_params);
+
+        $old = $gedcom . "\n";
+        $new = $filtered_records[0] ?? $gedcom;
+
+        return $new !== $old;
+    }
 
 	/**
      * Get Gedcom filters from data fix params

@@ -1,16 +1,19 @@
 <?php
 
 /**
- * @var array   $gedcom_filter_list
- * @var string  $gedcom_filter1 
- * @var string  $gedcom_filter2 
- * @var string  $gedcom_filter3
+ * @var array                $gedcom_filter_list
+ * @var string               $gedcom_filter1 
+ * @var string               $gedcom_filter2 
+ * @var string               $gedcom_filter3
+ * @var string               $default_type
+ * @var array<string,string> $types
  */
- 
+
 declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
+use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Fisharebest\Webtrees\I18N;
 
 ?>
@@ -27,7 +30,7 @@ use Fisharebest\Webtrees\I18N;
     <label class="col-sm-3 col-form-label" for="filter 1">
         <?= I18N::translate('GEDCOM filter %s', '1') ?>
     </label>
-    <div class="col-sm-3">
+    <div class="col-sm-9">
         <?= view('components/select', [
             'name'     => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '1',
             'selected' => $gedcom_filter1, 
@@ -42,7 +45,7 @@ use Fisharebest\Webtrees\I18N;
     <label class="col-sm-3 col-form-label" for="filter 2">
         <?= I18N::translate('GEDCOM filter %s', '2') ?>
     </label>
-    <div class="col-sm-3">
+    <div class="col-sm-9">
         <?= view('components/select', [
             'name'     => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '2',
             'selected' => $gedcom_filter2, 
@@ -57,7 +60,7 @@ use Fisharebest\Webtrees\I18N;
     <label class="col-sm-3 col-form-label" for="filter 3">
         <?= I18N::translate('GEDCOM filter %s', '3') ?>
     </label>
-    <div class="col-sm-3">
+    <div class="col-sm-9">
         <?= view('components/select', [
             'name'     => DownloadGedcomWithURL::VAR_GEDOCM_FILTER . '3',
             'selected' => $gedcom_filter3, 
@@ -66,6 +69,14 @@ use Fisharebest\Webtrees\I18N;
     </div>
     <div class="form-text col-sm-9 offset-sm-3">
         <?= I18N::translate('Select a GEDCOM filter'); ?>
+    </div>
+</div>
+<div class="row mb-3">
+    <label class="col-sm-3 col-form-label" for="type">
+        <?= MoreI18N::xlate('Records') ?>
+    </label>
+    <div class="col-sm-9">
+        <?= view('components/select', ['name' => 'type', 'options' => $types, 'selected' => $default_type]) ?>
     </div>
 </div>
 

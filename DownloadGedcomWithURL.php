@@ -1043,7 +1043,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             Individual::RECORD_TYPE => MoreI18N::xlate('Individuals'),
             Location::RECORD_TYPE   => MoreI18N::xlate('Locations'),
             Media::RECORD_TYPE      => MoreI18N::xlate('Media objects'),
-            Note::RECORD_TYPE       => MoreI18N::xlate('Notes'),
+            Note::RECORD_TYPE       => MoreI18N::xlate('Shared notes'),
             Repository::RECORD_TYPE => MoreI18N::xlate('Repositories'),
             Source::RECORD_TYPE     => MoreI18N::xlate('Sources'),
             Submitter::RECORD_TYPE  => MoreI18N::xlate('Submitters'),

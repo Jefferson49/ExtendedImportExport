@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ExtendedImportExport for webtrees 2\n"
-"POT-Creation-Date: 2025-02-08 10:49+0100\n"
+"POT-Creation-Date: 2025-02-22 10:36+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -133,16 +133,16 @@ msgid "The %s method of the used GEDCOM filter (%s) throws a PHP error"
 msgstr ""
 "De methode %s van het gebruikte GEDCOM-filter (%s) geeft een PHP-foutmelding"
 
-#: ConvertGedcomPage.php:111 resources/views/selection.phtml:77
+#: ConvertGedcomPage.php:111 resources/views/selection.phtml:89
 msgid "GEDCOM Conversion"
 msgstr "GEDCOM-conversie"
 
-#: DownloadGedcomWithURL.php:300 resources/views/convert.phtml:34
-#: resources/views/export.phtml:45 resources/views/import.phtml:31
+#: DownloadGedcomWithURL.php:312 resources/views/convert.phtml:34
+#: resources/views/export.phtml:46 resources/views/import.phtml:31
 msgid "Extended Import/Export"
 msgstr "Uitgebreide import/export"
 
-#: DownloadGedcomWithURL.php:313
+#: DownloadGedcomWithURL.php:325
 msgid ""
 "A custom module for advanced GEDCOM import, export, and filter operations. "
 "The module also supports remote downloads/uploads/filters via URL requests."
@@ -151,7 +151,7 @@ msgstr ""
 "filteren. De module ondersteunt ook downloaden/uploaden/filteren op afstand "
 "via URL-verzoeken."
 
-#: DownloadGedcomWithURL.php:554
+#: DownloadGedcomWithURL.php:566
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -159,7 +159,7 @@ msgstr ""
 "De opgegeven geheime sleutel is te kort. Geef een minimale lengte van 8 "
 "tekens op."
 
-#: DownloadGedcomWithURL.php:560
+#: DownloadGedcomWithURL.php:572
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -167,7 +167,7 @@ msgstr ""
 "De opgegeven geheime sleutel bevat tekens die niet worden geaccepteerd. Geef "
 "een andere sleutel op."
 
-#: DownloadGedcomWithURL.php:590
+#: DownloadGedcomWithURL.php:602
 #, php-format
 msgid ""
 "The folder settings could not be saved, because the folder \"%s\" does not "
@@ -176,12 +176,12 @@ msgstr ""
 "De mapinstellingen konden niet worden opgeslagen omdat de map \"%s\" niet "
 "bestaat."
 
-#: DownloadGedcomWithURL.php:616
+#: DownloadGedcomWithURL.php:628
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "De voorkeuren voor de module \"%s\" zijn bijgewerkt."
 
-#: DownloadGedcomWithURL.php:712
+#: DownloadGedcomWithURL.php:724
 #, php-format
 msgid ""
 "The preferences for the custom module \"%s\" were sucessfully updated to the "
@@ -190,7 +190,7 @@ msgstr ""
 "De voorkeuren voor de aangepaste module \"%s\" zijn bijgewerkt naar de "
 "nieuwe moduleversie %s."
 
-#: DownloadGedcomWithURL.php:765
+#: DownloadGedcomWithURL.php:777
 #, php-format
 msgid ""
 "The preferences for the custom module %s were imported from the earlier "
@@ -199,7 +199,7 @@ msgstr ""
 "De voorkeuren voor de aangepaste module %s werden geïmporteerd uit de "
 "eerdere aangepaste module versie %s."
 
-#: DownloadGedcomWithURL.php:792
+#: DownloadGedcomWithURL.php:804
 #, php-format
 msgid ""
 "The preferences for the default GEDCOM filter were reset to \"none\", "
@@ -208,27 +208,27 @@ msgstr ""
 "De voorkeuren voor het standaard GEDCOM-filter zijn teruggezet naar "
 "\"geen\", omdat het geselecteerde GEDCOM-filter %s niet kon worden gevonden"
 
-#: DownloadGedcomWithURL.php:866
+#: DownloadGedcomWithURL.php:878
 msgid "A compilation error was detected in the following GEDCOM filter"
 msgstr "Er is een compilatiefout gedetecteerd in het volgende GEDCOM-filter"
 
-#: DownloadGedcomWithURL.php:867
+#: DownloadGedcomWithURL.php:879
 msgid "line"
 msgstr "regel"
 
-#: DownloadGedcomWithURL.php:867
+#: DownloadGedcomWithURL.php:879
 msgid "error message"
 msgstr "foutmelding"
 
-#: DownloadGedcomWithURL.php:906
+#: DownloadGedcomWithURL.php:918
 msgid "No filter"
 msgstr "Geen filter"
 
-#: DownloadGedcomWithURL.php:926 DownloadGedcomWithURL.php:1260
+#: DownloadGedcomWithURL.php:938 DownloadGedcomWithURL.php:1368
 msgid "The GEDCOM filter was not found"
 msgstr "Het GEDCOM-filter is niet gevonden"
 
-#: DownloadGedcomWithURL.php:964
+#: DownloadGedcomWithURL.php:976
 #, php-format
 msgid ""
 "The include hierarchy for GEDCOM filters exceeds the maximum level of %s "
@@ -237,7 +237,7 @@ msgstr ""
 "De inclusief-hiërarchie voor GEDCOM filters overschrijdt het maximale niveau "
 "van %s inclusieven."
 
-#: DownloadGedcomWithURL.php:968
+#: DownloadGedcomWithURL.php:980
 msgid ""
 "The following GEDCOM filter might cause a loop in the include structure, "
 "because it was detected more than once in the include hierarchy"
@@ -246,20 +246,20 @@ msgstr ""
 "structuur, omdat het meer dan één keer is gedetecteerd in de inclusief-"
 "hiërarchie"
 
-#: DownloadGedcomWithURL.php:971
+#: DownloadGedcomWithURL.php:983
 msgid "Please check the include structure of the selected GEDCOM filters."
 msgstr "Controleer de inclusiefstructuur van de geselecteerde GEDCOM-filters."
 
-#: DownloadGedcomWithURL.php:1456 DownloadGedcomWithURL.php:1463
+#: DownloadGedcomWithURL.php:1632 DownloadGedcomWithURL.php:1639
 #: SelectionPage.php:94
 msgid "Tree not found"
 msgstr "Stamboom niet gevonden"
 
-#: DownloadGedcomWithURL.php:1521 SelectionPage.php:75
+#: DownloadGedcomWithURL.php:1707 SelectionPage.php:75
 msgid "Internal module error: Neither GET nor POST request received."
 msgstr "Interne module fout: Noch GET- noch POST-verzoek ontvangen."
 
-#: DownloadGedcomWithURL.php:1535
+#: DownloadGedcomWithURL.php:1721
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -267,7 +267,7 @@ msgstr ""
 "Geen sleutel opgegeven. Voor het controleren van de toegangsrechten is het "
 "verplicht om een sleutel op te geven als parameter in de URL."
 
-#: DownloadGedcomWithURL.php:1539
+#: DownloadGedcomWithURL.php:1725
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -275,118 +275,118 @@ msgstr ""
 "Geen geheime sleutel gedefinieerd. Definieer de geheime sleutel in de module-"
 "instellingen: Controlepaneel / Modules / Alle modules / "
 
-#: DownloadGedcomWithURL.php:1543
+#: DownloadGedcomWithURL.php:1729
 msgid "Key not accepted. Access denied."
 msgstr "Sleutel niet geaccepteerd. Toegang geweigerd."
 
-#: DownloadGedcomWithURL.php:1547
+#: DownloadGedcomWithURL.php:1733
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr "Sleutel (versleuteld) niet geaccepteerd. Toegang geweigerd."
 
-#: DownloadGedcomWithURL.php:1553
+#: DownloadGedcomWithURL.php:1739
 msgid "Privacy level not accepted"
 msgstr "Privacyniveau niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1557
+#: DownloadGedcomWithURL.php:1743
 msgid "Export format not accepted"
 msgstr "Exportindeling niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1561
+#: DownloadGedcomWithURL.php:1747
 msgid "Encoding not accepted"
 msgstr "Codering niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1565
+#: DownloadGedcomWithURL.php:1751
 msgid "Action not accepted"
 msgstr "Actie niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1569
+#: DownloadGedcomWithURL.php:1755
 msgid "Line endings not accepted"
 msgstr "Regeleinden niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1573
+#: DownloadGedcomWithURL.php:1759
 msgid "Time stamp setting not accepted"
 msgstr "Tijdstempelinstelling niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1577
+#: DownloadGedcomWithURL.php:1763
 msgid "No file name provided for the requested GEDCOM conversion"
 msgstr "Geen bestandsnaam opgegeven voor de gevraagde GEDCOM-conversie"
 
-#: DownloadGedcomWithURL.php:1679 DownloadGedcomWithURL.php:1840
+#: DownloadGedcomWithURL.php:1865 DownloadGedcomWithURL.php:2026
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Het bestand %s kon niet worden aangemaakt."
 
-#: DownloadGedcomWithURL.php:1683
+#: DownloadGedcomWithURL.php:1869
 #, php-format
 msgid "The family tree \"%s\" was sucessfully exported to: %s"
 msgstr "De stamboom \"%s\" is geëxporteerd naar: %s"
 
-#: DownloadGedcomWithURL.php:1694
+#: DownloadGedcomWithURL.php:1880
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
 msgstr ""
 "URL-verzoeken op afstand om GEDCOM-bestanden op te slaan op de server zijn "
 "niet toegestaan."
 
-#: DownloadGedcomWithURL.php:1695 DownloadGedcomWithURL.php:1712
-#: DownloadGedcomWithURL.php:1847 DownloadGedcomWithURL.php:1872
+#: DownloadGedcomWithURL.php:1881 DownloadGedcomWithURL.php:1898
+#: DownloadGedcomWithURL.php:2033 DownloadGedcomWithURL.php:2058
 msgid "Please check the module settings in the control panel."
 msgstr "Controleer de module-instellingen in het bedieningspaneel."
 
-#: DownloadGedcomWithURL.php:1711
+#: DownloadGedcomWithURL.php:1897
 msgid ""
 "Remote URL requests to download GEDCOM files from the server are not allowed."
 msgstr ""
 "URL-verzoeken op afstand om GEDCOM-bestanden te downloaden van de server "
 "zijn niet toegestaan."
 
-#: DownloadGedcomWithURL.php:1733 DownloadGedcomWithURL.php:1757
+#: DownloadGedcomWithURL.php:1919 DownloadGedcomWithURL.php:1943
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Kan bestand \"%s\" niet lezen."
 
-#: DownloadGedcomWithURL.php:1771
+#: DownloadGedcomWithURL.php:1957
 #, php-format
 msgid "No data imported from file \"%s\". The file might be empty."
 msgstr ""
 "Geen gegevens geïmporteerd uit bestand \"%s\". Het bestand kan leeg zijn."
 
-#: DownloadGedcomWithURL.php:1775
+#: DownloadGedcomWithURL.php:1961
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr "Het bestand \"%s\" is geüpload voor de stamboom \"%s\""
 
-#: DownloadGedcomWithURL.php:1824
+#: DownloadGedcomWithURL.php:2010
 #, php-format
 msgid "The GEDCOM file \"%s\" was successfully converted to: %s"
 msgstr "Het GEDCOM-bestand \"%s\" is geconverteerd naar: %s"
 
-#: DownloadGedcomWithURL.php:1846
+#: DownloadGedcomWithURL.php:2032
 msgid ""
 "Remote URL requests to convert GEDCOM files on the server are not allowed."
 msgstr ""
 "URL-verzoeken op afstand om GEDCOM-bestanden op de server te converteren "
 "zijn niet toegestaan."
 
-#: DownloadGedcomWithURL.php:1871
+#: DownloadGedcomWithURL.php:2057
 msgid ""
 "Remote URL requests to upload GEDCOM files to the server are not allowed."
 msgstr ""
 "URL-verzoeken op afstand om GEDCOM-bestanden te uploaden naar de server zijn "
 "niet toegestaan."
 
-#: ExportGedcomPage.php:107
+#: ExportGedcomPage.php:109
 msgid "Extended GEDCOM Export"
 msgstr "Uitgebreide GEDCOM-export"
 
-#: FilteredGedcomExportService.php:807
+#: FilteredGedcomExportService.php:820
 msgid "The following GEDCOM structure could not be matched"
 msgstr "De volgende GEDCOM-structuur kon niet worden gevonden"
 
-#: FilteredGedcomExportService.php:981
+#: FilteredGedcomExportService.php:994
 msgid "Error during a regular expression replacement."
 msgstr "Fout tijdens het vervangen van een reguliere expressie."
 
-#: FilteredGedcomExportService.php:1152
+#: FilteredGedcomExportService.php:1165
 msgid ""
 "Fatal error: Too many iterations while removing empty and unlinked records."
 msgstr ""
@@ -416,6 +416,10 @@ msgstr "Geboorte, huwelijk, overlijden exporteren"
 #: resources/filter/CombinedGedcomFilter.php:24
 msgid "Combined GEDCOM filter"
 msgstr "Gecombineerd GEDCOM-filter"
+
+#: resources/filter/ConvertOldCensusMarkupGedcomFilter.php:37
+msgid "Convert webtrees 1.7 census markup to markdown"
+msgstr "Webtrees 1.7 volkstelling-markup converteren naar markdown"
 
 #: resources/filter/ExampleGedcomFilter.php:55
 msgid "Example GEDCOM filter"
@@ -521,7 +525,7 @@ msgstr "Een bestand op de server"
 msgid "Conversion settings"
 msgstr "Conversie-instellingen"
 
-#: resources/views/convert.phtml:132 resources/views/export.phtml:98
+#: resources/views/convert.phtml:132 resources/views/export.phtml:100
 msgid "Other format (i.e. use extension of filename)"
 msgstr "Andere indeling (bijv. gebruik extensie van bestandsnaam)"
 
@@ -529,7 +533,7 @@ msgstr "Andere indeling (bijv. gebruik extensie van bestandsnaam)"
 msgid "Filename (converted)"
 msgstr "Bestandsnaam (geconverteerd)"
 
-#: resources/views/convert.phtml:149 resources/views/export.phtml:115
+#: resources/views/convert.phtml:149 resources/views/export.phtml:117
 msgid ""
 "The file extension will be added (or overruled) according to the selected "
 "format. Select \"Other format\" to use the extension, which is provided "
@@ -539,33 +543,33 @@ msgstr ""
 "geselecteerde indeling. Selecteer \"Andere indeling\" om de extensie te "
 "gebruiken die is opgegeven in de bestandsnaam."
 
-#: resources/views/convert.phtml:187 resources/views/export.phtml:168
+#: resources/views/convert.phtml:187 resources/views/export.phtml:170
 msgid "Time stamp"
 msgstr "Tijdstempel"
 
-#: resources/views/convert.phtml:192 resources/views/export.phtml:173
+#: resources/views/convert.phtml:192 resources/views/export.phtml:175
 #: resources/views/settings.phtml:383
 msgid "No time stamp"
 msgstr "Geen tijdstempel"
 
-#: resources/views/convert.phtml:193 resources/views/export.phtml:174
+#: resources/views/convert.phtml:193 resources/views/export.phtml:176
 #: resources/views/settings.phtml:384
 msgid "Prefix time stamp"
 msgstr "Tijdstempelvoorvoegsel"
 
-#: resources/views/convert.phtml:194 resources/views/export.phtml:175
+#: resources/views/convert.phtml:194 resources/views/export.phtml:177
 #: resources/views/settings.phtml:385
 msgid "Postfix time stamp"
 msgstr "Ttijdstempelachtervoegsel"
 
-#: resources/views/convert.phtml:202 resources/views/export.phtml:203
+#: resources/views/convert.phtml:202 resources/views/export.phtml:205
 #: resources/views/import.phtml:139
 msgid "Select GEDCOM filters"
 msgstr "Selecteer GEDCOM-filters"
 
 #: resources/views/convert.phtml:206 resources/views/convert.phtml:218
-#: resources/views/convert.phtml:230 resources/views/export.phtml:207
-#: resources/views/export.phtml:219 resources/views/export.phtml:231
+#: resources/views/convert.phtml:230 resources/views/export.phtml:209
+#: resources/views/export.phtml:221 resources/views/export.phtml:233
 #: resources/views/import.phtml:143 resources/views/import.phtml:155
 #: resources/views/import.phtml:167
 #, php-format
@@ -576,23 +580,23 @@ msgstr "GEDCOM-filter %s"
 msgid "Convert GEDCOM file"
 msgstr "Converteer GEDCOM-bestand"
 
-#: resources/views/export.phtml:183
+#: resources/views/export.phtml:185
 msgid "Export action"
 msgstr "Exportactie"
 
-#: resources/views/export.phtml:188
+#: resources/views/export.phtml:190
 msgid "Action"
 msgstr "Actie"
 
-#: resources/views/export.phtml:194
+#: resources/views/export.phtml:196
 msgid "Save on the webtrees server"
 msgstr "Opslaan op de webtrees-server"
 
-#: resources/views/export.phtml:195
+#: resources/views/export.phtml:197
 msgid "Both, i.e. download and save in parallel"
 msgstr "Beide, d.w.z. downloaden en opslaan tegelijk"
 
-#: resources/views/export.phtml:247
+#: resources/views/export.phtml:249
 msgid "Export GEDCOM file"
 msgstr "Exporteer GEDCOM-bestand"
 
@@ -625,31 +629,31 @@ msgstr ""
 msgid "Import GEDCOM file"
 msgstr "Importeer GEDCOM-bestand"
 
-#: resources/views/options.phtml:18 resources/views/selection.phtml:86
+#: resources/views/options.phtml:23 resources/views/selection.phtml:98
 msgid "Datafix using GEDCOM filters"
 msgstr "Gegevenscorrecties met behulp van GEDCOM-filters"
 
-#: resources/views/options.phtml:21
+#: resources/views/options.phtml:26
 msgid ""
 "You can select up to 3 GEDCOM filters, which will be applied as a data fix."
 msgstr ""
 "U kunt maximaal 3 GEDCOM-filters selecteren, die worden toegepast als een "
 "gegevenscorrectie."
 
-#: resources/views/options.phtml:24
+#: resources/views/options.phtml:29
 msgid "It is strongly recommended to backup your tree or your database first."
 msgstr ""
 "Het is sterk aanbevolen om eerst een back-up te maken van de stamboom of "
 "database."
 
-#: resources/views/options.phtml:28 resources/views/options.phtml:43
-#: resources/views/options.phtml:58
+#: resources/views/options.phtml:33 resources/views/options.phtml:48
+#: resources/views/options.phtml:63
 #, php-format
 msgid "GEDCOM filter %s"
 msgstr "GEDCOM-filter %s"
 
-#: resources/views/options.phtml:38 resources/views/options.phtml:53
-#: resources/views/options.phtml:68
+#: resources/views/options.phtml:43 resources/views/options.phtml:58
+#: resources/views/options.phtml:73
 msgid "Select a GEDCOM filter"
 msgstr "Selecteer een GEDCOM-filter"
 
@@ -661,9 +665,13 @@ msgstr "Selecteer een stamboom"
 msgid "GEDCOM Import"
 msgstr "GEDCOM-import"
 
-#: resources/views/selection.phtml:66
-msgid "GEDCOM Export"
-msgstr "GEDCOM-export"
+#: resources/views/selection.phtml:67
+msgid "GEDCOM Export: Tree"
+msgstr "GEDCOM-export: Stamboom"
+
+#: resources/views/selection.phtml:79
+msgid "GEDCOM Export: Clippings cart"
+msgstr "GEDCOM-export: Stamboomknipsels"
 
 #: resources/views/settings.phtml:72
 msgid "Control panel"
@@ -1037,3 +1045,6 @@ msgid ""
 msgstr ""
 "Om gewijzigde instellingen te gebruiken voor een download/upload, moeten de "
 "instellingen eerst worden opgeslagen."
+
+#~ msgid "GEDCOM Export"
+#~ msgstr "GEDCOM-export"

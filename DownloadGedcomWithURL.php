@@ -1655,6 +1655,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $gedcom_filter3            = Validator::queryParams($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
             $source                    = 'server';
             $import_encoding           = Validator::queryParams($request)->isInArrayKeys($encodings)->string('import_encoding', '');
+            $export_clippings_cart     = false;
 
             if ($action === self::ACTION_UPLOAD) {
                 $keep_media                = Validator::queryParams($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
@@ -1693,19 +1694,20 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $word_wrapped_notes        = Validator::parsedBody($request)->boolean('word_wrapped_notes', boolval($tree->getPreference('WORD_WRAPPED_NOTES', '0')));
                 $gedcom_media_path         = Validator::parsedBody($request)->string('gedcom_media_path', $tree->getPreference('GEDCOM_MEDIA_PATH', ''));
             }
-
-            if ($export_clippings_cart) {
-                $clippings_cart_records = $this->getClippingsCartRecords($tree, $privacy);
-                // If export of clippings cart, privacy rules are already handled in $this->getClippingsCartRecords; for further export, privacy is 'none' 
-                $privacy = 'none';
-            }
-            else {
-                $clippings_cart_records = null;
-            }
         }
         else {
             throw new DownloadGedcomWithUrlException(I18N::translate('Internal module error: Neither GET nor POST request received.'));
         }
+
+        //Handle export of clippings cart
+        if ($export_clippings_cart) {
+            $clippings_cart_records = $this->getClippingsCartRecords($tree, $privacy);
+            // If export of clippings cart, privacy rules are already handled in $this->getClippingsCartRecords; for further export, privacy is 'none' 
+            $privacy = 'none';
+        }
+        else {
+            $clippings_cart_records = null;
+        }        
 
         //Get folder from module settings and file system
         $folder_on_server = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');

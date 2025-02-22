@@ -1168,17 +1168,20 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Get filters
         $this->gedcom_filters_in_data_fix = $this->getGedcomFiltersFromParams($params);
 
-        //Set tree for filter configuration
-        $this->standard_params['tree_name'] = $tree->name();
+        if ($this->gedcom_filters_in_data_fix !== []) {
 
-        //Identify records, which are modified by the used filters
-        foreach ($records as $record) {
+            //Set tree for filter configuration
+            $this->standard_params['tree_name'] = $tree->name();
 
-            $gedcom_record = $gedcom_factory->make($record->xref, $tree, null);
-  
-            if ($this->isRecordCModifiedByFilters($gedcom_record, $this->gedcom_filters_in_data_fix)) {
+            //Identify records, which are modified by the used filters
+            foreach ($records as $record) {
 
-                $records_to_fix->add($record);
+                $gedcom_record = $gedcom_factory->make($record->xref, $tree, null);
+    
+                if ($this->isRecordCModifiedByFilters($gedcom_record, $this->gedcom_filters_in_data_fix)) {
+
+                    $records_to_fix->add($record);
+                }
             }
         }
 

@@ -28,23 +28,23 @@ class ReplaceXrefsInNotesAndText extends AbstractGedcomFilter
         //You might want to insert some filter rules here, e.g. to remove or convert certain tag structures
 
         'NOTE'                      => ["PHP_function" => "customConvert"],
-        'NOTE:*'                    => ["PHP_function" => "customConvert"],
+        'NOTE:CONT'                 => ["PHP_function" => "customConvert"],
         '*:NOTE'                    => ["PHP_function" => "customConvert"],
-        '*:NOTE:*'                  => ["PHP_function" => "customConvert"],
+        '*:NOTE:CONT'               => ["PHP_function" => "customConvert"],
         '*:*:NOTE'                  => ["PHP_function" => "customConvert"],
-        '*:*:NOTE:*'                => ["PHP_function" => "customConvert"],
+        '*:*:NOTE:CONT'             => ["PHP_function" => "customConvert"],
         '*:*:*:NOTE'                => ["PHP_function" => "customConvert"],
-        '*:*:*:NOTE:*'              => ["PHP_function" => "customConvert"],
+        '*:*:*:NOTE:CONT'           => ["PHP_function" => "customConvert"],
         '*:*:*:*:NOTE'              => ["PHP_function" => "customConvert"],
-        '*:*:*:*:NOTE:*'            => ["PHP_function" => "customConvert"],
+        '*:*:*:*:NOTE:CONT'         => ["PHP_function" => "customConvert"],
         '*:TEXT'                    => ["PHP_function" => "customConvert"],
-        '*:TEXT:*'                  => ["PHP_function" => "customConvert"],
+        '*:TEXT:CONT'               => ["PHP_function" => "customConvert"],
         '*:*:TEXT'                  => ["PHP_function" => "customConvert"],
-        '*:*:TEXT:*'                => ["PHP_function" => "customConvert"],
+        '*:*:TEXT:CONT'             => ["PHP_function" => "customConvert"],
         '*:*:*:TEXT'                => ["PHP_function" => "customConvert"],
-        '*:*:*:TEXT:*'              => ["PHP_function" => "customConvert"],
+        '*:*:*:TEXT:CONT'           => ["PHP_function" => "customConvert"],
         '*:*:*:*:TEXT'              => ["PHP_function" => "customConvert"],
-        '*:*:*:*:TEXT:*'            => ["PHP_function" => "customConvert"],
+        '*:*:*:*:TEXT:CONT'         => ["PHP_function" => "customConvert"],
 
         //Export other structures
         '*'                         => [],
@@ -94,16 +94,25 @@ class ReplaceXrefsInNotesAndText extends AbstractGedcomFilter
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
 
-        if(     preg_match("/[\d] " . Gedcom::REGEX_TAG . " @" . Gedcom::REGEX_XREF . "@\n/", $gedcom) 
-            OR  preg_match("/[\d] @" . Gedcom::REGEX_XREF . "@ " . Gedcom::REGEX_TAG . "\n/", $gedcom)
-            ) {
+        //If reference to shared note, do nothing
+        if(preg_match("/[\d] NOTE @" . Gedcom::REGEX_XREF . "@\n/", $gedcom, $matches)) {
             return $gedcom;
         }
 
-        if (!preg_match_all('/@(' . Gedcom::REGEX_XREF . ')@/', $gedcom, $matches, PREG_PATTERN_ORDER)) {
+        //If shared note, search in payload only, else search full gedcom
+        if(preg_match("/[\d] @" . Gedcom::REGEX_XREF . "@ NOTE (.*)/", $gedcom, $matches)) {
+            $search_text = $matches[1];
+        }
+        else {
+            $search_text = $gedcom;
+        }
+
+        //If no XREFs found, do nothing
+        if (!preg_match_all('/@(' . Gedcom::REGEX_XREF . ')@/', $search_text, $matches, PREG_PATTERN_ORDER)) {
             return $gedcom;
         }
 
+        //Replace XREFs by record names etc.
         foreach($matches[1] as $xref) {
 
             $records = [

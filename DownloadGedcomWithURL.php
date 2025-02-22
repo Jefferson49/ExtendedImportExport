@@ -1052,6 +1052,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return view(
             self::viewsNamespace() . '::options',
             [
+                'tree'                          => $tree,
                 self::VAR_GEDCOM_FILTER_LIST    => $this->getGedcomFilterList(),
                 self::VAR_GEDOCM_FILTER . '1'   => '',
                 self::VAR_GEDOCM_FILTER . '2'   => '',
@@ -1167,6 +1168,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Get filters
         $this->gedcom_filters_in_data_fix = $this->getGedcomFiltersFromParams($params);
 
+        //Set tree for filter configuration
+        $this->standard_params['tree_name'] = $tree->name();
+
         //Identify records, which are modified by the used filters
         foreach ($records as $record) {
 
@@ -1196,6 +1200,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function doesRecordNeedUpdate(GedcomRecord $record, array $params): bool
     {
+        //Get tree name in params
+        $this->standard_params['tree_name'] = $params['tree_name'];
+
         //Get filters, if not yet available
         if ($this->gedcom_filters_in_data_fix === []) {
             $this->gedcom_filters_in_data_fix = $this->getGedcomFiltersFromParams($params);
@@ -1284,10 +1291,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         $gedcom_filters = [];
 
-        foreach ($params as $key => $gedcom_filter_name) {
+        foreach ($params as $key => $value) {
 
-            if (strpos($key, self::VAR_GEDOCM_FILTER) !== false && $gedcom_filter_name !== '') {
-                $gedcom_filters[] = $gedcom_filter_name;
+            if (strpos($key, self::VAR_GEDOCM_FILTER) !== false && $value !== '') {
+                $gedcom_filters[] = $value;
             }
         }
 
@@ -1471,7 +1478,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         // If GET request
         if ($request->getMethod() === RequestMethodInterface::METHOD_GET) {
-            $params['tree'] = Validator::queryParams($request)->string('tree', '');
+            $params['tree']        = Validator::queryParams($request)->string('tree', '');
+            $params['tree_name']   = Validator::queryParams($request)->string('tree', '');
             $this->standard_params = $params;
 
             $query_params = $request->getQueryParams();
@@ -1482,7 +1490,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }     
         // If POST request (from control panel)
         elseif ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-            $params['tree'] = Validator::parsedBody($request)->string('tree', '');
+            $params['tree']        = Validator::parsedBody($request)->string('tree', '');
+            $params['tree_name']   = Validator::parsedBody($request)->string('tree', '');
             $this->standard_params = $params;
         }
 

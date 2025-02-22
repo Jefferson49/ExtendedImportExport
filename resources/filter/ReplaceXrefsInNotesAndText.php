@@ -70,7 +70,7 @@ class ReplaceXrefsInNotesAndText extends AbstractGedcomFilter
      */
     public function getGedcomFilterRules(array $params = []): array {
 
-        $tree_name = $params['tree'] ?? '';
+        $tree_name = $params['tree_name'] ?? '';
 
         if($tree_name !== '') {
             $tree_service = new TreeService(new GedcomImportService());

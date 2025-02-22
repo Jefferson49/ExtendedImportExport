@@ -1,5 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
+
+use Jefferson49\Webtrees\Internationalization\MoreI18N;
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Tree;
+
 /**
  * @var array                $gedcom_filter_list
  * @var string               $gedcom_filter1 
@@ -7,14 +15,8 @@
  * @var string               $gedcom_filter3
  * @var string               $default_type
  * @var array<string,string> $types
+ * @var Tree                 $tree
  */
-
-declare(strict_types=1);
-
-namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
-
-use Jefferson49\Webtrees\Internationalization\MoreI18N;
-use Fisharebest\Webtrees\I18N;
 
 ?>
 <div class="h4">
@@ -79,4 +81,4 @@ use Fisharebest\Webtrees\I18N;
         <?= view('components/select', ['name' => 'type', 'options' => $types, 'selected' => $default_type]) ?>
     </div>
 </div>
-
+<input type="hidden" name="tree_name" id="tree_name" value="<?=e($tree->name()) ?>">

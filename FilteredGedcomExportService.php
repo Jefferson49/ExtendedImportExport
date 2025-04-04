@@ -855,7 +855,7 @@ class FilteredGedcomExportService extends GedcomExportService
             && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
 
             $replace_pairs = $gedcom_filter_rules[$matched_tag_pattern];                
-            $converted_gedcom = $this->replaceInGedcom($converted_gedcom, $matched_tag_pattern, $replace_pairs, $gedcom_filter, $records_references);
+            $converted_gedcom = $this->replaceInGedcom($converted_gedcom, $matched_tag_pattern, $replace_pairs, $gedcom_filter, $params, $records_references);
         }            
 
         return $converted_gedcom;
@@ -973,6 +973,7 @@ class FilteredGedcomExportService extends GedcomExportService
         string                $matched_pattern,       
         array                 $replace_pairs,
         GedcomFilterInterface $gedcom_filter,
+        array                 $params,
         array                 &$records_references
         ): string {
 
@@ -982,7 +983,7 @@ class FilteredGedcomExportService extends GedcomExportService
             //If according string is found, apply custom conversion
             if ($search === AbstractGedcomFilter::PHP_FUNCTION_STRING) {
 
-                $gedcom = $gedcom_filter->customConvert($matched_pattern, $gedcom, $records_references);
+                $gedcom = $gedcom_filter->customConvert($matched_pattern, $gedcom, $records_references, $params);
             }
 
             //Else apply RegExp replacement

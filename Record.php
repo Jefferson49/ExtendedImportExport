@@ -247,4 +247,15 @@ class Record
 
         return $this->xref;
     }    
+
+    /**
+     * Whether the record exists (in the overall GEDCOM data)
+     * 
+     * @return bool
+     */
+    public function exists(): bool {
+
+        //If the type is set for the record, we assume that it exists
+        return $this->type() !== '';
+    }    
 }

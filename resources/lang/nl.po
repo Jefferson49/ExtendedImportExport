@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ExtendedImportExport for webtrees 2\n"
-"POT-Creation-Date: 2025-02-22 10:36+0100\n"
+"POT-Creation-Date: 2025-04-10 19:13+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 "X-Poedit-Basepath: ../..\n"
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -133,12 +133,11 @@ msgid "The %s method of the used GEDCOM filter (%s) throws a PHP error"
 msgstr ""
 "De methode %s van het gebruikte GEDCOM-filter (%s) geeft een PHP-foutmelding"
 
-#: ConvertGedcomPage.php:111 resources/views/selection.phtml:89
+#: ConvertGedcomPage.php:111
 msgid "GEDCOM Conversion"
 msgstr "GEDCOM-conversie"
 
-#: DownloadGedcomWithURL.php:312 resources/views/convert.phtml:34
-#: resources/views/export.phtml:46 resources/views/import.phtml:31
+#: DownloadGedcomWithURL.php:312
 msgid "Extended Import/Export"
 msgstr "Uitgebreide import/export"
 
@@ -224,7 +223,7 @@ msgstr "foutmelding"
 msgid "No filter"
 msgstr "Geen filter"
 
-#: DownloadGedcomWithURL.php:938 DownloadGedcomWithURL.php:1368
+#: DownloadGedcomWithURL.php:938 DownloadGedcomWithURL.php:1371
 msgid "The GEDCOM filter was not found"
 msgstr "Het GEDCOM-filter is niet gevonden"
 
@@ -250,16 +249,16 @@ msgstr ""
 msgid "Please check the include structure of the selected GEDCOM filters."
 msgstr "Controleer de inclusiefstructuur van de geselecteerde GEDCOM-filters."
 
-#: DownloadGedcomWithURL.php:1632 DownloadGedcomWithURL.php:1639
+#: DownloadGedcomWithURL.php:1635 DownloadGedcomWithURL.php:1642
 #: SelectionPage.php:94
 msgid "Tree not found"
 msgstr "Stamboom niet gevonden"
 
-#: DownloadGedcomWithURL.php:1707 SelectionPage.php:75
+#: DownloadGedcomWithURL.php:1702 SelectionPage.php:75
 msgid "Internal module error: Neither GET nor POST request received."
 msgstr "Interne module fout: Noch GET- noch POST-verzoek ontvangen."
 
-#: DownloadGedcomWithURL.php:1721
+#: DownloadGedcomWithURL.php:1726
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -267,7 +266,7 @@ msgstr ""
 "Geen sleutel opgegeven. Voor het controleren van de toegangsrechten is het "
 "verplicht om een sleutel op te geven als parameter in de URL."
 
-#: DownloadGedcomWithURL.php:1725
+#: DownloadGedcomWithURL.php:1730
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -275,99 +274,99 @@ msgstr ""
 "Geen geheime sleutel gedefinieerd. Definieer de geheime sleutel in de module-"
 "instellingen: Controlepaneel / Modules / Alle modules / "
 
-#: DownloadGedcomWithURL.php:1729
+#: DownloadGedcomWithURL.php:1734
 msgid "Key not accepted. Access denied."
 msgstr "Sleutel niet geaccepteerd. Toegang geweigerd."
 
-#: DownloadGedcomWithURL.php:1733
+#: DownloadGedcomWithURL.php:1738
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr "Sleutel (versleuteld) niet geaccepteerd. Toegang geweigerd."
 
-#: DownloadGedcomWithURL.php:1739
+#: DownloadGedcomWithURL.php:1744
 msgid "Privacy level not accepted"
 msgstr "Privacyniveau niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1743
+#: DownloadGedcomWithURL.php:1748
 msgid "Export format not accepted"
 msgstr "Exportindeling niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1747
+#: DownloadGedcomWithURL.php:1752
 msgid "Encoding not accepted"
 msgstr "Codering niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1751
+#: DownloadGedcomWithURL.php:1756
 msgid "Action not accepted"
 msgstr "Actie niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1755
+#: DownloadGedcomWithURL.php:1760
 msgid "Line endings not accepted"
 msgstr "Regeleinden niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1759
+#: DownloadGedcomWithURL.php:1764
 msgid "Time stamp setting not accepted"
 msgstr "Tijdstempelinstelling niet geaccepteerd"
 
-#: DownloadGedcomWithURL.php:1763
+#: DownloadGedcomWithURL.php:1768
 msgid "No file name provided for the requested GEDCOM conversion"
 msgstr "Geen bestandsnaam opgegeven voor de gevraagde GEDCOM-conversie"
 
-#: DownloadGedcomWithURL.php:1865 DownloadGedcomWithURL.php:2026
+#: DownloadGedcomWithURL.php:1870 DownloadGedcomWithURL.php:2031
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Het bestand %s kon niet worden aangemaakt."
 
-#: DownloadGedcomWithURL.php:1869
+#: DownloadGedcomWithURL.php:1874
 #, php-format
 msgid "The family tree \"%s\" was sucessfully exported to: %s"
 msgstr "De stamboom \"%s\" is geëxporteerd naar: %s"
 
-#: DownloadGedcomWithURL.php:1880
+#: DownloadGedcomWithURL.php:1885
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
 msgstr ""
 "URL-verzoeken op afstand om GEDCOM-bestanden op te slaan op de server zijn "
 "niet toegestaan."
 
-#: DownloadGedcomWithURL.php:1881 DownloadGedcomWithURL.php:1898
-#: DownloadGedcomWithURL.php:2033 DownloadGedcomWithURL.php:2058
+#: DownloadGedcomWithURL.php:1886 DownloadGedcomWithURL.php:1903
+#: DownloadGedcomWithURL.php:2038 DownloadGedcomWithURL.php:2063
 msgid "Please check the module settings in the control panel."
 msgstr "Controleer de module-instellingen in het bedieningspaneel."
 
-#: DownloadGedcomWithURL.php:1897
+#: DownloadGedcomWithURL.php:1902
 msgid ""
 "Remote URL requests to download GEDCOM files from the server are not allowed."
 msgstr ""
 "URL-verzoeken op afstand om GEDCOM-bestanden te downloaden van de server "
 "zijn niet toegestaan."
 
-#: DownloadGedcomWithURL.php:1919 DownloadGedcomWithURL.php:1943
+#: DownloadGedcomWithURL.php:1924 DownloadGedcomWithURL.php:1948
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Kan bestand \"%s\" niet lezen."
 
-#: DownloadGedcomWithURL.php:1957
+#: DownloadGedcomWithURL.php:1962
 #, php-format
 msgid "No data imported from file \"%s\". The file might be empty."
 msgstr ""
 "Geen gegevens geïmporteerd uit bestand \"%s\". Het bestand kan leeg zijn."
 
-#: DownloadGedcomWithURL.php:1961
+#: DownloadGedcomWithURL.php:1966
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr "Het bestand \"%s\" is geüpload voor de stamboom \"%s\""
 
-#: DownloadGedcomWithURL.php:2010
+#: DownloadGedcomWithURL.php:2015
 #, php-format
 msgid "The GEDCOM file \"%s\" was successfully converted to: %s"
 msgstr "Het GEDCOM-bestand \"%s\" is geconverteerd naar: %s"
 
-#: DownloadGedcomWithURL.php:2032
+#: DownloadGedcomWithURL.php:2037
 msgid ""
 "Remote URL requests to convert GEDCOM files on the server are not allowed."
 msgstr ""
 "URL-verzoeken op afstand om GEDCOM-bestanden op de server te converteren "
 "zijn niet toegestaan."
 
-#: DownloadGedcomWithURL.php:2057
+#: DownloadGedcomWithURL.php:2062
 msgid ""
 "Remote URL requests to upload GEDCOM files to the server are not allowed."
 msgstr ""
@@ -382,11 +381,11 @@ msgstr "Uitgebreide GEDCOM-export"
 msgid "The following GEDCOM structure could not be matched"
 msgstr "De volgende GEDCOM-structuur kon niet worden gevonden"
 
-#: FilteredGedcomExportService.php:994
+#: FilteredGedcomExportService.php:995
 msgid "Error during a regular expression replacement."
 msgstr "Fout tijdens het vervangen van een reguliere expressie."
 
-#: FilteredGedcomExportService.php:1165
+#: FilteredGedcomExportService.php:1166
 msgid ""
 "Fatal error: Too many iterations while removing empty and unlinked records."
 msgstr ""
@@ -409,7 +408,7 @@ msgstr "Alle records"
 msgid "Avoid leading spaces for CONC"
 msgstr "Vermijd voorloopspaties voor CONC"
 
-#: resources/filter/BirthMarriageDeathGedcomFilter.php:100
+#: resources/filter/BirthMarriageDeathGedcomFilter.php:105
 msgid "Birth, marriage, death export"
 msgstr "Geboorte, huwelijk, overlijden exporteren"
 
@@ -425,7 +424,7 @@ msgstr "Webtrees 1.7 volkstelling-markup converteren naar markdown"
 msgid "Example GEDCOM filter"
 msgstr "Voorbeeld GEDCOM-filter"
 
-#: resources/filter/GEDCOM_7_GedcomFilter.php:203
+#: resources/filter/GEDCOM_7_GedcomFilter.php:211
 msgid "GEDCOM 7 conversion"
 msgstr "GEDCOM 7-conversie"
 
@@ -496,6 +495,10 @@ msgstr "Verwijder beperkingen (bijv. RESN-labels)"
 #: resources/filter/RemoveToDoDataGedcomFilter.php:35
 msgid "Remove ToDo data (i.e. _TODO structures)"
 msgstr "Verwijder ToDo-gegevens (d.w.z. _TODO-structuren)"
+
+#: resources/filter/RemoveVoidReferencesGedcomFilter.php:57
+msgid "Remove void references"
+msgstr ""
 
 #: resources/filter/RemoveWebtreesUserGedcomFilter.php:33
 msgid "Remove webtrees user data (i.e. _WT_USER tags)"

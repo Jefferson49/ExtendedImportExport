@@ -70,12 +70,16 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
         'INDI:FAMC:*'               => [],
         'INDI:FAMS'                 => [],
 
+        'INDI:_UID'                 => [],
+
         //Add a link (as source citation) to the related individual in webtrees
         'FAM'                       => ["0 @([^@]+)@ FAM\n" => "0 @$1@ FAM\n1 SOUR @S1@\n2 PAGE %BASE_URL%/tree/%TREE%/family/$1\n"],
 
         'FAM:HUSB'                  => [],
         'FAM:WIFE'                  => [],
         'FAM:CHIL'                  => [],
+
+        'FAM:_UID'                  => [],
 
         //Add "Y" to marriage for the case that substructures might be empty      
         'FAM:MARR'                  => ["1 MARR\n$" => "1 MARR Y\n"],
@@ -85,6 +89,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
 
         'SUBM'                      => [],
         'SUBM:NAME'                 => [],
+        'SUBM:_UID'                 => [],
 
         //Add a source to the end of the data. The source is used for links in INDI and FAM (links in souce citations) 
         'TRLR'                      => ["0 TRLR\n" => "0 @S1@ SOUR\n1 TITL %BASE_URL%/tree/%TREE%/\n0 TRLR\n"],

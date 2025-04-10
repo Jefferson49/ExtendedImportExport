@@ -107,7 +107,7 @@ class FilteredGedcomExportService extends GedcomExportService
                 '_PRIM', '_PRIMARY', '_PRIM_CUTOUT', '_PRIO', '_PRIV', '_PRMN', '_PROJECT_GUID', '_QUAL', '_QUAY', '_QUOTED', '_RDATE', '_REC', '_REL', '_RELN',
                 '_RINS', '_RTLSAVE', '_RUFNAME', '_RUID', '_SCBK', '_SCHA', '_SCHEMA', '_SDATE', '_SENDOF', '_SENDOM', '_SENDOU', '_SENDPF', '_SENDPM', '_SENDPU',
                 '_SENF', '_SENM', '_SENPOF', '_SENPOM', '_SENPOU', '_SENU', '_SEPR', '_SHON', '_SIC', '_SIGN', '_SLDN', '_SM_MERGES', '_SOUND', '_SOUR', '_SSHOW',
-                '_STAT', '_STP', '_STYLE', '_SUBM', '_SURN', '_TASK', '_TODO', '_TXT', '_TYPE', '_TYPE', '_UID', '_UNKN', '_UPD', '_URL', '_URKU', '_VERI',
+                '_STAT', '_STP', '_STYLE', '_SUBM', '_SURN', '_TASK', '_TODO', '_TXT', '_TYPE', '_TYPE', '_UNKN', '_UPD', '_URL', '_URKU', '_VERI',
                 '_WEIG', '_WGFM', '_WIFE', '_WITN', '_WT_USER', '_WT_OBJE_SORT', '_WTN', '_YART', '_ZUS', '_ZVST',
             ],
         ],
@@ -127,7 +127,7 @@ class FilteredGedcomExportService extends GedcomExportService
         ['https://genealogy.net/GEDCOM/' =>
             [
                 '_ASSO', '_CAT', '_CDATE', '_GODP', '_GOV', '_GOVTYPE', '_LOC', '_NAME', '_POST', '_PRIM', '_RDATE', '_RUFNAME', '_SCHEMA', '_STAT', '_TODO',
-                '_UID', '_WITN',
+                '_WITN',
             ],
         ],
     ];

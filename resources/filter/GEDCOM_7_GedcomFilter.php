@@ -39,6 +39,12 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         '*:LANG' 	           		=> ["RegExp_macro" => "LanguageConversion"],		
         '*:*:LANG'     	   			=> ["RegExp_macro" => "LanguageConversion"],		        
 
+        //UID conversion
+        '*:_UID'                 	=> ["RegExp_macro" => "UIdConversion"],
+        '*:*:_UID'                 	=> ["RegExp_macro" => "UIdConversion"],
+        '*:*:*:_UID'                => ["RegExp_macro" => "UIdConversion"],
+        '*:*:*:*:_UID'              => ["RegExp_macro" => "UIdConversion"],
+
         //Modify header
         'HEAD'                      => [],
         '!HEAD:GEDC:FORM'           => [],
@@ -147,6 +153,8 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
                                         "([\d]) AGE (?i)CHILD" => "$1 AGE < 8y",
                                         "([\d]) AGE (?i)INFANT" => "$1 AGE < 1y",
                                         "([\d]) AGE (?i)STILLBORN" => "$1 AGE 0y"],
+
+        "UIdConversion"				=> ["([\d]) _UID (.*)" => "$1 UID $2"],
 
         "ASSO_RELA"					=> ["([\d]) RELA (?i)GODPARENT" => "$1 RELA GODP",
                                         "([\d]) RELA (?i)WITNESS" => "$1 RELA WITN",

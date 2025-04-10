@@ -8,8 +8,7 @@ use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\I18N;
 
 /**
- * A GEDCOM filter to remove empty and unlinked records. 
- * Applied to: FAM, NOTE, OBJE, REPO, SOUR, _LOC. For INDI, only empty records are removed.
+ * A GEDCOM filter to remove void references
  */
 class RemoveVoidReferencesGedcomFilter extends AbstractGedcomFilter
 {
@@ -76,7 +75,7 @@ class RemoveVoidReferencesGedcomFilter extends AbstractGedcomFilter
         $xref   = $match[1] ?? '';
         $record = $records_list[$xref] ?? null;
 
-        //If a reference was found and the record related to the XREF exists forward theGEDCOM data.
+        //If a reference was found and the record related to the XREF exists forward the GEDCOM data.
         if (sizeof($match) === 0 OR $xref === '' OR $record === null OR $record->exists()) {
             return $gedcom;
         };

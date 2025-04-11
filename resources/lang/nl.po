@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ExtendedImportExport for webtrees 2\n"
 "POT-Creation-Date: 2025-04-10 19:13+0200\n"
 "PO-Revision-Date: \n"
-"Last-Translator: \n"
+"Last-Translator: TheDutchJewel <thedutchjewel@gmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -498,7 +498,7 @@ msgstr "Verwijder ToDo-gegevens (d.w.z. _TODO-structuren)"
 
 #: resources/filter/RemoveVoidReferencesGedcomFilter.php:57
 msgid "Remove void references"
-msgstr ""
+msgstr "Verwijder ongeldige referenties"
 
 #: resources/filter/RemoveWebtreesUserGedcomFilter.php:33
 msgid "Remove webtrees user data (i.e. _WT_USER tags)"

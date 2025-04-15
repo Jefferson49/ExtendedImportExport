@@ -53,6 +53,7 @@ class RemoveEmptyOrUnlinkedRecordsGedcomFilter extends AbstractGedcomFilter
         'OBJE'                      => ["PHP_function" => "customConvert"],
         'REPO'                      => ["PHP_function" => "customConvert"],
         'SOUR'                      => ["PHP_function" => "customConvert"],
+        'SUBM'                      => ["PHP_function" => "customConvert"],
         '_LOC'                      => ["PHP_function" => "customConvert"],
 
         //Export other records

@@ -404,20 +404,6 @@ class FilteredGedcomExportService extends GedcomExportService
                         $datum->o_gedcom;
                 }
 
-                if ($media_path !== null && $zip_filesystem !== null && preg_match('/0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
-                    preg_match_all('/\n1 FILE (.+)/', $gedcom, $matches, PREG_SET_ORDER);
-
-                    foreach ($matches as $match) {
-                        $media_file = $match[1];
-
-                        if ($tree !== null) {
-                            if ($media_filesystem->fileExists($media_file)) {
-                                $zip_filesystem->writeStream($media_path . $media_file, $media_filesystem->readStream($media_file));
-                            }    
-                        }
-                    }
-                }
-
                 //Add line end if not already exists
                 if (!strpos($gedcom, "\n", -1)) {
                     $gedcom .= "\n";
@@ -454,6 +440,21 @@ class FilteredGedcomExportService extends GedcomExportService
 
         //Finally, write Gedcom data to stream
         foreach($gedcom_export as $gedcom) {
+
+            //Add media files to ZIP file
+            if ($media_path !== null && $zip_filesystem !== null && preg_match('/0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
+                preg_match_all('/\n1 FILE (.+)/', $gedcom, $matches, PREG_SET_ORDER);
+
+                foreach ($matches as $match) {
+                    $media_file = $match[1];
+
+                    if ($tree !== null) {
+                        if ($media_filesystem->fileExists($media_file)) {
+                            $zip_filesystem->writeStream($media_path . $media_file, $media_filesystem->readStream($media_file));
+                        }    
+                    }
+                }
+            }
 
             //If not Gedcom 7, wrap long lines
             if (!$gedcom7) {

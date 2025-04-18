@@ -674,7 +674,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         $tree_list = Functions::getTreeNameTitleList($this->tree_service->all());
 
-        if (sizeof($tree_list) === 0 OR !boolval($this->getPreference(self::PREF_SHOW_MENU_LIST_ITEM, '0'))) {
+        if (sizeof($tree_list) === 0 OR !boolval($this->getPreference(self::PREF_SHOW_MENU_LIST_ITEM, '1'))) {
             return true;
         }
 

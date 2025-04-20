@@ -47,10 +47,10 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 		<li>
 			<span class="fa-li"><?= view('icons/upload') ?></span>
 			<a href="<?= e(route(ImportGedcomPage::class, [
-				'tree_name'              => $tree->name(),
-				'default_gedcom_filter1' => $default_gedcom_filter1,
-				'default_gedcom_filter2' => $default_gedcom_filter2,
-				'default_gedcom_filter3' => $default_gedcom_filter3,
+				'tree_name'      => $tree->name(),
+				'gedcom_filter1' => $default_gedcom_filter1,
+				'gedcom_filter2' => $default_gedcom_filter2,
+				'gedcom_filter3' => $default_gedcom_filter3,
 				])) ?>">
 				<?= I18N::translate('GEDCOM Import') ?>
 			</a>
@@ -60,9 +60,9 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 			<a href="<?= e(route(ExportGedcomPage::class, [
 				'tree_name'              => $tree->name(),
                 'export_clippings_cart'  => false,
-				'default_gedcom_filter1' => $default_gedcom_filter1,
-				'default_gedcom_filter2' => $default_gedcom_filter2,
-				'default_gedcom_filter3' => $default_gedcom_filter3,
+				'gedcom_filter1'         => $default_gedcom_filter1,
+				'gedcom_filter2'         => $default_gedcom_filter2,
+				'gedcom_filter3'         => $default_gedcom_filter3,
 				])) ?>">
 				<?= I18N::translate('GEDCOM Export: Tree') ?>
 			</a>
@@ -72,19 +72,18 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 			<a href="<?= e(route(ExportGedcomPage::class, [
                 'tree_name'              => $tree->name(),
                 'export_clippings_cart'  => true,
-				'default_gedcom_filter1' => $default_gedcom_filter1,
-				'default_gedcom_filter2' => $default_gedcom_filter2,
-				'default_gedcom_filter3' => $default_gedcom_filter3,
+				'gedcom_filter1'         => $default_gedcom_filter1,
+				'gedcom_filter2'         => $default_gedcom_filter2,
+				'gedcom_filter3'         => $default_gedcom_filter3,
 				])) ?>">
 				<?= I18N::translate('GEDCOM Export: Clippings cart') ?>
 			</a>
 		</li>		<li>
 			<span class="fa-li"><?= view('icons/copy') ?></span>
 			<a href="<?= e(route(ConvertGedcomPage::class, [
-				'tree_name'              => $tree->name(),
-				'default_gedcom_filter1' => $default_gedcom_filter1,
-				'default_gedcom_filter2' => $default_gedcom_filter2,
-				'default_gedcom_filter3' => $default_gedcom_filter3,
+				'gedcom_filter1'         => $default_gedcom_filter1,
+				'gedcom_filter2'         => $default_gedcom_filter2,
+				'gedcom_filter3'         => $default_gedcom_filter3,
 				])) ?>">
 				<?= I18N::translate('GEDCOM Conversion') ?>
 			</a>

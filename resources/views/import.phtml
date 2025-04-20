@@ -16,15 +16,15 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
  * @var  string                 $title,
  * @var  Tree                   $tree,
  * @var  string                 $folder,
+ * @var  string                 $gedcom_filename,
  * @var  Collection<int,string> $gedcom_files,
  * @var  array                  $gedcom_filter_list
- * @var  string                 $default_gedcom_filter1
- * @var  string                 $default_gedcom_filter2
- * @var  string                 $default_gedcom_filter3
+ * @var  string                 $gedcom_filter1
+ * @var  string                 $gedcom_filter2
+ * @var  string                 $gedcom_filter3
  */
 
- $default_gedcom_file = $tree->getPreference('gedcom_filename');
- $gedcom_media_path   = $tree->getPreference('GEDCOM_MEDIA_PATH');
+ $gedcom_media_path = $tree->getPreference('GEDCOM_MEDIA_PATH');
 
 ?>
 
@@ -42,7 +42,6 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
 	<input type="hidden" name="action" id="action" value="<?= DownloadGedcomWithURL::ACTION_UPLOAD ?>">	
-	<input type="hidden" id="gedcom_filename" value="<?= e($default_gedcom_file) ?>">
 	
 		<div class="h4">
 			<?= MoreI18N::xlate('Select a GEDCOM file to import') ?>
@@ -70,7 +69,7 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 					<select name="filename" class="form-select" dir="ltr" id="import-server-file">
 						<option selected="selected" value="">&nbsp;</option>
 						<?php foreach ($gedcom_files as $gedcom_file) : ?>
-							<option value="<?= e($gedcom_file) ?>" <?= $gedcom_file === $default_gedcom_file ? 'selected' : '' ?>>
+							<option value="<?= e($gedcom_file) ?>" <?= $gedcom_file === $gedcom_filename ? 'selected' : '' ?>>
 								<?= e($gedcom_file) ?>
 							</option>
 						<?php endforeach ?>
@@ -145,7 +144,7 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 			<div class="col-sm-9">
 				<?= view('components/select', [
 					'name'     => 'gedcom_filter1',
-					'selected' => $default_gedcom_filter1, 
+					'selected' => $gedcom_filter1, 
 					'options'  => $gedcom_filter_list,
 					]) ?>
 			</div>
@@ -157,7 +156,7 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 			<div class="col-sm-9">
 			<?= view('components/select', [
 					'name'     => 'gedcom_filter2',
-					'selected' => $default_gedcom_filter2, 
+					'selected' => $gedcom_filter2, 
 					'options'  => $gedcom_filter_list,
 					]) ?>
 			</div>
@@ -169,7 +168,7 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 			<div class="col-sm-9">
 				<?= view('components/select', [
 					'name'     => 'gedcom_filter3',
-					'selected' => $default_gedcom_filter3, 
+					'selected' => $gedcom_filter3, 
 					'options'  => $gedcom_filter_list,
 					]) ?>
 			</div>

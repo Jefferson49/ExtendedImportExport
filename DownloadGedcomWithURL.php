@@ -2029,7 +2029,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                             if ($called_from_control_panel) {
                                 FlashMessages::addMessage($message, 'success');
-                                $response = redirect(route(SelectionPage::class));
+                                $response = redirect(route(ConvertGedcomPage::class, [
+                                    'gedcom_filename'    => $filename,
+                                    'filename_converted' => $filename_converted,
+                                    'format'             => $format,
+                                    'encoding'           => $encoding,
+                                    'endings'            => $line_endings,
+                                    'privacy'            => $privacy,
+                                    'time_stamp'         => $time_stamp,
+                                    'gedcom_filter1'     => $gedcom_filter1,
+                                    'gedcom_filter2'     => $gedcom_filter2,
+                                    'gedcom_filter3'     => $gedcom_filter3,
+                                ]));
                             }
                             else {
                                 $response = $this->showSuccessMessage($message);

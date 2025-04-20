@@ -79,20 +79,24 @@ class ConvertGedcomPage implements RequestHandlerInterface
     {
         $this->layout = 'layouts/administration';
 
-        $tree_name               = Validator::queryParams($request)->string('tree_name');
-        $default_gedcom_filter1  = Validator::queryParams($request)->string('default_gedcom_filter1', MoreI18N::xlate('None'));
-        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter2', MoreI18N::xlate('None'));
-        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter3', MoreI18N::xlate('None'));
-
-        $tree_service = new TreeService(new GedcomImportService());
-        $tree = $tree_service->all()[$tree_name];
-
         $module_service = new ModuleService();
+        $tree_service = new TreeService(new GedcomImportService());
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+        
+        $gedcom_filename    = Validator::queryParams($request)->string('gedcom_filename', '');
+        $filename_converted = Validator::queryParams($request)->string('filename_converted', '');
+        $format             = Validator::queryParams($request)->string('format', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
+        $encoding           = Validator::queryParams($request)->string('encoding', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENCODING,  UTF8::NAME));
+        $endings            = Validator::queryParams($request)->string('endings', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'CRLF'));
+        $privacy            = Validator::queryParams($request)->string('privacy', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
+        $time_stamp         = Validator::queryParams($request)->string('time_stamp', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, DownloadGedcomWithURL::TIME_STAMP_NONE));
+        $gedcom_filter1     = Validator::queryParams($request)->string('gedcom_filter1', MoreI18N::xlate('None'));
+        $gedcom_filter2     = Validator::queryParams($request)->string('gedcom_filter2', MoreI18N::xlate('None'));
+        $gedcom_filter3     = Validator::queryParams($request)->string('gedcom_filter3', MoreI18N::xlate('None'));
 
-        $folder          = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
-        $data_filesystem = Registry::filesystem()->root($folder);
-        $gedcom_files    = $this->admin_service->gedcomFiles($data_filesystem);
+        $folder             = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
+        $data_filesystem    = Registry::filesystem()->root($folder);
+        $gedcom_files       = $this->admin_service->gedcomFiles($data_filesystem);
 
         //Load Gedcom filters
         try {
@@ -108,21 +112,22 @@ class ConvertGedcomPage implements RequestHandlerInterface
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::convert',
             [
-                'title'                    => I18N::translate('GEDCOM Conversion'),
-                'tree'                     => $tree,
-                'tree_list'                => $tree_list,
-                'folder'                   => $folder,
-                'gedcom_files'             => $gedcom_files,
-                'zip_available'            => extension_loaded('zip'),
-                'default_format'           => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
-                'default_encoding'         => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENCODING,  UTF8::NAME),
-                'default_endings'          => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'CRLF'),
-                'default_privacy'          => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'),
-                'default_time_stamp'       => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, DownloadGedcomWithURL::TIME_STAMP_NONE),
-                'gedcom_filter_list'       => $gedcom_filter_list,
-                'default_gedcom_filter1'   => $default_gedcom_filter1,
-                'default_gedcom_filter2'   => $default_gedcom_filter2,
-                'default_gedcom_filter3'   => $default_gedcom_filter2,
+                'title'              => I18N::translate('GEDCOM Conversion'),
+                'tree_list'          => $tree_list,
+                'folder'             => $folder,
+                'gedcom_filename'    => $gedcom_filename,
+                'filename_converted' => $filename_converted,
+                'gedcom_files'       => $gedcom_files,
+                'zip_available'      => extension_loaded('zip'),
+                'format'             => $format,
+                'encoding'           => $encoding,
+                'endings'            => $endings,
+                'privacy'            => $privacy,
+                'time_stamp'         => $time_stamp,
+                'gedcom_filter_list' => $gedcom_filter_list,
+                'gedcom_filter1'     => $gedcom_filter1,
+                'gedcom_filter2'     => $gedcom_filter2,
+                'gedcom_filter3'     => $gedcom_filter3,
             ]
         );
     }

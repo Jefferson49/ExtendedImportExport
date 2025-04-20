@@ -78,14 +78,16 @@ class ImportGedcomPage implements RequestHandlerInterface
     {
         $this->layout = 'layouts/administration';
 
-        $tree_name               = Validator::queryParams($request)->string('tree_name');
-        $default_gedcom_filter1  = Validator::queryParams($request)->string('default_gedcom_filter1', MoreI18N::xlate('None'));
-        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter2', MoreI18N::xlate('None'));
-        $default_gedcom_filter2  = Validator::queryParams($request)->string('default_gedcom_filter3', MoreI18N::xlate('None'));
+        $tree_service    = new TreeService(new GedcomImportService()); 
 
-        $tree_service = new TreeService(new GedcomImportService()); 
-        $tree = $tree_service->all()[$tree_name];
+        $tree_name       = Validator::queryParams($request)->string('tree_name');
+        $tree_name       = Validator::queryParams($request)->string('tree_name');
+        $tree            = $tree_service->all()[$tree_name];
 
+        $gedcom_filename = Validator::queryParams($request)->string('gedcom_filename', $tree->getPreference('gedcom_filename'));
+        $gedcom_filter1  = Validator::queryParams($request)->string('gedcom_filter1', MoreI18N::xlate('None'));
+        $gedcom_filter2  = Validator::queryParams($request)->string('gedcom_filter2', MoreI18N::xlate('None'));
+        $gedcom_filter3  = Validator::queryParams($request)->string('gedcom_filter3', MoreI18N::xlate('None'));
         $module_service = new ModuleService();
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
@@ -107,15 +109,16 @@ class ImportGedcomPage implements RequestHandlerInterface
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::import',
             [
-                'title'                    => I18N::translate('Extended GEDCOM Import') . ' — ' . e($tree->title()),
-                'tree'                     => $tree,
-                'tree_list'                => $tree_list,                
-                'folder'                   => $folder,
-                'gedcom_files'             => $gedcom_files,
-                'gedcom_filter_list'       => $gedcom_filter_list,
-                'default_gedcom_filter1'   => $default_gedcom_filter1,
-                'default_gedcom_filter2'   => $default_gedcom_filter2,
-                'default_gedcom_filter3'   => $default_gedcom_filter2,
+                'title'               => I18N::translate('Extended GEDCOM Import') . ' — ' . e($tree->title()),
+                'tree'                => $tree,
+                'tree_list'           => $tree_list,                
+                'folder'              => $folder,
+                'gedcom_files'        => $gedcom_files,
+                'gedcom_filename'     => $gedcom_filename,
+                'gedcom_filter_list'  => $gedcom_filter_list,
+                'gedcom_filter1'      => $gedcom_filter1,
+                'gedcom_filter2'      => $gedcom_filter2,
+                'gedcom_filter3'      => $gedcom_filter3,
             ]
         );
     }

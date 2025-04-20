@@ -15,21 +15,20 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 
 
 /**
- * @var  string                 $title,
- * @var  Tree                   $tree,
- * @var  bool                   $export_clippings_cart,
- * @var  string                 $data_folder,
- * @var  bool                   $zip_available
- * @var  string                 $default_action
- * @var  string                 $default_format
- * @var  string                 $default_encoding
- * @var  string                 $default_endings
- * @var  string                 $default_privacy
- * @var  string                 $default_time_stamp
- * @var  array                  $gedcom_filter_list
- * @var  string                 $default_gedcom_filter1
- * @var  string                 $default_gedcom_filter2
- * @var  string                 $default_gedcom_filter3
+ * @var  string  $title,
+ * @var  Tree    $tree,
+ * @var  bool    $export_clippings_cart,
+ * @var  bool    $zip_available
+ * @var  string  $action
+ * @var  string  $format
+ * @var  string  $encoding
+ * @var  string  $endings
+ * @var  string  $privacy
+ * @var  string  $time_stamp
+ * @var  array   $gedcom_filter_list
+ * @var  string  $gedcom_filter1
+ * @var  string  $gedcom_filter2
+ * @var  string  $gedcom_filter3
  */
 
 $filename = $export_clippings_cart ? 'clippings' : $tree->name();
@@ -61,7 +60,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 
 		<div class="col-sm-9">
 			<div class="form-check">
-				<input class="form-check-input" type="radio" name="format" id="format-gedcom" value="gedcom" <?= $default_format === 'gedcom' ? 'checked="checked"' : '' ?> data-wt-extension=".ged">
+				<input class="form-check-input" type="radio" name="format" id="format-gedcom" value="gedcom" <?= $format === 'gedcom' ? 'checked="checked"' : '' ?> data-wt-extension=".ged">
 
 				<label class="form-check-label" for="format-gedcom">
 					<?= MoreI18N::xlate('GEDCOM') ?>
@@ -69,7 +68,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			</div>
 
 			<div class="form-check">
-				<input class="form-check-input" type="radio" name="format" id="format-zip" value="zip" <?= $default_format === 'zip' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
+				<input class="form-check-input" type="radio" name="format" id="format-zip" value="zip" <?= $format === 'zip' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 				<label class="form-check-label" for="format-zip">
 					<?= /* I18N: ZIP = file format */ MoreI18N::xlate('ZIP') ?>
@@ -77,7 +76,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			</div>
 
 			<div class="form-check">
-				<input class="form-check-input" type="radio" name="format" id="format-zipmedia" value="zipmedia" <?= $default_format === 'zipmedia' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
+				<input class="form-check-input" type="radio" name="format" id="format-zipmedia" value="zipmedia" <?= $format === 'zipmedia' ? 'checked="checked"' : '' ?> data-wt-extension=".zip" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 				<label class="form-check-label" for="format-zipmedia">
 					<?= /* I18N: ZIP = file format */ MoreI18N::xlate('ZIP') ?>
@@ -86,7 +85,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			</div>
 
 			<div class="form-check">
-				<input class="form-check-input" type="radio" name="format" id="format-gdz" value="gedzip" <?= $default_format === 'gedzip' ? 'checked="checked"' : '' ?> data-wt-extension=".gdz" <?= $zip_available ? '' : 'disabled="disabled"'?>>
+				<input class="form-check-input" type="radio" name="format" id="format-gdz" value="gedzip" <?= $format === 'gedzip' ? 'checked="checked"' : '' ?> data-wt-extension=".gdz" <?= $zip_available ? '' : 'disabled="disabled"'?>>
 
 				<label class="form-check-label" for="format-gdz">
 					<?= /* I18N: GEDZIP = file format */ MoreI18N::xlate('GEDZIP') ?>
@@ -95,7 +94,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			</div>
 
 			<div class="form-check">
-				<input class="form-check-input" type="radio" name="format" id="format-other" value="other" <?= $default_format === 'other' ? 'checked="checked"' : '' ?> data-wt-extension=""'?>
+				<input class="form-check-input" type="radio" name="format" id="format-other" value="other" <?= $format === 'other' ? 'checked="checked"' : '' ?> data-wt-extension=""'?>
 				<label class="form-check-label" for="format-other">
 					<?= I18N::translate('Other format (i.e. use extension of filename)') ?>
 				</label>
@@ -128,7 +127,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			<?= view('components/select', [
 				'name'     => 'encoding',
 				'id'       => 'encoding',
-				'selected' => $default_encoding,
+				'selected' => $encoding,
 				'options'  => [UTF8::NAME => 'UTF-8', UTF16BE::NAME => 'UNICODE (UTF16-BE)', ANSEL::NAME => 'ANSEL', ASCII::NAME => 'ASCII', 'CP1252' => 'ANSI (CP1252)'],
 				]) ?>
 		</div>
@@ -143,7 +142,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			<?= view('components/radios-inline', [
 				'name'     => 'line_endings',
 				'options'  => ['CRLF' => 'CR/LF (windows)', 'LF' => 'LF (unix)'],
-				'selected' => $default_endings,
+				'selected' => $endings,
 				]) ?>
 		</div>
 	</div>
@@ -153,7 +152,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 			<?= MoreI18N::xlate('Apply privacy settings') ?>
 		</label>
 		<div class="col-sm-9">
-			<?= view('components/radios-inline', ['name' => 'privacy','selected' => $default_privacy, 
+			<?= view('components/radios-inline', ['name' => 'privacy','selected' => $privacy, 
 				'options' => [
 					'none'     => 'none (' . MoreI18N::xlate('None') .')', 
 					'gedadmin' => 'gedadmin (' . MoreI18N::xlate('Manager') .')', 
@@ -170,7 +169,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 				<?= I18N::translate('Time stamp') ?>
 			</legend>
 			<div class="col-sm-9">
-				<?= view('components/radios-inline', ['name' => 'time_stamp', 'selected' => $default_time_stamp,
+				<?= view('components/radios-inline', ['name' => 'time_stamp', 'selected' => $time_stamp,
 					'options' => [
 						DownloadGedcomWithURL::TIME_STAMP_NONE    => DownloadGedcomWithURL::TIME_STAMP_NONE    . ' (' . I18N::translate('No time stamp') . ')',
 						DownloadGedcomWithURL::TIME_STAMP_PREFIX  => DownloadGedcomWithURL::TIME_STAMP_PREFIX  . ' (' .  I18N::translate('Prefix time stamp') . ')',
@@ -190,7 +189,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 				<?= I18N::translate('Action') ?>
 			</legend>
 			<div class="col-sm-9">
-				<?= view('components/radios-inline', ['name' => 'action', 'selected' => $default_action,
+				<?= view('components/radios-inline', ['name' => 'action', 'selected' => $action,
 					'options' => [
 						DownloadGedcomWithURL::ACTION_DOWNLOAD => MoreI18N::xlate('Download'),
 						DownloadGedcomWithURL::ACTION_SAVE     => I18N::translate('Save on the webtrees server'),
@@ -211,7 +210,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 		<div class="col-sm-9">
 			<?= view('components/select', [
 				'name'     => 'gedcom_filter1',
-				'selected' => $default_gedcom_filter1, 
+				'selected' => $gedcom_filter1, 
 				'options'  => $gedcom_filter_list,
 				]) ?>
 		</div>
@@ -223,7 +222,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 		<div class="col-sm-9">
 			<?= view('components/select', [
 				'name'     => 'gedcom_filter2',
-				'selected' => $default_gedcom_filter2, 
+				'selected' => $gedcom_filter2, 
 				'options'  => $gedcom_filter_list,
 				]) ?>
 		</div>
@@ -235,7 +234,7 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 		<div class="col-sm-9">
 			<?= view('components/select', [
 				'name'     => 'gedcom_filter3',
-				'selected' => $default_gedcom_filter3, 
+				'selected' => $gedcom_filter3, 
 				'options'  => $gedcom_filter_list,
 				]) ?>
 		</div>

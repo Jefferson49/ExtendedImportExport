@@ -78,17 +78,24 @@ class ExportGedcomPage implements RequestHandlerInterface
     {
         $this->layout = 'layouts/administration';
 
-        $tree_name              = Validator::queryParams($request)->string('tree_name');
-        $export_clippings_cart  = Validator::queryParams($request)->boolean('export_clippings_cart', false);
-        $default_gedcom_filter1 = Validator::queryParams($request)->string('default_gedcom_filter1', MoreI18N::xlate('None'));
-        $default_gedcom_filter2 = Validator::queryParams($request)->string('default_gedcom_filter2', MoreI18N::xlate('None'));
-        $default_gedcom_filter3 = Validator::queryParams($request)->string('default_gedcom_filter3', MoreI18N::xlate('None'));
+        $module_service = new ModuleService();
+        $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+
+        $tree_name             = Validator::queryParams($request)->string('tree_name');
+        $export_clippings_cart = Validator::queryParams($request)->boolean('export_clippings_cart', false);
+        $gedcom_filter1        = Validator::queryParams($request)->string('gedcom_filter1', MoreI18N::xlate('None'));
+        $gedcom_filter2        = Validator::queryParams($request)->string('gedcom_filter2', MoreI18N::xlate('None'));
+        $gedcom_filter3        = Validator::queryParams($request)->string('gedcom_filter3', MoreI18N::xlate('None'));
+        $filename              = Validator::queryParams($request)->string('filename', $export_clippings_cart ? 'clippings' : $tree_name);
+        $action                = Validator::queryParams($request)->string('action', DownloadGedcomWithURL::ACTION_DOWNLOAD);
+        $format                = Validator::queryParams($request)->string('format', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
+        $privacy               = Validator::queryParams($request)->string('privacy', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
+        $encoding              = Validator::queryParams($request)->string('encoding', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENCODING,  UTF8::NAME));
+        $endings               = Validator::queryParams($request)->string('endings', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'CRLF'));
+        $time_stamp            = Validator::queryParams($request)->string('time_stamp', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, DownloadGedcomWithURL::TIME_STAMP_NONE));
 
         $tree_service = new TreeService(new GedcomImportService());
         $tree = $tree_service->all()[$tree_name];
-
-        $module_service = new ModuleService();
-        $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
         //Load Gedcom filters
         try {
@@ -106,20 +113,21 @@ class ExportGedcomPage implements RequestHandlerInterface
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::export',
             [
-                'title'                    => I18N::translate('Extended GEDCOM Export') . ' — ' . $title,
-                'tree'                     => $tree,
-                'export_clippings_cart'    => $export_clippings_cart,
-                'zip_available'            => extension_loaded('zip'),
-                'default_action'           => DownloadGedcomWithURL::ACTION_DOWNLOAD,
-                'default_format'           => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'),
-                'default_encoding'         => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENCODING,  UTF8::NAME),
-                'default_endings'          => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'CRLF'),
-                'default_privacy'          => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'),
-                'default_time_stamp'       => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, DownloadGedcomWithURL::TIME_STAMP_NONE),
-                'gedcom_filter_list'       => $gedcom_filter_list,
-                'default_gedcom_filter1'   => $default_gedcom_filter1,
-                'default_gedcom_filter2'   => $default_gedcom_filter2,
-                'default_gedcom_filter3'   => $default_gedcom_filter3,
+                'title'                 => I18N::translate('Extended GEDCOM Export') . ' — ' . $title,
+                'tree'                  => $tree,
+                'export_clippings_cart' => $export_clippings_cart,
+                'filename'              => $filename,
+                'zip_available'         => extension_loaded('zip'),
+                'action'                => $action,
+                'format'                => $format,
+                'privacy'               => $privacy,
+                'encoding'              => $encoding,
+                'endings'               => $endings,
+                'time_stamp'            => $time_stamp,
+                'gedcom_filter_list'    => $gedcom_filter_list,
+                'gedcom_filter1'        => $gedcom_filter1,
+                'gedcom_filter2'        => $gedcom_filter2,
+                'gedcom_filter3'        => $gedcom_filter3,
             ]
         );
     }

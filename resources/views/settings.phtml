@@ -117,7 +117,7 @@ $remote_url = Html::url($url, $parameters) . DownloadGedcomWithURL::ROUTE_REMOTE
 			<div class="col-sm-9">
 				<?= view('components/checkbox', ['label' => MoreI18N::xlate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_GEDBAS_UPLOAD, 'checked' => $allow_gedbas_upload]) ?>
 				<div class="form-text">
-					<?= I18N::translate('If this option is selected, an upload of GEDCOM files to the GEDBAS database will be enabled. Allows to select GEDBAS upload as an "Eport action" in the extended GEDCOM export for trees.', e($title)); ?>
+					<?= I18N::translate('If this option is selected, an upload of GEDCOM files to the GEDBAS database will be enabled. This allows to select "GEDBAS upload" as an export action in the extended GEDCOM export.', e($title)); ?>
 				</div>
 			</div>
 		</div>

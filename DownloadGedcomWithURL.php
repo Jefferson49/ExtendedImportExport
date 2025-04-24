@@ -103,6 +103,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 use ErrorException;
+use CURLFile;
 use Throwable;
 
 use ReflectionClass;
@@ -188,7 +189,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const PREF_ALLOW_REMOTE_UPLOAD = "allow_remote_upload";
 	public const PREF_ALLOW_REMOTE_SAVE = "allow_remote_save";
 	public const PREF_ALLOW_REMOTE_CONVERT = "allow_remote_convert";
+    public const PREF_ALLOW_REMOTE_GEDBAS_UPLOAD = 'allow_remote_gedbas_upload';
+
 	public const PREF_SHOW_MENU_LIST_ITEM = "show_menu_list_item";
+    public const PREF_ALLOW_GEDBAS_UPLOAD = 'allow_gedbas_upload';
+    public const PREF_GEDBAS_API_KEY = 'GEDBAS_apiKey';
 	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
     public const PREF_DEFAULT_GEDCOM_FILTER1 = 'default_gedcom_filter1';
     public const PREF_DEFAULT_GEDCOM_FILTER2 = 'default_gedcom_filter2';
@@ -198,11 +203,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const PREF_DEFAULT_ENCODING = 'default_encoding';
     public const PREF_DEFAULT_ENDING = 'default_ending';
     public const PREF_DEFAULT_TIME_STAMP = 'default_time_stamp';
+
+    //Preferences for trees
+    public const TREE_PREF_GEDBAS_ID = 'GEDBAS_id';
+
     
     //Actions
     public const ACTION_DOWNLOAD      = 'download';
     public const ACTION_SAVE          = 'save';
     public const ACTION_BOTH          = 'both';
+    public const ACTION_GEDBAS        = 'GEDBAS';
     public const ACTION_UPLOAD        = 'upload';
     public const ACTION_CONVERT       = 'convert';
     public const ACTION_RENUMBER_XREF = 'renumber_tree';
@@ -500,7 +510,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				self::PREF_ALLOW_REMOTE_UPLOAD        => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_UPLOAD, '0')),
 				self::PREF_ALLOW_REMOTE_SAVE          => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_SAVE, '0')),
 				self::PREF_ALLOW_REMOTE_CONVERT       => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_CONVERT, '0')),
+				self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD, '0')),
 				self::PREF_SHOW_MENU_LIST_ITEM        => boolval($this->getPreference(self::PREF_SHOW_MENU_LIST_ITEM, '1')),
+				self::PREF_ALLOW_GEDBAS_UPLOAD        => boolval($this->getPreference(self::PREF_ALLOW_GEDBAS_UPLOAD, '0')),
+				self::PREF_GEDBAS_API_KEY             => $this->getPreference(self::PREF_GEDBAS_API_KEY, ''),
 				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, $data_folder_relative),
                 self::PREF_DEFAULT_GEDCOM_FILTER1     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''),
                 self::PREF_DEFAULT_GEDCOM_FILTER2     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''),
@@ -530,9 +543,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $allow_remote_upload        = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_UPLOAD, false);
         $allow_remote_save          = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_SAVE, false);
         $allow_remote_convert       = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_CONVERT, false);
+        $allow_remote_gedbas_upload = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD, false);
         $new_secret_key             = Validator::parsedBody($request)->string('new_secret_key', '');
         $folder_to_save             = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY'));
         $show_menu_list_item        = Validator::parsedBody($request)->boolean(self::PREF_SHOW_MENU_LIST_ITEM, false);
+        $allow_gedbas_upload        = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_GEDBAS_UPLOAD, false);
+        $GEDBAS_apiKey              = Validator::parsedBody($request)->string(self::PREF_GEDBAS_API_KEY, '');
         $default_gedcom_filter1     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER1, '');
         $default_gedcom_filter2     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER2, '');
         $default_gedcom_filter3     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER3, '');
@@ -612,7 +628,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			$this->setPreference(self::PREF_ALLOW_REMOTE_UPLOAD, $allow_remote_upload ? '1' : '0');
 			$this->setPreference(self::PREF_ALLOW_REMOTE_SAVE, $allow_remote_save ? '1' : '0');
 			$this->setPreference(self::PREF_ALLOW_REMOTE_CONVERT, $allow_remote_convert ? '1' : '0');
+			$this->setPreference(self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD, $allow_remote_gedbas_upload ? '1' : '0');
 			$this->setPreference(self::PREF_SHOW_MENU_LIST_ITEM, $show_menu_list_item ? '1' : '0');
+			$this->setPreference(self::PREF_ALLOW_GEDBAS_UPLOAD, $allow_gedbas_upload ? '1' : '0');
+            $this->setPreference(self::PREF_GEDBAS_API_KEY, $GEDBAS_apiKey);
 
             //Save default settings to preferences
             $this->setPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, $default_gedcom_filter1);
@@ -1608,8 +1627,97 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return $records;
     }
 
+
 	/**
-     * Execute the request (from URL or from control panel) to download or save 
+     * Upload GEDCOM file to GEDBAS
+     *
+     * @param  string   $GEDBAS_apiKey
+     * @param  string   $GEDBAS_Id
+     * @param  string   $file_name
+     * @param  string   $title
+     * @param  string   $description
+     * @param  resource $resource
+     * 
+     * @return string
+     */	
+    private function uploadToGEDBAS(string $GEDBAS_apiKey, string $GEDBAS_Id, string $file_name, string $title, string $description, $resource): string
+    {
+        if ($GEDBAS_apiKey === '') {
+            throw new DownloadGedcomWithUrlException(I18N::translate('Invalid GEDBAS API key'));
+        }
+
+        if (strlen($file_name) < 5 OR strpos($file_name, '.ged', -4) === false) {
+            throw new DownloadGedcomWithUrlException(I18N::translate('Invalid file name for GEDBAS upload'));
+        }
+
+        //$database_info = $this->getDatabaseInfoFromGEDBAS($GEDBAS_apiKey);
+
+        // Encode cURL request
+        $url =  "https://gedbas.genealogy.net/database/saveWithApiKey";
+
+        $this->root_filesystem->writeStream($file_name, $resource);
+        $cfile = new CURLFile($file_name,'text/plain',$file_name);
+
+        $cdata = [
+            "apiKey"      => $GEDBAS_apiKey,
+            "file"        => $cfile,
+            "title"       => $title,
+            "description" => $description,
+        ];
+
+        if ($GEDBAS_Id !== '') {
+            $cdata['id'] = $GEDBAS_Id;
+        }
+
+        // Use cURL to create the GEDBAS request
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $cdata);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER , true);
+        $response = curl_exec($ch);
+        $e = curl_error($ch);
+        $decodedData = json_decode($response, true);
+        curl_close($ch);
+
+        $this->root_filesystem->delete($file_name);
+
+        return $response;
+    }
+
+	/**
+     * Get information about existing databases from GEDBAS
+     *
+     * @param  string   $GEDBAS_apiKey
+     * 
+     * @return array
+     */	
+    private function getDatabaseInfoFromGEDBAS(string $GEDBAS_apiKey): array
+    {
+        if ($GEDBAS_apiKey === '') {
+            throw new DownloadGedcomWithUrlException(I18N::translate('Invalid GEDBAS API key'));
+        }
+
+        // Encode cURL request
+        $url = "https://gedbas.genealogy.net/database/myFiles";
+
+        // Use cURL to create the GEDBAS request
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, ["apiKey" => $GEDBAS_apiKey]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER , true);
+        $response = curl_exec($ch);
+        $error = curl_error($ch);
+        $database_info = json_decode($response, true);
+        curl_close($ch);
+        
+        return $database_info;
+    }
+
+
+	/**
+     * Execute the request (from URL or from control panel)
      * 
      * @param ServerRequestInterface $request
      *
@@ -1659,6 +1767,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $source                    = 'server';
             $import_encoding           = Validator::queryParams($request)->isInArrayKeys($encodings)->string('import_encoding', '');
             $export_clippings_cart     = false;
+            $GEDBAS_apiKey             = Validator::queryParams($request)->string('GEDBAS_apiKey', '');
+            $GEDBAS_Id                 = Validator::queryParams($request)->string('GEDBAS_Id', '');
 
             if ($action === self::ACTION_UPLOAD) {
                 $keep_media                = Validator::queryParams($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
@@ -1691,6 +1801,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $gedcom_filter3            = Validator::parsedBody($request)->string('gedcom_filter3', $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER3, ''));
             $source                    = Validator::parsedBody($request)->isInArray(['client', 'server'])->string('source', '');
             $import_encoding           = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
+            $GEDBAS_apiKey             = Validator::parsedBody($request)->string('GEDBAS_apiKey', '');
+            $GEDBAS_Id                 = Validator::parsedBody($request)->string('GEDBAS_Id', '');
 
             if ($action === self::ACTION_UPLOAD) {
                 $keep_media                = Validator::parsedBody($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
@@ -1752,7 +1864,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			return $this->showErrorMessage(I18N::translate('Encoding not accepted') . ': ' . $encoding);
         }       
         //Error action is not valid
-        if (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_UPLOAD, self::ACTION_CONVERT, self::ACTION_RENUMBER_XREF, self::ACTION_MERGE_TREES, self::ACTION_CREATE_TREE])) {
+        if (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_GEDBAS, self::ACTION_UPLOAD, self::ACTION_CONVERT, self::ACTION_RENUMBER_XREF, self::ACTION_MERGE_TREES, self::ACTION_CREATE_TREE])) {
 			return $this->showErrorMessage(I18N::translate('Action not accepted') . ': ' . $action);
         }  
 		//Error if line ending is not valid
@@ -1899,6 +2011,45 @@ class DownloadGedcomWithURL extends AbstractModule implements
                                                 I18N::translate('Please check the module settings in the control panel.'));
             }
         }
+
+        //If upload to GEDBAS is requested and allowed
+        if (($action === self::ACTION_GEDBAS)) {
+
+            if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD, '0'))) {
+
+                $export_file_name = $filename . '.ged';
+
+                //Create response
+                try {
+                    $resource = $this->filtered_gedcom_export_service->filteredResource(
+                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params, $clippings_cart_records, $export_clippings_cart);
+
+                    //Upload to GEDBAS
+                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $tree->title(), '', $resource);
+                } 
+                catch (DownloadGedcomWithUrlException $ex) {
+
+                    return $this->showErrorMessage($ex->getMessage());
+                }
+
+                //Assign received GEDBAS Id to tree
+                $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, $GEDBAS_Id);
+                $message = I18N::translate('The family tree "%s" was sucessfully uploaded to GEDBAS', $tree_name);
+
+                if ($called_from_control_panel) {
+                    FlashMessages::addMessage($message, 'success');
+                    $response = redirect(route(SelectionPage::class, ['tree' => $tree->name()]));
+                }
+                else {
+                    $response = $this->showSuccessMessage($message);
+                }
+            }
+            else {
+                return $this->showErrorMessage( I18N::translate('Remote URL requests to upload GEDCOM files to GEDBAS are disabled.') . ' ' . 
+                                                I18N::translate('Please check the module settings in the control panel.'));
+            }
+        }
+
 
         //If download is requested and allowed
         if ($action === self::ACTION_DOWNLOAD OR $action === self::ACTION_BOTH) {

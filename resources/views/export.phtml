@@ -9,6 +9,7 @@ use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
@@ -31,6 +32,9 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
  * @var  string  $gedcom_filter3
  */
 
+$module_service           = New ModuleService();
+$download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+
 $filename = $export_clippings_cart ? 'clippings' : $tree->name();
 
 // Force a ".ged" suffix
@@ -40,6 +44,19 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 	$export_file_name = $filename;
 }
 
+$export_options = [
+	DownloadGedcomWithURL::ACTION_DOWNLOAD => MoreI18N::xlate('Download'),
+	DownloadGedcomWithURL::ACTION_SAVE     => I18N::translate('Save on the webtrees server'),
+	DownloadGedcomWithURL::ACTION_BOTH     => I18N::translate('Both, i.e. download and save in parallel'),
+];
+
+$gedbas_upload_allowed = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_ALLOW_GEDBAS_UPLOAD, '0') === '1';
+
+if ($gedbas_upload_allowed) {
+	$export_options[DownloadGedcomWithURL::ACTION_GEDBAS] = I18N::translate('Upload to GEDBAS');
+	$GEDBAS_Id = $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, '');
+}
+
 ?>
 
 <?= view('components/breadcrumbs', ['links' => [route(SelectionPage::class, ['tree' => $tree->name()]) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
@@ -47,11 +64,12 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 <h1><?= $title ?></h1>
 <div class="row mb-3"><?= view('icons/spacer') ?></div>
 
-<form method="post" action="<?= e(route(DownloadGedcomWithURL::class)) ?>" enctype="multipart/form-data">
+<form method="post" id="export-form" action="<?= e(route(DownloadGedcomWithURL::class)) ?>" enctype="multipart/form-data">
 	<?= csrf_field() ?>
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="export_clippings_cart" id="export_clippings_cart" value="<?= $export_clippings_cart ? '1' : '0' ?>">
 	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
+	<input type="hidden" name="GEDBAS_apiKey" id="GEDBAS_apiKey" value="<?= $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_GEDBAS_API_KEY, '') ?>">
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="format">
@@ -189,17 +207,27 @@ if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'ged') {
 				<?= I18N::translate('Action') ?>
 			</legend>
 			<div class="col-sm-9">
-				<?= view('components/radios-inline', ['name' => 'action', 'selected' => $action,
-					'options' => [
-						DownloadGedcomWithURL::ACTION_DOWNLOAD => MoreI18N::xlate('Download'),
-						DownloadGedcomWithURL::ACTION_SAVE     => I18N::translate('Save on the webtrees server'),
-						DownloadGedcomWithURL::ACTION_BOTH     => I18N::translate('Both, i.e. download and save in parallel'),
-					]
-				]) ?>
+				<?= view('components/radios-inline', ['name' => 'action', 'selected' => $action, 'options' => $export_options]) ?>
 			</div>
 		</div>
-	</fieldset>		
+	</fieldset>
+	<?php if ($gedbas_upload_allowed) : ?>
+		<div class="row mb-3">
+			<label class="col-sm-3" for="GEDBAS_Id">
+				<?= MoreI18N::xlate('GEDBAS database Id') ?>
+			</label>
 
+			<div class="col-sm-9">
+				<div class="input-group">
+					<input class="form-control" id="GEDBAS_Id" name="GEDBAS_Id" type="text" value="<?= $GEDBAS_Id ?>">
+					</div>
+				<div class="form-text">
+					<?= I18N::translate('Id of the GEDBAS database to which the GEDCOM file shall be uploaded. If no Id is provided, a new database will be created in GEDBAS.'); ?>
+				</div>
+			</div>
+		</div>	
+	<?php endif ?>
+	
 	<div class="h4">
 		<?= I18N::translate('Select GEDCOM filters') ?>
 	</div>

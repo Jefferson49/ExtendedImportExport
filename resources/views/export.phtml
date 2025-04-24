@@ -50,11 +50,13 @@ $export_options = [
 	DownloadGedcomWithURL::ACTION_BOTH     => I18N::translate('Both, i.e. download and save in parallel'),
 ];
 
-$gedbas_upload_allowed = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_ALLOW_GEDBAS_UPLOAD, '0') === '1';
+// GEDBAS settings 
+$gedbas_upload_allowed = boolval($download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_ALLOW_GEDBAS_UPLOAD, '0') === '1');
 
 if ($gedbas_upload_allowed) {
 	$export_options[DownloadGedcomWithURL::ACTION_GEDBAS] = I18N::translate('Upload to GEDBAS');
-	$GEDBAS_Id = $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, '');
+	$GEDBAS_apiKey = $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, '');
+	$GEDBAS_Id     = $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, '');
 }
 
 ?>
@@ -69,7 +71,6 @@ if ($gedbas_upload_allowed) {
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="export_clippings_cart" id="export_clippings_cart" value="<?= $export_clippings_cart ? '1' : '0' ?>">
 	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
-	<input type="hidden" name="GEDBAS_apiKey" id="GEDBAS_apiKey" value="<?= e($download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_GEDBAS_API_KEY, '')) ?>">
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="format">
@@ -225,6 +226,17 @@ if ($gedbas_upload_allowed) {
 					<?= I18N::translate('Id of the GEDBAS database to which the GEDCOM file shall be uploaded. If no Id is provided, a new database will be created in GEDBAS.'); ?>
 				</div>
 			</div>
+		</div>
+		<div class="row mb-3">
+			<label class="col-sm-3 col-form-label wt-page-options-label" for="GEDBAS_apiKey">
+				<?= I18N::translate('GEDBAS API key') ?>
+			</label>
+			<div class="col-sm-9 wt-page-options-value">
+				<input class="form-control" id="GEDBAS_apiKey" name="GEDBAS_apiKey" type="text" value="<?= e($GEDBAS_apiKey) ?>">
+			</div>
+		</div>
+		<div class="form-text col-sm-9 offset-sm-3">
+			<?= I18N::translate('GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account.'); ?> 
 		</div>	
 	<?php endif ?>
 	

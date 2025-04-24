@@ -34,6 +34,7 @@ use function e;
  * @var  bool       $allow_remote_save
  * @var  bool       $allow_remote_convert
  * @var  bool       $allow_remote_gedbas_upload
+ * @var  bool       $use_head_note_for_gedbas
  * @var  string		$folder_to_save 
  * @var  array      $gedcom_filter_list
  * @var  string     $default_gedcom_filter1
@@ -116,7 +117,20 @@ $remote_url = Html::url($url, $parameters) . DownloadGedcomWithURL::ROUTE_REMOTE
 			<div class="col-sm-9">
 				<?= view('components/checkbox', ['label' => MoreI18N::xlate('Allow'), 'name' => DownloadGedcomWithURL::PREF_ALLOW_GEDBAS_UPLOAD, 'checked' => $allow_gedbas_upload]) ?>
 				<div class="form-text">
-					<?= I18N::translate('If this option is selected, an upload of GEDCOM files to the GEDBAS database will be enabled. This allows to select "GEDBAS upload" as an export action in the extended GEDCOM export.', e($title)); ?>
+					<?= I18N::translate('If this option is selected, an upload of GEDCOM files to the GEDBAS database will be enabled. This allows to select "GEDBAS upload" as an export action in the extended GEDCOM export.'); ?>
+				</div>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset class="mb-3">
+		<div class="row">
+			<legend class="col-form-label col-sm-3">
+				<?= I18N::translate('GEDBAS description') ?>
+			</legend>
+			<div class="col-sm-9">
+				<?= view('components/checkbox', ['label' =>  I18N::translate('Use note from GEDCOM header (HEAD:NOTE)'), 'name' => DownloadGedcomWithURL::PREF_USE_HEAD_NOTE_FOR_GEDBAS, 'checked' => $use_head_note_for_gedbas]) ?>
+				<div class="form-text">
+					<?= I18N::translate('If this option is selected, a note included in the GEDCOM header will be used as the tree description during a GEDBAS upload. Otherwise, the title of the tree will be used.'); ?>
 				</div>
 			</div>
 		</div>

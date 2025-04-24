@@ -197,6 +197,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	public const PREF_SHOW_MENU_LIST_ITEM = "show_menu_list_item";
     public const PREF_ALLOW_GEDBAS_UPLOAD = 'allow_gedbas_upload';
+    public const PREF_USE_HEAD_NOTE_FOR_GEDBAS = 'use_head_note_for_gedbas';
 	public const PREF_FOLDER_TO_SAVE = "folder_to_save";
     public const PREF_DEFAULT_GEDCOM_FILTER1 = 'default_gedcom_filter1';
     public const PREF_DEFAULT_GEDCOM_FILTER2 = 'default_gedcom_filter2';
@@ -519,6 +520,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 				self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD => boolval($this->getPreference(self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD, '0')),
 				self::PREF_SHOW_MENU_LIST_ITEM        => boolval($this->getPreference(self::PREF_SHOW_MENU_LIST_ITEM, '1')),
 				self::PREF_ALLOW_GEDBAS_UPLOAD        => boolval($this->getPreference(self::PREF_ALLOW_GEDBAS_UPLOAD, '0')),
+				self::PREF_USE_HEAD_NOTE_FOR_GEDBAS   => boolval($this->getPreference(self::PREF_USE_HEAD_NOTE_FOR_GEDBAS, '0')),
 				self::PREF_FOLDER_TO_SAVE             => $this->getPreference(self::PREF_FOLDER_TO_SAVE, $data_folder_relative),
                 self::PREF_DEFAULT_GEDCOM_FILTER1     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, ''),
                 self::PREF_DEFAULT_GEDCOM_FILTER2     => $this->getPreference(self::PREF_DEFAULT_GEDCOM_FILTER2, ''),
@@ -553,6 +555,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $folder_to_save             = Validator::parsedBody($request)->string(self::PREF_FOLDER_TO_SAVE, Site::getPreference('INDEX_DIRECTORY'));
         $show_menu_list_item        = Validator::parsedBody($request)->boolean(self::PREF_SHOW_MENU_LIST_ITEM, false);
         $allow_gedbas_upload        = Validator::parsedBody($request)->boolean(self::PREF_ALLOW_GEDBAS_UPLOAD, false);
+        $use_head_note_for_gedbas   = Validator::parsedBody($request)->boolean(self::PREF_USE_HEAD_NOTE_FOR_GEDBAS, false);
         $default_gedcom_filter1     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER1, '');
         $default_gedcom_filter2     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER2, '');
         $default_gedcom_filter3     = Validator::parsedBody($request)->string(self::PREF_DEFAULT_GEDCOM_FILTER3, '');
@@ -635,6 +638,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 			$this->setPreference(self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD, $allow_remote_gedbas_upload ? '1' : '0');
 			$this->setPreference(self::PREF_SHOW_MENU_LIST_ITEM, $show_menu_list_item ? '1' : '0');
 			$this->setPreference(self::PREF_ALLOW_GEDBAS_UPLOAD, $allow_gedbas_upload ? '1' : '0');
+			$this->setPreference(self::PREF_USE_HEAD_NOTE_FOR_GEDBAS, $use_head_note_for_gedbas ? '1' : '0');
 
             //Save default settings to preferences
             $this->setPreference(self::PREF_DEFAULT_GEDCOM_FILTER1, $default_gedcom_filter1);
@@ -1722,6 +1726,29 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return $database_info;
     }
 
+	/**
+     * Create a description of a tree for a GEDBAS upload
+     *
+     * @param  Tree $tree
+     * 
+     * @return string
+     */	
+    private function createGEDBASdescription(Tree $tree): string
+    {
+
+        //Retrieve HEAD:NOTE
+        $header_note = '';
+        If (boolval($this->getPreference(self::PREF_USE_HEAD_NOTE_FOR_GEDBAS, '0'))) {
+            $header = $this->filtered_gedcom_export_service->createHeader($tree, UTF8::NAME, false);
+            if (preg_match('/1 NOTE (.*)/', $header, $matches)) {
+                $header_note = $matches[1];
+            }
+        }
+
+        $description = $header_note !== '' ? $header_note : $tree->title(); 
+
+        return $description;
+    }
 
 	/**
      * Execute the request (from URL or from control panel)
@@ -2047,7 +2074,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     //Upload to GEDBAS
                     $this->root_filesystem->writeStream($export_file_location, $resource);               
-                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $tree->title());
+                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $this->createGEDBASdescription($tree));
                     $this->root_filesystem->delete($export_file_location);
                 } 
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {

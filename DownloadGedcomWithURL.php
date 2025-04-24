@@ -150,6 +150,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //A set of standard parameters to be used for calling Gedcom filter
     private array $standard_params;
 
+    //Path for temporary GEDCOM files
+    private string $gedcom_temp_path;
+
+
 	//Custom module version
 	public const CUSTOM_VERSION = '4.2.6';
 
@@ -273,6 +277,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $this->gedcom_filters_loaded_in_data_fix = false;
         $this->root_filesystem = Registry::filesystem()->root();
         $this->standard_params = [];
+        $this->gedcom_temp_path = 'modules_v4/' . basename(__DIR__) . '/resources/temp/';
 
         $router = Registry::routeFactory()->routeMap();            
 
@@ -1627,20 +1632,28 @@ class DownloadGedcomWithURL extends AbstractModule implements
         return $records;
     }
 
-
 	/**
      * Upload GEDCOM file to GEDBAS
      *
-     * @param  string   $GEDBAS_apiKey
-     * @param  string   $GEDBAS_Id
-     * @param  string   $file_name
-     * @param  string   $title
-     * @param  string   $description
-     * @param  resource $resource
+     * @param  string  $GEDBAS_apiKey
+     * @param  string  $GEDBAS_Id
+     * @param  string  $file_name
+     * @param  string  $file_location
+     * @param  string  $title
+     * @param  string  $description
+     * @param  bool    $downloadAllowed
      * 
      * @return string
      */	
-    private function uploadToGEDBAS(string $GEDBAS_apiKey, string $GEDBAS_Id, string $file_name, string $title, string $description, $resource): string
+    private function uploadToGEDBAS(
+        string $GEDBAS_apiKey,
+        string $GEDBAS_Id,
+        string $file_name,
+        string $file_location,
+        string $title,
+        string $description,
+        bool   $downloadAllowed = false
+    ): string 
     {
         if ($GEDBAS_apiKey === '') {
             throw new DownloadGedcomWithUrlException(I18N::translate('Invalid GEDBAS API key'));
@@ -1652,35 +1665,31 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         //$database_info = $this->getDatabaseInfoFromGEDBAS($GEDBAS_apiKey);
 
-        // Encode cURL request
-        $url =  "https://gedbas.genealogy.net/database/saveWithApiKey";
-
-        $this->root_filesystem->writeStream($file_name, $resource);
-        $cfile = new CURLFile($file_name,'text/plain',$file_name);
-
+        // Configure cURL request
+        $url = "https://gedbas.genealogy.net/database/saveWithApiKey";
+        $cfile = new CURLFile($file_location,'text/plain',$file_name);
         $cdata = [
-            "apiKey"      => $GEDBAS_apiKey,
-            "file"        => $cfile,
-            "title"       => $title,
-            "description" => $description,
+            "apiKey"          => $GEDBAS_apiKey,
+            "file"            => $cfile,
+            "title"           => $title,
+            "description"     => $description,
+            'downloadAllowed' => $downloadAllowed ? 'true' : 'false',
         ];
 
+        //  Add GEDBAS id if already exists
         if ($GEDBAS_Id !== '') {
             $cdata['id'] = $GEDBAS_Id;
         }
 
-        // Use cURL to create the GEDBAS request
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $cdata);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER , true);
-        $response = curl_exec($ch);
-        $e = curl_error($ch);
-        $decodedData = json_decode($response, true);
-        curl_close($ch);
 
-        $this->root_filesystem->delete($file_name);
+        // Execute cURL request to GEDBAS
+        $response = curl_exec($ch);
+        curl_close($ch);
 
         return $response;
     }
@@ -2017,7 +2026,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             if ($called_from_control_panel OR boolval($this->getPreference(self::PREF_ALLOW_REMOTE_GEDBAS_UPLOAD, '0'))) {
 
-                $export_file_name = $filename . '.ged';
+                $export_file_name     = $filename . '.ged';
+                $export_file_location = $this->gedcom_temp_path . $export_file_name;
 
                 //Create response
                 try {
@@ -2025,11 +2035,23 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params, $clippings_cart_records, $export_clippings_cart);
 
                     //Upload to GEDBAS
-                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $tree->title(), '', $resource);
+                    $this->root_filesystem->writeStream($export_file_location, $resource);               
+                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $tree->title());
+                    $this->root_filesystem->delete($export_file_location);
                 } 
-                catch (DownloadGedcomWithUrlException $ex) {
+                catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
 
-                    return $this->showErrorMessage($ex->getMessage());
+                    if ($ex instanceof DownloadGedcomWithUrlException) {
+                        return $this->showErrorMessage($ex->getMessage());
+                    }
+                    else {
+                        return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $export_file_location));
+                    }
+                }
+
+                // Show error if returned GEDBAS Id does not contain an integer
+                if (filter_var($GEDBAS_Id, FILTER_VALIDATE_INT) === false) {
+                    return $this->showErrorMessage(I18N::translate('Error during GEDBAS upload: %s', $GEDBAS_Id));
                 }
 
                 //Assign received GEDBAS Id to tree

@@ -69,7 +69,7 @@ if ($gedbas_upload_allowed) {
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="export_clippings_cart" id="export_clippings_cart" value="<?= $export_clippings_cart ? '1' : '0' ?>">
 	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
-	<input type="hidden" name="GEDBAS_apiKey" id="GEDBAS_apiKey" value="<?= $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_GEDBAS_API_KEY, '') ?>">
+	<input type="hidden" name="GEDBAS_apiKey" id="GEDBAS_apiKey" value="<?= e($download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_GEDBAS_API_KEY, '')) ?>">
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="format">

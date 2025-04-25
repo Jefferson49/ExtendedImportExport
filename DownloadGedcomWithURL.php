@@ -2076,6 +2076,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     $this->root_filesystem->writeStream($export_file_location, $resource);               
                     $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $this->createGEDBASdescription($tree));
                     $this->root_filesystem->delete($export_file_location);
+
+                    //Throw error if GEDBAS Id does not contain an Integer
+                    if (filter_var($GEDBAS_Id, FILTER_VALIDATE_INT) === false) {
+                        throw new DownloadGedcomWithUrlException(I18N::translate('Error during GEDBAS upload.').  ' ' . $GEDBAS_Id);
+                    }
                 } 
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
 

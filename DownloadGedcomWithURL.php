@@ -1646,6 +1646,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @param  bool    $downloadAllowed
      * 
      * @return string
+     * @throws DownloadGedcomWithUrlException
+     * @throws GEDBASCommunicationException
      */	
     private function uploadToGEDBAS(
         string $GEDBAS_apiKey,
@@ -1661,11 +1663,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
             throw new DownloadGedcomWithUrlException(I18N::translate('Invalid GEDBAS API key'));
         }
 
+        if ($GEDBAS_Id !== '' && filter_var($GEDBAS_Id, FILTER_VALIDATE_INT) === false) {
+            throw new DownloadGedcomWithUrlException(I18N::translate('GEDBAS Id does not contain an Integer: %s', $GEDBAS_Id));
+        }
+
         if (strlen($file_name) < 5 OR strpos($file_name, '.ged', -4) === false) {
             throw new DownloadGedcomWithUrlException(I18N::translate('Invalid file name for GEDBAS upload'));
         }
-
-        //$database_info = $this->getDatabaseInfoFromGEDBAS($GEDBAS_apiKey);
 
         // Configure cURL request
         $url = "https://gedbas.genealogy.net/database/saveWithApiKey";
@@ -1691,7 +1695,17 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         // Execute cURL request to GEDBAS
         $response = curl_exec($ch);
+        $curl_error = curl_error($ch);
         curl_close($ch);
+
+        //Throw exception if cURL error
+        if ($curl_error !== '') {
+            throw new GEDBASCommunicationException('curl_error: ' . $curl_error . ' response: ' . $response);
+        }
+        //Throw exception if GEDBAS Id does not contain an Integer, i.e. no valid GEDBAS database id
+        elseif (filter_var($response, FILTER_VALIDATE_INT) === false) {
+            throw new GEDBASCommunicationException($response);
+        }
 
         return $response;
     }
@@ -1702,8 +1716,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @param  string   $GEDBAS_apiKey
      * 
      * @return array
+     * @throws DownloadGedcomWithUrlException
+     * @throws GEDBASCommunicationException
      */	
-    private function getDatabaseInfoFromGEDBAS(string $GEDBAS_apiKey): array
+    private function getDatabaseInfoFromGEDBAS(string $GEDBAS_apiKey): array 
     {
         if ($GEDBAS_apiKey === '') {
             throw new DownloadGedcomWithUrlException(I18N::translate('Invalid GEDBAS API key'));
@@ -1719,10 +1735,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
         curl_setopt($ch, CURLOPT_POSTFIELDS, ["apiKey" => $GEDBAS_apiKey]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER , true);
         $response = curl_exec($ch);
-        $error = curl_error($ch);
-        $database_info = json_decode($response, true);
+        $curl_error = curl_error($ch);
         curl_close($ch);
-        
+
+        //Throw exception if cURL error
+        if ($curl_error !== '') {
+            throw new GEDBASCommunicationException('curl_error: ' . $curl_error . ' response: ' . $response);
+        }
+
+        $database_info = json_decode($response, true);
+
         return $database_info;
     }
 
@@ -2076,16 +2098,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     $this->root_filesystem->writeStream($export_file_location, $resource);               
                     $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $this->createGEDBASdescription($tree));
                     $this->root_filesystem->delete($export_file_location);
-
-                    //Throw error if GEDBAS Id does not contain an Integer
-                    if (filter_var($GEDBAS_Id, FILTER_VALIDATE_INT) === false) {
-                        throw new DownloadGedcomWithUrlException(I18N::translate('Error during GEDBAS upload.').  ' ' . $GEDBAS_Id);
-                    }
                 } 
-                catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
+                catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException | GEDBASCommunicationException $ex) {
 
                     if ($ex instanceof DownloadGedcomWithUrlException) {
-                        return $this->showErrorMessage($ex->getMessage());
+                        return $this->showErrorMessage(I18N::translate('Error during GEDBAS upload') . ': ' . $ex->getMessage());
+                    }
+                    elseif ($ex instanceof GEDBASCommunicationException) {
+                        return $this->showErrorMessage(I18N::translate('Error during communication with GEDBAS'). ': ' . $ex->getMessage());
                     }
                     else {
                         return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $export_file_location));

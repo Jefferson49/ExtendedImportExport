@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ExtendedImportExport for webtrees 2\n"
-"POT-Creation-Date: 2025-04-26 09:31+0200\n"
+"POT-Creation-Date: 2025-04-26 10:10+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -621,14 +621,14 @@ msgstr "Prefix Zeitstempel"
 msgid "Postfix time stamp"
 msgstr "Postfix Zeitstempel"
 
-#: resources/views/convert.phtml:198 resources/views/export.phtml:244
+#: resources/views/convert.phtml:198 resources/views/export.phtml:245
 #: resources/views/import.phtml:138
 msgid "Select GEDCOM filters"
 msgstr "Selektieren Sie GEDCOM-Filter"
 
 #: resources/views/convert.phtml:202 resources/views/convert.phtml:214
-#: resources/views/convert.phtml:226 resources/views/export.phtml:248
-#: resources/views/export.phtml:260 resources/views/export.phtml:272
+#: resources/views/convert.phtml:226 resources/views/export.phtml:249
+#: resources/views/export.phtml:261 resources/views/export.phtml:273
 #: resources/views/import.phtml:142 resources/views/import.phtml:154
 #: resources/views/import.phtml:166
 #, php-format
@@ -659,28 +659,33 @@ msgstr "Export-Aktion"
 msgid "Action"
 msgstr "Aktion"
 
+#: resources/views/export.phtml:218
+msgid "GEDBAS database Id"
+msgstr "GEDBAS Datenbank-Nummer"
+
 #: resources/views/export.phtml:226
 msgid ""
-"Id of the GEDBAS database to which the GEDCOM file shall be uploaded. If no "
-"Id is provided, a new database will be created in GEDBAS."
+"Id of the GEDBAS database to which the GEDCOM file shall be uploaded. In "
+"order to create a new database in GEDBAS, leave the Id field empty."
 msgstr ""
-"Nummer der Datenbank in GEDBAS, in welche die GEDCOM-Datei hochgeladen "
-"werden soll. Wird keine Nummer angegeben, dann wird in GEDBAS eine neue "
-"Datenbank angelegt."
+"Nummer der GEDBAS-Datenbank, in welche die GEDCOM-Datei hochgeladen werden "
+"soll. Um eine neue Datenbank in GEDBAS zu erstellen, lassen Sie das Nummern-"
+"Feld leer."
 
-#: resources/views/export.phtml:232
+#: resources/views/export.phtml:232 resources/views/export.phtml:240
 msgid "GEDBAS API key"
 msgstr "GEDBAS API-Schlüssel"
 
 #: resources/views/export.phtml:239
 msgid ""
 "GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS "
-"account."
+"account. You can identify your individual key with the following link"
 msgstr ""
-"GEDBAS API-Schlüssel, der das Hochladen von GEDCOM-Dateien für ein "
-"bestimmtes GEDBAS-Konto ermöglicht."
+"GEDBAS API-Schlüssel, welcher das Hochladen von GEDCOM-Dateien für ein "
+"bestimmtes GEDBAS-Konto ermöglicht. Ihren individuellen Schlüssel können Sie "
+"mit folgendem Link ermitteln"
 
-#: resources/views/export.phtml:288
+#: resources/views/export.phtml:289
 msgid "Export GEDCOM file"
 msgstr "GEDCOM-Datei exportieren"
 

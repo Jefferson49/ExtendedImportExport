@@ -215,7 +215,7 @@ if ($gedbas_upload_allowed) {
 	<?php if ($gedbas_upload_allowed) : ?>
 		<div class="row mb-3">
 			<label class="col-sm-3" for="GEDBAS_Id">
-				<?= MoreI18N::xlate('GEDBAS database Id') ?>
+				<?= I18N::translate('GEDBAS database Id') ?>
 			</label>
 
 			<div class="col-sm-9">
@@ -223,7 +223,7 @@ if ($gedbas_upload_allowed) {
 					<input class="form-control" id="GEDBAS_Id" name="GEDBAS_Id" type="text" value="<?= $GEDBAS_Id ?>">
 					</div>
 				<div class="form-text">
-					<?= I18N::translate('Id of the GEDBAS database to which the GEDCOM file shall be uploaded. If no Id is provided, a new database will be created in GEDBAS.'); ?>
+					<?= I18N::translate('Id of the GEDBAS database to which the GEDCOM file shall be uploaded. In order to create a new database in GEDBAS, leave the Id field empty.'); ?>
 				</div>
 			</div>
 		</div>
@@ -236,7 +236,8 @@ if ($gedbas_upload_allowed) {
 			</div>
 		</div>
 		<div class="form-text col-sm-9 offset-sm-3">
-			<?= I18N::translate('GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account.'); ?> 
+			<?= I18N::translate('GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account. You can identify your individual key with the following link') . ': ' ?> 
+			<a href="https://gedbas.genealogy.net/user/apiKeys"><?= I18N::translate('GEDBAS API key') ?></a>
 		</div>	
 	<?php endif ?>
 	

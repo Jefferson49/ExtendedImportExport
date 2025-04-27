@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Http\RequestHandlers\DataFixPage;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Services\ModuleService;
@@ -44,68 +45,79 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 	</div>
 
 	<ul class="fa-ul mx-0">
-		<li>
-			<span class="fa-li"><?= view('icons/upload') ?></span>
-			<a href="<?= e(route(ImportGedcomPage::class, [
-				'tree_name'      => $tree->name(),
-				'gedcom_filter1' => $default_gedcom_filter1,
-				'gedcom_filter2' => $default_gedcom_filter2,
-				'gedcom_filter3' => $default_gedcom_filter3,
-				])) ?>">
-				<?= I18N::translate('GEDCOM Import') ?>
-			</a>
-		</li>				
-		<li>
-			<span class="fa-li"><?= view('icons/download') ?></span>
-			<a href="<?= e(route(ExportGedcomPage::class, [
-				'tree_name'              => $tree->name(),
-                'export_clippings_cart'  => false,
-				'gedcom_filter1'         => $default_gedcom_filter1,
-				'gedcom_filter2'         => $default_gedcom_filter2,
-				'gedcom_filter3'         => $default_gedcom_filter3,
-				])) ?>">
-				<?= I18N::translate('GEDCOM Export: Tree') ?>
-			</a>
-		</li>
-		<li>
-			<span class="fa-li"><?= view('icons/download') ?></span>
-			<a href="<?= e(route(ExportGedcomPage::class, [
-                'tree_name'              => $tree->name(),
-                'export_clippings_cart'  => true,
-				'gedcom_filter1'         => $default_gedcom_filter1,
-				'gedcom_filter2'         => $default_gedcom_filter2,
-				'gedcom_filter3'         => $default_gedcom_filter3,
-				])) ?>">
-				<?= I18N::translate('GEDCOM Export: Clippings cart') ?>
-			</a>
-		</li>		<li>
-			<span class="fa-li"><?= view('icons/copy') ?></span>
-			<a href="<?= e(route(ConvertGedcomPage::class, [
-				'gedcom_filter1'         => $default_gedcom_filter1,
-				'gedcom_filter2'         => $default_gedcom_filter2,
-				'gedcom_filter3'         => $default_gedcom_filter3,
-				])) ?>">
-				<?= I18N::translate('GEDCOM Conversion') ?>
-			</a>
-		</li>
-		<li>
-			<span class="fa-li"><?= view('icons/data-fix') ?></span>
-			<a href="<?= e(route(DataFixPage::class, [
-					'tree'     => $tree->name(),
-					'data_fix' => DownloadGedcomWithURL::activeModuleName(),
+		<?php if (Auth::isAdmin()) : ?>	
+			<li>
+				<span class="fa-li"><?= view('icons/upload') ?></span>
+				<a href="<?= e(route(ImportGedcomPage::class, [
+					'tree_name'      => $tree->name(),
+					'gedcom_filter1' => $default_gedcom_filter1,
+					'gedcom_filter2' => $default_gedcom_filter2,
+					'gedcom_filter3' => $default_gedcom_filter3,
 					])) ?>">
-				<?= I18N::translate('Datafix using GEDCOM filters') ?>
-			</a>
-		</li>
+					<?= I18N::translate('GEDCOM Import') ?>
+				</a>
+			</li>
+		<?php endif ?>
+		<?php if (Auth::isManager($tree)) : ?>	
+			<li>
+				<span class="fa-li"><?= view('icons/download') ?></span>
+				<a href="<?= e(route(ExportGedcomPage::class, [
+					'tree_name'              => $tree->name(),
+					'export_clippings_cart'  => false,
+					'gedcom_filter1'         => $default_gedcom_filter1,
+					'gedcom_filter2'         => $default_gedcom_filter2,
+					'gedcom_filter3'         => $default_gedcom_filter3,
+					])) ?>">
+					<?= I18N::translate('GEDCOM Export: Tree') ?>
+				</a>
+			</li>
+			<li>
+				<span class="fa-li"><?= view('icons/download') ?></span>
+				<a href="<?= e(route(ExportGedcomPage::class, [
+					'tree_name'              => $tree->name(),
+					'export_clippings_cart'  => true,
+					'gedcom_filter1'         => $default_gedcom_filter1,
+					'gedcom_filter2'         => $default_gedcom_filter2,
+					'gedcom_filter3'         => $default_gedcom_filter3,
+					])) ?>">
+					<?= I18N::translate('GEDCOM Export: Clippings cart') ?>
+				</a>
+			</li>
+		<?php endif ?>
+		<?php if (Auth::isAdmin()) : ?>
+			<li>
+				<span class="fa-li"><?= view('icons/copy') ?></span>
+				<a href="<?= e(route(ConvertGedcomPage::class, [
+					'gedcom_filter1'         => $default_gedcom_filter1,
+					'gedcom_filter2'         => $default_gedcom_filter2,
+					'gedcom_filter3'         => $default_gedcom_filter3,
+					])) ?>">
+					<?= I18N::translate('GEDCOM Conversion') ?>
+				</a>
+			</li>
+		<?php endif ?>
+		<?php if (Auth::isManager($tree)) : ?>	
+			<li>
+				<span class="fa-li"><?= view('icons/data-fix') ?></span>
+				<a href="<?= e(route(DataFixPage::class, [
+						'tree'     => $tree->name(),
+						'data_fix' => DownloadGedcomWithURL::activeModuleName(),
+						])) ?>">
+					<?= I18N::translate('Datafix using GEDCOM filters') ?>
+				</a>
+			</li>
+		<?php endif ?>
 		<li>
 			<div class="row mb-3"><?= view('icons/spacer') ?></div>
 		</li>
-		<li>
-			<span class="fa-li"><?= view('icons/preferences') ?></span>			
-			<a href="<?= e($download_gedcom_with_url->getConfigLink()) ?>" title="<?= MoreI18N::xlate('Preferences') ?>">
-				<?= MoreI18N::xlate('Preferences') ?>
-			</a>
-		</li>
+		<?php if (Auth::isAdmin()) : ?>			
+			<li>
+				<span class="fa-li"><?= view('icons/preferences') ?></span>			
+				<a href="<?= e($download_gedcom_with_url->getConfigLink()) ?>" title="<?= MoreI18N::xlate('Preferences') ?>">
+					<?= MoreI18N::xlate('Preferences') ?>
+				</a>
+			</li>
+		<?php endif ?>
 	</ul>
 </form>	
 

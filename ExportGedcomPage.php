@@ -36,6 +36,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
@@ -96,6 +97,12 @@ class ExportGedcomPage implements RequestHandlerInterface
 
         $tree_service = new TreeService(new GedcomImportService());
         $tree = $tree_service->all()[$tree_name];
+
+        //If current user is no manager for the selected tree, return to the selection page
+        if (!Auth::isManager($tree)) {
+            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be a manager of the tree.'), 'danger');
+            return redirect(route(SelectionPage::class, ['tree' => $tree->name()]));
+        }
 
         //Load Gedcom filters
         try {

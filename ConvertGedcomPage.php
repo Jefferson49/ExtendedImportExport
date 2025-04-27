@@ -36,6 +36,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
@@ -78,6 +79,12 @@ class ConvertGedcomPage implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->layout = 'layouts/administration';
+
+        //If current user is no admin, return to the selection page
+        if (!Auth::isAdmin()) { 
+            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
+            return redirect(route(SelectionPage::class));
+        }        
 
         $module_service = new ModuleService();
         $tree_service = new TreeService(new GedcomImportService());

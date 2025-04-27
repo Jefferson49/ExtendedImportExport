@@ -37,7 +37,9 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fig\Http\Message\RequestMethodInterface;
+use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Validator;
@@ -91,7 +93,8 @@ class SelectionPage implements RequestHandlerInterface
             $tree = Functions::getAllTrees()[$tree_name];
         }
         else {
-            return $download_gedcom_with_url->showErrorMessage(I18N::translate('Tree not found') . ': ' . $tree_name);
+            FlashMessages::addMessage(I18N::translate('The current user does not have sufficient rights to access trees with the custom module %s.', $download_gedcom_with_url->title()), 'danger');	
+            return redirect(route(HomePage::class));
         }
 
         //Set the identifyed tree as the new default tree 

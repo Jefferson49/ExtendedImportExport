@@ -36,6 +36,7 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\I18N;
@@ -81,7 +82,13 @@ class ImportGedcomPage implements RequestHandlerInterface
         $tree_service    = new TreeService(new GedcomImportService()); 
 
         $tree_name       = Validator::queryParams($request)->string('tree_name');
-        $tree_name       = Validator::queryParams($request)->string('tree_name');
+
+        //If current user is no admin, return to the selection page
+        if (!Auth::isAdmin()) { 
+            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
+            return redirect(route(SelectionPage::class, ['tree' => $tree_name]));
+        }
+
         $tree            = $tree_service->all()[$tree_name];
 
         $gedcom_filename = Validator::queryParams($request)->string('gedcom_filename', $tree->getPreference('gedcom_filename'));

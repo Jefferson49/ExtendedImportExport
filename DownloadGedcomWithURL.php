@@ -53,6 +53,7 @@ use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Http\RequestHandlers\CreateTreeAction;
+use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\RequestHandlers\ManageTrees;
 use Fisharebest\Webtrees\Http\RequestHandlers\MergeTreesAction;
 use Fisharebest\Webtrees\Http\RequestHandlers\RenumberTreeAction;
@@ -1865,6 +1866,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $word_wrapped_notes        = Validator::parsedBody($request)->boolean('word_wrapped_notes', boolval($tree->getPreference('WORD_WRAPPED_NOTES', '0')));
                 $gedcom_media_path         = Validator::parsedBody($request)->string('gedcom_media_path', $tree->getPreference('GEDCOM_MEDIA_PATH', ''));
             }
+
         }
         else {
             throw new DownloadGedcomWithUrlException(I18N::translate('Internal module error: Neither GET nor POST request received.'));
@@ -1883,9 +1885,24 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Get folder from module settings and file system
         $folder_on_server = $this->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
 
-        //If not called from control panel (i.e. called remotely via URL), evaluate key
-        if (!$called_from_control_panel) {
+        //If called from control panel, check if current user has the required access rights
+        if ($called_from_control_panel) {
 
+            if (in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_GEDBAS])) {
+                if (!Auth::isManager($tree)) { 
+                    FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be a manager of the tree.'), 'danger');	
+                    return redirect(route(HomePage::class));
+                }    
+            }
+            else {
+                if (!Auth::isAdmin()) { 
+                    FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
+                    return redirect(route(HomePage::class));
+                }    
+            }
+        }
+        //If not called from control panel (i.e. called remotely via URL), evaluate key
+        else {
             //Load secret key from preferences
             $secret_key = $this->getPreference(self::PREF_SECRET_KEY, '');
 

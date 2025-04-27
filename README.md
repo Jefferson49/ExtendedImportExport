@@ -29,6 +29,7 @@ This README file contains the following main sections:
         + [Additional switches](#additional-switches)
     +   [Details about GEDCOM Filter Execution](#details-about-gedcom-filter-execution)
     +   [GEDCOM Filter Validation](#gedcom-filter-validation)
++   [GEDBAS Upload](#gedbas-upload)
 +   [Remote API](#remote-api)
     + [Remote URL](#remote-url)
     + [URL Format for Remote Requests](#url-format-for-remote-requests)
@@ -53,6 +54,7 @@ This README file contains the following main sections:
     + Create your own customizable GEDCOM filter
     + Run a sequence of GEDCOM filters or combine several filters
     + Convert GEDCOM files with GEDCOM filters
++ Upload GEDCOM files from webtrees to the GEDBAS database
 + Remote download/upload/save
     + Remotely download/upload GEDCOM files without logging into the user interface (webtrees front end)
     + Download/Upload GEDCOM files with a script, see attached [example scripts](#example-scripts)
@@ -133,6 +135,7 @@ Further insights about GEDCOM filters can be gained by refering to the following
 |[Avoid leading spaces for CONC](resources/filter/AvoidLeadingSpacesForCONC_GedcomFilter.php)|Modifies CONC structure in order to avoid leading spaces|
 |[Birth, marriage, death export](resources/filter/BirthMarriageDeathGedcomFilter.php)|Exports INDI and FAM data and only include limited facts about birth marriage, and death|
 |[Combined GEDCOM filter](resources/filter/CombinedGedcomFilter.php)|An example how several filters can be combined to a filter, which executes a sequence of filters|
+|[Convert old census markup](resources/filter/ConvertOldCensusMarkupGedcomFilter.php)|Converts former webtrees 1.7 census markup to webtrees 2.x|
 |[Example GEDCOM filter](resources/filter/ExampleGedcomFilter.php)|An example filter, which demonstrates the principle features of GEDCOM filters|
 |[GEDCOM 7 conversion](resources/filter/GEDCOM_7_GedcomFilter.php)|Converts the GEDCOM export to the GEDCOM 7 standard|
 |[Individual names CSV list](resources/filter/IndividualNamesCsvGedcomFilter.php)|An example, how GEDCOM filters can be used to generate alternative formats, e.g. CSV, JSON, etc.|
@@ -151,6 +154,7 @@ Further insights about GEDCOM filters can be gained by refering to the following
 |[Remove empty records](resources/filter/RemoveEmptyRecordsGedcomFilter.php)|Removes empty records. Applied to: FAM, INDI, NOTE, OBJE, REPO, SOUR, _LOC|
 |[Remove restrictions (i.e. RESN tags)](resources/filter/RemoveRestrictionsGedcomFilter.php)|Removes RESN structures|
 |[Remove ToDo data (i.e. _TODO structures)](resources/filter/RemoveToDoDataGedcomFilter.php)|Removes _TODO structures|
+|[Remove void references](resources/filter/RemoveWebtreesUserGedcomFilter.php)|Removes void references, whoose XREFs point to records, which do not exist|
 |[Remove webtrees user data (i.e. _WT_USER tags)](resources/filter/RemoveWebtreesUserGedcomFilter.php)|Removes webtrees user structures, i.e. _WT_USER|
 |[Replace XREFs in notes and text](resources/filter/ReplaceXrefsInNotesAndText.php)|Replaces XREFs in notes and text|
 
@@ -256,6 +260,25 @@ The validation includes the following checks:
 
 There is also a check included, whether GEDCOM filter classes create PHP compilation errors. This check is performed if selecting or executing GEDCOM filters.
 
+## GEDBAS Upload
+[GEDBAS](https://gedbas.genealogy.net/) is an internet database/website for GEDCOM files, which is managed by the German [CompGen](https://www.compgen.de/) association.
+
+The Extended Import/Export module allows to upload GEDCOM files from webtrees to GEDBAS.
+
+In order to upload GEDCOM files to GEDBAS, the following credentials are needed:
++ **GEDBAS API key**, which allows to upload GEDCOM files for a certain GEDBAS account.
+  + If you login into your GEDBAS account, you can identify your individual key with the following link: [GEDBAS API key](https://gedbas.genealogy.net/user/apiKeys)
++ **GEDBAS database Id**, to which the GEDCOM file shall be uploaded.
+  * If you login into your GEDBAS account, you can identify existing GEDBAS databbase Ids with the following link: [GEDBAS database Ids](https://gedbas.genealogy.net/database/myFiles)
+  * In order to create a new database in GEDBAS, an empty Id is used.
+  * If an existing Id is used during upload, the existing database will be replaced with the new GEDCOM file.
+
+In order to use the upload, you need to enable the GEDBAS upload in the module settings.
+
+If GEDBAS upload is enabled, the upload will be offered as an additional "Action" in the export view. Also refer to chapter "[How to use GEDCOM filters](#how-to-use-gedcom-filters)".
+
+![GEDBAS upload in the Export view](resources/img/GEDBAS_upload_in_the_export_view.jpg)
+
 ## Remote API
 
 ### Remote URL
@@ -281,7 +304,7 @@ The full URL format, which contains all possible parameters is defined as follow
 &emsp;**&format**=[MY_EXPORT_FORMAT](#MY_EXPORT_FORMAT)  
 &emsp;**&privacy**=[MY_PRIVACY_LEVEL](#MY_PRIVACY_LEVEL)  
 &emsp;**&encoding**=[MY_ENCODING](#MY_ENCODING)  
-&emsp;**&line_endings**=[MY_ENDINGS](#MY_ENDINGS)  
+&emsp;**&line_endings**=[MY_ENDINGS](#MY_ENDINGS)
 &emsp;**&time_stamp**=[MY_TIME_STAMP](#MY_TIME_STAMP)  
 &emsp;**&gedcom_filter1**=[MY_GEDCOM_FILTER1](#MY_GEDCOM_FILTER)  
 &emsp;**&gedcom_filter2**=[MY_GEDCOM_FILTER2](#MY_GEDCOM_FILTER)  
@@ -289,7 +312,9 @@ The full URL format, which contains all possible parameters is defined as follow
 &emsp;**&import_encoding**=[MY_IMPORT_ENCODING](#MY_IMPORT_ENCODING)  
 &emsp;**&keep_media**=[MY_KEEP_MEDIA](#MY_KEEP_MEDIA)  
 &emsp;**&word_wrapped_notes**=[MY_WORD_WRAPPED_NOTES](#MY_WORD_WRAPPED_NOTES)  
-&emsp;**&gedcom_media_path**=[MY_GEDCOM_MEDIA_PATH](#MY_GEDCOM_MEDIA_PATH)
+&emsp;**&gedcom_media_path**=[MY_GEDCOM_MEDIA_PATH](#MY_GEDCOM_MEDIA_PATH)  
+&emsp;**&GEDBAS_apiKey**=[MY_GEDBAS_APIKEY](#MY_GEDBAS_APIKEY)  
+&emsp;**&GEDBAS_id**=[MY_GEDBAS_ID](#MY_GEDBAS_ID)  
 
 **REMOTE_URL** is the webtrees route to call the remote API of the Extended Import/Export module, see chapter [Remote URL](#remote-url).
 
@@ -326,7 +351,7 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 * **<a name="TREE_TO_MERGE">TREE_TO_MERGE</a>** specifies the tree name, which shall be merged into tree
   * This is an optional parameter, which is only relevant if the action parameter ([MY_ACTION](#MY_ACTION)) has the value "merge_trees". In this case, [TREE_TO_MERGE](#TREE_TO_MERGE) will be merged into [MY_TREE](#MY_TREE).
 
-* **<a name="MY_KEY">MY_KEY</a>** specifies a authorization key, which restricts the access to the download
+* **<a name="MY_KEY">MY_KEY</a>** specifies an authorization key, which restricts the access to the download
   * This is a mandatory parameter. If it is not provided in the URL, the remote request will be denied.
 
 * **<a name="MY_FILENAME">MY_FILENAME</a>** can be provided with or without file extension, i.e. use this_file instead of this_file.ged
@@ -368,6 +393,13 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 * **<a name="MY_GEDCOM_MEDIA_PATH">MY_GEDCOM_MEDIA_PATH</a>** specifies a part of the media file path, which shall be removed from file names during the GEDCOM import
   * Accepted values: A file path used in the GEDCOM import file, e.g. "C:\Documents\"
   * If the file path contains slashes, the value needs to be included in brackets 
+
+* **<a name="MY_GEDBAS_APIKEY">MY_GEDBAS_APIKEY</a>** specifies a GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account. 
+  * If you login into your GEDBAS account, you can identify your individual key with the following link: [GEDBAS API key](https://gedbas.genealogy.net/user/apiKeys)
+
+* **<a name="MY_GEDBAS_ID">MY_GEDBAS_ID</a>** specifies the Id of the GEDBAS database, to which the GEDCOM file shall be uploaded.
+  * In order to create a new database in GEDBAS, leave the Id field empty.
+  * If you login into your GEDBAS account, you can identify existing GEDBAS databbase Ids with the following link: [GEDBAS database Ids](https://gedbas.genealogy.net/database/myFiles)
 
 ### Extending the Remote API with further parameters
 It is possible to add further parameters and values to the remote URL. The full set of parameters - either like described above or any freely added parameters - will be handed over to the GEDCOM filter in the **$param** variable of the **function customConvert**:

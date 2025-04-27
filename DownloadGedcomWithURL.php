@@ -1758,7 +1758,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */	
     private function createGEDBASdescription(Tree $tree): string
     {
-
         //Retrieve HEAD:NOTE
         $header_note = '';
         If (boolval($this->getPreference(self::PREF_USE_HEAD_NOTE_FOR_GEDBAS, '0'))) {

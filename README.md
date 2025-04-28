@@ -447,8 +447,11 @@ The GEDCOM 7 filter were successfully valdidated with [GEDCOM Validator](https:/
 
 ## Translation
 Currently, the following languages are already available:
++ Catalan
++ Dutch
 + English
 + German
++ Spanish
 
 You can help to translate this module. The language files are available on [POEditor](https://poeditor.com/projects/view?id=760286), where you can update them or add new languages.
 

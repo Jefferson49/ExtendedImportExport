@@ -265,17 +265,21 @@ There is also a check included, whether GEDCOM filter classes create PHP compila
 
 The Extended Import/Export module allows to upload GEDCOM files from webtrees to GEDBAS.
 
+In order to use the upload, you need to enable the GEDBAS upload in the module settings.
+
+![GEDBAS settings in the control panel](resources/img/GEDBAS_settings.jpg)
+
+If GEDBAS upload is enabled, the upload will be offered as an additional "Action" in the export view. Also refer to chapter "[How to use GEDCOM filters](#how-to-use-gedcom-filters)".
+
 In order to upload GEDCOM files to GEDBAS, the following credentials are needed:
 + **GEDBAS API key**, which allows to upload GEDCOM files for a certain GEDBAS account.
   + If you login into your GEDBAS account, you can identify your individual key with the following link: [GEDBAS API key](https://gedbas.genealogy.net/user/apiKeys)
 + **GEDBAS database Id**, to which the GEDCOM file shall be uploaded.
-  * If you login into your GEDBAS account, you can identify existing GEDBAS databbase Ids with the following link: [GEDBAS database Ids](https://gedbas.genealogy.net/database/myFiles)
-  * In order to create a new database in GEDBAS, an empty Id is used.
-  * If an existing Id is used during upload, the existing database will be replaced with the new GEDCOM file.
+  * If you enter a GEDBAS API key, a list of available GEDBAS databases will be loaded from GEDBAS and offered as a selection list.
+  * If an existing database is selected, an upload will replace the existing database with the new GEDCOM file.
+  * A specific list item can be selected to create a new database in GEDBAS.
 
-In order to use the upload, you need to enable the GEDBAS upload in the module settings.
-
-If GEDBAS upload is enabled, the upload will be offered as an additional "Action" in the export view. Also refer to chapter "[How to use GEDCOM filters](#how-to-use-gedcom-filters)".
+The specific GEDBAS settings are only shown if the GEDBAS upload check box is selected.
 
 ![GEDBAS upload in the Export view](resources/img/GEDBAS_upload_in_the_export_view.jpg)
 

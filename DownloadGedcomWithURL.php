@@ -195,7 +195,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	public const PREF_ALLOW_REMOTE_SAVE = "allow_remote_save";
 	public const PREF_ALLOW_REMOTE_CONVERT = "allow_remote_convert";
     public const PREF_ALLOW_REMOTE_GEDBAS_UPLOAD = 'allow_remote_gedbas_upload';
-
 	public const PREF_SHOW_MENU_LIST_ITEM = "show_menu_list_item";
     public const PREF_ALLOW_GEDBAS_UPLOAD = 'allow_gedbas_upload';
     public const PREF_USE_HEAD_NOTE_FOR_GEDBAS = 'use_head_note_for_gedbas';
@@ -208,13 +207,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const PREF_DEFAULT_ENCODING = 'default_encoding';
     public const PREF_DEFAULT_ENDING = 'default_ending';
     public const PREF_DEFAULT_TIME_STAMP = 'default_time_stamp';
-
+    
     //Preferences for trees
     public const TREE_PREF_GEDBAS_ID = 'GEDBAS_id';
     public const TREE_PREF_GEDBAS_APIKEY = 'GEDBAS_apiKey';
+    public const TREE_PREF_GEDBAS_DESCRIPTION = 'GEDBAS_description';
 
-
-    
     //Actions
     public const ACTION_DOWNLOAD      = 'download';
     public const ACTION_SAVE          = 'save';
@@ -1647,7 +1645,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @param  bool    $downloadAllowed
      * 
      * @return string
-     * @throws DownloadGedcomWithUrlException
      * @throws GEDBASCommunicationException
      */	
     private function uploadToGEDBAS(
@@ -1661,15 +1658,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
     ): string 
     {
         if ($GEDBAS_apiKey === '') {
-            throw new DownloadGedcomWithUrlException(I18N::translate('Invalid GEDBAS API key'));
+            throw new GEDBASCommunicationException(I18N::translate('Invalid GEDBAS API key'));
         }
 
         if ($GEDBAS_Id !== '' && filter_var($GEDBAS_Id, FILTER_VALIDATE_INT) === false) {
-            throw new DownloadGedcomWithUrlException(I18N::translate('GEDBAS Id does not contain an Integer: %s', $GEDBAS_Id));
+            throw new GEDBASCommunicationException(I18N::translate('GEDBAS Id does not contain an Integer: %s', $GEDBAS_Id));
         }
 
         if (strlen($file_name) < 5 OR strpos($file_name, '.ged', -4) === false) {
-            throw new DownloadGedcomWithUrlException(I18N::translate('Invalid file name for GEDBAS upload'));
+            throw new GEDBASCommunicationException(I18N::translate('Invalid file name for GEDBAS upload'));
         }
 
         // Configure cURL request
@@ -1717,13 +1714,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @param  string   $GEDBAS_apiKey
      * 
      * @return array
-     * @throws DownloadGedcomWithUrlException
      * @throws GEDBASCommunicationException
      */	
-    private function getDatabaseInfoFromGEDBAS(string $GEDBAS_apiKey): array 
+    public function getDatabaseInfoFromGEDBAS(string $GEDBAS_apiKey): array 
     {
         if ($GEDBAS_apiKey === '') {
-            throw new DownloadGedcomWithUrlException(I18N::translate('Invalid GEDBAS API key'));
+            throw new GEDBASCommunicationException(I18N::translate('Invalid GEDBAS API key'));
         }
 
         // Encode cURL request
@@ -1735,6 +1731,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, ["apiKey" => $GEDBAS_apiKey]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER , true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3);        
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
         curl_close($ch);
@@ -1746,6 +1743,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         $database_info = json_decode($response, true);
 
+        //Throw exception if invalid database information
+        if (!is_array($database_info)) {
+            throw new GEDBASCommunicationException('invalid database information: ' . $response);
+        }
+
         return $database_info;
     }
 
@@ -1756,7 +1758,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * 
      * @return string
      */	
-    private function createGEDBASdescription(Tree $tree): string
+    public function createGEDBASdescription(Tree $tree): string
     {
         //Retrieve HEAD:NOTE
         $header_note = '';
@@ -1825,6 +1827,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $export_clippings_cart     = false;
             $GEDBAS_apiKey             = Validator::queryParams($request)->string('GEDBAS_apiKey', $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, ''));
             $GEDBAS_Id                 = Validator::queryParams($request)->string('GEDBAS_Id', $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, ''));
+            $GEDBAS_description        = Validator::queryParams($request)->string('GEDBAS_description', $this->createGEDBASdescription($tree));
 
             if ($action === self::ACTION_UPLOAD) {
                 $keep_media                = Validator::queryParams($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
@@ -1844,6 +1847,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }
 
             $called_from_control_panel = Validator::parsedBody($request)->boolean('called_from_control_panel', false);
+            $reload_form               = Validator::parsedBody($request)->boolean('reload_form', false);
             $export_clippings_cart     = Validator::parsedBody($request)->boolean('export_clippings_cart', false);
             $filename                  = Validator::parsedBody($request)->string('filename', $tree_name);
             $filename_converted        = Validator::parsedBody($request)->string('filename_converted', '');
@@ -1859,6 +1863,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $import_encoding           = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
             $GEDBAS_apiKey             = Validator::parsedBody($request)->string('GEDBAS_apiKey', '');
             $GEDBAS_Id                 = Validator::parsedBody($request)->string('GEDBAS_Id', '');
+            $GEDBAS_description        = Validator::parsedBody($request)->string('GEDBAS_description', '');
 
             if ($action === self::ACTION_UPLOAD) {
                 $keep_media                = Validator::parsedBody($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
@@ -1870,6 +1875,44 @@ class DownloadGedcomWithURL extends AbstractModule implements
         else {
             throw new DownloadGedcomWithUrlException(I18N::translate('Internal module error: Neither GET nor POST request received.'));
         }
+
+        //If reload form for control panel is requested, i.e. new GEDBAS_apiKey was provided
+        if ($called_from_control_panel && $reload_form) {
+
+            //Check GEDBAS_apiKey
+            try {
+                $GEDBAS_database_info = $this->getDatabaseInfoFromGEDBAS($GEDBAS_apiKey);
+
+                //Assign received GEDBAS apiKey to tree
+                $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, $GEDBAS_apiKey);
+            } 
+            catch (GEDBASCommunicationException $ex) {
+
+                //Reset GEDBAS apiKey for tree
+                $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, '');
+
+                $message = I18N::translate('Error during communication with GEDBAS'). ': ' . $ex->getMessage();
+                FlashMessages::addMessage($message, 'danger');
+            }
+
+            return redirect(route(ExportGedcomPage::class, [
+                'tree_name'             => $tree->name(),
+                'export_clippings_cart' => $export_clippings_cart,
+                'filename'              => $filename,
+                'action'                => $action,
+                'format'                => $format,
+                'privacy'               => $privacy,
+                'encoding'              => $encoding,
+                'endings'               => $line_endings,
+                'time_stamp'            => $time_stamp,
+                'GEDBAS_Id'             => $GEDBAS_Id,
+                'GEDBAS_description'    => $GEDBAS_description,
+                'gedcom_filter1'        => $gedcom_filter1,                        
+                'gedcom_filter2'        => $gedcom_filter2,                        
+                'gedcom_filter3'        => $gedcom_filter3,
+            ]));                    
+        }
+
 
         //Handle export of clippings cart
         if ($export_clippings_cart) {
@@ -2082,6 +2125,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         'encoding'              => $encoding,
                         'endings'               => $line_endings,
                         'time_stamp'            => $time_stamp,
+                        'GEDBAS_Id'             => $GEDBAS_Id,
+                        'GEDBAS_description'    => $GEDBAS_description,
                         'gedcom_filter1'        => $gedcom_filter1,                        
                         'gedcom_filter2'        => $gedcom_filter2,                        
                         'gedcom_filter3'        => $gedcom_filter3,
@@ -2105,32 +2150,40 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $export_file_name     = $filename . '.ged';
                 $export_file_location = $this->gedcom_temp_path . $export_file_name;
 
-                //Create response
+                //Create resource and upload to GEDBAS
                 try {
                     $resource = $this->filtered_gedcom_export_service->filteredResource(
                         $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params, $clippings_cart_records, $export_clippings_cart);
 
                     //Upload to GEDBAS
-                    $this->root_filesystem->writeStream($export_file_location, $resource);               
-                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $this->createGEDBASdescription($tree));
+                    $this->root_filesystem->writeStream($export_file_location, $resource);
+                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $GEDBAS_description);
                     $this->root_filesystem->delete($export_file_location);
                 } 
-                catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException | GEDBASCommunicationException $ex) {
+                catch (FilesystemException | UnableToWriteFile | GEDBASCommunicationException $ex) {
 
-                    if ($ex instanceof DownloadGedcomWithUrlException) {
-                        return $this->showErrorMessage(I18N::translate('Error during GEDBAS upload') . ': ' . $ex->getMessage());
-                    }
-                    elseif ($ex instanceof GEDBASCommunicationException) {
-                        return $this->showErrorMessage(I18N::translate('Error during communication with GEDBAS'). ': ' . $ex->getMessage());
+                    if ($ex instanceof GEDBASCommunicationException) {
+                        $message = I18N::translate('Error during communication with GEDBAS'). ': ' . $ex->getMessage();
                     }
                     else {
-                        return $this->showErrorMessage(I18N::translate('The file %s could not be created.', $export_file_location));
+                        $message =I18N::translate('The file %s could not be created.', $export_file_location);
+                    }
+
+                    if ($called_from_control_panel) {
+                        FlashMessages::addMessage($message, 'danger');
+                    }
+                    else {
+                        return $this->showErrorMessage($message);
                     }
                 }
 
-                //Assign received GEDBAS apiKey and Id to tree
+                //Assign received GEDBAS apiKey, Id, and description to tree
                 $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, $GEDBAS_apiKey);
-                $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, $GEDBAS_Id);
+                if (!$export_clippings_cart) {
+                    $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_DESCRIPTION, $GEDBAS_description);
+                    $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, $GEDBAS_Id);
+                }
+
                 $message = I18N::translate('The family tree "%s" was sucessfully uploaded to GEDBAS', $tree_name);
 
                 if ($called_from_control_panel) {
@@ -2145,6 +2198,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         'encoding'              => $encoding,
                         'endings'               => $line_endings,
                         'time_stamp'            => $time_stamp,
+                        'GEDBAS_Id'             => $GEDBAS_Id,
+                        'GEDBAS_description'    => $GEDBAS_description,
                         'gedcom_filter1'        => $gedcom_filter1,                        
                         'gedcom_filter2'        => $gedcom_filter2,                        
                         'gedcom_filter3'        => $gedcom_filter3,

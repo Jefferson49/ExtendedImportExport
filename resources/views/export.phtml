@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
+use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Tree;
@@ -26,14 +28,17 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
  * @var  string  $endings
  * @var  string  $privacy
  * @var  string  $time_stamp
+ * @var  string  $GEDBAS_Id
+ * @var  string  $GEDBAS_description
  * @var  array   $gedcom_filter_list
  * @var  string  $gedcom_filter1
  * @var  string  $gedcom_filter2
  * @var  string  $gedcom_filter3
  */
 
-$module_service           = New ModuleService();
-$download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+$module_service               = New ModuleService();
+$download_gedcom_with_url     = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+$gedbas_communication_success = false;
 
 $filename = $export_clippings_cart ? 'clippings' : $tree->name();
 
@@ -54,9 +59,48 @@ $export_options = [
 $gedbas_upload_allowed = boolval($download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_ALLOW_GEDBAS_UPLOAD, '0') === '1');
 
 if ($gedbas_upload_allowed) {
+
+	$GEDBAS_databases = [];
+	$GEDBAS_databases[''] = I18N::translate('Create new GEDBAS database');
+	$GEDBAS_database_descriptions = [];
 	$export_options[DownloadGedcomWithURL::ACTION_GEDBAS] = I18N::translate('Upload to GEDBAS');
 	$GEDBAS_apiKey = $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, '');
-	$GEDBAS_Id     = $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, '');
+
+	if ($GEDBAS_apiKey !== '') {
+
+		try {
+			// Retrieve database information from GEDBAS
+			$database_info = $download_gedcom_with_url->getDatabaseInfoFromGEDBAS($GEDBAS_apiKey);
+			$gedbas_communication_success = true;
+
+			foreach ($database_info as $database) {
+				if (isset($database['id']) && isset($database['title'])) {
+					$GEDBAS_databases[$database['id']] = $database['id'] . ' (' . $database['title'] . ')';
+					$GEDBAS_database_descriptions[$database['id']] = $database['description'];
+				}
+			}
+
+			//Retrieve GEDBAS database description
+			if ($GEDBAS_Id !== '' && isset($GEDBAS_database_descriptions[$GEDBAS_Id]) && $GEDBAS_database_descriptions[$GEDBAS_Id] !== '' ) {		
+				$GEDBAS_description = $GEDBAS_database_descriptions[$GEDBAS_Id];
+			}
+
+			//Reset GEDBAS_Id if invalid
+			if ($GEDBAS_Id !== '' && !isset($GEDBAS_databases[$GEDBAS_Id])) {				
+				$GEDBAS_Id = '';
+				$tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, '');
+			}
+		}
+		catch (GEDBASCommunicationException $e) {
+			$gedbas_communication_success = false;
+			FlashMessages::addMessage(I18N::translate('Could not retrieve database information from GEDBAS'), 'warning');
+		}
+	}
+
+	// Create default description if no GEDBAS description is available
+	if ($GEDBAS_description === '') {
+		$GEDBAS_description = $download_gedcom_with_url->createGEDBASdescription($tree);
+	}
 }
 
 ?>
@@ -71,6 +115,7 @@ if ($gedbas_upload_allowed) {
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="export_clippings_cart" id="export_clippings_cart" value="<?= $export_clippings_cart ? '1' : '0' ?>">
 	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
+	<input type="hidden" name="reload_form" id="reload_form" value="0">
 
 	<div class="row mb-3">
 		<label class="col-sm-3" for="format">
@@ -212,33 +257,50 @@ if ($gedbas_upload_allowed) {
 			</div>
 		</div>
 	</fieldset>
-	<?php if ($gedbas_upload_allowed) : ?>
-		<div class="row mb-3">
-			<label class="col-sm-3" for="GEDBAS_Id">
-				<?= I18N::translate('GEDBAS database Id') ?>
-			</label>
-
-			<div class="col-sm-9">
-				<div class="input-group">
-					<input class="form-control" id="GEDBAS_Id" name="GEDBAS_Id" type="text" value="<?= $GEDBAS_Id ?>">
+	<?php if (Auth::isAdmin() && $gedbas_upload_allowed) : ?>
+		<div id="GEDBAS_parameters" <?= $action !== DownloadGedcomWithURL::ACTION_GEDBAS ? 'style="display:none;"' : '' ?></div>
+			<div class="row mb-3">
+				<label class="col-sm-3 col-form-label wt-page-options-label" for="GEDBAS_apiKey">
+					<?= I18N::translate('GEDBAS API key') ?>
+				</label>
+				<div class="col-sm-9 wt-page-options-value">
+					<input class="form-control" id="GEDBAS_apiKey" name="GEDBAS_apiKey" type="text" value="<?= e($GEDBAS_apiKey) ?>">
+					<div class="form-text">
+						<?= I18N::translate('GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account. You can identify your individual key with the following link') . ': ' ?> 
+						<a href="https://gedbas.genealogy.net/user/apiKeys"><?= I18N::translate('GEDBAS API key') ?></a>
 					</div>
-				<div class="form-text">
-					<?= I18N::translate('Id of the GEDBAS database to which the GEDCOM file shall be uploaded. In order to create a new database in GEDBAS, leave the Id field empty.'); ?>
 				</div>
 			</div>
+
+			<?php if ($GEDBAS_apiKey !== '' && $gedbas_communication_success) : ?>
+				<div class="row mb-3">
+					<label class="col-sm-3" for="GEDBAS_Id">
+						<?= I18N::translate('GEDBAS database Id') ?>
+					</label>
+					<div class="col-sm-9"  >
+						<div id="GEDBAS_Id">
+							<?= view('components/select', ['name' => 'GEDBAS_Id', 'selected' => $GEDBAS_Id, 'options' => $GEDBAS_databases]) ?>
+						</div>
+						<div class="form-text">
+							<?= I18N::translate('Select a GEDBAS database, to which the GEDCOM file shall be uploaded or create a new database.'); ?>
+						</div>
+					</div>
+				</div>
+				<div class="row mb-3">
+					<label class="col-sm-3" for="GEDBAS_description">
+						<?= I18N::translate('GEDBAS database description') ?>
+					</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<input class="form-control" id="GEDBAS_description" name="GEDBAS_description" type="text" value="<?= e($GEDBAS_description) ?>">
+							</div>
+						<div class="form-text">
+							<?= I18N::translate('By default, the GEDBAS database description is generated from HEAD:NOTE or from the tree title. Modify the description according to your needs.'); ?>
+						</div>
+					</div>
+				</div>
+			<?php endif ?>
 		</div>
-		<div class="row mb-3">
-			<label class="col-sm-3 col-form-label wt-page-options-label" for="GEDBAS_apiKey">
-				<?= I18N::translate('GEDBAS API key') ?>
-			</label>
-			<div class="col-sm-9 wt-page-options-value">
-				<input class="form-control" id="GEDBAS_apiKey" name="GEDBAS_apiKey" type="text" value="<?= e($GEDBAS_apiKey) ?>">
-			</div>
-		</div>
-		<div class="form-text col-sm-9 offset-sm-3">
-			<?= I18N::translate('GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account. You can identify your individual key with the following link') . ': ' ?> 
-			<a href="https://gedbas.genealogy.net/user/apiKeys"><?= I18N::translate('GEDBAS API key') ?></a>
-		</div>	
 	<?php endif ?>
 	
 	<div class="h4">
@@ -297,10 +359,26 @@ if ($gedbas_upload_allowed) {
 <script>
 	'use strict';
 
+    $('#action-GEDBAS').change(function() {
+		$('#GEDBAS_parameters').show();
+    });
+    $('#action-download').change(function() {
+		$('#GEDBAS_parameters').hide();
+    });
+    $('#action-save').change(function() {
+		$('#GEDBAS_parameters').hide();
+    });
+    $('#action-both').change(function() {
+		$('#GEDBAS_parameters').hide();
+    });
+	$('#GEDBAS_apiKey').change(function () {
+		document.getElementById("reload_form").value = "1";
+        $('#export-form').submit();
+    });
+
 	document.querySelectorAll('[name=format]').forEach(element => element.addEventListener('change', event => document.getElementById('extension').innerText = event.target.dataset.wtExtension));
 
 	// Firefox will reload the page and change the selected item.
 	document.getElementById('extension').innerText = document.querySelector('[name=format]:checked').dataset.wtExtension;
-
 </script>
 <?php View::endpush(); ?>

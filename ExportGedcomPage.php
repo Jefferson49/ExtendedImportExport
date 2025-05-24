@@ -84,6 +84,8 @@ class ExportGedcomPage implements RequestHandlerInterface
 
         $tree_name             = Validator::queryParams($request)->string('tree_name');
         $export_clippings_cart = Validator::queryParams($request)->boolean('export_clippings_cart', false);
+        $GEDBAS_Id             = Validator::queryParams($request)->string('GEDBAS_Id', '');
+        $GEDBAS_description    = Validator::queryParams($request)->string('GEDBAS_description', '');
         $gedcom_filter1        = Validator::queryParams($request)->string('gedcom_filter1', MoreI18N::xlate('None'));
         $gedcom_filter2        = Validator::queryParams($request)->string('gedcom_filter2', MoreI18N::xlate('None'));
         $gedcom_filter3        = Validator::queryParams($request)->string('gedcom_filter3', MoreI18N::xlate('None'));
@@ -131,6 +133,8 @@ class ExportGedcomPage implements RequestHandlerInterface
                 'encoding'              => $encoding,
                 'endings'               => $endings,
                 'time_stamp'            => $time_stamp,
+                'GEDBAS_Id'             => $GEDBAS_Id,
+                'GEDBAS_description'    => $GEDBAS_description,
                 'gedcom_filter_list'    => $gedcom_filter_list,
                 'gedcom_filter1'        => $gedcom_filter1,
                 'gedcom_filter2'        => $gedcom_filter2,

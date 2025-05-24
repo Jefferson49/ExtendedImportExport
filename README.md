@@ -315,6 +315,7 @@ The full URL format, which contains all possible parameters is defined as follow
 &emsp;**&gedcom_media_path**=[MY_GEDCOM_MEDIA_PATH](#MY_GEDCOM_MEDIA_PATH)  
 &emsp;**&GEDBAS_apiKey**=[MY_GEDBAS_APIKEY](#MY_GEDBAS_APIKEY)  
 &emsp;**&GEDBAS_id**=[MY_GEDBAS_ID](#MY_GEDBAS_ID)  
+&emsp;**&GEDBAS_description**=[MY_GEDBAS_DESCRIPTION](#MY_GEDBAS_DESCRIPTION)  
 
 **REMOTE_URL** is the webtrees route to call the remote API of the Extended Import/Export module, see chapter [Remote URL](#remote-url).
 
@@ -400,6 +401,9 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 * **<a name="MY_GEDBAS_ID">MY_GEDBAS_ID</a>** specifies the Id of the GEDBAS database, to which the GEDCOM file shall be uploaded.
   * In order to create a new database in GEDBAS, leave the Id field empty.
   * If you login into your GEDBAS account, you can identify existing GEDBAS databbase Ids with the following link: [GEDBAS database Ids](https://gedbas.genealogy.net/database/myFiles)
+
+* **<a name="MY_GEDBAS_DESCRIPTION">MY_GEDBAS_DESCRIPTION</a>** specifies the description of the GEDBAS database.
+  * If no value is provided, the description will default to HEAD:NOTE or the tree name
 
 ### Extending the Remote API with further parameters
 It is possible to add further parameters and values to the remote URL. The full set of parameters - either like described above or any freely added parameters - will be handed over to the GEDCOM filter in the **$param** variable of the **function customConvert**:

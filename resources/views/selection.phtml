@@ -67,6 +67,8 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 					'gedcom_filter1'         => $default_gedcom_filter1,
 					'gedcom_filter2'         => $default_gedcom_filter2,
 					'gedcom_filter3'         => $default_gedcom_filter3,
+					'GEDBAS_Id'              => $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, ''),
+					'GEDBAS_description'     => '',
 					])) ?>">
 					<?= I18N::translate('GEDCOM Export: Tree') ?>
 				</a>
@@ -79,6 +81,8 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 					'gedcom_filter1'         => $default_gedcom_filter1,
 					'gedcom_filter2'         => $default_gedcom_filter2,
 					'gedcom_filter3'         => $default_gedcom_filter3,
+					'GEDBAS_Id'              => '',
+					'GEDBAS_description'     => '',
 					])) ?>">
 					<?= I18N::translate('GEDCOM Export: Clippings cart') ?>
 				</a>

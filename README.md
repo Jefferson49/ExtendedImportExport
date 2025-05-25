@@ -313,19 +313,19 @@ The full URL format, which contains all possible parameters is defined as follow
 &emsp;**&gedcom_filter1**=[MY_GEDCOM_FILTER1](#MY_GEDCOM_FILTER)  
 &emsp;**&gedcom_filter2**=[MY_GEDCOM_FILTER2](#MY_GEDCOM_FILTER)  
 &emsp;**&gedcom_filter3**=[MY_GEDCOM_FILTER3](#MY_GEDCOM_FILTER)  
-&emsp;**&import_encoding**=[MY_IMPORT_ENCODING](#MY_IMPORT_ENCODING)  
+&emsp;**&import_encoding**=[MY_IMPORT_ENCODING](#MY_IMPORT_ENCODING)
 &emsp;**&keep_media**=[MY_KEEP_MEDIA](#MY_KEEP_MEDIA)  
 &emsp;**&word_wrapped_notes**=[MY_WORD_WRAPPED_NOTES](#MY_WORD_WRAPPED_NOTES)  
 &emsp;**&gedcom_media_path**=[MY_GEDCOM_MEDIA_PATH](#MY_GEDCOM_MEDIA_PATH)  
 &emsp;**&GEDBAS_apiKey**=[MY_GEDBAS_APIKEY](#MY_GEDBAS_APIKEY)  
-&emsp;**&GEDBAS_id**=[MY_GEDBAS_ID](#MY_GEDBAS_ID)  
-&emsp;**&GEDBAS_description**=[MY_GEDBAS_DESCRIPTION](#MY_GEDBAS_DESCRIPTION)  
+&emsp;**&GEDBAS_Id**=[MY_GEDBAS_ID](#MY_GEDBAS_ID)  
+&emsp;**&GEDBAS_description**=[MY_GEDBAS_DESCRIPTION](#MY_GEDBAS_DESCRIPTION)
 
 **REMOTE_URL** is the webtrees route to call the remote API of the Extended Import/Export module, see chapter [Remote URL](#remote-url).
 
 The "MY_XXX" place holders need to be replaced by the specific parameter values, which shall be used for the upload/download/conversion. The possible values for the URL parameters are described below. 
 
-Most of the parameters match 1:1 to the webtrees import/xport settings in the control panel. To gain a better understanding of these parameters, it is very helpful to check these parameters and run some manual tests in the control panel.
+Most of the parameters match 1:1 to the webtrees import/export settings in the control panel. To gain a better understanding of these parameters, it is very helpful to check these parameters and run some manual tests in the control panel.
 
 It is not mandatory to provide all parameters. The only mandatory parameters are the tree and the authorization key. If any of the other parameters is not provided as URL parameter, the default value, which is specified in the control panel, is used. The tree name is used as default value for the file name. Download is used as default action.
 
@@ -334,7 +334,7 @@ It is not mandatory to provide all parameters. The only mandatory parameters are
     + REMOTE_URL&tree=tree&**action=save**&key=hYHBiZM9
 
 + **Import** a file from the webtrees server:
-    + REMOTE_URL&tree=tree1&**action=import**&key=hYHBiZM9&file=filename
+    + REMOTE_URL&tree=tree1&**action=upload**&key=hYHBiZM9&file=filename
 
 + **Downlaod** a file with applying certain settings and a GEDCOM filter during export:
     + REMOTE_URL&**action=download**&tree=tree1&key=hYHBiZM9&file=export&privacy=user&format=zip&encoding=ANSEL&line_endings=LF&time_stamp=prefix&gedcom_filter1=GEDCOM_7_ExportFilter
@@ -342,6 +342,8 @@ It is not mandatory to provide all parameters. The only mandatory parameters are
 + **Merge a tree into another tree**:
     + REMOTE_URL&**action=merge_trees**&tree_to_merge=tree1&tree=tree2&key=hYHBiZM9
 
++ **Upload the GEDCOM file of a tree to the GEDBAS internet database**:
+    + REMOTE_URL&**action=GEDBAS**&GEDBAS_apiKey=1111-2222-3333&GEDBAS_Id=12345&GEDBAS_description="An uploaded tree"&key=hYHBiZM9
 
 For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 

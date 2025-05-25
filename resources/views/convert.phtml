@@ -249,6 +249,15 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 <script>
 	'use strict';
 
+	$('#import-client-file').change(function () {
+		document.getElementById("filename_converted").value = "";
+        $('#export-form').submit();
+    });
+	$('#import-server-file').change(function () {
+		document.getElementById("filename_converted").value = "";
+        $('#export-form').submit();
+    });
+
 	document.querySelectorAll('[name=format]').forEach(element => element.addEventListener('change', event => document.getElementById('extension').innerText = event.target.dataset.wtExtension));
 
 	// Firefox will reload the page and change the selected item.

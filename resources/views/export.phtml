@@ -86,7 +86,7 @@ if ($gedbas_upload_allowed) {
 			}
 
 			//Reset GEDBAS_Id if invalid
-			if ($GEDBAS_Id !== '' && !isset($GEDBAS_databases[$GEDBAS_Id])) {				
+			if (!isset($GEDBAS_databases[$GEDBAS_Id])) {				
 				$GEDBAS_Id = '';
 				$tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, '');
 			}

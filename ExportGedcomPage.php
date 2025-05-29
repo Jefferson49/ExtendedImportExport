@@ -80,6 +80,8 @@ class ExportGedcomPage implements RequestHandlerInterface
         $this->layout = 'layouts/administration';
 
         $module_service = new ModuleService();
+
+        /** @var DownloadGedcomWithURL $download_gedcom_with_url */
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
         $tree_name             = Validator::queryParams($request)->string('tree_name');

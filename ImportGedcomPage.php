@@ -96,6 +96,8 @@ class ImportGedcomPage implements RequestHandlerInterface
         $gedcom_filter2  = Validator::queryParams($request)->string('gedcom_filter2', MoreI18N::xlate('None'));
         $gedcom_filter3  = Validator::queryParams($request)->string('gedcom_filter3', MoreI18N::xlate('None'));
         $module_service = new ModuleService();
+
+        /** @var DownloadGedcomWithURL $download_gedcom_with_url */
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
         $folder          = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');

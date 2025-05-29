@@ -24,6 +24,8 @@ use function e;
  */
 
 $module_service           = New ModuleService();
+
+/** @var DownloadGedcomWithURL $download_gedcom_with_url */
 $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
 ?>

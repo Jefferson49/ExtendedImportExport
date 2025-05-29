@@ -88,6 +88,8 @@ class ConvertGedcomPage implements RequestHandlerInterface
 
         $module_service = new ModuleService();
         $tree_service = new TreeService(new GedcomImportService());
+
+        /** @var DownloadGedcomWithURL $download_gedcom_with_url */
         $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
         
         $gedcom_filename    = Validator::queryParams($request)->string('gedcom_filename', '');

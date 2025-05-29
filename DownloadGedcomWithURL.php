@@ -2170,7 +2170,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     //Upload to GEDBAS
                     $this->root_filesystem->writeStream($export_file_location, $resource);
                     $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $GEDBAS_description);
-                    $options_to_return_to_control_panel['GEDBAS_Id'] = $GEDBAS_Id;
                     $this->root_filesystem->delete($export_file_location);
                 } 
                 catch (FilesystemException | UnableToWriteFile | GEDBASCommunicationException $ex) {
@@ -2193,6 +2192,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                 //Assign received GEDBAS apiKey, Id, and description to tree
                 $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, $GEDBAS_apiKey);
+                $options_to_return_to_control_panel['GEDBAS_Id'] = $GEDBAS_Id;
 
                 if (!$export_clippings_cart) {
                     $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_DESCRIPTION, $GEDBAS_description);

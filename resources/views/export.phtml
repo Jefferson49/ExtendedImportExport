@@ -100,7 +100,7 @@ if ($gedbas_upload_allowed) {
 	}
 
 	// Create default description if no GEDBAS description is available
-	if ($GEDBAS_description === '') {
+	if ($GEDBAS_description === '' && !$export_clippings_cart) {
 		$GEDBAS_description = $download_gedcom_with_url->createGEDBASdescription($tree);
 	}
 }

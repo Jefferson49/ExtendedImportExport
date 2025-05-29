@@ -29,6 +29,7 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
  * @var  string  $privacy
  * @var  string  $time_stamp
  * @var  string  $GEDBAS_Id
+ * @var  string  $GEDBAS_title
  * @var  string  $GEDBAS_description
  * @var  array   $gedcom_filter_list
  * @var  string  $gedcom_filter1
@@ -64,6 +65,7 @@ if ($gedbas_upload_allowed) {
 
 	$GEDBAS_databases = [];
 	$GEDBAS_databases[''] = I18N::translate('Create new GEDBAS database');
+	$GEDBAS_database_titless = [];
 	$GEDBAS_database_descriptions = [];
 	$export_options[DownloadGedcomWithURL::ACTION_GEDBAS] = I18N::translate('Upload to GEDBAS');
 	$GEDBAS_apiKey = $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, '');
@@ -79,12 +81,14 @@ if ($gedbas_upload_allowed) {
 				if (isset($database['id']) && isset($database['title'])) {
 					$GEDBAS_databases[$database['id']] = $database['id'] . ' (' . $database['title'] . ')';
 					$GEDBAS_database_descriptions[$database['id']] = $database['description'];
+					$GEDBAS_database_titles[$database['id']] = $database['title'];
 				}
 			}
 
-			//Retrieve GEDBAS database description
+			//Retrieve GEDBAS database title and description
 			if ($GEDBAS_Id !== '' && isset($GEDBAS_database_descriptions[$GEDBAS_Id]) && $GEDBAS_database_descriptions[$GEDBAS_Id] !== '' ) {		
 				$GEDBAS_description = $GEDBAS_database_descriptions[$GEDBAS_Id];
+				$GEDBAS_title = $GEDBAS_database_titles[$GEDBAS_Id];
 			}
 
 			//Reset GEDBAS_Id if invalid
@@ -97,6 +101,11 @@ if ($gedbas_upload_allowed) {
 			$gedbas_communication_success = false;
 			FlashMessages::addMessage(I18N::translate('Could not retrieve database information from GEDBAS'), 'warning');
 		}
+	}
+
+	// Create default title if no GEDBAS title is available
+	if ($GEDBAS_title === '' && !$export_clippings_cart) {
+		$GEDBAS_title = $tree->title();
 	}
 
 	// Create default description if no GEDBAS description is available
@@ -289,16 +298,33 @@ if ($gedbas_upload_allowed) {
 					</div>
 				</div>
 				<div class="row mb-3">
+					<label class="col-sm-3" for="GEDBAS_title">
+						<?= I18N::translate('GEDBAS database title') ?>
+					</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<input class="form-control" id="GEDBAS_title" name="GEDBAS_title" type="text" value="<?= e($GEDBAS_title) ?>">
+						</div>
+						<?php if (!$export_clippings_cart) : ?>							
+							<div class="form-text">
+									<?= I18N::translate('By default, the GEDBAS database title is generated from the tree title. Modify the title according to your needs.'); ?>
+							</div>
+						<?php endif ?>
+					</div>
+				</div>
+				<div class="row mb-3">
 					<label class="col-sm-3" for="GEDBAS_description">
 						<?= I18N::translate('GEDBAS database description') ?>
 					</label>
 					<div class="col-sm-9">
 						<div class="input-group">
 							<input class="form-control" id="GEDBAS_description" name="GEDBAS_description" type="text" value="<?= e($GEDBAS_description) ?>">
-							</div>
-						<div class="form-text">
-							<?= I18N::translate('By default, the GEDBAS database description is generated from HEAD:NOTE or from the tree title. Modify the description according to your needs.'); ?>
 						</div>
+						<?php if (!$export_clippings_cart) : ?>							
+							<div class="form-text">
+								<?= I18N::translate('By default, the GEDBAS database description is generated from HEAD:NOTE or from the tree title. Modify the description according to your needs.'); ?>
+							</div>
+						<?php endif ?>
 					</div>
 				</div>
 			<?php endif ?>

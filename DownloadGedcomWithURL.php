@@ -209,7 +209,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
     public const PREF_DEFAULT_TIME_STAMP = 'default_time_stamp';
     
     //Preferences for trees
-    public const TREE_PREF_GEDBAS_ID = 'GEDBAS_id';
+    public const TREE_PREF_GEDBAS_ID = 'GEDBAS_Id';
+    public const TREE_PREF_GEDBAS_TITLE = 'GEDBAS_title';
     public const TREE_PREF_GEDBAS_APIKEY = 'GEDBAS_apiKey';
     public const TREE_PREF_GEDBAS_DESCRIPTION = 'GEDBAS_description';
 
@@ -1818,6 +1819,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $export_clippings_cart     = false;
             $GEDBAS_apiKey             = Validator::queryParams($request)->string('GEDBAS_apiKey', $tree !== null ? $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, '') : '');
             $GEDBAS_Id                 = Validator::queryParams($request)->string('GEDBAS_Id', $tree !== null ? $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, '') : '');
+            $GEDBAS_title              = Validator::queryParams($request)->string('GEDBAS_title', $tree !== null ? $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_TITLE, '') : '');
             $GEDBAS_description        = Validator::queryParams($request)->string('GEDBAS_description', $tree !== null ? $this->createGEDBASdescription($tree) : '');
 
             if ($action === self::ACTION_UPLOAD) {
@@ -1854,6 +1856,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $import_encoding           = Validator::parsedBody($request)->isInArrayKeys($encodings)->string('import_encoding', '');
             $GEDBAS_apiKey             = Validator::parsedBody($request)->string('GEDBAS_apiKey', '');
             $GEDBAS_Id                 = Validator::parsedBody($request)->string('GEDBAS_Id', '');
+            $GEDBAS_title              = Validator::parsedBody($request)->string('GEDBAS_title', '');
             $GEDBAS_description        = Validator::parsedBody($request)->string('GEDBAS_description', '');
 
             if ($action === self::ACTION_UPLOAD) {
@@ -1879,6 +1882,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             'endings'               => $line_endings,
             'time_stamp'            => $time_stamp,
             'GEDBAS_Id'             => $GEDBAS_Id,
+            'GEDBAS_title'          => $GEDBAS_title,
             'GEDBAS_description'    => $GEDBAS_description,
             'gedcom_filter1'        => $gedcom_filter1,                        
             'gedcom_filter2'        => $gedcom_filter2,                        
@@ -2169,7 +2173,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     //Upload to GEDBAS
                     $this->root_filesystem->writeStream($export_file_location, $resource);
-                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $tree->title(), $GEDBAS_description);
+                    $GEDBAS_Id = $this->uploadToGEDBAS($GEDBAS_apiKey, $GEDBAS_Id, $export_file_name, $export_file_location, $GEDBAS_title, $GEDBAS_description);
                     $this->root_filesystem->delete($export_file_location);
                 } 
                 catch (FilesystemException | UnableToWriteFile | GEDBASCommunicationException $ex) {
@@ -2190,12 +2194,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     }
                 }
 
-                //Assign received GEDBAS apiKey, Id, and description to tree
+                //Assign received GEDBAS apiKey, title, Id, and description to tree
                 $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, $GEDBAS_apiKey);
                 $options_to_return_to_control_panel['GEDBAS_Id'] = $GEDBAS_Id;
 
                 if (!$export_clippings_cart) {
                     $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_DESCRIPTION, $GEDBAS_description);
+                    $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_TITLE, $GEDBAS_title);
                     $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, $GEDBAS_Id);
                 }
 

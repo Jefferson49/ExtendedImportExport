@@ -319,6 +319,7 @@ The full URL format, which contains all possible parameters is defined as follow
 &emsp;**&gedcom_media_path**=[MY_GEDCOM_MEDIA_PATH](#MY_GEDCOM_MEDIA_PATH)  
 &emsp;**&GEDBAS_apiKey**=[MY_GEDBAS_APIKEY](#MY_GEDBAS_APIKEY)  
 &emsp;**&GEDBAS_Id**=[MY_GEDBAS_ID](#MY_GEDBAS_ID)  
+&emsp;**&GEDBAS_title**=[MY_GEDBAS_TITLE](#MY_GEDBAS_TITLE)  
 &emsp;**&GEDBAS_description**=[MY_GEDBAS_DESCRIPTION](#MY_GEDBAS_DESCRIPTION)
 
 **REMOTE_URL** is the webtrees route to call the remote API of the Extended Import/Export module, see chapter [Remote URL](#remote-url).
@@ -343,7 +344,7 @@ It is not mandatory to provide all parameters. The only mandatory parameters are
     + REMOTE_URL&**action=merge_trees**&tree_to_merge=tree1&tree=tree2&key=hYHBiZM9
 
 + **Upload the GEDCOM file of a tree to the GEDBAS internet database**:
-    + REMOTE_URL&**action=GEDBAS**&GEDBAS_apiKey=1111-2222-3333&GEDBAS_Id=12345&GEDBAS_description="An uploaded tree"&key=hYHBiZM9
+    + REMOTE_URL&**action=GEDBAS**&GEDBAS_apiKey=1111-2222-3333&GEDBAS_Id=12345&GEDBAS_title="My tree"&GEDBAS_description="An uploaded tree"&key=hYHBiZM9
 
 For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
@@ -407,6 +408,9 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 * **<a name="MY_GEDBAS_ID">MY_GEDBAS_ID</a>** specifies the Id of the GEDBAS database, to which the GEDCOM file shall be uploaded.
   * In order to create a new database in GEDBAS, leave the Id field empty.
   * If you login into your GEDBAS account, you can identify existing GEDBAS databbase Ids with the following link: [GEDBAS database Ids](https://gedbas.genealogy.net/database/myFiles)
+
+* **<a name="MY_GEDBAS_TITLE">MY_GEDBAS_TITLE</a>** specifies the title of the GEDBAS database.
+  * If no value is provided, the description will default to the tree title
 
 * **<a name="MY_GEDBAS_DESCRIPTION">MY_GEDBAS_DESCRIPTION</a>** specifies the description of the GEDBAS database.
   * If no value is provided, the description will default to HEAD:NOTE or the tree name

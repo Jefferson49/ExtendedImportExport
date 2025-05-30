@@ -209,7 +209,7 @@ The general idea of the GEDCOM filter is to apply regular expression replacement
 
 In order to use the PHP function call, a customConvert function needs to be inserted to the code of the GEDCOM filter class. The interface of the customConvert function is defined in the [GedcomFilterInterface](GedcomFilterInterface.php#L53).
 
-![PHP function customConvert interface](resources/img/php_function_custom_convert_interface.jpg)
+![PHP function customConvert interface](resources/img/screenshot_php_function_custom_convert_interface.jpg)
 
 In filter rules, the PHP customConvert function can be used instead of regular expression replacements:
 + Use "PHP_function" as "search pattern"

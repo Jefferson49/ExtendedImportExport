@@ -147,7 +147,7 @@ Further insights about GEDCOM filters can be gained by refering to the following
 |[Remove minimal individuals](resources/filter/ReduceMinimalIndividualsGedcomFilter.php)|Identifys individuals with SEX/FAMC/FAMS or less and removes their data|
 |[Remove all media objects](resources/filter/RemoveAllMediaObjectsGedcomFilter.php)|Removes all notes and their references|
 |[Remove all notes](resources/filter/RemoveAllNotesGedcomFilter.php)|Removes all notes and their references|
-|[Remove all sources](resources/filter/RemoveAllSouresGedcomFilter.php)|Removes all sources and their references|
+|[Remove all sources](resources/filter/RemoveAllSourcesGedcomFilter.php)|Removes all sources and their references|
 |[Remove asterisk characters from names](resources/filter/RemoveAsteriskCharactersFromNamesGedcomFilter.php)|Removes asterisk characters (i.e. '*') from names. Background: In webtrees, an asterisk character indicates the part of a given name to be underlined.|
 |[Remove change data (i.e. CHAN structures)](resources/filter/RemoveChangeDataGedcomFilter.php)|Removes CHAN structures|
 |[Remove empty or unlinked records](resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php)|Removes empty and unlinked records. Applied to: FAM, NOTE, OBJE, REPO, SOUR, _LOC. For INDI, only empty records are removed.|

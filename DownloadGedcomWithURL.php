@@ -77,6 +77,7 @@ use Fisharebest\Webtrees\Repository;
 use Fisharebest\Webtrees\Services\AdminService;
 use Fisharebest\Webtrees\Services\DataFixService;
 use Fisharebest\Webtrees\Services\GedcomImportService;
+use Fisharebest\Webtrees\Services\PhpService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Services\TimeoutService;
 use Fisharebest\Webtrees\Session;
@@ -1999,7 +2000,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $request         = Functions::getFromContainer(ServerRequestInterface::class);
             $request         = $request->withAttribute('tree', $tree instanceof Tree ? $tree : null);
 
-            $request_handler = new RenumberTreeAction(new AdminService, new TimeoutService);
+            $request_handler = new RenumberTreeAction(new AdminService, new TimeoutService(new PhpService));
         
             return $request_handler->handle($request);
         }

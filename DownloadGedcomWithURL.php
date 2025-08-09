@@ -37,7 +37,6 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fig\Http\Message\RequestMethodInterface;
-use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\ANSEL;
@@ -87,9 +86,9 @@ use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
+use Jefferson49\Webtrees\Exceptions\GithubCommunicationError;
+use Jefferson49\Webtrees\Helpers\GithubService;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Jefferson49\Webtrees\Helpers\Functions;
 use League\Flysystem\FilesystemException;
@@ -397,43 +396,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function customModuleLatestVersion(): string
     {
-        // No update URL provided.
-        if (self::GITHUB_API_LATEST_VERSION === '') {
-            return $this->customModuleVersion();
-        }
         return Registry::cache()->file()->remember(
             $this->name() . '-latest-version',
             function (): string {
+
                 try {
-                    $client = new Client(
-                        [
-                        'timeout' => 3,
-                        ]
-                    );
-
-                    $response = $client->get(self::GITHUB_API_LATEST_VERSION);
-
-                    if ($response->getStatusCode() === StatusCodeInterface::STATUS_OK) {
-                        $content = $response->getBody()->getContents();
-                        preg_match_all('/' . self::GITHUB_API_TAG_NAME_PREFIX . '\d+\.\d+\.\d+/', $content, $matches, PREG_OFFSET_CAPTURE);
-
-						if(!empty($matches[0]))
-						{
-							$version = $matches[0][0][0];
-							$version = substr($version, strlen(self::GITHUB_API_TAG_NAME_PREFIX));	
-						}
-						else
-						{
-							$version = $this->customModuleVersion();
-						}
-
-                        return $version;
-                    }
-                } catch (GuzzleException $ex) {
-                    // Can't connect to the server?
+                    //Get latest release from GitHub
+                    return GithubService::getLatestReleaseTag(self::GITHUB_REPO);
                 }
-
-                return $this->customModuleVersion();
+                catch (GithubCommunicationError $ex) {
+                    // Can't connect to GitHub?
+                    return $this->customModuleVersion();
+                }
             },
             86400
         );

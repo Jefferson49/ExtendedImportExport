@@ -7,5 +7,8 @@
     ],
     "require": {
         "jefferson49/webtrees-common": ">=1.2.14"
+    },
+    "config": {
+        "prepend-autoloader": false
     }
 }

@@ -72,6 +72,10 @@ This README file contains the following main sections:
 Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authorization key**. This means that installing these module versions enables everyone, who can reach the webtrees URL, to download GEDCOM files from webtrees. **Therefore, it is highly recommended to uprade to a module version v3.0.0 or later**.
 
 ## Installation
++ Install and use [Custom Module Manager](https://github.com/Jefferson49/CustomModuleManager) for an easy and convenient installation of webtrees custom modules.
++ Open the Custom Module Manager view in webtrees, scroll to "ExtendedImportExport", and click on the "Install Module" button.
+
+**Manual installation**:
 + Download the [latest release](https://github.com/Jefferson49/ExtendedImportExport/releases/latest) of the module by downloading the "extended_import_export_v*.zip" file from "Assets". Do not download "Source code.zip".
 + Unzip the downloaded file and copy the included folder "extended_import_export" into the "module_v4" folder of your webtrees installation
 + Check if the module is activated in the control panel:

@@ -37,8 +37,11 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fig\Http\Message\RequestMethodInterface;
+use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
 use Fisharebest\Webtrees\Auth;
+use Fisharebest\Webtrees\Cli\Commands\TreeImport;
+use Fisharebest\Webtrees\Cli\Console;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -87,6 +90,7 @@ use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
+use Fisharebest\Webtrees\Webtrees;
 use Illuminate\Support\Collection;
 use Jefferson49\Webtrees\Exceptions\GithubCommunicationError;
 use Jefferson49\Webtrees\Helpers\GithubService;
@@ -102,15 +106,18 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\StreamOutput;
 
 use ErrorException;
 use CURLFile;
-use Throwable;
-
+use RuntimeException;
 use ReflectionClass;
 use stdClass;
+use Throwable;
 
 use function substr;
+use function str_replace;
 
 
 class DownloadGedcomWithURL extends AbstractModule implements 
@@ -246,6 +253,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //All GEDCOM records (for record selection in datafix)
     private const ALL_RECORDS = 'ALL';
     private const HEAD = 'HEAD';
+
+    //Others
+    private const UPLOAD_TEMP_FOLDER = 'tmp/';
+
 
    /**
      * DownloadGedcomWithURL constructor.
@@ -819,26 +830,32 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	 
 	/**
-     * View alert in the front end
+     * Send a response, depending on the client type
      *
-     * @param  string $text
-     * @param  string $alert_type
+     * @param string $text
+     * @param bool   $is_error     Whether the response contains an error
+     * @param bool   $for_browser  Whether the client is a browser and we respond with a view; otherwise plain text is returned, e.g. for scripts
      * 
      * @return ResponseInterface
      */ 
-    public function viewAlert(string $text, string $alert_type = DownloadGedcomWithURL::ALERT_DANGER): ResponseInterface
+    public function sendResponse(string $text, bool $is_error = false, bool $for_browser = true): ResponseInterface
 	{		
-        if (!in_array($alert_type, [DownloadGedcomWithURL::ALERT_DANGER, DownloadGedcomWithURL::ALERT_SUCCESS] )) {
-            $alert_type = DownloadGedcomWithURL::ALERT_DANGER;
+        $title = $is_error ? MoreI18N::xlate('Succes') : MoreI18N::xlate('Error');
+
+        if ($for_browser) {
+
+            //Return a view, i.e. for a browser
+            return $this->viewResponse($this->name() . '::alert', [
+                'title'        	=> $title,
+                'tree'			=> null,
+                'alert_type'    => $is_error ? DownloadGedcomWithURL::ALERT_DANGER : DownloadGedcomWithURL::ALERT_SUCCESS,
+                'module_name'	=> $this->title(),
+                'text'  	   	=> $text,
+            ]);	 
         }
 
-        return $this->viewResponse($this->name() . '::alert', [
-            'title'        	=> 'Error',
-            'tree'			=> null,
-            'alert_type'    => $alert_type,
-            'module_name'	=> $this->title(),
-            'text'  	   	=> $text,
-        ]);	 
+        //Return plain text, e.g. for a script
+        return response($title . ': ' . $text, $is_error ? StatusCodeInterface::STATUS_OK : StatusCodeInterface::STATUS_OK);
 	}
  
 	/**
@@ -1742,6 +1759,54 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
 	/**
+     * Import a tree into the database
+     * 
+     * @param Tree   $tree
+     * @param string $gedcom_file
+     * @param string $encoding
+     * @param bool   $keep_media
+     * @param bool   $conc_spaces
+     * @param string $gedcom_media_path
+     *
+     * @return string
+     * 
+     * @throws RuntimeException
+     */	
+    private function importTree(Tree $tree, string $gedcom_file, string $encoding, bool $keep_media, bool $conc_spaces, string $gedcom_media_path): string
+    {
+        // Replace backslashes by slashes
+        $gedcom_file = str_replace('\\' , '/', $gedcom_file);
+
+        $stream = fopen('php://memory', 'wb+');
+
+        if ($stream === false) {
+            throw new RuntimeException('Failed to create temporary stream');
+        }
+
+        $console = new Console();
+        $console->setAutoExit(false);
+        $input = new ArrayInput([
+                'command'             => 'tree-import',
+                'tree-name'           => $tree->name(),
+                'gedcom-file'         => $gedcom_file,
+                '--encoding'          => $encoding,
+                '--keep-media'        => $keep_media,
+                '--conc-spaces'       => $conc_spaces,
+                '--gedcom-media-path' => $gedcom_media_path,
+            ]);
+        $output  = new StreamOutput($stream);
+        
+        $exit_code = $console->loadCommands()->bootstrap()->run($input, $output);
+        $error     = $exit_code !== 0;
+
+        $output_stream = $this->stream_factory->createStreamFromResource($stream);
+        $output_stream->rewind();
+        $console_output = $output_stream->getContents();
+
+        return $console_output;
+    }
+
+	/**
      * Execute the request (from URL or from control panel)
      * 
      * @param ServerRequestInterface $request
@@ -1765,14 +1830,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             if (!in_array($action, [self::ACTION_CONVERT, self::ACTION_CREATE_TREE])) {
                 if (!Functions::isValidTree($tree_name)) {
-                    return $this->viewAlert(I18N::translate('Tree not found') . ': ' . $tree_name);
+                    return $this->sendResponse(I18N::translate('Tree not found') . ': ' . $tree_name, true, $called_from_control_panel);
                 } else {
                     $tree = Functions::getAllTrees()[$tree_name];
                 }                
             }
             if ($action === self::ACTION_MERGE_TREES) {
                 if (!Functions::isValidTree($tree_to_merge_name)) {
-                    return $this->viewAlert(I18N::translate('Tree not found') . ': ' . $tree_to_merge_name);
+                    return $this->sendResponse(I18N::translate('Tree not found') . ': ' . $tree_to_merge_name, true, $called_from_control_panel);
                 } else {
                     $tree_to_merge = Functions::getAllTrees()[$tree_to_merge_name];
                 }                
@@ -1845,8 +1910,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
             throw new DownloadGedcomWithUrlException(I18N::translate('Internal module error: Neither GET nor POST request received.'));
         }
 
-        //Create a response to return to control panel with the received options
-        $options_to_return_to_control_panel = [
+        //Create the response parameters for the case we return to the control panel with the received options
+        $parameters_for_control_panel = [
             'tree_name'             => $tree_name,
             'export_clippings_cart' => $export_clippings_cart,
             'filename'              => $filename,
@@ -1883,9 +1948,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 FlashMessages::addMessage($message, 'danger');
             }
 
-            return redirect(route(ExportGedcomPage::class, $options_to_return_to_control_panel));        
+            return redirect(route(ExportGedcomPage::class, $parameters_for_control_panel));        
         }
-
 
         //Handle export of clippings cart
         if ($export_clippings_cart) {
@@ -1924,49 +1988,49 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             //Error if key is empty
             if ($key === '') {
-                return $this->viewAlert(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'));
+                return $this->sendResponse(I18N::translate('No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL.'), true, $called_from_control_panel);
             }
             //Error if secret key is empty
             if ($secret_key === '') {
-                return $this->viewAlert(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $this->title());
+                return $this->sendResponse(I18N::translate('No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / ') . $this->title(), true, $called_from_control_panel);
             }
             //Error if no hashing and key is not valid
             if (!boolval($this->getPreference(self::PREF_USE_HASH, '0')) && ($key !== $secret_key)) {
-                return $this->viewAlert(I18N::translate('Key not accepted. Access denied.'));
+                return $this->sendResponse(I18N::translate('Key not accepted. Access denied.'), true, $called_from_control_panel);
             }
             //Error if hashing and key does not fit to hash
             if (boolval($this->getPreference(self::PREF_USE_HASH, '0')) && (!password_verify($key, $secret_key))) {
-                return $this->viewAlert(I18N::translate('Key (encrypted) not accepted. Access denied.'));
+                return $this->sendResponse(I18N::translate('Key (encrypted) not accepted. Access denied.'), true, $called_from_control_panel);
             }     
         }
 
         //Error if privacy level is not valid
 		if (!in_array($privacy, ['none', 'gedadmin', 'user', 'visitor'])) {
-			return $this->viewAlert(I18N::translate('Privacy level not accepted') . ': ' . $privacy);
+			return $this->sendResponse(I18N::translate('Privacy level not accepted') . ': ' . $privacy, true, $called_from_control_panel);
         }
         //Error if export format is not valid
         if (!in_array($format, ['gedcom', 'zip', 'zipmedia', 'gedzip', 'other'])) {
-			return $this->viewAlert(I18N::translate('Export format not accepted') . ': ' . $format);
+			return $this->sendResponse(I18N::translate('Export format not accepted') . ': ' . $format, true, $called_from_control_panel);
         }       
         //Error if encoding is not valid
 		if (!in_array($encoding, ['', UTF8::NAME, UTF16BE::NAME, ANSEL::NAME, ASCII::NAME, Windows1252::NAME])) {
-			return $this->viewAlert(I18N::translate('Encoding not accepted') . ': ' . $encoding);
+			return $this->sendResponse(I18N::translate('Encoding not accepted') . ': ' . $encoding, true, $called_from_control_panel);
         }       
         //Error action is not valid
         if (!in_array($action, [self::ACTION_DOWNLOAD, self::ACTION_SAVE, self::ACTION_BOTH, self::ACTION_GEDBAS, self::ACTION_UPLOAD, self::ACTION_CONVERT, self::ACTION_RENUMBER_XREF, self::ACTION_MERGE_TREES, self::ACTION_CREATE_TREE])) {
-			return $this->viewAlert(I18N::translate('Action not accepted') . ': ' . $action);
+			return $this->sendResponse(I18N::translate('Action not accepted') . ': ' . $action, true, $called_from_control_panel);
         }  
 		//Error if line ending is not valid
         if (!in_array($line_endings, ['CRLF', 'LF'])) {
-			return $this->viewAlert(I18N::translate('Line endings not accepted') . ': ' . $line_endings);
+			return $this->sendResponse(I18N::translate('Line endings not accepted') . ': ' . $line_endings, true, $called_from_control_panel);
         } 
 		//Error if time_stamp is not valid
         if (!in_array($time_stamp, [self::TIME_STAMP_PREFIX, self::TIME_STAMP_POSTFIX, self::TIME_STAMP_NONE])) {
-			return $this->viewAlert(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp);
+			return $this->sendResponse(I18N::translate('Time stamp setting not accepted') . ': ' . $time_stamp, true, $called_from_control_panel);
         }
 		//Error if conversion and no file name provided
         if (!$called_from_control_panel && $action === self::ACTION_CONVERT && $filename === '') {
-			return $this->viewAlert(I18N::translate('No file name provided for the requested GEDCOM conversion'));
+			return $this->sendResponse(I18N::translate('No file name provided for the requested GEDCOM conversion'), true, $called_from_control_panel);
         }
 		//Error if GEDBAS upload and wrong apiKey, Id, or filename
         if ($action === self::ACTION_GEDBAS) {
@@ -1986,10 +2050,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
             if ($error_message !== '') {
                 if ($called_from_control_panel ) {
                     FlashMessages::addMessage($error_message, 'danger');
-                    return redirect(route(ExportGedcomPage::class, $options_to_return_to_control_panel));                     
+                    return redirect(route(ExportGedcomPage::class, $parameters_for_control_panel));                     
                 }
                 else {
-                    return $this->viewAlert($error_message);
+                    return $this->sendResponse($error_message, true, $called_from_control_panel);
                 }
             }
         }
@@ -2033,20 +2097,20 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 self::loadGedcomFilterClasses();
             }
             catch (DownloadGedcomWithUrlException $ex) {
-                return $this->viewAlert($ex->getMessage());
+                return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
             }    
 
             //Error if Gedcom filter 1 validation fails
             if ($gedcom_filter1 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter1)) !== '') {
-                return $this->viewAlert($error);
+                return $this->sendResponse($error, true, $called_from_control_panel);
             }
             //Error if Gedcom filter 2 validation fails
             if ($gedcom_filter2 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter2)) !== '') {
-                return $this->viewAlert($error);
+                return $this->sendResponse($error, true, $called_from_control_panel);
             }
             //Error if Gedcom filter 3 validation fails
             if ($gedcom_filter3 !== '' && ($error = $this->validateGedcomFilter($gedcom_filter3)) !== '') {
-                return $this->viewAlert($error);
+                return $this->sendResponse($error, true, $called_from_control_panel);
             }
 
             //Initialize filters and get filter list
@@ -2054,7 +2118,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $gedcom_filter_set = $this->createGedcomFilterList([$gedcom_filter1, $gedcom_filter2, $gedcom_filter3]);
             }
             catch (DownloadGedcomWithUrlException $ex) {
-                return $this->viewAlert($ex->getMessage());
+                return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
             }
         }
         else {
@@ -2090,10 +2154,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
 
                     if ($ex instanceof DownloadGedcomWithUrlException) {
-                        return $this->viewAlert($ex->getMessage());
+                        return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
                     }
                     else {
-                        return $this->viewAlert(I18N::translate('The file %s could not be created.', $folder_on_server . $export_file_name));
+                        return $this->sendResponse(I18N::translate('The file %s could not be created.', $folder_on_server . $export_file_name), true, $called_from_control_panel);
                     }
                 }
 
@@ -2103,16 +2167,17 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     if ($called_from_control_panel) {
                         FlashMessages::addMessage($message, 'success');
-                        return redirect(route(ExportGedcomPage::class, $options_to_return_to_control_panel));                     
+                        return redirect(route(ExportGedcomPage::class, $parameters_for_control_panel));                     
                     }
                     else {
-                        return $this->viewAlert($message, DownloadGedcomWithURL::ALERT_SUCCESS);
+                        return $this->sendResponse($message, false, $called_from_control_panel);
                     }
                 }
             }
             else {
-                return $this->viewAlert( I18N::translate('Remote URL requests to save GEDCOM files to the server are not allowed.') . ' ' . 
-                                                I18N::translate('Please check the module settings in the control panel.'));
+                return $this->sendResponse( I18N::translate('Remote URL requests to save GEDCOM files to the server are not allowed.') . ' ' . 
+                                            I18N::translate('Please check the module settings in the control panel.'),
+                                            true, $called_from_control_panel);
             }
         }
 
@@ -2124,12 +2189,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     return $this->filtered_gedcom_export_service->filteredDownloadResponse($tree, true, $encoding, $privacy, $line_endings, $filename, $extension, $format, $gedcom_filter_set, $params, $clippings_cart_records, $export_clippings_cart);
                 }
                 catch (DownloadGedcomWithUrlException $ex) {
-                    return $this->viewAlert($ex->getMessage());
+                    return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
                 }
             }
             else {
-                return $this->viewAlert(I18N::translate('Remote URL requests to download GEDCOM files from the server are not allowed.') . ' ' . 
-                                        I18N::translate('Please check the module settings in the control panel.'));
+                return $this->sendResponse(I18N::translate('Remote URL requests to download GEDCOM files from the server are not allowed.') . ' ' . 
+                                        I18N::translate('Please check the module settings in the control panel.'),
+                                        true, $called_from_control_panel);
             }
         }
 
@@ -2162,16 +2228,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     if ($called_from_control_panel) {
                         FlashMessages::addMessage($message, 'danger');
-                        return redirect(route(ExportGedcomPage::class, $options_to_return_to_control_panel));                 
+                        return redirect(route(ExportGedcomPage::class, $parameters_for_control_panel));                 
                     }
                     else {
-                        return $this->viewAlert($message);
+                        return $this->sendResponse($message, true, $called_from_control_panel);
                     }
                 }
 
                 //Assign received GEDBAS apiKey, title, Id, and description to tree
                 $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, $GEDBAS_apiKey);
-                $options_to_return_to_control_panel['GEDBAS_Id'] = $GEDBAS_Id;
+                $parameters_for_control_panel['GEDBAS_Id'] = $GEDBAS_Id;
 
                 if (!$export_clippings_cart) {
                     $tree->setPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_DESCRIPTION, $GEDBAS_description);
@@ -2183,15 +2249,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                 if ($called_from_control_panel) {
                     FlashMessages::addMessage($message, 'success');
-                    return redirect(route(ExportGedcomPage::class, $options_to_return_to_control_panel));                 
+                    return redirect(route(ExportGedcomPage::class, $parameters_for_control_panel));                 
                 }
                 else {
-                    return $this->viewAlert($message, DownloadGedcomWithURL::ALERT_SUCCESS);
+                    return $this->sendResponse($message, false, $called_from_control_panel);
                 }
             }
             else {
-                return $this->viewAlert( I18N::translate('Remote URL requests to upload GEDCOM files to GEDBAS are disabled.') . ' ' . 
-                                                I18N::translate('Please check the module settings in the control panel.'));
+                return $this->sendResponse( I18N::translate('Remote URL requests to upload GEDCOM files to GEDBAS are disabled.') . ' ' . 
+                                                I18N::translate('Please check the module settings in the control panel.'),
+                                                true, $called_from_control_panel);
             }
         }
 
@@ -2213,7 +2280,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 }
                 catch (Throwable $ex) {
                     $message = I18N::translate('Unable to read file "%s".', $folder_on_server . $filename . $extension);
-                    return $this->viewAlert($message);
+                    return $this->sendResponse($message, true, $called_from_control_panel);
                 }
             }
             elseif ($source === 'client') {
@@ -2221,7 +2288,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                 if ($client_file === null || $client_file->getError() === UPLOAD_ERR_NO_FILE) {
                     $message = MoreI18N::xlate('No GEDCOM file was received.');    
-                    return $this->viewAlert($message);
+                    return $this->sendResponse($message, true, $called_from_control_panel);
                 }
     
                 if ($client_file->getError() !== UPLOAD_ERR_OK) {
@@ -2229,7 +2296,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 }
     
                 try {
-                    $stream = $client_file->getStream(); 
+                    $stream    = $client_file->getStream(); 
                     $path_info = pathinfo($client_file->getClientFilename());
                     $extension = $path_info['extension'] ?? '';
                     $extension = $extension !== '' ? '.' . $extension : '';
@@ -2237,30 +2304,32 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 }
                 catch (Throwable $ex) {
                     $message = I18N::translate('Unable to read file "%s".', $client_file);
-                    return $this->viewAlert($message);
+                    return $this->sendResponse($message, true, $called_from_control_panel);
                 }   
             }
             else {
                 $message = MoreI18N::xlate('No GEDCOM file was received.');
-                return $this->viewAlert($message);
+                return $this->sendResponse($message, true, $called_from_control_panel);
             }
 
             //Import the file to a set of Gedcom records
-            try {
-                $gedcom_records = $this->importGedcomFileToRecords($stream, $import_encoding, $word_wrapped_notes);
+            if (!empty($gedcom_filter_set)){
+                try {
+                    $gedcom_records = $this->importGedcomFileToRecords($stream, $import_encoding, $word_wrapped_notes);
 
-                if (empty($gedcom_records)) {
-                    $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename . $extension);
-                    return $this->viewAlert($message);
+                    if (empty($gedcom_records)) {
+                        $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename . $extension);
+                        return $this->sendResponse($message, true, $called_from_control_panel);
+                    }
+                    elseif ($action === self::ACTION_UPLOAD) {
+                        $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename . $extension, $tree_name);
+                        FlashMessages::addMessage($message, 'success');
+                    }
                 }
-                elseif ($action === self::ACTION_UPLOAD) {
-                    $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename . $extension, $tree_name);
-                    FlashMessages::addMessage($message, 'success');
-                }
+                catch (Throwable $ex) {
+                    return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
+                } 
             }
-            catch (Throwable $ex) {
-                return $this->viewAlert($ex->getMessage());
-            } 
 
             //Apply Gedcom filters
             $matched_tag_combinations = [];
@@ -2321,23 +2390,24 @@ class DownloadGedcomWithURL extends AbstractModule implements
                                 ]));
                             }
                             else {
-                                return $this->viewAlert($message, DownloadGedcomWithURL::ALERT_SUCCESS);
+                                return $this->sendResponse($message, false, $called_from_control_panel);
                             }
                         } 
                         catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {
         
                             if ($ex instanceof DownloadGedcomWithUrlException) {
-                                return $this->viewAlert($ex->getMessage());
+                                return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
                             }
                             else {
-                                return $this->viewAlert(I18N::translate('The file %s could not be created.', $folder_on_server . $export_filename));
+                                return $this->sendResponse(I18N::translate('The file %s could not be created.', $folder_on_server . $export_filename), true, $called_from_control_panel);
                             }
                         }        
                     }
                 }
                 else {
-                    return $this->viewAlert( I18N::translate('Remote URL requests to convert GEDCOM files on the server are not allowed.') . ' ' . 
-                                                    I18N::translate('Please check the module settings in the control panel.'));
+                    return $this->sendResponse( I18N::translate('Remote URL requests to convert GEDCOM files on the server are not allowed.') . ' ' . 
+                                                    I18N::translate('Please check the module settings in the control panel.'),
+                                                    true, $called_from_control_panel);
                 }
             }
 
@@ -2347,26 +2417,55 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     //Create a stream from the filtered data
                     $resource = $this->filtered_gedcom_export_service->filteredResource(
                         $tree, true, $encoding, $privacy, $line_endings, $filename, $format, [], [], new Collection($gedcom_records));
-                    $stream = $this->stream_factory->createStreamFromResource($resource);
 
-                    //Import the stream into the database
                     try {
-                        $this->tree_service->importGedcomFile($tree, $stream, $filename, $encoding);
+                        $file_info = $this->evaluateFilename($filename, $action, $format);
+                        $temporary_folder = $folder_on_server . self::UPLOAD_TEMP_FOLDER;
+
+                        while ($this->root_filesystem->directoryExists($temporary_folder)) {
+                            $temporary_folder .= 'x';
+                        }
+
+                        $temporary_file = $temporary_folder . $file_info['filename'] . $file_info['extension']; 
+
+                        //Save the filtered export to a temporary file
+                        $this->root_filesystem->writeStream($temporary_file, $resource);
+
+                        //Import the tree into the database
+                        $this->importTree($tree, Webtrees::ROOT_DIR . $temporary_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
+
+                        //Delete the temporary folder
+                        $this->root_filesystem->deleteDirectory($temporary_folder);
                     }
                     catch (Throwable $ex) {
-                        return $this->viewAlert($ex->getMessage());
-                    }      
+                        return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
+                    }
 
-                    //Redirect in order to process the Gedcom data of the imported file
-                    return redirect(route(ManageTrees::class, ['tree' => $tree->name()]));
+                    //Successfully return after upload/import
+                    $message = I18N::translate('The tree was successfully imported into the database.');
+
+                    if ($called_from_control_panel) {
+                        FlashMessages::addMessage($message, 'success');
+                        return redirect(route(ImportGedcomPage::class, [
+                            'tree_name'       => $tree->name(),
+                            'gedcom_filename' => $filename,
+                            'gedcom_filter1'  => $gedcom_filter1,
+                            'gedcom_filter2'  => $gedcom_filter2,
+                            'gedcom_filter3'  => $gedcom_filter3,
+                        ]));
+                    }
+                    else {
+                        return $this->sendResponse($message, false, $called_from_control_panel);
+                    }                    
                 }
                 else {
-                    return $this->viewAlert( I18N::translate('Remote URL requests to upload GEDCOM files to the server are not allowed.') . ' ' . 
-                                                    I18N::translate('Please check the module settings in the control panel.'));
+                    return $this->sendResponse( I18N::translate('Remote URL requests to upload GEDCOM files to the server are not allowed.') . ' ' . 
+                                                    I18N::translate('Please check the module settings in the control panel.'),
+                                                    true, $called_from_control_panel);
                 }
             }
         }
 
-        return $this->viewAlert(I18N::translate('Reached end of request handle without proper response'));
+        return $this->sendResponse(I18N::translate('Reached end of request handle without proper response'), true, $called_from_control_panel);
     }
 }

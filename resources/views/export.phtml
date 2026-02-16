@@ -275,7 +275,7 @@ if ($gedbas_upload_allowed) {
 					<?= I18N::translate('GEDBAS API key') ?>
 				</label>
 				<div class="col-sm-9 wt-page-options-value">
-					<input class="form-control" id="GEDBAS_apiKey" name="GEDBAS_apiKey" type="text" value="<?= e($GEDBAS_apiKey) ?>">
+					<input class="form-control" id="GEDBAS_apiKey" name="GEDBAS_apiKey" type="password" value="<?= e($GEDBAS_apiKey) ?>" dir="ltr" autocomplete="off" data-wt-show-password-text="<?= e(MoreI18N::xlate('show')) ?>" data-wt-hide-password-text="<?= e(I18N::translate('hide')) ?>">
 					<div class="form-text">
 						<?= I18N::translate('GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account. You can identify your individual key with the following link') . ': ' ?> 
 						<a href="https://gedbas.genealogy.net/user/apiKeys"><?= I18N::translate('GEDBAS API key') ?></a>

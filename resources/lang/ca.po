@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ExtendedImportExport for webtrees 2\n"
-"POT-Creation-Date: \n"
+"POT-Creation-Date: 2026-02-17 20:40+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -9,240 +9,433 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 "X-Poedit-Basepath: ../..\n"
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
 #: AbstractGedcomFilter.php:137
-msgid "The variable type of the filter rules definition (%s) of the GEDCOM filter (%s) does not have the type \"array\"."
-msgstr "El tipus de variable de la definició de regles de filtre (%s) del filtre GEDCOM (%s) no té el tipus \"matriu\"."
+#, php-format
+msgid ""
+"The variable type of the filter rules definition (%s) of the GEDCOM filter "
+"(%s) does not have the type \"array\"."
+msgstr ""
+"El tipus de variable de la definició de regles de filtre (%s) del filtre "
+"GEDCOM (%s) no té el tipus \"matriu\"."
 
 #: AbstractGedcomFilter.php:142
+#, php-format
 msgid "The selected GEDCOM filter (%s) does not contain any filter rules."
 msgstr "El filtre GEDCOM seleccionat (%s) no conté cap regla de filtre."
 
 #: AbstractGedcomFilter.php:147
-msgid "The selected GEDCOM filter (%s) contains an invalid definition for regular expression macros (%s)."
-msgstr "El filtre GEDCOM seleccionat (%s) conté una definició no vàlida per a les macros d'expressió regular (%s)."
+#, php-format
+msgid ""
+"The selected GEDCOM filter (%s) contains an invalid definition for regular "
+"expression macros (%s)."
+msgstr ""
+"El filtre GEDCOM seleccionat (%s) conté una definició no vàlida per a les "
+"macros d'expressió regular (%s)."
 
 #: AbstractGedcomFilter.php:154
-msgid "The selected GEDCOM filter (%s) contains an invalid definition for the regular expression macro %s."
-msgstr "El filtre GEDCOM seleccionat (%s) conté una definició no vàlida per a la macro d'expressió regular %s."
+#, php-format
+msgid ""
+"The selected GEDCOM filter (%s) contains an invalid definition for the "
+"regular expression macro %s."
+msgstr ""
+"El filtre GEDCOM seleccionat (%s) conté una definició no vàlida per a la "
+"macro d'expressió regular %s."
 
 #: AbstractGedcomFilter.php:155 AbstractGedcomFilter.php:165
 msgid "Invalid definition"
 msgstr "Definició no vàlida"
 
 #: AbstractGedcomFilter.php:164
-msgid "The selected GEDCOM filter (%s) contains an invalid filter definition for tag pattern %s."
-msgstr "El filtre GEDCOM seleccionat (%s) conté una definició de filtre no vàlida per al patró d'etiquetes %s."
+#, php-format
+msgid ""
+"The selected GEDCOM filter (%s) contains an invalid filter definition for "
+"tag pattern %s."
+msgstr ""
+"El filtre GEDCOM seleccionat (%s) conté una definició de filtre no vàlida "
+"per al patró d'etiquetes %s."
 
 #: AbstractGedcomFilter.php:172
+#, php-format
 msgid "The selected GEDCOM filter (%s) contains an invalid tag definition"
-msgstr "El filtre GEDCOM seleccionat (%s) conté una definició d'etiqueta no vàlida"
+msgstr ""
+"El filtre GEDCOM seleccionat (%s) conté una definició d'etiqueta no vàlida"
 
 #: AbstractGedcomFilter.php:184
-msgid "The used GEDCOM filter (%s) contains a %s command with a method (%s), which is not available. Currently, only \"%s\" is allowed to be used as a method."
-msgstr "El filtre GEDCOM utilitzat (%s) conté una ordre %s amb un mètode (%s), que no està disponible. Actualment, només es pot utilitzar \"%s\" com a mètode."
+#, php-format
+msgid ""
+"The used GEDCOM filter (%s) contains a %s command with a method (%s), which "
+"is not available. Currently, only \"%s\" is allowed to be used as a method."
+msgstr ""
+"El filtre GEDCOM utilitzat (%s) conté una ordre %s amb un mètode (%s), que "
+"no està disponible. Actualment, només es pot utilitzar \"%s\" com a mètode."
 
 #: AbstractGedcomFilter.php:194
-msgid "The used GEDCOM filter (%s) contains a %s command with a method (%s), but the filter class does not contain a \"%s\" method."
-msgstr "El filtre GEDCOM utilitzat (%s) conté una ordre %s amb un mètode (%s), però la classe de filtre no conté un mètode \"%s\"."
+#, php-format
+msgid ""
+"The used GEDCOM filter (%s) contains a %s command with a method (%s), but "
+"the filter class does not contain a \"%s\" method."
+msgstr ""
+"El filtre GEDCOM utilitzat (%s) conté una ordre %s amb un mètode (%s), però "
+"la classe de filtre no conté un mètode \"%s\"."
 
 #: AbstractGedcomFilter.php:204
-msgid "The used GEDCOM filter (%s) contains a macro command (%s) for a regular expression, but the macro is not defined in the filter."
-msgstr "El filtre GEDCOM utilitzat (%s) conté una comanda macro (%s) per a una expressió regular, però la macro no està definida al filtre."
+#, php-format
+msgid ""
+"The used GEDCOM filter (%s) contains a macro command (%s) for a regular "
+"expression, but the macro is not defined in the filter."
+msgstr ""
+"El filtre GEDCOM utilitzat (%s) conté una comanda macro (%s) per a una "
+"expressió regular, però la macro no està definida al filtre."
 
 #: AbstractGedcomFilter.php:213 AbstractGedcomFilter.php:220
+#, php-format
 msgid "The selected GEDCOM filter (%s) contains an invalid regular expression"
-msgstr "El filtre GEDCOM seleccionat (%s) conté una expressió regular no vàlida"
+msgstr ""
+"El filtre GEDCOM seleccionat (%s) conté una expressió regular no vàlida"
 
 #: AbstractGedcomFilter.php:213
 msgid "Error message"
 msgstr "Missatge d'error"
 
 #: AbstractGedcomFilter.php:230
-msgid "The selected GEDCOM filter (%s) contains a black list filter rule (%s) with a regular expression, which will never be executed, because the black list filter rule will delete the related GEDCOM line."
-msgstr "El filtre GEDCOM seleccionat (%s) conté una regla de filtre de llista negra (%s) amb una expressió regular, que mai s'executarà, perquè la regla de filtre de llista negra suprimirà la línia GEDCOM relacionada."
+#, php-format
+msgid ""
+"The selected GEDCOM filter (%s) contains a black list filter rule (%s) with "
+"a regular expression, which will never be executed, because the black list "
+"filter rule will delete the related GEDCOM line."
+msgstr ""
+"El filtre GEDCOM seleccionat (%s) conté una regla de filtre de llista negra "
+"(%s) amb una expressió regular, que mai s'executarà, perquè la regla de "
+"filtre de llista negra suprimirà la línia GEDCOM relacionada."
 
 #: AbstractGedcomFilter.php:251
-msgid "The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and will never be executed. Please remove the rule or change the order of the filter rules."
-msgstr "La regla de filtre \"%s\" està dominada per la regla de filtre anterior \"%s\" i no s'executarà mai. Si us plau, elimineu la regla o canvieu l'ordre de les regles de filtre."
+#, php-format
+msgid ""
+"The filter rule \"%s\" is dominated by the earlier filter rule \"%s\" and "
+"will never be executed. Please remove the rule or change the order of the "
+"filter rules."
+msgstr ""
+"La regla de filtre \"%s\" està dominada per la regla de filtre anterior "
+"\"%s\" i no s'executarà mai. Si us plau, elimineu la regla o canvieu l'ordre "
+"de les regles de filtre."
 
 #: AbstractGedcomFilter.php:262 AbstractGedcomFilter.php:271
 #: AbstractGedcomFilter.php:279
+#, php-format
 msgid "The %s method of the used GEDCOM filter (%s) throws a PHP error"
 msgstr "El mètode %s del filtre GEDCOM utilitzat (%s) genera un error PHP"
 
-#: ConvertGedcomPage.php:122
+#: ConvertGedcomPage.php:85 DownloadGedcomWithURL.php:1978
+#: ImportGedcomPage.php:88
+msgid "Access denied. The user needs to be an administrator."
+msgstr "Accés denegat. L'usuari ha de ser administrador."
+
+#: ConvertGedcomPage.php:124
 msgid "GEDCOM Conversion"
 msgstr "Conversió GEDCOM"
 
-#: DownloadGedcomWithURL.php:330
+#: DownloadGedcomWithURL.php:340
 msgid "Extended Import/Export"
 msgstr "Importació/Exportació ampliada"
 
-#: DownloadGedcomWithURL.php:343
-msgid "A custom module for advanced GEDCOM import, export, and filter operations. The module also supports remote downloads/uploads/filters via URL requests."
-msgstr "Un mòdul personalitzat per a operacions avançades d'importació, exportació i filtrat de GEDCOM. El mòdul també admet descàrregues/càrregues/filtres remots mitjançant sol·licituds d'URL."
+#: DownloadGedcomWithURL.php:353
+msgid ""
+"A custom module for advanced GEDCOM import, export, and filter operations. "
+"The module also supports remote downloads/uploads/filters via URL requests."
+msgstr ""
+"Un mòdul personalitzat per a operacions avançades d'importació, exportació i "
+"filtrat de GEDCOM. El mòdul també admet descàrregues/càrregues/filtres "
+"remots mitjançant sol·licituds d'URL."
 
-#: DownloadGedcomWithURL.php:590
-msgid "The provided secret key is too short. Please provide a minimum length of 8 characters."
-msgstr "La clau secreta proporcionada és massa curta. Proporcioneu una longitud mínima de 8 caràcters."
+#: DownloadGedcomWithURL.php:575
+msgid ""
+"The provided secret key is too short. Please provide a minimum length of 8 "
+"characters."
+msgstr ""
+"La clau secreta proporcionada és massa curta. Proporcioneu una longitud "
+"mínima de 8 caràcters."
 
-#: DownloadGedcomWithURL.php:596
-msgid "The provided secret key contains characters, which are not accepted. Please provide a different key."
-msgstr "La clau secreta proporcionada conté caràcters, que no s'accepten. Proporcioneu una clau diferent."
+#: DownloadGedcomWithURL.php:581
+msgid ""
+"The provided secret key contains characters, which are not accepted. Please "
+"provide a different key."
+msgstr ""
+"La clau secreta proporcionada conté caràcters, que no s'accepten. "
+"Proporcioneu una clau diferent."
 
-#: DownloadGedcomWithURL.php:655
+#: DownloadGedcomWithURL.php:611
+#, php-format
+msgid ""
+"The folder settings could not be saved, because the folder \"%s\" does not "
+"exist."
+msgstr ""
+"La configuració de la carpeta no s'ha pogut desar perquè la carpeta \"%s\" "
+"no existeix."
+
+#: DownloadGedcomWithURL.php:640
+#, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "S'han actualitzat les preferències del mòdul \"%s\"."
 
-#: DownloadGedcomWithURL.php:751
-msgid "The preferences for the custom module \"%s\" were sucessfully updated to the new module version %s."
-msgstr "Les preferències del mòdul personalitzat \"%s\" s'han actualitzat correctament a la nova versió del mòdul %s."
+#: DownloadGedcomWithURL.php:736
+#, php-format
+msgid ""
+"The preferences for the custom module \"%s\" were sucessfully updated to the "
+"new module version %s."
+msgstr ""
+"Les preferències del mòdul personalitzat \"%s\" s'han actualitzat "
+"correctament a la nova versió del mòdul %s."
 
-#: DownloadGedcomWithURL.php:804
-msgid "The preferences for the custom module %s were imported from the earlier custom module version %s."
-msgstr "Les preferències del mòdul personalitzat %s es van importar de la versió anterior del mòdul personalitzat %s."
+#: DownloadGedcomWithURL.php:789
+#, php-format
+msgid ""
+"The preferences for the custom module %s were imported from the earlier "
+"custom module version %s."
+msgstr ""
+"Les preferències del mòdul personalitzat %s es van importar de la versió "
+"anterior del mòdul personalitzat %s."
 
-#: DownloadGedcomWithURL.php:831
-msgid "The preferences for the default GEDCOM filter were reset to \"none\", because the selected GEDCOM filter %s could not be found"
-msgstr "Les preferències del filtre GEDCOM predeterminat es van restablir a \"cap\", perquè no s'ha pogut trobar el filtre GEDCOM seleccionat %s"
+#: DownloadGedcomWithURL.php:816
+#, php-format
+msgid ""
+"The preferences for the default GEDCOM filter were reset to \"none\", "
+"because the selected GEDCOM filter %s could not be found"
+msgstr ""
+"Les preferències del filtre GEDCOM predeterminat es van restablir a \"cap\", "
+"perquè no s'ha pogut trobar el filtre GEDCOM seleccionat %s"
 
-#: DownloadGedcomWithURL.php:905
+#: DownloadGedcomWithURL.php:887
 msgid "A compilation error was detected in the following GEDCOM filter"
 msgstr "S'ha detectat un error de compilació al següent filtre GEDCOM"
 
-#: DownloadGedcomWithURL.php:906
+#: DownloadGedcomWithURL.php:888
 msgid "line"
 msgstr "línia"
 
-#: DownloadGedcomWithURL.php:906
+#: DownloadGedcomWithURL.php:888
 msgid "error message"
 msgstr "missatge d'error"
 
-#: DownloadGedcomWithURL.php:945
+#: DownloadGedcomWithURL.php:927
 msgid "No filter"
 msgstr "Sense filtre"
 
-#: DownloadGedcomWithURL.php:965 DownloadGedcomWithURL.php:1398
+#: DownloadGedcomWithURL.php:947 DownloadGedcomWithURL.php:1380
 msgid "The GEDCOM filter was not found"
 msgstr "No s'ha trobat el filtre GEDCOM"
 
-#: DownloadGedcomWithURL.php:1003
-msgid "The include hierarchy for GEDCOM filters exceeds the maximum level of %s includes."
-msgstr "La jerarquia d'inclusió per als filtres GEDCOM supera el nivell màxim de %s inclou."
+#: DownloadGedcomWithURL.php:985
+#, php-format
+msgid ""
+"The include hierarchy for GEDCOM filters exceeds the maximum level of %s "
+"includes."
+msgstr ""
+"La jerarquia d'inclusió per als filtres GEDCOM supera el nivell màxim de %s "
+"inclou."
 
-#: DownloadGedcomWithURL.php:1007
-msgid "The following GEDCOM filter might cause a loop in the include structure, because it was detected more than once in the include hierarchy"
-msgstr "El següent filtre GEDCOM pot provocar un bucle a l'estructura d'inclusió, perquè s'ha detectat més d'una vegada a la jerarquia d'inclusió"
+#: DownloadGedcomWithURL.php:989
+msgid ""
+"The following GEDCOM filter might cause a loop in the include structure, "
+"because it was detected more than once in the include hierarchy"
+msgstr ""
+"El següent filtre GEDCOM pot provocar un bucle a l'estructura d'inclusió, "
+"perquè s'ha detectat més d'una vegada a la jerarquia d'inclusió"
 
-#: DownloadGedcomWithURL.php:1010
+#: DownloadGedcomWithURL.php:992
 msgid "Please check the include structure of the selected GEDCOM filters."
-msgstr "Si us plau, comproveu l'estructura d'inclusió dels filtres GEDCOM seleccionats."
+msgstr ""
+"Si us plau, comproveu l'estructura d'inclusió dels filtres GEDCOM "
+"seleccionats."
 
-#: DownloadGedcomWithURL.php:1799 DownloadGedcomWithURL.php:1806
+#: DownloadGedcomWithURL.php:1645 DownloadGedcomWithURL.php:1706
+msgid "Invalid GEDBAS API key"
+msgstr "Clau d'API de GEDBAS no vàlida"
+
+#: DownloadGedcomWithURL.php:1649 DownloadGedcomWithURL.php:2044
+#, php-format
+msgid "GEDBAS Id does not contain an Integer: %s"
+msgstr "L'identificador de GEDBAS no conté un nombre enter: %s"
+
+#: DownloadGedcomWithURL.php:1653
+msgid "Invalid file name for GEDBAS upload"
+msgstr "Nom de fitxer no vàlid per a la càrrega de GEDBAS"
+
+#: DownloadGedcomWithURL.php:1833 DownloadGedcomWithURL.php:1840
 msgid "Tree not found"
 msgstr "Arbre no trobat"
 
-#: DownloadGedcomWithURL.php:1871 SelectionPage.php:77
+#: DownloadGedcomWithURL.php:1910 SelectionPage.php:77
 msgid "Internal module error: Neither GET nor POST request received."
 msgstr "Error intern del mòdul: no s'ha rebut cap sol·licitud GET ni POST."
 
-#: DownloadGedcomWithURL.php:1910
-msgid "No key provided. For checking of the access rights, it is mandatory to provide a key as parameter in the URL."
-msgstr "No s'ha proporcionat cap clau. Per comprovar els drets d'accés, és obligatori proporcionar una clau com a paràmetre a l'URL."
+#: DownloadGedcomWithURL.php:1947 DownloadGedcomWithURL.php:2223
+msgid "Error during communication with GEDBAS"
+msgstr "Error durant la comunicació amb GEDBAS"
 
-#: DownloadGedcomWithURL.php:1914
-msgid "No secret key defined. Please define secret key in the module settings: Control Panel / Modules / All Modules / "
-msgstr "No s'ha definit cap clau secreta. Definiu la clau secreta a la configuració del mòdul: Tauler de control / Mòduls / Tots els mòduls / "
+#: DownloadGedcomWithURL.php:1972 ExportGedcomPage.php:108
+msgid "Access denied. The user needs to be a manager of the tree."
+msgstr "Accés denegat. L'usuari ha de ser un administrador de l'arbre."
 
-#: DownloadGedcomWithURL.php:1918
+#: DownloadGedcomWithURL.php:1991
+msgid ""
+"No key provided. For checking of the access rights, it is mandatory to "
+"provide a key as parameter in the URL."
+msgstr ""
+"No s'ha proporcionat cap clau. Per comprovar els drets d'accés, és "
+"obligatori proporcionar una clau com a paràmetre a l'URL."
+
+#: DownloadGedcomWithURL.php:1995
+msgid ""
+"No secret key defined. Please define secret key in the module settings: "
+"Control Panel / Modules / All Modules / "
+msgstr ""
+"No s'ha definit cap clau secreta. Definiu la clau secreta a la configuració "
+"del mòdul: Tauler de control / Mòduls / Tots els mòduls / "
+
+#: DownloadGedcomWithURL.php:1999
 msgid "Key not accepted. Access denied."
 msgstr "Clau no acceptada. Accés denegat."
 
-#: DownloadGedcomWithURL.php:1922
+#: DownloadGedcomWithURL.php:2003
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr "La clau (xifrada) no s'accepta. Accés denegat."
 
-#: DownloadGedcomWithURL.php:1928
+#: DownloadGedcomWithURL.php:2009
 msgid "Privacy level not accepted"
 msgstr "Nivell de privadesa no acceptat"
 
-#: DownloadGedcomWithURL.php:1932
+#: DownloadGedcomWithURL.php:2013
 msgid "Export format not accepted"
 msgstr "Format d'exportació no acceptat"
 
-#: DownloadGedcomWithURL.php:1936
+#: DownloadGedcomWithURL.php:2017
 msgid "Encoding not accepted"
 msgstr "No s'accepta la codificació"
 
-#: DownloadGedcomWithURL.php:1940
+#: DownloadGedcomWithURL.php:2021
 msgid "Action not accepted"
 msgstr "Acció no acceptada"
 
-#: DownloadGedcomWithURL.php:1944
+#: DownloadGedcomWithURL.php:2025
 msgid "Line endings not accepted"
 msgstr "No s'accepten finals de línia"
 
-#: DownloadGedcomWithURL.php:1948
+#: DownloadGedcomWithURL.php:2029
 msgid "Time stamp setting not accepted"
 msgstr "No s'accepta la configuració de marca de temps"
 
-#: DownloadGedcomWithURL.php:1952
+#: DownloadGedcomWithURL.php:2033
 msgid "No file name provided for the requested GEDCOM conversion"
-msgstr "No s'ha proporcionat cap nom de fitxer per a la conversió GEDCOM sol·licitada"
+msgstr ""
+"No s'ha proporcionat cap nom de fitxer per a la conversió GEDCOM sol·licitada"
 
-#: DownloadGedcomWithURL.php:2067 DownloadGedcomWithURL.php:2127
-#: DownloadGedcomWithURL.php:2316
+#: DownloadGedcomWithURL.php:2041 DownloadGedcomWithURL.php:2044
+#: DownloadGedcomWithURL.php:2047
+msgid "Error during GEDBAS upload."
+msgstr "Error durant la càrrega de GEDBAS."
+
+#: DownloadGedcomWithURL.php:2041
+msgid "Empty GEDBAS API key."
+msgstr "Clau API GEDBAS buida."
+
+#: DownloadGedcomWithURL.php:2047
+msgid "No filename provided."
+msgstr "No s'ha proporcionat cap nom de fitxer."
+
+#: DownloadGedcomWithURL.php:2160 DownloadGedcomWithURL.php:2226
+#: DownloadGedcomWithURL.php:2402
+#, php-format
 msgid "The file %s could not be created."
 msgstr "No s'ha pogut crear el fitxer %s."
 
-#: DownloadGedcomWithURL.php:2071
+#: DownloadGedcomWithURL.php:2164
+#, php-format
 msgid "The family tree \"%s\" was sucessfully exported to: %s"
 msgstr "L'arbre genealògic \"%s\" s'ha exportat correctament a: %s"
 
-#: DownloadGedcomWithURL.php:2095
+#: DownloadGedcomWithURL.php:2178
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
-msgstr "No es permeten les sol·licituds d'URL remotes per desar fitxers GEDCOM al servidor."
+msgstr ""
+"No es permeten les sol·licituds d'URL remotes per desar fitxers GEDCOM al "
+"servidor."
 
-#: DownloadGedcomWithURL.php:2096 DownloadGedcomWithURL.php:2159
-#: DownloadGedcomWithURL.php:2177 DownloadGedcomWithURL.php:2323
-#: DownloadGedcomWithURL.php:2348
+#: DownloadGedcomWithURL.php:2179 DownloadGedcomWithURL.php:2197
+#: DownloadGedcomWithURL.php:2260 DownloadGedcomWithURL.php:2409
+#: DownloadGedcomWithURL.php:2463
 msgid "Please check the module settings in the control panel."
 msgstr "Comproveu la configuració del mòdul al tauler de control."
 
-#: DownloadGedcomWithURL.php:2176
-msgid "Remote URL requests to download GEDCOM files from the server are not allowed."
-msgstr "No es permeten les sol·licituds d'URL remotes per descarregar fitxers GEDCOM des del servidor."
+#: DownloadGedcomWithURL.php:2196
+msgid ""
+"Remote URL requests to download GEDCOM files from the server are not allowed."
+msgstr ""
+"No es permeten les sol·licituds d'URL remotes per descarregar fitxers GEDCOM "
+"des del servidor."
 
-#: DownloadGedcomWithURL.php:2198 DownloadGedcomWithURL.php:2222
+#: DownloadGedcomWithURL.php:2248
+#, php-format
+msgid "The family tree \"%s\" was sucessfully uploaded to GEDBAS"
+msgstr "L'arbre genealògic \"%s\" s'ha pujat correctament a GEDBAS"
+
+#: DownloadGedcomWithURL.php:2259
+msgid "Remote URL requests to upload GEDCOM files to GEDBAS are disabled."
+msgstr ""
+"Les sol·licituds d'URL remotes per carregar fitxers GEDCOM a GEDBAS estan "
+"desactivades."
+
+#: DownloadGedcomWithURL.php:2282 DownloadGedcomWithURL.php:2306
+#, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "No es pot llegir el fitxer \"%s\"."
 
-#: DownloadGedcomWithURL.php:2236
+#: DownloadGedcomWithURL.php:2321
+#, php-format
 msgid "No data imported from file \"%s\". The file might be empty."
-msgstr "No s'ha importat cap dada del fitxer \"%s\". És possible que el fitxer estigui buit."
+msgstr ""
+"No s'ha importat cap dada del fitxer \"%s\". És possible que el fitxer "
+"estigui buit."
 
-#: DownloadGedcomWithURL.php:2240
+#: DownloadGedcomWithURL.php:2325
+#, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
-msgstr "El fitxer \"%s\" s'ha carregat correctament per a l'arbre genealògic \"%s\""
+msgstr ""
+"El fitxer \"%s\" s'ha carregat correctament per a l'arbre genealògic \"%s\""
 
-#: DownloadGedcomWithURL.php:2289
+#: DownloadGedcomWithURL.php:2375
+#, php-format
 msgid "The GEDCOM file \"%s\" was successfully converted to: %s"
 msgstr "El fitxer GEDCOM \"%s\" s'ha convertit correctament a: %s"
 
-#: DownloadGedcomWithURL.php:2322
-msgid "Remote URL requests to convert GEDCOM files on the server are not allowed."
-msgstr "No es permeten les sol·licituds d'URL remotes per convertir fitxers GEDCOM al servidor."
+#: DownloadGedcomWithURL.php:2408
+msgid ""
+"Remote URL requests to convert GEDCOM files on the server are not allowed."
+msgstr ""
+"No es permeten les sol·licituds d'URL remotes per convertir fitxers GEDCOM "
+"al servidor."
 
-#: DownloadGedcomWithURL.php:2347
-msgid "Remote URL requests to upload GEDCOM files to the server are not allowed."
-msgstr "No es permeten les sol·licituds d'URL remotes per carregar fitxers GEDCOM al servidor."
+#: DownloadGedcomWithURL.php:2445
+msgid "The tree was successfully imported into the database."
+msgstr "L'arbre s'ha importat correctament a la base de dades."
 
-#: ExportGedcomPage.php:123
+#: DownloadGedcomWithURL.php:2462
+msgid ""
+"Remote URL requests to upload GEDCOM files to the server are not allowed."
+msgstr ""
+"No es permeten les sol·licituds d'URL remotes per carregar fitxers GEDCOM al "
+"servidor."
+
+#: DownloadGedcomWithURL.php:2469
+msgid "Reached end of request handle without proper response"
+msgstr ""
+"S'ha arribat al final de l'identificador de sol·licitud sense una resposta "
+"adequada"
+
+#: ExportGedcomPage.php:128
 msgid "Extended GEDCOM Export"
 msgstr "Exportació GEDCOM ampliada"
 
@@ -255,12 +448,24 @@ msgid "Error during a regular expression replacement."
 msgstr "Error durant la substitució d'una expressió regular."
 
 #: FilteredGedcomExportService.php:1167
-msgid "Fatal error: Too many iterations while removing empty and unlinked records."
-msgstr "Error fatal: hi ha massa iteracions mentre s'eliminen els registres buits i sense enllaçar."
+msgid ""
+"Fatal error: Too many iterations while removing empty and unlinked records."
+msgstr ""
+"Error fatal: hi ha massa iteracions mentre s'eliminen els registres buits i "
+"sense enllaçar."
 
-#: ImportGedcomPage.php:119
+#: ImportGedcomPage.php:121
 msgid "Extended GEDCOM Import"
 msgstr "Importació GEDCOM ampliada"
+
+#: SelectionPage.php:96
+#, php-format
+msgid ""
+"The current user does not have sufficient rights to access trees with the "
+"custom module %s."
+msgstr ""
+"L'usuari actual no té prou drets per accedir als arbres amb el mòdul "
+"personalitzat %s."
 
 #: SelectionPage.php:106
 msgid "Extended GEDCOM Import/Export"
@@ -281,6 +486,10 @@ msgstr "Exportació de naixement, matrimoni, mort"
 #: resources/filter/CombinedGedcomFilter.php:24
 msgid "Combined GEDCOM filter"
 msgstr "Filtre GEDCOM combinat"
+
+#: resources/filter/ConvertOldCensusMarkupGedcomFilter.php:37
+msgid "Convert webtrees 1.7 census markup to markdown"
+msgstr "Converteix el marcatge censal d'arbres web 1.7 a markdown"
 
 #: resources/filter/ExampleGedcomFilter.php:55
 msgid "Example GEDCOM filter"
@@ -315,8 +524,12 @@ msgid "Reduce dates to years"
 msgstr "Redueix les dates a anys"
 
 #: resources/filter/ReduceMinimalIndividualsGedcomFilter.php:28
-msgid "Reduce minimal INDI records (with SEX, FAMC, FAMS or less) to empty INDI records"
-msgstr "Reduïu els registres INDI mínims (amb SEX, FAMC, FAMS o menys) per buidar els registres INDI"
+msgid ""
+"Reduce minimal INDI records (with SEX, FAMC, FAMS or less) to empty INDI "
+"records"
+msgstr ""
+"Reduïu els registres INDI mínims (amb SEX, FAMC, FAMS o menys) per buidar "
+"els registres INDI"
 
 #: resources/filter/RemoveAllMediaObjectsGedcomFilter.php:41
 msgid "Remove all media objects"
@@ -354,9 +567,14 @@ msgstr "Elimina les restriccions (és a dir, etiquetes RESN)"
 msgid "Remove ToDo data (i.e. _TODO structures)"
 msgstr "Suprimeix les dades ToDo (és a dir, estructures _TODO)"
 
+#: resources/filter/RemoveVoidReferencesGedcomFilter.php:57
+msgid "Remove void references"
+msgstr "Suprimir les referències buides"
+
 #: resources/filter/RemoveWebtreesUserGedcomFilter.php:33
 msgid "Remove webtrees user data (i.e. _WT_USER tags)"
-msgstr "Suprimeix les dades d'usuari de webtrees (és a dir, etiquetes _WT_USER)"
+msgstr ""
+"Suprimeix les dades d'usuari de webtrees (és a dir, etiquetes _WT_USER)"
 
 #: resources/filter/ReplaceXrefsInNotesAndText.php:60
 msgid "Replace XREFs by names in notes and text"
@@ -382,7 +600,7 @@ msgstr "Un fitxer al servidor"
 msgid "Conversion settings"
 msgstr "Configuració de conversió"
 
-#: resources/views/convert.phtml:128 resources/views/export.phtml:118
+#: resources/views/convert.phtml:128 resources/views/export.phtml:174
 msgid "Other format (i.e. use extension of filename)"
 msgstr "Un altre format (és a dir, utilitzeu l'extensió del nom del fitxer)"
 
@@ -390,39 +608,46 @@ msgstr "Un altre format (és a dir, utilitzeu l'extensió del nom del fitxer)"
 msgid "Filename (converted)"
 msgstr "Nom del fitxer (convertit)"
 
-#: resources/views/convert.phtml:145 resources/views/export.phtml:135
-msgid "The file extension will be added (or overruled) according to the selected format. Select \"Other format\" to use the extension, which is provided within the filename."
-msgstr "L'extensió del fitxer s'afegirà (o anul·larà) segons el format seleccionat. Seleccioneu \"Altre format\" per utilitzar l'extensió, que es proporciona al nom del fitxer."
+#: resources/views/convert.phtml:145 resources/views/export.phtml:191
+msgid ""
+"The file extension will be added (or overruled) according to the selected "
+"format. Select \"Other format\" to use the extension, which is provided "
+"within the filename."
+msgstr ""
+"L'extensió del fitxer s'afegirà (o anul·larà) segons el format seleccionat. "
+"Seleccioneu \"Altre format\" per utilitzar l'extensió, que es proporciona al "
+"nom del fitxer."
 
-#: resources/views/convert.phtml:183 resources/views/export.phtml:188
+#: resources/views/convert.phtml:183 resources/views/export.phtml:244
 msgid "Time stamp"
 msgstr "Segell de temps"
 
-#: resources/views/convert.phtml:188 resources/views/export.phtml:193
+#: resources/views/convert.phtml:188 resources/views/export.phtml:249
 #: resources/views/settings.phtml:429
 msgid "No time stamp"
 msgstr "Sense marca de temps"
 
-#: resources/views/convert.phtml:189 resources/views/export.phtml:194
+#: resources/views/convert.phtml:189 resources/views/export.phtml:250
 #: resources/views/settings.phtml:430
 msgid "Prefix time stamp"
 msgstr "Prefix marca de temps"
 
-#: resources/views/convert.phtml:190 resources/views/export.phtml:195
+#: resources/views/convert.phtml:190 resources/views/export.phtml:251
 #: resources/views/settings.phtml:431
 msgid "Postfix time stamp"
 msgstr "Segell de temps Postfix"
 
-#: resources/views/convert.phtml:198 resources/views/export.phtml:245
+#: resources/views/convert.phtml:198 resources/views/export.phtml:335
 #: resources/views/import.phtml:138
 msgid "Select GEDCOM filters"
 msgstr "Seleccioneu els filtres GEDCOM"
 
 #: resources/views/convert.phtml:202 resources/views/convert.phtml:214
-#: resources/views/convert.phtml:226 resources/views/export.phtml:249
-#: resources/views/export.phtml:261 resources/views/export.phtml:273
+#: resources/views/convert.phtml:226 resources/views/export.phtml:339
+#: resources/views/export.phtml:351 resources/views/export.phtml:363
 #: resources/views/import.phtml:142 resources/views/import.phtml:154
 #: resources/views/import.phtml:166
+#, php-format
 msgid "Gedcom filter %s"
 msgstr "Filtre Gedcom %s"
 
@@ -430,52 +655,137 @@ msgstr "Filtre Gedcom %s"
 msgid "Convert GEDCOM file"
 msgstr "Converteix el fitxer GEDCOM"
 
-#: resources/views/export.phtml:203
-msgid "Export action"
-msgstr "Acció d'exportació"
-
-#: resources/views/export.phtml:208
-msgid "Action"
-msgstr "Acció"
-
-#: resources/views/export.phtml:49
+#: resources/views/export.phtml:57
 msgid "Save on the webtrees server"
 msgstr "Desa al servidor webtrees"
 
-#: resources/views/export.phtml:50
+#: resources/views/export.phtml:58
 msgid "Both, i.e. download and save in parallel"
 msgstr "Tots dos, és a dir, descarregueu i deseu en paral·lel"
 
+#: resources/views/export.phtml:67
+msgid "Create new GEDBAS database"
+msgstr "Crea una nova base de dades GEDBAS"
+
+#: resources/views/export.phtml:70
+msgid "Upload to GEDBAS"
+msgstr "Puja a GEDBAS"
+
+#: resources/views/export.phtml:102
+msgid "Could not retrieve database information from GEDBAS"
+msgstr "No s'ha pogut recuperar la informació de la base de dades de GEDBAS"
+
+#: resources/views/export.phtml:259
+msgid "Export action"
+msgstr "Acció d'exportació"
+
+#: resources/views/export.phtml:264
+msgid "Action"
+msgstr "Acció"
+
+#: resources/views/export.phtml:275 resources/views/export.phtml:281
+msgid "GEDBAS API key"
+msgstr "Clau de l'API de GEDBAS"
+
+#: resources/views/export.phtml:280
+msgid ""
+"GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS "
+"account. You can identify your individual key with the following link"
+msgstr ""
+"Clau de l'API de GEDBAS, que permet carregar fitxers GEDCOM per a un compte "
+"GEDBAS determinat. Podeu identificar la vostra clau individual amb l'enllaç "
+"següent"
+
+#: resources/views/export.phtml:289
+msgid "GEDBAS database Id"
+msgstr "Identificador de la base de dades GEDBAS"
+
+#: resources/views/export.phtml:296
+msgid ""
+"Select a GEDBAS database, to which the GEDCOM file shall be uploaded or "
+"create a new database."
+msgstr ""
+"Seleccioneu una base de dades GEDBAS a la qual es carregarà el fitxer GEDCOM "
+"o creeu-ne una de nova."
+
+#: resources/views/export.phtml:302
+msgid "GEDBAS database title"
+msgstr "Títol de la base de dades GEDBAS"
+
+#: resources/views/export.phtml:310
+msgid ""
+"By default, the GEDBAS database title is generated from the tree title. "
+"Modify the title according to your needs."
+msgstr ""
+"Per defecte, el títol de la base de dades GEDBAS es genera a partir del "
+"títol de l'arbre. Modifiqueu el títol segons les vostres necessitats."
+
+#: resources/views/export.phtml:317
+msgid "GEDBAS database description"
+msgstr "Descripció de la base de dades GEDBAS"
+
+#: resources/views/export.phtml:325
+msgid ""
+"By default, the GEDBAS database description is generated from HEAD:NOTE or "
+"from the tree title. Modify the description according to your needs."
+msgstr ""
+"Per defecte, la descripció de la base de dades GEDBAS es genera a partir de "
+"HEAD:NOTE o a partir del títol de l'arbre. Modifiqueu la descripció segons "
+"les vostres necessitats."
+
+#: resources/views/export.phtml:379
+msgid "Transfer GEDCOM file"
+msgstr "Transfereix el fitxer GEDCOM"
+
 #: resources/views/import.phtml:37
-msgid "Any import will delete all the genealogy data of the tree in the database and replace it with data from a GEDCOM file."
-msgstr "Qualsevol importació suprimirà totes les dades de genealogia de l'arbre a la base de dades i les substituirà per dades d'un fitxer GEDCOM."
+msgid ""
+"Any import will delete all the genealogy data of the tree in the database "
+"and replace it with data from a GEDCOM file."
+msgstr ""
+"Qualsevol importació suprimirà totes les dades de genealogia de l'arbre a la "
+"base de dades i les substituirà per dades d'un fitxer GEDCOM."
 
 #: resources/views/import.phtml:87
 msgid "Settings for GEDCOM Import"
 msgstr "Configuració per a la importació de GEDCOM"
 
 #: resources/views/import.phtml:179
-msgid "Are you absolutely sure you want to import the selected file into the specified tree? Please be aware that importing the file will delete all existing data in the tree without possibility to recover! Therefore, also consider to backup the webtrees database before importing new files."
-msgstr "Esteu absolutament segur que voleu importar el fitxer seleccionat a l'arbre especificat? Si us plau, tingueu en compte que la importació del fitxer suprimirà totes les dades existents a l'arbre sense possibilitat de recuperació! Per tant, també considereu fer una còpia de seguretat de la base de dades dels arbres web abans d'importar fitxers nous."
+msgid ""
+"Are you absolutely sure you want to import the selected file into the "
+"specified tree? Please be aware that importing the file will delete all "
+"existing data in the tree without possibility to recover! Therefore, also "
+"consider to backup the webtrees database before importing new files."
+msgstr ""
+"Esteu absolutament segur que voleu importar el fitxer seleccionat a l'arbre "
+"especificat? Si us plau, tingueu en compte que la importació del fitxer "
+"suprimirà totes les dades existents a l'arbre sense possibilitat de "
+"recuperació! Per tant, també considereu fer una còpia de seguretat de la "
+"base de dades dels arbres web abans d'importar fitxers nous."
 
 #: resources/views/import.phtml:181
 msgid "Import GEDCOM file"
 msgstr "Importa el fitxer GEDCOM"
 
-#: resources/views/options.phtml:23 resources/views/selection.phtml:106
+#: resources/views/options.phtml:23 resources/views/selection.phtml:114
 msgid "Datafix using GEDCOM filters"
 msgstr "Correcció de dades mitjançant filtres GEDCOM"
 
 #: resources/views/options.phtml:26
-msgid "You can select up to 3 GEDCOM filters, which will be applied as a data fix."
-msgstr "Podeu seleccionar fins a 3 filtres GEDCOM, que s'aplicaran com a correcció de dades."
+msgid ""
+"You can select up to 3 GEDCOM filters, which will be applied as a data fix."
+msgstr ""
+"Podeu seleccionar fins a 3 filtres GEDCOM, que s'aplicaran com a correcció "
+"de dades."
 
 #: resources/views/options.phtml:29
 msgid "It is strongly recommended to backup your tree or your database first."
-msgstr "És molt recomanable fer una còpia de seguretat de l'arbre o de la base de dades primer."
+msgstr ""
+"És molt recomanable fer una còpia de seguretat de l'arbre o de la base de "
+"dades primer."
 
 #: resources/views/options.phtml:33 resources/views/options.phtml:48
 #: resources/views/options.phtml:63
+#, php-format
 msgid "GEDCOM filter %s"
 msgstr "Filtre GEDCOM %s"
 
@@ -484,13 +794,21 @@ msgstr "Filtre GEDCOM %s"
 msgid "Select a GEDCOM filter"
 msgstr "Seleccioneu un filtre GEDCOM"
 
-#: resources/views/selection.phtml:39
+#: resources/views/selection.phtml:41
 msgid "Select a tree"
 msgstr "Seleccioneu un arbre"
 
-#: resources/views/selection.phtml:57
+#: resources/views/selection.phtml:59
 msgid "GEDCOM Import"
 msgstr "Importació GEDCOM"
+
+#: resources/views/selection.phtml:76
+msgid "GEDCOM Export: Tree"
+msgstr "GEDCOM Exportació: Arbre"
+
+#: resources/views/selection.phtml:91
+msgid "GEDCOM Export: Clippings cart"
+msgstr "GEDCOM Exportació: Carretó de retalls"
 
 #: resources/views/settings.phtml:75
 msgid "Control panel"
@@ -513,8 +831,49 @@ msgid "Show menu item in list menu"
 msgstr "Mostra l'element del menú al menú llista"
 
 #: resources/views/settings.phtml:103
-msgid "If this option is selected, a link to the %s page will be shown as a list menu item."
-msgstr "Si se selecciona aquesta opció, es mostrarà un enllaç a la pàgina %s com a element de menú de llista."
+#, php-format
+msgid ""
+"If this option is selected, a link to the %s page will be shown as a list "
+"menu item."
+msgstr ""
+"Si se selecciona aquesta opció, es mostrarà un enllaç a la pàgina %s com a "
+"element de menú de llista."
+
+#: resources/views/settings.phtml:110
+msgid "Settings for GEDBAS"
+msgstr "Configuració per a GEDBAS"
+
+#: resources/views/settings.phtml:115
+msgid "Allow GEDBAS upload"
+msgstr "Permet la càrrega de GEDBAS"
+
+#: resources/views/settings.phtml:120
+msgid ""
+"If this option is selected, an upload of GEDCOM files to the GEDBAS database "
+"will be enabled. This allows to select \"GEDBAS upload\" as an export action "
+"in the extended GEDCOM export."
+msgstr ""
+"Si es selecciona aquesta opció, s'habilitarà una càrrega de fitxers GEDCOM a "
+"la base de dades GEDBAS. Això permet seleccionar \"Càrrega GEDBAS\" com a "
+"acció d'exportació a l'exportació GEDCOM ampliada."
+
+#: resources/views/settings.phtml:128
+msgid "GEDBAS description"
+msgstr "Descripció de GEDBAS"
+
+#: resources/views/settings.phtml:131
+msgid "Use note from GEDCOM header (HEAD:NOTE)"
+msgstr "Utilitza la nota de la capçalera GEDCOM (HEAD:NOTE)"
+
+#: resources/views/settings.phtml:133
+msgid ""
+"If this option is selected, a note included in the GEDCOM header will be "
+"used as the tree description during a GEDBAS upload. Otherwise, the title of "
+"the tree will be used."
+msgstr ""
+"Si se selecciona aquesta opció, s'utilitzarà una nota inclosa a la capçalera "
+"GEDCOM com a descripció de l'arbre durant una càrrega GEDBAS. En cas "
+"contrari, s'utilitzarà el títol de l'arbre."
 
 #: resources/views/settings.phtml:140
 msgid "URL for Remote Requests"
@@ -533,12 +892,20 @@ msgid "Settings for Remote Requests via URL"
 msgstr "Configuració de sol·licituds remotes mitjançant URL"
 
 #: resources/views/settings.phtml:167
-msgid "Currently, remote downloading of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation."
-msgstr "Actualment, es permet la descàrrega remota de fitxers GEDCOM. Tingueu en compte que totes les persones amb accés a la clau d'autorització poden descarregar/penjar/desar fitxers GEDCOM des de/a la instal·lació de l'arbre web."
+msgid ""
+"Currently, remote downloading of GEDCOM files is allowed. Please note that "
+"everyone with access to the authorization key, can download/upload/save "
+"GEDCOM files from/to your webtrees installation."
+msgstr ""
+"Actualment, es permet la descàrrega remota de fitxers GEDCOM. Tingueu en "
+"compte que totes les persones amb accés a la clau d'autorització poden "
+"descarregar/penjar/desar fitxers GEDCOM des de/a la instal·lació de l'arbre "
+"web."
 
 #: resources/views/settings.phtml:173
 msgid "Allow remote requests via URL to download GEDCOM files"
-msgstr "Permet sol·licituds remotes mitjançant URL per descarregar fitxers GEDCOM"
+msgstr ""
+"Permet sol·licituds remotes mitjançant URL per descarregar fitxers GEDCOM"
 
 #: resources/views/settings.phtml:176 resources/views/settings.phtml:189
 #: resources/views/settings.phtml:207 resources/views/settings.phtml:220
@@ -547,64 +914,129 @@ msgid "Allow"
 msgstr "Permetre"
 
 #: resources/views/settings.phtml:178
-msgid "By selecting this option, it is possible to activate remote downloads by calling an URL."
-msgstr "En seleccionar aquesta opció, és possible activar descàrregues remotes trucant a una URL."
+msgid ""
+"By selecting this option, it is possible to activate remote downloads by "
+"calling an URL."
+msgstr ""
+"En seleccionar aquesta opció, és possible activar descàrregues remotes "
+"trucant a una URL."
 
 #: resources/views/settings.phtml:186
 msgid "Allow remote requests via URL to save GEDCOM files to the server"
-msgstr "Permet sol·licituds remotes mitjançant URL per desar fitxers GEDCOM al servidor"
+msgstr ""
+"Permet sol·licituds remotes mitjançant URL per desar fitxers GEDCOM al "
+"servidor"
 
 #: resources/views/settings.phtml:191
-msgid "By selecting this option, it is possible to activate remote requests to save GEDCOM files on the server via calling an URL."
-msgstr "En seleccionar aquesta opció, és possible activar sol·licituds remotes per desar fitxers GEDCOM al servidor mitjançant una trucada a una URL."
+msgid ""
+"By selecting this option, it is possible to activate remote requests to save "
+"GEDCOM files on the server via calling an URL."
+msgstr ""
+"En seleccionar aquesta opció, és possible activar sol·licituds remotes per "
+"desar fitxers GEDCOM al servidor mitjançant una trucada a una URL."
 
 #: resources/views/settings.phtml:198
-msgid "Currently, remote uploading of GEDCOM files is allowed. Please note that everyone with access to the authorization key, can download/upload/save GEDCOM files from/to your webtrees installation."
-msgstr "Actualment, es permet la càrrega remota de fitxers GEDCOM. Tingueu en compte que totes les persones amb accés a la clau d'autorització poden descarregar/penjar/desar fitxers GEDCOM des de/a la instal·lació de l'arbre web."
+msgid ""
+"Currently, remote uploading of GEDCOM files is allowed. Please note that "
+"everyone with access to the authorization key, can download/upload/save "
+"GEDCOM files from/to your webtrees installation."
+msgstr ""
+"Actualment, es permet la càrrega remota de fitxers GEDCOM. Tingueu en compte "
+"que totes les persones amb accés a la clau d'autorització poden descarregar/"
+"penjar/desar fitxers GEDCOM des de/a la instal·lació de l'arbre web."
 
 #: resources/views/settings.phtml:204
 msgid "Allow remote requests via URL to upload GEDCOM files"
 msgstr "Permet sol·licituds remotes mitjançant URL per penjar fitxers GEDCOM"
 
 #: resources/views/settings.phtml:209
-msgid "By selecting this option, it is possible to activate remote uploads via calling an URL."
-msgstr "En seleccionar aquesta opció, és possible activar les càrregues remotes trucant a una URL."
+msgid ""
+"By selecting this option, it is possible to activate remote uploads via "
+"calling an URL."
+msgstr ""
+"En seleccionar aquesta opció, és possible activar les càrregues remotes "
+"trucant a una URL."
 
 #: resources/views/settings.phtml:217
 msgid "Allow remote requests via URL to convert GEDCOM files on the server"
-msgstr "Permet sol·licituds remotes mitjançant URL per convertir fitxers GEDCOM al servidor"
+msgstr ""
+"Permet sol·licituds remotes mitjançant URL per convertir fitxers GEDCOM al "
+"servidor"
 
 #: resources/views/settings.phtml:222
-msgid "By selecting this option, it is possible to activate remote conversion of GEDCOM files on the server via calling an URL."
-msgstr "En seleccionar aquesta opció, és possible activar la conversió remota dels fitxers GEDCOM al servidor mitjançant una trucada a una URL."
+msgid ""
+"By selecting this option, it is possible to activate remote conversion of "
+"GEDCOM files on the server via calling an URL."
+msgstr ""
+"En seleccionar aquesta opció, és possible activar la conversió remota dels "
+"fitxers GEDCOM al servidor mitjançant una trucada a una URL."
+
+#: resources/views/settings.phtml:230
+msgid "Allow remote requests via URL to upload GEDCOM files to GEDBAS"
+msgstr ""
+"Permet sol·licituds remotes via URL per carregar fitxers GEDCOM a GEDBAS"
+
+#: resources/views/settings.phtml:235
+msgid ""
+"By selecting this option, it is possible to remotely trigger an upload of "
+"GEDCOM files to GEDBAS via calling an URL."
+msgstr ""
+"Si seleccioneu aquesta opció, és possible activar remotament una càrrega de "
+"fitxers GEDCOM a GEDBAS mitjançant una crida a una URL."
 
 #: resources/views/settings.phtml:242
 msgid "Settings for the Authorization Key"
 msgstr "Configuració de la clau d'autorització"
 
 #: resources/views/settings.phtml:244
-msgid "An authorization key is needed if remote requests via URL shall be used."
-msgstr "Es necessita una clau d'autorització si s'utilitzen sol·licituds remotes mitjançant URL."
+msgid ""
+"An authorization key is needed if remote requests via URL shall be used."
+msgstr ""
+"Es necessita una clau d'autorització si s'utilitzen sol·licituds remotes "
+"mitjançant URL."
 
 #: resources/views/settings.phtml:248
-msgid "Currently, webtrees does not use the HTTPS protocol. It is urgently recommended to use HTTPS in order to ensure the encryption of the authorization key within URL remote requests. HTTPS can be activated by changing \"base_url\" in the \"config.ini.php\". Currently, \"base_url\" does not start with \"https://\"."
-msgstr "Actualment, webtrees no utilitza el protocol HTTPS. Es recomana amb urgència utilitzar HTTPS per garantir el xifratge de la clau d'autorització a les sol·licituds remotes d'URL. HTTPS es pot activar canviant \"base_url\" a \"config.ini.php\". Actualment, \"base_url\" no comença per \"https://\"."
+msgid ""
+"Currently, webtrees does not use the HTTPS protocol. It is urgently "
+"recommended to use HTTPS in order to ensure the encryption of the "
+"authorization key within URL remote requests. HTTPS can be activated by "
+"changing \"base_url\" in the \"config.ini.php\". Currently, \"base_url\" "
+"does not start with \"https://\"."
+msgstr ""
+"Actualment, webtrees no utilitza el protocol HTTPS. Es recomana amb urgència "
+"utilitzar HTTPS per garantir el xifratge de la clau d'autorització a les "
+"sol·licituds remotes d'URL. HTTPS es pot activar canviant \"base_url\" a "
+"\"config.ini.php\". Actualment, \"base_url\" no comença per \"https://\"."
 
 #: resources/views/settings.phtml:253
-msgid "Currently, the authorization key is not encrypted. This option is less secure and should only be used in local environments with limited users. Otherwise, please activate encryption of the authorization key."
-msgstr "Actualment, la clau d'autorització no està xifrada. Aquesta opció és menys segura i només s'ha d'utilitzar en entorns locals amb usuaris limitats. En cas contrari, activeu el xifratge de la clau d'autorització."
+msgid ""
+"Currently, the authorization key is not encrypted. This option is less "
+"secure and should only be used in local environments with limited users. "
+"Otherwise, please activate encryption of the authorization key."
+msgstr ""
+"Actualment, la clau d'autorització no està xifrada. Aquesta opció és menys "
+"segura i només s'ha d'utilitzar en entorns locals amb usuaris limitats. En "
+"cas contrari, activeu el xifratge de la clau d'autorització."
 
 #: resources/views/settings.phtml:258
-msgid "One of the options remote download/upload/save/convert is activated and the authorization key is empty or not available"
-msgstr "Una de les opcions descàrrega/carrega/desa/conversió remota està activada i la clau d'autorització està buida o no està disponible"
+msgid ""
+"One of the options remote download/upload/save/convert is activated and the "
+"authorization key is empty or not available"
+msgstr ""
+"Una de les opcions descàrrega/carrega/desa/conversió remota està activada i "
+"la clau d'autorització està buida o no està disponible"
 
 #: resources/views/settings.phtml:262
 msgid "Current authorization key"
 msgstr "Clau d'autorització actual"
 
 #: resources/views/settings.phtml:265
-msgid "The authorization key cannot be shown, because encryption is activated. If you forgot the key, you have to create a new key."
-msgstr "La clau d'autorització no es pot mostrar perquè el xifratge està activat. Si heu oblidat la clau, heu de crear-ne una nova."
+msgid ""
+"The authorization key cannot be shown, because encryption is activated. If "
+"you forgot the key, you have to create a new key."
+msgstr ""
+"La clau d'autorització no es pot mostrar perquè el xifratge està activat. Si "
+"heu oblidat la clau, heu de crear-ne una nova."
 
 #: resources/views/settings.phtml:267
 msgid "Authorization key has not been set yet"
@@ -623,24 +1055,55 @@ msgid "Activate"
 msgstr "Activar"
 
 #: resources/views/settings.phtml:291
-msgid "The encryption of the authorization key is more secure, because the authorization key is not visible to anyone and also encrypted in the database. However, the authorization key is not readible any more (e.g. for other administrators) and cannot be recovered if it is forgotten."
-msgstr "El xifratge de la clau d'autorització és més segur, perquè la clau d'autorització no és visible per a ningú i també està xifrada a la base de dades. Tanmateix, la clau d'autorització ja no és llegible (per exemple, per a altres administradors) i no es pot recuperar si s'oblida."
+msgid ""
+"The encryption of the authorization key is more secure, because the "
+"authorization key is not visible to anyone and also encrypted in the "
+"database. However, the authorization key is not readible any more (e.g. for "
+"other administrators) and cannot be recovered if it is forgotten."
+msgstr ""
+"El xifratge de la clau d'autorització és més segur, perquè la clau "
+"d'autorització no és visible per a ningú i també està xifrada a la base de "
+"dades. Tanmateix, la clau d'autorització ja no és llegible (per exemple, per "
+"a altres administradors) i no es pot recuperar si s'oblida."
 
 #: resources/views/settings.phtml:298
 msgid "Setting for the Import/Export Folder on the webtrees Server"
-msgstr "Configuració per a la carpeta d'importació/exportació al servidor webtrees"
+msgstr ""
+"Configuració per a la carpeta d'importació/exportació al servidor webtrees"
 
 #: resources/views/settings.phtml:302
 msgid "Folder name"
 msgstr "Nom de la carpeta"
 
 #: resources/views/settings.phtml:315
-msgid "Currently, the folder to save is not a sub-directory of the webtrees data folder. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to this folder. If you choose a folder outside of the webtrees data folder, the saved GEDCOM file might be unprotected against unauthorized access."
-msgstr "Actualment, la carpeta a desar no és un subdirectori de la carpeta de dades dels arbres web. És molt recomanable utilitzar la carpeta de dades webtrees o un subdirectori, perquè els webtrees protegeix l'accés no autoritzat a aquesta carpeta. Si trieu una carpeta fora de la carpeta de dades dels arbres web, és possible que el fitxer GEDCOM desat no estigui protegit contra l'accés no autoritzat."
+msgid ""
+"Currently, the folder to save is not a sub-directory of the webtrees data "
+"folder. It is highly recommended to use the webtrees data folder or a sub-"
+"directory, because webtrees protects unauthorized access to this folder. If "
+"you choose a folder outside of the webtrees data folder, the saved GEDCOM "
+"file might be unprotected against unauthorized access."
+msgstr ""
+"Actualment, la carpeta a desar no és un subdirectori de la carpeta de dades "
+"dels arbres web. És molt recomanable utilitzar la carpeta de dades webtrees "
+"o un subdirectori, perquè els webtrees protegeix l'accés no autoritzat a "
+"aquesta carpeta. Si trieu una carpeta fora de la carpeta de dades dels "
+"arbres web, és possible que el fitxer GEDCOM desat no estigui protegit "
+"contra l'accés no autoritzat."
 
 #: resources/views/settings.phtml:321
-msgid "Relative path to a folder within the webtrees root path, where GEDCOM import/exports are saved. It is highly recommended to use the webtrees data folder or a sub-directory, because webtrees protects unauthorized access to the data folder. The current settings (Control panel / Website preferences) for the webtrees root and data folder are:"
-msgstr "Camí relatiu a una carpeta dins del camí arrel dels arbres web, on es desaran les importacions/exportacions de GEDCOM. És molt recomanable utilitzar la carpeta de dades webtrees o un subdirectori, perquè webtrees protegeix l'accés no autoritzat a la carpeta de dades. La configuració actual (tauler de control / preferències del lloc web) per a l'arrel dels arbres web i la carpeta de dades són:"
+msgid ""
+"Relative path to a folder within the webtrees root path, where GEDCOM import/"
+"exports are saved. It is highly recommended to use the webtrees data folder "
+"or a sub-directory, because webtrees protects unauthorized access to the "
+"data folder. The current settings (Control panel / Website preferences) for "
+"the webtrees root and data folder are:"
+msgstr ""
+"Camí relatiu a una carpeta dins del camí arrel dels arbres web, on es "
+"desaran les importacions/exportacions de GEDCOM. És molt recomanable "
+"utilitzar la carpeta de dades webtrees o un subdirectori, perquè webtrees "
+"protegeix l'accés no autoritzat a la carpeta de dades. La configuració "
+"actual (tauler de control / preferències del lloc web) per a l'arrel dels "
+"arbres web i la carpeta de dades són:"
 
 #: resources/views/settings.phtml:323
 msgid "webtrees root folder"
@@ -663,20 +1126,38 @@ msgid "Default Settings for Gedcom Export"
 msgstr "Configuració per defecte per a Gedcom Export"
 
 #: resources/views/settings.phtml:340
-msgid "These settings are used as default values for exports, e.g. if certain parameter values are not provided within the URL. By specifying the default values, the URLs can be simplified. In the most extreme case, it is sufficient to provide the tree and the authorization key parameter only."
-msgstr "Aquests paràmetres s'utilitzen com a valors per defecte per a les exportacions, p. si no es proporcionen determinats valors de paràmetre a l'URL. Si especifiqueu els valors predeterminats, els URL es poden simplificar. En el cas més extrem, n'hi ha prou amb proporcionar només l'arbre i el paràmetre de la clau d'autorització."
+msgid ""
+"These settings are used as default values for exports, e.g. if certain "
+"parameter values are not provided within the URL. By specifying the default "
+"values, the URLs can be simplified. In the most extreme case, it is "
+"sufficient to provide the tree and the authorization key parameter only."
+msgstr ""
+"Aquests paràmetres s'utilitzen com a valors per defecte per a les "
+"exportacions, p. si no es proporcionen determinats valors de paràmetre a "
+"l'URL. Si especifiqueu els valors predeterminats, els URL es poden "
+"simplificar. En el cas més extrem, n'hi ha prou amb proporcionar només "
+"l'arbre i el paràmetre de la clau d'autorització."
 
 #: resources/views/settings.phtml:341
-msgid "Any parameters provided in the URL of a remote download have a higher priority and will overrule the default settings."
-msgstr "Qualsevol paràmetre proporcionat a l'URL d'una baixada remota té una prioritat més alta i anul·larà la configuració predeterminada."
+msgid ""
+"Any parameters provided in the URL of a remote download have a higher "
+"priority and will overrule the default settings."
+msgstr ""
+"Qualsevol paràmetre proporcionat a l'URL d'una baixada remota té una "
+"prioritat més alta i anul·larà la configuració predeterminada."
 
 #: resources/views/settings.phtml:345
 msgid "Default privacy level"
 msgstr "Nivell de privadesa predeterminat"
 
 #: resources/views/settings.phtml:357
-msgid "Select the default privacy level. This privacy level will be chosen if no specific privacy level is provided as URL parameter."
-msgstr "Seleccioneu el nivell de privadesa predeterminat. Aquest nivell de privadesa es triarà si no es proporciona cap nivell de privadesa específic com a paràmetre d'URL."
+msgid ""
+"Select the default privacy level. This privacy level will be chosen if no "
+"specific privacy level is provided as URL parameter."
+msgstr ""
+"Seleccioneu el nivell de privadesa predeterminat. Aquest nivell de privadesa "
+"es triarà si no es proporciona cap nivell de privadesa específic com a "
+"paràmetre d'URL."
 
 #: resources/views/settings.phtml:365
 msgid "Default export format"
@@ -687,8 +1168,13 @@ msgid "includes media files"
 msgstr "inclou fitxers multimèdia"
 
 #: resources/views/settings.phtml:377 resources/views/settings.phtml:398
-msgid "Select the default export format. This export format will be chosen if no specific export format is provided as URL parameter."
-msgstr "Seleccioneu el format d'exportació predeterminat. Aquest format d'exportació s'escollirà si no es proporciona cap format d'exportació específic com a paràmetre d'URL."
+msgid ""
+"Select the default export format. This export format will be chosen if no "
+"specific export format is provided as URL parameter."
+msgstr ""
+"Seleccioneu el format d'exportació predeterminat. Aquest format d'exportació "
+"s'escollirà si no es proporciona cap format d'exportació específic com a "
+"paràmetre d'URL."
 
 #: resources/views/settings.phtml:385
 msgid "Default encoding"
@@ -699,16 +1185,26 @@ msgid "Default ending"
 msgstr "Final predeterminat"
 
 #: resources/views/settings.phtml:416
-msgid "Select the default ending. This ending will be chosen if no specific ending is provided as URL parameter."
-msgstr "Seleccioneu el final predeterminat. Aquest final s'escollirà si no es proporciona cap final específic com a paràmetre d'URL."
+msgid ""
+"Select the default ending. This ending will be chosen if no specific ending "
+"is provided as URL parameter."
+msgstr ""
+"Seleccioneu el final predeterminat. Aquest final s'escollirà si no es "
+"proporciona cap final específic com a paràmetre d'URL."
 
 #: resources/views/settings.phtml:424
 msgid "Default time stamp"
 msgstr "Segell de temps per defecte"
 
 #: resources/views/settings.phtml:435
-msgid "Select the default time stamp. This time stamp will be chosen if no specific time stamp is provided as URL parameter. If \"none\" is chosen, no time stamp will be used."
-msgstr "Seleccioneu el segell de temps predeterminat. Aquest segell de temps es triarà si no es proporciona cap segell de temps específic com a paràmetre d'URL. Si s'escull \"cap\", no s'utilitzarà cap marca de temps."
+msgid ""
+"Select the default time stamp. This time stamp will be chosen if no specific "
+"time stamp is provided as URL parameter. If \"none\" is chosen, no time "
+"stamp will be used."
+msgstr ""
+"Seleccioneu el segell de temps predeterminat. Aquest segell de temps es "
+"triarà si no es proporciona cap segell de temps específic com a paràmetre "
+"d'URL. Si s'escull \"cap\", no s'utilitzarà cap marca de temps."
 
 #: resources/views/settings.phtml:442
 msgid "Default Settings for GEDCOM Filters"
@@ -716,144 +1212,24 @@ msgstr "Configuració per defecte per als filtres GEDCOM"
 
 #: resources/views/settings.phtml:446 resources/views/settings.phtml:461
 #: resources/views/settings.phtml:476
+#, php-format
 msgid "Default GEDCOM filter %s"
 msgstr "Filtre GEDCOM per defecte %s"
 
 #: resources/views/settings.phtml:456 resources/views/settings.phtml:471
 #: resources/views/settings.phtml:486
-msgid "Select a default filter for GEDCOM filter %s. This filter will be chosen if no specific filter is provided as URL parameter."
-msgstr "Seleccioneu un filtre predeterminat per al filtre GEDCOM %s. Aquest filtre es triarà si no es proporciona cap filtre específic com a paràmetre d'URL."
+#, php-format
+msgid ""
+"Select a default filter for GEDCOM filter %s. This filter will be chosen if "
+"no specific filter is provided as URL parameter."
+msgstr ""
+"Seleccioneu un filtre predeterminat per al filtre GEDCOM %s. Aquest filtre "
+"es triarà si no es proporciona cap filtre específic com a paràmetre d'URL."
 
 #: resources/views/settings.phtml:497
-msgid "In order to use changed settings for a download/upload, the settings need to be saved first."
-msgstr "Per utilitzar la configuració modificada per a una baixada/càrrega, primer cal desar la configuració."
-
-#: DownloadGedcomWithURL.php:626
-msgid "The folder settings could not be saved, because the folder \"%s\" does not exist."
-msgstr "La configuració de la carpeta no s'ha pogut desar perquè la carpeta \"%s\" no existeix."
-
-#: resources/filter/ConvertOldCensusMarkupGedcomFilter.php:37
-msgid "Convert webtrees 1.7 census markup to markdown"
-msgstr "Converteix el marcatge censal d'arbres web 1.7 a markdown"
-
-#: resources/views/selection.phtml:71
-msgid "GEDCOM Export: Tree"
-msgstr "GEDCOM Exportació: Arbre"
-
-#: resources/views/selection.phtml:83
-msgid "GEDCOM Export: Clippings cart"
-msgstr "GEDCOM Exportació: Carretó de retalls"
-
-#: resources/filter/RemoveVoidReferencesGedcomFilter.php:57
-msgid "Remove void references"
-msgstr "Suprimir les referències buides"
-
-#: DownloadGedcomWithURL.php:1664 DownloadGedcomWithURL.php:1726
-msgid "Invalid GEDBAS API key"
+msgid ""
+"In order to use changed settings for a download/upload, the settings need to "
+"be saved first."
 msgstr ""
-
-#: DownloadGedcomWithURL.php:1672
-msgid "Invalid file name for GEDBAS upload"
-msgstr ""
-
-#: DownloadGedcomWithURL.php:2134
-msgid "The family tree \"%s\" was sucessfully uploaded to GEDBAS"
-msgstr ""
-
-#: DownloadGedcomWithURL.php:2158
-msgid "Remote URL requests to upload GEDCOM files to GEDBAS are disabled."
-msgstr ""
-
-#: resources/views/export.phtml:57
-msgid "Upload to GEDBAS"
-msgstr ""
-
-#: resources/views/settings.phtml:110
-msgid "Settings for GEDBAS"
-msgstr ""
-
-#: resources/views/settings.phtml:115
-msgid "Allow GEDBAS upload"
-msgstr ""
-
-#: resources/views/settings.phtml:120
-msgid "If this option is selected, an upload of GEDCOM files to the GEDBAS database will be enabled. This allows to select \"GEDBAS upload\" as an export action in the extended GEDCOM export."
-msgstr ""
-
-#: resources/views/export.phtml:232 resources/views/export.phtml:240
-msgid "GEDBAS API key"
-msgstr ""
-
-#: resources/views/settings.phtml:230
-msgid "Allow remote requests via URL to upload GEDCOM files to GEDBAS"
-msgstr ""
-
-#: resources/views/settings.phtml:235
-msgid "By selecting this option, it is possible to remotely trigger an upload of GEDCOM files to GEDBAS via calling an URL."
-msgstr ""
-
-#: DownloadGedcomWithURL.php:1958 DownloadGedcomWithURL.php:1961
-#: DownloadGedcomWithURL.php:1964
-msgid "Error during GEDBAS upload."
-msgstr ""
-
-#: DownloadGedcomWithURL.php:1958
-msgid "Empty GEDBAS API key."
-msgstr ""
-
-#: DownloadGedcomWithURL.php:1668 DownloadGedcomWithURL.php:1961
-msgid "GEDBAS Id does not contain an Integer: %s"
-msgstr ""
-
-#: DownloadGedcomWithURL.php:1964
-msgid "No filename provided."
-msgstr ""
-
-#: resources/views/settings.phtml:128
-msgid "GEDBAS description"
-msgstr ""
-
-#: resources/views/settings.phtml:131
-msgid "Use note from GEDCOM header (HEAD:NOTE)"
-msgstr ""
-
-#: resources/views/settings.phtml:133
-msgid "If this option is selected, a note included in the GEDCOM header will be used as the tree description during a GEDBAS upload. Otherwise, the title of the tree will be used."
-msgstr ""
-
-#: ConvertGedcomPage.php:85 DownloadGedcomWithURL.php:1898
-#: ImportGedcomPage.php:88
-msgid "Access denied. The user needs to be an administrator."
-msgstr ""
-
-#: DownloadGedcomWithURL.php:1892 ExportGedcomPage.php:103
-msgid "Access denied. The user needs to be a manager of the tree."
-msgstr ""
-
-#: DownloadGedcomWithURL.php:2121
-msgid "Error during GEDBAS upload"
-msgstr ""
-
-#: DownloadGedcomWithURL.php:2124
-msgid "Error during communication with GEDBAS"
-msgstr ""
-
-#: SelectionPage.php:96
-msgid "The current user does not have sufficient rights to access trees with the custom module %s."
-msgstr ""
-
-#: resources/views/export.phtml:218
-msgid "GEDBAS database Id"
-msgstr ""
-
-#: resources/views/export.phtml:226
-msgid "Id of the GEDBAS database to which the GEDCOM file shall be uploaded. In order to create a new database in GEDBAS, leave the Id field empty."
-msgstr ""
-
-#: resources/views/export.phtml:239
-msgid "GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account. You can identify your individual key with the following link"
-msgstr ""
-
-#: resources/views/export.phtml:289
-msgid "Transfer GEDCOM file"
-msgstr ""
+"Per utilitzar la configuració modificada per a una baixada/càrrega, primer "
+"cal desar la configuració."

@@ -40,7 +40,6 @@ use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
 use Fisharebest\Webtrees\Auth;
-use Fisharebest\Webtrees\Cli\Commands\TreeImport;
 use Fisharebest\Webtrees\Cli\Console;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
@@ -163,7 +162,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 
 	//Custom module version
-	public const CUSTOM_VERSION = '4.2.9';
+	public const CUSTOM_VERSION = '4.2.10';
 
 	//Routes
 	protected const ROUTE_REMOTE_ACTION_OLD = '/DownloadGedcomWithURL';

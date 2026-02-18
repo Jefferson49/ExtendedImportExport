@@ -269,13 +269,15 @@ if ($gedbas_upload_allowed) {
 		</div>
 	</fieldset>
 	<?php if (Auth::isAdmin() && $gedbas_upload_allowed) : ?>
-		<div id="GEDBAS_parameters" <?= $action !== DownloadGedcomWithURL::ACTION_GEDBAS ? 'style="display:none;"' : '' ?></div>
+		<div id="GEDBAS_parameters" class="gedbas-parameters">
 			<div class="row mb-3">
 				<label class="col-sm-3 col-form-label wt-page-options-label" for="GEDBAS_apiKey">
 					<?= I18N::translate('GEDBAS API key') ?>
 				</label>
 				<div class="col-sm-9 wt-page-options-value">
-					<input class="form-control" id="GEDBAS_apiKey" name="GEDBAS_apiKey" type="password" value="<?= e($GEDBAS_apiKey) ?>" dir="ltr" autocomplete="off" data-wt-show-password-text="<?= e(MoreI18N::xlate('show')) ?>" data-wt-hide-password-text="<?= e(MoreI18N::xlate('hide')) ?>">
+					<input class="form-control" id="GEDBAS_apiKey" name="GEDBAS_apiKey" type="password" value="<?= e($GEDBAS_apiKey) ?>" dir="ltr" autocomplete="off" 
+						data-wt-show-password-text="<?= e(MoreI18N::xlate('show')) ?>" 
+						data-wt-hide-password-text="<?= e(MoreI18N::xlate('hide')) ?>">
 					<div class="form-text">
 						<?= I18N::translate('GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account. You can identify your individual key with the following link') . ': ' ?> 
 						<a href="https://gedbas.genealogy.net/user/apiKeys"><?= I18N::translate('GEDBAS API key') ?></a>
@@ -386,7 +388,10 @@ if ($gedbas_upload_allowed) {
 <?php View::push('javascript') ?>
 <script>
 	'use strict';
-
+	// Hide GEDBAS parameters by default
+	window.onload = function() {
+		$('#GEDBAS_parameters').hide();
+	};
     $('#action-GEDBAS').change(function() {
 		$('#GEDBAS_parameters').show();
     });

@@ -839,7 +839,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */ 
     public function sendResponse(string $text, bool $is_error = false, bool $for_browser = true): ResponseInterface
 	{		
-        $title = $is_error ? MoreI18N::xlate('Succes') : MoreI18N::xlate('Error');
+        $title = $is_error ? MoreI18N::xlate('Error') : MoreI18N::xlate('Success');
 
         if ($for_browser) {
 

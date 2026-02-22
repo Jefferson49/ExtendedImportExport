@@ -1824,19 +1824,26 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $tree_to_merge_name        = Validator::queryParams($request)->string('tree_to_merge', '');
             $action                    = Validator::queryParams($request)->string('action', self::ACTION_DOWNLOAD);
 
+            $all_trees = Functions::getAllTrees();
+
             if (!in_array($action, [self::ACTION_CONVERT, self::ACTION_CREATE_TREE])) {
-                if (!Functions::isValidTree($tree_name)) {
+                $tree = $all_trees->first(static function (Tree $tree) use ($tree_name): bool {
+                    return $tree->name() === $tree_name;
+                });
+                if (!($tree instanceof Tree)) {
                     return $this->sendResponse(I18N::translate('Tree not found') . ': ' . $tree_name, true, $called_from_control_panel);
-                } else {
-                    $tree = Functions::getAllTrees()[$tree_name];
-                }                
+                }          
             }
             if ($action === self::ACTION_MERGE_TREES) {
-                if (!Functions::isValidTree($tree_to_merge_name)) {
+                $tree_to_merge = $all_trees->first(static function (Tree $tree) use ($tree_to_merge_name): bool {
+                    return $tree->name() === $tree_to_merge_name;
+                });
+
+                if (!($tree_to_merge instanceof Tree)) {
                     return $this->sendResponse(I18N::translate('Tree not found') . ': ' . $tree_to_merge_name, true, $called_from_control_panel);
                 } else {
-                    $tree_to_merge = Functions::getAllTrees()[$tree_to_merge_name];
-                }                
+                    $tree_to_merge = $all_trees[$tree_to_merge_name];
+                }            
             }
 
             $key                       = Validator::queryParams($request)->string('key', '');
@@ -1872,7 +1879,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $action                    = Validator::parsedBody($request)->string('action', self::ACTION_DOWNLOAD);
 
             if ($action !== self::ACTION_CONVERT) {
-                $tree = Functions::getAllTrees()[$tree_name];
+                $tree = $this->tree_service->all()[$tree_name];
             }
 
             $called_from_control_panel = Validator::parsedBody($request)->boolean('called_from_control_panel', false);

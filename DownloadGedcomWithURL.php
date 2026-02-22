@@ -2316,23 +2316,21 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }
 
             //Import the file to a set of Gedcom records
-            if (!empty($gedcom_filter_set)){
-                try {
-                    $gedcom_records = $this->importGedcomFileToRecords($stream, $import_encoding, $word_wrapped_notes);
+            try {
+                $gedcom_records = $this->importGedcomFileToRecords($stream, $import_encoding, $word_wrapped_notes);
 
-                    if (empty($gedcom_records)) {
-                        $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename . $extension);
-                        return $this->sendResponse($message, true, $called_from_control_panel);
-                    }
-                    elseif ($action === self::ACTION_UPLOAD) {
-                        $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename . $extension, $tree_name);
-                        FlashMessages::addMessage($message, 'success');
-                    }
+                if (empty($gedcom_records)) {
+                    $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename . $extension);
+                    return $this->sendResponse($message, true, $called_from_control_panel);
                 }
-                catch (Throwable $ex) {
-                    return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
-                } 
+                elseif ($action === self::ACTION_UPLOAD) {
+                    $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename . $extension, $tree_name);
+                    FlashMessages::addMessage($message, 'success');
+                }
             }
+            catch (Throwable $ex) {
+                return $this->sendResponse($ex->getMessage(), true, $called_from_control_panel);
+            } 
 
             //Apply Gedcom filters
             $matched_tag_combinations = [];
@@ -2450,7 +2448,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     if ($called_from_control_panel) {
                         FlashMessages::addMessage($message, 'success');
                         return redirect(route(ImportGedcomPage::class, [
-                            'tree_name'       => $tree->name(),
+                            'tree'            => $tree->name(),
                             'gedcom_filename' => $filename,
                             'gedcom_filter1'  => $gedcom_filter1,
                             'gedcom_filter2'  => $gedcom_filter2,

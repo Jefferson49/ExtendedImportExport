@@ -39,10 +39,10 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\FlashMessages;
+use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Services\AdminService;
-use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Validator;
@@ -60,14 +60,19 @@ class ExportGedcomPage implements RequestHandlerInterface
 {
     use ViewResponseTrait;
 
-    private AdminService $admin_service;
+    private AdminService  $admin_service;
+    private ModuleService $module_service;
+    private TreeService   $tree_service;
+
 
     /**
      * @param AdminService $admin_service
      */
-    public function __construct(AdminService $admin_service)
+    public function __construct(AdminService $admin_service, ModuleService $module_service, TreeService $tree_service)
     {
-        $this->admin_service = $admin_service;
+        $this->admin_service  = $admin_service;
+        $this->module_service = $module_service;
+        $this->tree_service   = $tree_service;
     }
 
     /**
@@ -79,12 +84,12 @@ class ExportGedcomPage implements RequestHandlerInterface
     {
         $this->layout = 'layouts/administration';
 
-        $module_service = new ModuleService();
-
         /** @var DownloadGedcomWithURL $download_gedcom_with_url */
-        $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+        $download_gedcom_with_url = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
-        $tree_name             = Validator::queryParams($request)->string('tree_name');
+        $tree_name             = Validator::queryParams($request)->string('tree', '');
+        $tree                  = $this->tree_service->all()[$tree_name] ?? null;
+
         $export_clippings_cart = Validator::queryParams($request)->boolean('export_clippings_cart', false);
         $GEDBAS_Id             = Validator::queryParams($request)->string('GEDBAS_Id', '');
         $GEDBAS_description    = Validator::queryParams($request)->string('GEDBAS_description', '');
@@ -92,7 +97,7 @@ class ExportGedcomPage implements RequestHandlerInterface
         $gedcom_filter1        = Validator::queryParams($request)->string('gedcom_filter1', MoreI18N::xlate('None'));
         $gedcom_filter2        = Validator::queryParams($request)->string('gedcom_filter2', MoreI18N::xlate('None'));
         $gedcom_filter3        = Validator::queryParams($request)->string('gedcom_filter3', MoreI18N::xlate('None'));
-        $filename              = Validator::queryParams($request)->string('filename', $export_clippings_cart ? 'clippings' : $tree_name);
+        $filename              = Validator::queryParams($request)->string('filename', $export_clippings_cart ? 'clippings' : ($tree instanceof Tree ? $tree->name() : ''));
         $action                = Validator::queryParams($request)->string('action', DownloadGedcomWithURL::ACTION_DOWNLOAD);
         $format                = Validator::queryParams($request)->string('format', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
         $privacy               = Validator::queryParams($request)->string('privacy', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_PRIVACY_LEVEL, 'visitor'));
@@ -100,13 +105,16 @@ class ExportGedcomPage implements RequestHandlerInterface
         $endings               = Validator::queryParams($request)->string('endings', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'CRLF'));
         $time_stamp            = Validator::queryParams($request)->string('time_stamp', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, DownloadGedcomWithURL::TIME_STAMP_NONE));
 
-        $tree_service = new TreeService(new GedcomImportService());
-        $tree = $tree_service->all()[$tree_name];
+        //If current user is no admin, return to the home page
+        if (!Auth::isAdmin()) { 
+            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
+            return redirect(route(HomePage::class));
+        }
 
-        //If current user is no manager for the selected tree, return to the selection page
-        if (!Auth::isManager($tree)) {
-            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be a manager of the tree.'), 'danger');
-            return redirect(route(SelectionPage::class, ['tree' => $tree->name()]));
+        //If no tree access
+        if ($tree === null) {
+            FlashMessages::addMessage(I18N::translate('The current user does not have sufficient rights to access trees with the custom module %s.', $download_gedcom_with_url->title()), 'danger');	
+            return redirect(route(HomePage::class));
         }
 
         //Load Gedcom filters

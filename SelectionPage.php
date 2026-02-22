@@ -37,13 +37,14 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fig\Http\Message\RequestMethodInterface;
+use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\Services\ModuleService;
+use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Validator;
-use Jefferson49\Webtrees\Helpers\Functions;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -55,6 +56,16 @@ use Psr\Http\Server\RequestHandlerInterface;
 class SelectionPage implements RequestHandlerInterface
 {
     use ViewResponseTrait;
+
+    private ModuleService $module_service;
+    private TreeService   $tree_service;
+
+
+    public function __construct(ModuleService $module_service, TreeService $tree_service)
+    {
+        $this->module_service = $module_service;
+        $this->tree_service   = $tree_service;
+    }
 
     /**
      * @param ServerRequestInterface $request
@@ -73,26 +84,32 @@ class SelectionPage implements RequestHandlerInterface
         elseif ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
             $tree_name = Validator::parsedBody($request)->string('tree', '');
         }
-        else {
-            throw new DownloadGedcomWithUrlException(I18N::translate('Internal module error: Neither GET nor POST request received.'));
+
+        $tree = $this->tree_service->all()[$tree_name] ?? null;
+
+        $download_gedcom_with_url = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+        $tree_list = $this->tree_service->titles();
+
+        if ($tree === null) {
+
+            $default_tree = $this->tree_service->all()->get($download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, ''));
+
+            if ($default_tree !== null) {
+                $tree = $default_tree;
+            }
+            else {
+                $tree = $this->tree_service->all()->first();
+            }
         }
 
-        $module_service = new ModuleService();
-        $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
-        $tree_list = Functions::getTreeNameTitleList(Functions::getAllTrees());
-        $default_tree = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, '');
+        //If current user is no admin, return to the home page
+        if (!Auth::isAdmin()) { 
+            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
+            return redirect(route(HomePage::class));
+        }
 
-        if (Functions::isValidTree($tree_name) && array_key_exists($tree_name, $tree_list)) {
-            $tree = Functions::getAllTrees()[$tree_name];
-        }
-        elseif (Functions::isValidTree($default_tree) && array_key_exists($default_tree, $tree_list)) {
-            $tree = Functions::getAllTrees()[$default_tree];
-        }
-        elseif (sizeof($tree_list) > 0) {
-            $tree_name = array_key_first($tree_list);
-            $tree = Functions::getAllTrees()[$tree_name];
-        }
-        else {
+        //If no tree access, return to the home page
+        if ($tree === null OR empty($tree_list)) {
             FlashMessages::addMessage(I18N::translate('The current user does not have sufficient rights to access trees with the custom module %s.', $download_gedcom_with_url->title()), 'danger');	
             return redirect(route(HomePage::class));
         }

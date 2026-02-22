@@ -55,7 +55,6 @@ use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Http\RequestHandlers\CreateTreeAction;
 use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
-use Fisharebest\Webtrees\Http\RequestHandlers\ManageTrees;
 use Fisharebest\Webtrees\Http\RequestHandlers\MergeTreesAction;
 use Fisharebest\Webtrees\Http\RequestHandlers\RenumberTreeAction;
 use Fisharebest\Webtrees\I18N;
@@ -478,7 +477,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
         
         //Generate a tree list with all the trees, the user has access to; authorization is checked in tree service
-        $tree_list = Functions::getTreeNameTitleList($this->tree_service->all());
+        $tree_list = $this->tree_service->titles();
 
         //Check the Gedcom filters, which are defined in the prefernces
         $this->checkFilterPreferences(self::PREF_DEFAULT_GEDCOM_FILTER1);
@@ -683,9 +682,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */    
     public function listIsEmpty(Tree $tree): bool
     {
-        $tree_list = Functions::getTreeNameTitleList($this->tree_service->all());
-
-        if (sizeof($tree_list) === 0 OR !boolval($this->getPreference(self::PREF_SHOW_MENU_LIST_ITEM, '1'))) {
+        if (!Auth::isAdmin()  OR !boolval($this->getPreference(self::PREF_SHOW_MENU_LIST_ITEM, '1'))) {
             return true;
         }
 

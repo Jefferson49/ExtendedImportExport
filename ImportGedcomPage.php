@@ -37,16 +37,15 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fisharebest\Webtrees\Auth;
+use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\AdminService;
-use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Validator;
-use Jefferson49\Webtrees\Helpers\Functions;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -60,14 +59,16 @@ class ImportGedcomPage implements RequestHandlerInterface
 {
     use ViewResponseTrait;
 
-    private AdminService $admin_service;
+    private AdminService  $admin_service;
+    private ModuleService $module_service;
+    private TreeService   $tree_service;
 
-    /**
-     * @param AdminService $admin_service
-     */
-    public function __construct(AdminService $admin_service)
+
+    public function __construct(AdminService $admin_service, ModuleService $module_service, TreeService $tree_service)
     {
-        $this->admin_service = $admin_service;
+        $this->admin_service  = $admin_service;
+        $this->module_service = $module_service;
+        $this->tree_service   = $tree_service;
     }
 
     /**
@@ -79,26 +80,28 @@ class ImportGedcomPage implements RequestHandlerInterface
     {
         $this->layout = 'layouts/administration';
 
-        $tree_service    = new TreeService(new GedcomImportService()); 
+        $tree_name = Validator::queryParams($request)->string('tree', '');
+        $tree      = $this->tree_service->all()[$tree_name] ?? null;
 
-        $tree_name       = Validator::queryParams($request)->string('tree_name');
+        /** @var DownloadGedcomWithURL $download_gedcom_with_url */
+        $download_gedcom_with_url = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
-        //If current user is no admin, return to the selection page
+        //If current user is no admin, return to the home page
         if (!Auth::isAdmin()) { 
             FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
-            return redirect(route(SelectionPage::class, ['tree' => $tree_name]));
+            return redirect(route(HomePage::class));
         }
 
-        $tree            = $tree_service->all()[$tree_name];
+        //If no tree access, return to the home page
+        if ($tree === null) {
+            FlashMessages::addMessage(I18N::translate('The current user does not have sufficient rights to access trees with the custom module %s.', $download_gedcom_with_url->title()), 'danger');	
+            return redirect(route(HomePage::class));
+        }
 
         $gedcom_filename = Validator::queryParams($request)->string('gedcom_filename', $tree->getPreference('gedcom_filename'));
         $gedcom_filter1  = Validator::queryParams($request)->string('gedcom_filter1', MoreI18N::xlate('None'));
         $gedcom_filter2  = Validator::queryParams($request)->string('gedcom_filter2', MoreI18N::xlate('None'));
         $gedcom_filter3  = Validator::queryParams($request)->string('gedcom_filter3', MoreI18N::xlate('None'));
-        $module_service = new ModuleService();
-
-        /** @var DownloadGedcomWithURL $download_gedcom_with_url */
-        $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
         $folder          = $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_FOLDER_TO_SAVE, '');
         $data_filesystem = Registry::filesystem()->root($folder);
@@ -113,14 +116,12 @@ class ImportGedcomPage implements RequestHandlerInterface
         }
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
-        $tree_list = Functions::getTreeNameTitleList($tree_service->all());
 
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::import',
             [
                 'title'               => I18N::translate('Extended GEDCOM Import') . ' — ' . e($tree->title()),
                 'tree'                => $tree,
-                'tree_list'           => $tree_list,                
                 'folder'              => $folder,
                 'gedcom_files'        => $gedcom_files,
                 'gedcom_filename'     => $gedcom_filename,

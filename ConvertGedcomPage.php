@@ -39,15 +39,14 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\FlashMessages;
+use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\AdminService;
-use Fisharebest\Webtrees\Services\GedcomImportService;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Validator;
-use Jefferson49\Webtrees\Helpers\Functions;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -61,15 +60,20 @@ class ConvertGedcomPage implements RequestHandlerInterface
 {
     use ViewResponseTrait;
 
-    private AdminService $admin_service;
+    private AdminService  $admin_service;
+    private ModuleService $module_service;
+    private TreeService   $tree_service;
+
 
     /**
      * @param AdminService $admin_service
      */
-    public function __construct(AdminService $admin_service)
+    public function __construct(AdminService $admin_service, ModuleService  $module_service, TreeService $tree_service)
     {
-        $this->admin_service = $admin_service;
-    }
+        $this->admin_service  = $admin_service;
+        $this->module_service = $module_service;    
+        $this->tree_service   = $tree_service;
+    }       
 
     /**
      * @param ServerRequestInterface $request
@@ -80,17 +84,14 @@ class ConvertGedcomPage implements RequestHandlerInterface
     {
         $this->layout = 'layouts/administration';
 
-        //If current user is no admin, return to the selection page
+        /** @var DownloadGedcomWithURL $download_gedcom_with_url */
+        $download_gedcom_with_url = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+
+        //If current user is no admin, return to the home page
         if (!Auth::isAdmin()) { 
             FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
-            return redirect(route(SelectionPage::class));
-        }        
-
-        $module_service = new ModuleService();
-        $tree_service = new TreeService(new GedcomImportService());
-
-        /** @var DownloadGedcomWithURL $download_gedcom_with_url */
-        $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+            return redirect(route(HomePage::class));
+        }
         
         $gedcom_filename    = Validator::queryParams($request)->string('gedcom_filename', '');
         $filename_converted = Validator::queryParams($request)->string('filename_converted', '');
@@ -116,13 +117,11 @@ class ConvertGedcomPage implements RequestHandlerInterface
         }       
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
-        $tree_list = Functions::getTreeNameTitleList($tree_service->all());
 
         return $this->viewResponse(
             DownloadGedcomWithURL::viewsNamespace() . '::convert',
             [
                 'title'              => I18N::translate('GEDCOM Conversion'),
-                'tree_list'          => $tree_list,
                 'folder'             => $folder,
                 'gedcom_filename'    => $gedcom_filename,
                 'filename_converted' => $filename_converted,

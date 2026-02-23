@@ -248,9 +248,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
     //Maximum level of includes for Gedcom filters
     private const MAXIMUM_FILTER_INCLUDE_LEVELS = 10;
 
-    //All GEDCOM records (for record selection in datafix)
-    private const ALL_RECORDS = 'ALL';
-    private const HEAD = 'HEAD';
+    //Record types (for record selection in datafix)
+    private const RECORD_TYPE_ALL  = 'ALL';
+    private const RECORD_TYPE_HEAD = 'HEAD';
 
     //Others
     private const UPLOAD_TEMP_FOLDER = 'tmp/';
@@ -1042,8 +1042,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
 
         $types = [
-            self::ALL_RECORDS       => MoreI18N::xlate('All'),
-            self::HEAD              => MoreI18N::xlate('Header'),
+            self::RECORD_TYPE_ALL   => MoreI18N::xlate('All'),
+            self::RECORD_TYPE_HEAD  => MoreI18N::xlate('Header'),
             Family::RECORD_TYPE     => MoreI18N::xlate('Families'),
             Individual::RECORD_TYPE => MoreI18N::xlate('Individuals'),
             Location::RECORD_TYPE   => MoreI18N::xlate('Locations'),
@@ -1052,7 +1052,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             Repository::RECORD_TYPE => MoreI18N::xlate('Repositories'),
             Source::RECORD_TYPE     => MoreI18N::xlate('Sources'),
             Submitter::RECORD_TYPE  => MoreI18N::xlate('Submitters'),
-        ];        
+        ];
 
         return view(
             self::viewsNamespace() . '::options',
@@ -1063,7 +1063,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 self::VAR_GEDOCM_FILTER . '2'   => '',
                 self::VAR_GEDOCM_FILTER . '3'   => '',
                 self::VAR_DATA_FIX_TYPES        => $types,
-                self::VAR_DATA_FIX_DEFAULT_TYPE => self::ALL_RECORDS,
+                self::VAR_DATA_FIX_DEFAULT_TYPE => self::RECORD_TYPE_ALL,
             ]
         );
     }
@@ -1117,49 +1117,42 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $header->xref = 'HEAD';
         $header->type = 'HEAD';
 
-        if ($record_type === self::HEAD OR $record_type === self::ALL_RECORDS) {
+        if ($record_type === self::RECORD_TYPE_HEAD OR $record_type === self::RECORD_TYPE_ALL) {
             $records = $records->concat([$header]);
         }
-        
-        if ($families !== null && ($record_type === Family::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
+
+        if ($families !== null && ($record_type === Family::RECORD_TYPE OR $record_type === self::RECORD_TYPE_ALL)) {
             $records = $records->concat($this->mergePendingRecords($families, $tree, Family::RECORD_TYPE));
         }
 
-        if ($individuals !== null && ($record_type === Individual::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
+        if ($individuals !== null && ($record_type === Individual::RECORD_TYPE OR $record_type === self::RECORD_TYPE_ALL)) {
             $records = $records->concat($this->mergePendingRecords($individuals, $tree, Individual::RECORD_TYPE));
         }
 
-        if ($locations !== null && ($record_type === Location::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
+        if ($locations !== null && ($record_type === Location::RECORD_TYPE OR $record_type === self::RECORD_TYPE_ALL)) {
             $records = $records->concat($this->mergePendingRecords($locations, $tree, Location::RECORD_TYPE));
         }
 
-        if ($media !== null && ($record_type === Media::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
+        if ($media !== null && ($record_type === Media::RECORD_TYPE OR $record_type === self::RECORD_TYPE_ALL)) {
             $records = $records->concat($this->mergePendingRecords($media, $tree, Media::RECORD_TYPE));
         }
 
-        if ($notes !== null && ($record_type === Note::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
+        if ($notes !== null && ($record_type === Note::RECORD_TYPE OR $record_type === self::RECORD_TYPE_ALL)) {
             $records = $records->concat($this->mergePendingRecords($notes, $tree, Note::RECORD_TYPE));
         }
 
-        if ($repositories !== null && ($record_type === Repository::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
+        if ($repositories !== null && ($record_type === Repository::RECORD_TYPE OR $record_type === self::RECORD_TYPE_ALL)) {
             $records = $records->concat($this->mergePendingRecords($repositories, $tree, Repository::RECORD_TYPE));
         }
 
-        if ($sources !== null && ($record_type === Source::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
+        if ($sources !== null && ($record_type === Source::RECORD_TYPE OR $record_type === self::RECORD_TYPE_ALL)) {
             $records = $records->concat($this->mergePendingRecords($sources, $tree, Source::RECORD_TYPE));
         }
 
-        if ($submitters !== null && ($record_type === Submitter::RECORD_TYPE OR $record_type === self::ALL_RECORDS)) {
+        if ($submitters !== null && ($record_type === Submitter::RECORD_TYPE OR $record_type === self::RECORD_TYPE_ALL)) {
             $records = $records->concat($this->mergePendingRecords($submitters, $tree, Submitter::RECORD_TYPE));
         }
-
-        //Add TRLR
-        $trailer = new stdClass;
-        $trailer->xref = 'TRLR';
-        $trailer->type = 'TRLR';
-
-        $records = $records->concat([$trailer]);
-
+        
         //Sort records
         $records = $records
             ->unique()

@@ -28,7 +28,7 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(SelectionPage::class, ['tree' => $tree->name()]) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
+<?= view('components/breadcrumbs', ['links' => [route(SelectionPage::class, ['tree_name' => $tree->name()]) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
 
 <h1><?=e($title) ?></h1>
 <div class="row mb-3"><?= view('icons/spacer') ?></div>

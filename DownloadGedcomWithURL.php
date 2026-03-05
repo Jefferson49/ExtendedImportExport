@@ -655,8 +655,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
     public function listUrl(Tree $tree, array $parameters = []): string
     {
-        return route(SelectionPage::class, ['tree' => $tree->name()]);
-    }    
+        return route(SelectionPage::class, ['tree_name' => $tree->name()]);
+    }
 
     /**
      * {@inheritDoc}
@@ -2370,18 +2370,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                             if ($called_from_control_panel) {
                                 FlashMessages::addMessage($message, 'success');
-                                return redirect(route(ConvertGedcomPage::class, [
-                                    'gedcom_filename'    => $filename,
-                                    'filename_converted' => $filename_converted,
-                                    'format'             => $format,
-                                    'encoding'           => $encoding,
-                                    'endings'            => $line_endings,
-                                    'privacy'            => $privacy,
-                                    'time_stamp'         => $time_stamp,
-                                    'gedcom_filter1'     => $gedcom_filter1,
-                                    'gedcom_filter2'     => $gedcom_filter2,
-                                    'gedcom_filter3'     => $gedcom_filter3,
-                                ]));
+                                $parameters_for_control_panel['gedcom_filename'] = $filename;
+                                $parameters_for_control_panel['filename_converted'] = $filename_converted;
+
+                                return redirect(route(ConvertGedcomPage::class, $parameters_for_control_panel));
                             }
                             else {
                                 return $this->sendResponse($message, false, $called_from_control_panel);
@@ -2440,13 +2432,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                     if ($called_from_control_panel) {
                         FlashMessages::addMessage($message, 'success');
-                        return redirect(route(ImportGedcomPage::class, [
-                            'tree'            => $tree->name(),
-                            'gedcom_filename' => $filename,
-                            'gedcom_filter1'  => $gedcom_filter1,
-                            'gedcom_filter2'  => $gedcom_filter2,
-                            'gedcom_filter3'  => $gedcom_filter3,
-                        ]));
+                        $parameters_for_control_panel['gedcom_filename'] = $filename;
+
+                        return redirect(route(ImportGedcomPage::class, $parameters_for_control_panel));
                     }
                     else {
                         return $this->sendResponse($message, false, $called_from_control_panel);

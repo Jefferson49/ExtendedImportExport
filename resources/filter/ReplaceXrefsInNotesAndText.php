@@ -75,7 +75,7 @@ class ReplaceXrefsInNotesAndText extends AbstractGedcomFilter
         if($tree_name !== '') {
             $tree_service = new TreeService(new GedcomImportService());
             $all_trees = $tree_service->all();
-            $this->tree = $all_trees[$tree_name];
+            $this->tree = $all_trees[$tree_name] ?? null;
         }
 
         return parent::getGedcomFilterRules($params);
@@ -94,6 +94,11 @@ class ReplaceXrefsInNotesAndText extends AbstractGedcomFilter
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
 
+		//If unknown tree, do nothing
+        if($this->tree === null) {
+            return $gedcom;
+        }
+		
         //If reference to shared note, do nothing
         if(preg_match("/[\d] NOTE @" . Gedcom::REGEX_XREF . "@\n/", $gedcom, $matches)) {
             return $gedcom;

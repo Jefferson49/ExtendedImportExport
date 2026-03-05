@@ -116,7 +116,7 @@ if ($gedbas_upload_allowed) {
 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(SelectionPage::class, ['tree' => $tree->name()]) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
+<?= view('components/breadcrumbs', ['links' => [route(SelectionPage::class, ['tree_name' => $tree->name()]) => I18N::translate('Extended Import/Export'), e($title)]]) ?>
 
 <h1><?= $title ?></h1>
 <div class="row mb-3"><?= view('icons/spacer') ?></div>
@@ -390,7 +390,11 @@ if ($gedbas_upload_allowed) {
 	'use strict';
 	// Hide GEDBAS parameters by default
 	window.onload = function() {
-		$('#GEDBAS_parameters').hide();
+		if ($('#action-GEDBAS').is(':checked')) {
+			$('#GEDBAS_parameters').show();
+		} else {
+			$('#GEDBAS_parameters').hide();
+		};
 	};
     $('#action-GEDBAS').change(function() {
 		$('#GEDBAS_parameters').show();

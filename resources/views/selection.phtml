@@ -41,7 +41,7 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 			<?= I18N::translate('Select a tree') ?>
 		</label>
 		<div class="col-sm-9" id="tree-select">
-			<?= view('components/select', ['name' => 'tree', 'selected' => $tree->name(),
+			<?= view('components/select', ['name' => 'tree_name', 'selected' => $tree->name(),
 				'options' => $tree_list]) ?>
 		</div>
 	</div>
@@ -50,7 +50,7 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 		<li>
 			<span class="fa-li"><?= view('icons/upload') ?></span>
 			<a href="<?= e(route(ImportGedcomPage::class, [
-				'tree'           => $tree->name(),
+				'tree_name'      => $tree->name(),
 				'gedcom_filter1' => $default_gedcom_filter1,
 				'gedcom_filter2' => $default_gedcom_filter2,
 				'gedcom_filter3' => $default_gedcom_filter3,
@@ -61,7 +61,7 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 		<li>
 			<span class="fa-li"><?= view('icons/download') ?></span>
 			<a href="<?= e(route(ExportGedcomPage::class, [
-				'tree'                   => $tree->name(),
+				'tree_name'              => $tree->name(),
 				'export_clippings_cart'  => false,
 				'gedcom_filter1'         => $default_gedcom_filter1,
 				'gedcom_filter2'         => $default_gedcom_filter2,
@@ -76,7 +76,7 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 		<li>
 			<span class="fa-li"><?= view('icons/download') ?></span>
 			<a href="<?= e(route(ExportGedcomPage::class, [
-				'tree'                   => $tree->name(),
+				'tree_name'              => $tree->name(),
 				'export_clippings_cart'  => true,
 				'gedcom_filter1'         => $default_gedcom_filter1,
 				'gedcom_filter2'         => $default_gedcom_filter2,

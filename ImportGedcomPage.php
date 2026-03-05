@@ -80,7 +80,7 @@ class ImportGedcomPage implements RequestHandlerInterface
     {
         $this->layout = 'layouts/administration';
 
-        $tree_name = Validator::queryParams($request)->string('tree', '');
+        $tree_name = Validator::queryParams($request)->string('tree_name', '');
         $tree      = $this->tree_service->all()[$tree_name] ?? null;
 
         /** @var DownloadGedcomWithURL $download_gedcom_with_url */

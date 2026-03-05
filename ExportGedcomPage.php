@@ -87,7 +87,7 @@ class ExportGedcomPage implements RequestHandlerInterface
         /** @var DownloadGedcomWithURL $download_gedcom_with_url */
         $download_gedcom_with_url = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
 
-        $tree_name             = Validator::queryParams($request)->string('tree', '');
+        $tree_name             = Validator::queryParams($request)->string('tree_name', '');
         $tree                  = $this->tree_service->all()[$tree_name] ?? null;
 
         $export_clippings_cart = Validator::queryParams($request)->boolean('export_clippings_cart', false);

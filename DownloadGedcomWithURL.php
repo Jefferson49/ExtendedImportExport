@@ -2433,6 +2433,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         //Save the filtered export to a temporary file
                         $this->root_filesystem->writeStream($temporary_file, $resource);
 
+                        //Message needs to be created before import, because importTree can confuse the translation system
+                        $message = I18N::translate('The tree was successfully imported into the database.');                        
+
                         //Import the tree into the database
                         $this->importTree($tree, Webtrees::ROOT_DIR . $temporary_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
 
@@ -2444,7 +2447,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     }
 
                     //Successfully return after upload/import
-                    $message = I18N::translate('The tree was successfully imported into the database.');
                     $parameters_for_control_panel['gedcom_filename'] = $filename;
                     $redirect_url = route(ImportGedcomPage::class, $parameters_for_control_panel);
 

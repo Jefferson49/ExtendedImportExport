@@ -94,7 +94,7 @@ use Illuminate\Support\Collection;
 use Jefferson49\Webtrees\Exceptions\GithubCommunicationError;
 use Jefferson49\Webtrees\Helpers\GithubService;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
-use Jefferson49\Webtrees\Helpers\Functions;
+use Jefferson49\Webtrees\Helpers\Functions as CommonFunctions;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToWriteFile;
@@ -278,7 +278,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $this->checkModuleVersionUpdate();
 
         //Initialize services etc.
-        $response_factory = Functions::getFromContainer(ResponseFactoryInterface::class);
+        $response_factory = CommonFunctions::getFromContainer(ResponseFactoryInterface::class);
         $this->stream_factory = new Psr17Factory();
         $this->data_fix_service = New DataFixService();
         $this->gedcom_import_service = new GedcomImportService;
@@ -746,8 +746,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $updated_settings = false;
 
         //If secret key is already stored and secret key hashing preference is not available (i.e. before module version v3.0.1)
-        if(     Functions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_SECRET_KEY, '') !== '' 
-            &&  Functions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_USE_HASH, '') === '') {
+        if(     CommonFunctions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_SECRET_KEY, '') !== '' 
+            &&  CommonFunctions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, self::PREF_USE_HASH, '') === '') {
 
             //Set secret key hashing to false
             $this->setPreference(self::PREF_USE_HASH, '0');
@@ -774,7 +774,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         ];   
 
         foreach($preferences as $preference) {
-            $setting_value = Functions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, $preference, '');
+            $setting_value = CommonFunctions::getPreferenceForModule(self::OLD_MODULE_NAME_FOR_PREFERENCES, $preference, '');
 
             if ($setting_value !== '') {
                 $this->setPreference($preference, $setting_value);
@@ -2154,7 +2154,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         if ($action === self::ACTION_RENUMBER_XREF) {
 
             //Generate a request for the RenumberTreeAction
-            $request         = Functions::getFromContainer(ServerRequestInterface::class);
+            $request         = CommonFunctions::getFromContainer(ServerRequestInterface::class);
             $request         = $request->withAttribute('tree', $tree instanceof Tree ? $tree : null);
 
             $request_handler = new RenumberTreeAction(new AdminService, new TimeoutService(new PhpService));
@@ -2164,7 +2164,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         elseif ($action === self::ACTION_MERGE_TREES) {
 
             //Generate a request for the MergeTreesAction
-            $request         = Functions::getFromContainer(ServerRequestInterface::class);
+            $request         = CommonFunctions::getFromContainer(ServerRequestInterface::class);
             $request         = $request->withParsedBody(['tree1_name' => $tree_to_merge->name(), 'tree2_name' => $tree->name()]);
 
             $request_handler = new MergeTreesAction(new AdminService, new TreeService(new GedcomImportService));
@@ -2175,7 +2175,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             //Generate a request for the MergeTreesAction
             //Use tree name as title
-            $request         = Functions::getFromContainer(ServerRequestInterface::class);
+            $request         = CommonFunctions::getFromContainer(ServerRequestInterface::class);
             $request         = $request->withParsedBody(['name' => $tree_name, 'title' => $tree_name]);
 
             $request_handler = new CreateTreeAction(new TreeService(new GedcomImportService));

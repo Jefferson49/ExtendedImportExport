@@ -161,9 +161,6 @@ class FilteredGedcomExportService extends GedcomExportService
 	{
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
-        $this->records_xref_list = [];
-        $this->empty_records_xref_list = [];
-        $this->references_list = [];
         $this->custom_tags_found = [];
         $this->use_schema_tag_analysis = false;      
         $this->wrap_lines_without_leading_and_trailing_spaces = false;  
@@ -187,14 +184,14 @@ class FilteredGedcomExportService extends GedcomExportService
      * @return resource
      */
     public function filteredResource(
-        Tree $tree = null,
+        Tree $tree,
         bool $sort_by_xref,
         string $encoding,
         string $privacy,
         string $line_endings,
         string $filename,
         string $format,
-        array $gedcom_filters = null,
+        array $gedcom_filters = [],
         array $params = [],
         ?Collection $records = null,
         ?bool $head_and_trlr = false,        
@@ -255,7 +252,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @return ResponseInterface
      */
     public function filteredDownloadResponse(
-        Tree $tree = null,
+        Tree $tree,
         bool $sort_by_xref,
         string $encoding,
         string $privacy,
@@ -263,7 +260,7 @@ class FilteredGedcomExportService extends GedcomExportService
         string $filename,
         string $extension,
         string $format,
-        array $gedcom_filters = null,
+        array $gedcom_filters = [],
         array $params = [],
         ?Collection $records = null,
         ?bool $head_and_trlr = false,        
@@ -316,7 +313,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @return resource
      */
     public function filteredExport(
-        Tree $tree = null,
+        Tree $tree,
         bool $sort_by_xref = false,
         string $encoding = UTF8::NAME,
         int $access_level = Auth::PRIV_HIDE,
@@ -344,7 +341,7 @@ class FilteredGedcomExportService extends GedcomExportService
             // Export just these records - e.g. from clippings cart.
             if ($head_and_trlr) {
                 $data = [
-                    new Collection([$this->createHeader($tree, $encoding, false)]),
+                    new Collection([$this->createHeader($tree, $encoding, false, $access_level)]),
                     $records,
                     new Collection(['0 TRLR']),
                     ];    
@@ -356,7 +353,7 @@ class FilteredGedcomExportService extends GedcomExportService
         } elseif ($access_level === Auth::PRIV_HIDE) {
             // If we will be applying privacy filters, then we will need the GEDCOM record objects.
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, true)]),
+                new Collection([$this->createHeader($tree, $encoding, true, $access_level)]),
                 $this->individualQuery($tree, $sort_by_xref)->cursor(),
                 $this->familyQuery($tree, $sort_by_xref)->cursor(),
                 $this->sourceQuery($tree, $sort_by_xref)->cursor(),
@@ -371,7 +368,7 @@ class FilteredGedcomExportService extends GedcomExportService
             });
 
             $data = [
-                new Collection([$this->createHeader($tree, $encoding, true)]),
+                new Collection([$this->createHeader($tree, $encoding, true, $access_level)]),
                 $this->individualQuery($tree, $sort_by_xref)->get()->map(Registry::individualFactory()->mapper($tree)),
                 $this->familyQuery($tree, $sort_by_xref)->get()->map(Registry::familyFactory()->mapper($tree)),
                 $this->sourceQuery($tree, $sort_by_xref)->get()->map(Registry::sourceFactory()->mapper($tree)),
@@ -495,10 +492,10 @@ class FilteredGedcomExportService extends GedcomExportService
      *
      * @return string
      */
-    public function createHeader(Tree $tree, string $encoding, bool $include_sub): string
+    public function createHeader(Tree $tree, string $encoding, bool $include_sub, int $access_level = Auth::PRIV_HIDE): string
     {
         //Take GEDCOM from parent method as a base
-        $gedcom = parent::createHeader($tree, $encoding, $include_sub);
+        $gedcom = parent::createHeader($tree, $encoding, $include_sub, $access_level);
 
         $header = Registry::headerFactory()->make('HEAD', $tree) ?? Registry::headerFactory()->new('HEAD', '0 HEAD', null, $tree);
 
@@ -797,7 +794,7 @@ class FilteredGedcomExportService extends GedcomExportService
         string $higher_level_matched_tag_pattern,
         string $tag_combination,
         GedcomFilterInterface $gedcom_filter,
-        array $params = [],
+        array $params,
         array  &$gedcom_filter_patterns,
         array  &$gedcom_filter_rules,
         array  &$gedcom_filter_rule_has_regexp,

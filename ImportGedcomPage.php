@@ -45,7 +45,9 @@ use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\AdminService;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Services\TreeService;
+use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Validator;
+use Fisharebest\Webtrees\Webtrees;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -98,7 +100,13 @@ class ImportGedcomPage implements RequestHandlerInterface
             return redirect(route(HomePage::class));
         }
 
-        $gedcom_filename = Validator::queryParams($request)->string('gedcom_filename', $tree->getPreference('gedcom_filename'));
+        if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+            $gedcom_filename = Validator::queryParams($request)->string('gedcom_filename', $tree->getPreference('gedcom_filename'));
+        }
+        else {
+            $gedcom_filename = Validator::queryParams($request)->string('gedcom_filename', $tree->gedcomFilename());
+        }
+
         $gedcom_filter1  = Validator::queryParams($request)->string('gedcom_filter1', MoreI18N::xlate('None'));
         $gedcom_filter2  = Validator::queryParams($request)->string('gedcom_filter2', MoreI18N::xlate('None'));
         $gedcom_filter3  = Validator::queryParams($request)->string('gedcom_filter3', MoreI18N::xlate('None'));

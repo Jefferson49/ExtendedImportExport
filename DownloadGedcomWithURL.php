@@ -40,7 +40,7 @@ use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Fisharebest\Localization\Translation;
 use Fisharebest\Webtrees\Auth;
-use Fisharebest\Webtrees\Cli\Console;
+use Fisharebest\Webtrees\DB;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
@@ -105,8 +105,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\StreamOutput;
 
 use ErrorException;
 use CURLFile;
@@ -135,6 +133,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
     //The data fix service
     private DataFixService $data_fix_service;
+
+    //The GEDCOM import service
+    private GedcomImportService $gedcom_import_service;    
 
     //The tree service
     private TreeService $tree_service;    
@@ -280,13 +281,13 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $response_factory = Functions::getFromContainer(ResponseFactoryInterface::class);
         $this->stream_factory = new Psr17Factory();
         $this->data_fix_service = New DataFixService();
-        $this->tree_service   = new TreeService(new GedcomImportService);
+        $this->gedcom_import_service = new GedcomImportService;
+        $this->tree_service = new TreeService($this->gedcom_import_service);
         $this->filtered_gedcom_export_service = new FilteredGedcomExportService($response_factory, $this->stream_factory);
 
         //Initialize variables
         $this->matched_pattern_for_tag_combination_in_data_fix = [];
         $this->gedcom_filters_in_data_fix = [];
-        $this->gedcom_filters_loaded_in_data_fix = false;
         $this->root_filesystem = Registry::filesystem()->root();
         $this->standard_params = [];
         $this->gedcom_temp_path = 'modules_v4/' . basename(__DIR__) . '/resources/temp/';
@@ -1768,50 +1769,108 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	/**
      * Import a tree into the database
+     * Code from: Fisharebest\Webtrees\Cli\Commands\TreeImport, function execute()    
      * 
      * @param Tree   $tree
      * @param string $gedcom_file
      * @param string $encoding
      * @param bool   $keep_media
-     * @param bool   $conc_spaces
+     * @param bool   $word_wrapped_notes
      * @param string $gedcom_media_path
      *
-     * @return string
+     * @return bool  true if import was successful, false if import failed
      * 
      * @throws RuntimeException
      */	
-    private function importTree(Tree $tree, string $gedcom_file, string $encoding, bool $keep_media, bool $conc_spaces, string $gedcom_media_path): string
+    private function importTree(Tree $tree, string $gedcom_file, string $encoding, bool $keep_media, bool $word_wrapped_notes, string $gedcom_media_path): bool
     {
         // Replace backslashes by slashes
         $gedcom_file = str_replace('\\' , '/', $gedcom_file);
 
-        $stream = fopen('php://memory', 'wb+');
-
-        if ($stream === false) {
-            throw new RuntimeException('Failed to create temporary stream');
+        if (!file_exists($gedcom_file)) {
+            return false;
         }
 
-        $console = new Console();
-        $console->setAutoExit(false);
-        $input = new ArrayInput([
-                'command'             => 'tree-import',
-                'tree-name'           => $tree->name(),
-                'gedcom-file'         => $gedcom_file,
-                '--encoding'          => $encoding,
-                '--keep-media'        => $keep_media,
-                '--conc-spaces'       => $conc_spaces,
-                '--gedcom-media-path' => $gedcom_media_path,
-            ]);
-        $output  = new StreamOutput($stream);
-        
-        $exit_code = $console->loadCommands()->bootstrap()->run($input, $output);
-        $error     = $exit_code !== 0;
+        try {
+            DB::connection()->beginTransaction();
 
-        $output_stream = $this->stream_factory->createStreamFromResource($stream);
-        $output_stream->rewind();
-        $console_output = $output_stream->getContents();
+            if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+                $tree->setPreference('imported', '0');
+            }
+            else {
+                DB::table('gedcom')->where('gedcom_id', '=', $tree->id())->update(['imported' => 0]);
+            }
 
-        return $console_output;
+            $tree->setPreference('keep_media', $keep_media ? '1' : '0');
+            $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
+            $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);
+
+            $queries = [
+                'individuals' => DB::table('individuals')->where('i_file', '=', $tree->id()),
+                'families'    => DB::table('families')->where('f_file', '=', $tree->id()),
+                'sources'     => DB::table('sources')->where('s_file', '=', $tree->id()),
+                'other'       => DB::table('other')->where('o_file', '=', $tree->id()),
+                'places'      => DB::table('places')->where('p_file', '=', $tree->id()),
+                'placelinks'  => DB::table('placelinks')->where('pl_file', '=', $tree->id()),
+                'name'        => DB::table('name')->where('n_file', '=', $tree->id()),
+                'dates'       => DB::table('dates')->where('d_file', '=', $tree->id()),
+                'change'      => DB::table('change')->where('gedcom_id', '=', $tree->id()),
+            ];
+
+
+            if ($keep_media) {
+                $queries['link'] = DB::table('link')
+                    ->where('l_file', '=', $tree->id())
+                    ->where('l_type', '<>', 'OBJE');
+            } else {
+                $queries += [
+                    'link'       => DB::table('link')->where('l_file', '=', $tree->id()),
+                    'media_file' => DB::table('media_file')->where('m_file', '=', $tree->id()),
+                    'media'      => DB::table('media')->where('m_file', '=', $tree->id()),
+                ];
+            }
+
+            foreach ($queries as $query) {
+                $query->delete();
+            }
+
+            $total_bytes  = filesize($gedcom_file);
+
+            $bytes_loaded = 0;
+
+            $fp     = fopen($gedcom_file, 'rb');
+            $buffer = '';
+
+            while ($bytes_loaded < $total_bytes) {
+                $tmp = fread($fp, 8192);
+                $buffer .= $tmp;
+                $bytes_loaded += strlen($tmp);
+
+                $records = preg_split('/[\r\n]+(?=0)/', $buffer);
+                $buffer = array_pop($records);
+
+                foreach ($records as $record) {
+                    $this->gedcom_import_service->importRecord($record, $tree, false);
+                }
+
+            }
+
+            if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+                $tree->setPreference('imported', '1');
+            }
+            else {
+                DB::table('gedcom')->where('gedcom_id', '=', $tree->id())->update(['imported' => 1]);
+            }
+            
+            DB::connection()->commit();
+
+        } catch (Throwable $ex) {
+            DB::connection()->rollBack();
+
+            return false;
+        }
+
+        return true;
     }
 
 	/**
@@ -2434,10 +2493,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         $this->root_filesystem->writeStream($temporary_file, $resource);
 
                         //Message needs to be created before import, because importTree can confuse the translation system
-                        $message = I18N::translate('The tree was successfully imported into the database.');                        
+                        $message_success = I18N::translate('The tree was successfully imported into the database.');
+                        $message_error   = I18N::translate('Error during importing the tree into the database.');
 
                         //Import the tree into the database
-                        $this->importTree($tree, Webtrees::ROOT_DIR . $temporary_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
+                        $import_successful = $this->importTree($tree, Webtrees::ROOT_DIR . $temporary_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
 
                         //Delete the temporary folder
                         $this->root_filesystem->deleteDirectory($temporary_folder);
@@ -2446,11 +2506,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         return $this->createResponse($ex->getMessage(), StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $called_from_control_panel, $redirect_url);
                     }
 
-                    //Successfully return after upload/import
+                    // Return after upload/import
                     $parameters_for_control_panel['gedcom_filename'] = $filename;
                     $redirect_url = route(ImportGedcomPage::class, $parameters_for_control_panel);
 
-                    return $this->createResponse($message, StatusCodeInterface::STATUS_OK, $called_from_control_panel, $redirect_url);
+                    return $this->createResponse(
+                        $import_successful ? $message_success : $message_error,
+                        $import_successful ? StatusCodeInterface::STATUS_OK : StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
+                        $called_from_control_panel,
+                        $redirect_url
+                    );
                 }
                 else {
                     return $this->createResponse( I18N::translate('Remote URL requests to upload GEDCOM files to the server are not allowed.') . ' ' . 

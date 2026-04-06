@@ -47,20 +47,19 @@ use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Services\GedcomExportService;
 use Fisharebest\Webtrees\Tree;
+use Fisharebest\Webtrees\Webtrees;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Collection;
-use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemOperator;
-use League\Flysystem\ZipArchive\FilesystemZipArchiveProvider;
-use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
 use RuntimeException;
 use Throwable;
+use ZipArchive;
 
 use function addcslashes;
 use function explode;
@@ -167,6 +166,10 @@ class FilteredGedcomExportService extends GedcomExportService
 	}
 
     /**
+     * Filter GEDCOM data and return a resource.
+     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function downloadResponse
+     * Last Check: 2026-04-06
+     * 
      * @param Tree                         $tree           Export data from this tree
      * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
      * @param string                       $encoding       Convert from UTF-8 to other encoding
@@ -194,9 +197,7 @@ class FilteredGedcomExportService extends GedcomExportService
         array $gedcom_filters = [],
         array $params = [],
         ?Collection $records = null,
-        ?bool $head_and_trlr = false,        
-        ?FilesystemOperator $zip_filesystem = null,
-        ?string $media_path = null        
+        ?bool $head_and_trlr = false      
     ) {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
@@ -207,12 +208,16 @@ class FilteredGedcomExportService extends GedcomExportService
 
         // Create a new/empty .ZIP file
         $temp_zip_file  = stream_get_meta_data(tmpfile())['uri'];
-        $zip_provider   = new FilesystemZipArchiveProvider($temp_zip_file, 0755);
-        $zip_adapter    = new ZipArchiveAdapter($zip_provider);
-        $zip_filesystem = new Filesystem($zip_adapter);
+        $zip_filesystem = new ZipArchive();
+        $zip_filesystem->open($temp_zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
-        if ($tree !== null && $format === 'zipmedia') {
-            $media_path = $tree->getPreference('MEDIA_DIRECTORY');
+        if ($format === 'zipmedia') {
+            if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+                $media_path = $tree->getPreference('MEDIA_DIRECTORY');
+            }
+            else {
+                $media_path = $tree->mediaFolder();
+            }
         } elseif ($format === 'gedzip') {
             $media_path = '';
         } else {
@@ -224,17 +229,23 @@ class FilteredGedcomExportService extends GedcomExportService
         $resource = $this->filteredExport($tree, $sort_by_xref, $encoding, $access_level, $line_endings, $gedcom_filters, $params, $records, $head_and_trlr, $zip_filesystem, $media_path);
 
         if ($format === 'gedzip') {
-            $zip_filesystem->writeStream('gedcom.ged', $resource);
+            $zip_filesystem->addFromString('gedcom.ged', stream_get_contents($resource));
         } else {
-            $zip_filesystem->writeStream($filename . '.ged', $resource);
+            $zip_filesystem->addFromString($filename . '.ged', stream_get_contents($resource));
         }
 
         fclose($resource);
+
+        $zip_filesystem->close();
 
         return fopen($temp_zip_file, 'r');
     }
     
     /**
+     * Filter GEDCOM data and return a download response.
+     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function downloadResponse
+     * Last Check: 2026-04-06     * 
+     * 
      * @param Tree                         $tree           Export data from this tree
      * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
      * @param string                       $encoding       Convert from UTF-8 to other encoding
@@ -297,6 +308,8 @@ class FilteredGedcomExportService extends GedcomExportService
 
     /**
      * Filter GEDCOM data and write to a stream.
+     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function export
+     * Last Check: 2026-04-06
      *
      * @param Tree                                            $tree           Export data from this tree
      * @param bool                                            $sort_by_xref   Write GEDCOM records in XREF order
@@ -307,7 +320,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<string>                                   $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
      * @param bool                                            $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
-     * @param FilesystemOperator|null                         $zip_filesystem Write media files to this filesystem
+     * @param ZipArchive|null                                 $zip_filesystem Write media files to this filesystem
      * @param string|null                                     $media_path     Location within the zip filesystem
      * 
      * @return resource
@@ -322,7 +335,7 @@ class FilteredGedcomExportService extends GedcomExportService
         array $params = [],
         ?Collection $records = null,
         ?bool $head_and_trlr = false,
-        ?FilesystemOperator $zip_filesystem = null,
+        ?ZipArchive $zip_filesystem = null,
         ?string $media_path = null
     ) {
         //Create stream and initialize array with Gedcom export
@@ -363,9 +376,7 @@ class FilteredGedcomExportService extends GedcomExportService
             ];
         } else {
             // Disable the pending changes before creating GEDCOM records.
-            Registry::cache()->array()->remember(AbstractGedcomRecordFactory::class . $tree->id(), static function (): Collection {
-                return new Collection();
-            });
+            Registry::cache()->array()->remember(AbstractGedcomRecordFactory::class . $tree->id(), static fn (): Collection => new Collection());
 
             $data = [
                 new Collection([$this->createHeader($tree, $encoding, true, $access_level)]),
@@ -378,9 +389,7 @@ class FilteredGedcomExportService extends GedcomExportService
             ];
         }
 
-        if ($tree !== null) {
-            $media_filesystem = $tree->mediaFilesystem();
-        }
+        $media_filesystem = $tree->mediaFilesystem();
 
         foreach ($data as $rows) {
             foreach ($rows as $datum) {
@@ -439,16 +448,24 @@ class FilteredGedcomExportService extends GedcomExportService
         foreach($gedcom_export as $gedcom) {
 
             //Add media files to ZIP file
-            if ($media_path !== null && $zip_filesystem !== null && preg_match('/0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
+            if ($media_path !== null && preg_match('/^0 @' . Gedcom::REGEX_XREF . '@ OBJE/', $gedcom) === 1) {
                 preg_match_all('/\n1 FILE (.+)/', $gedcom, $matches, PREG_SET_ORDER);
 
                 foreach ($matches as $match) {
                     $media_file = $match[1];
 
-                    if ($tree !== null) {
-                        if ($media_filesystem->fileExists($media_file)) {
-                            $zip_filesystem->writeStream($media_path . $media_file, $media_filesystem->readStream($media_file));
-                        }    
+                    if ($media_filesystem->fileExists($media_file)) {
+                        $tmpfile = tempnam(sys_get_temp_dir(), 'wt-zip-');
+                        $src = $media_filesystem->readStream($media_file);
+                        $dst = fopen($tmpfile, 'wb+');
+                        stream_copy_to_stream($src, $dst);
+
+                        $zip_filesystem->addFile($tmpfile, $media_path . $media_file);
+                        // Media files are (almost always) already compressed.  Don't recompress them.
+                        $zip_filesystem->setCompressionName($media_path . $media_file, ZipArchive::CM_STORE);
+
+                        fclose($src);
+                        fclose($dst);
                     }
                 }
             }
@@ -563,6 +580,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
+     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function familyQuery
+     * Last Check: 2026-04-06
+     * 
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -584,6 +604,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
+     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function individualQuery
+     * Last Check: 2026-04-06
+     * 
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -605,6 +628,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
+     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function sourceQuery
+     * Last Check: 2026-04-06
+     * 
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -626,6 +652,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
+     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function mediaQuery
+     * Last Check: 2026-04-06
+     * 
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -647,6 +676,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
+     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function otherQuery
+     * Last Check: 2026-04-06
+     * 
      * @param Tree $tree
      * @param bool $sort_by_xref
      *

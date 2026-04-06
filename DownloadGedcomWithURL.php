@@ -1562,7 +1562,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	/**
      * Get the records stored in the clippings cart
-     * Code from: ClippingsCartModule, function postDownloadAction
+     * Code from: Fisharebest\Webtrees\Module\ClippingsCartModule, function postDownloadAction
+     * Last check: 2026-04-05
      *
      * @param  Tree       $tree
      * @param  string     $privacy
@@ -1592,7 +1593,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             default:
                 $access_level = Auth::PRIV_HIDE;
                 break;
-        }        
+        }
 
         foreach ($xrefs as $xref) {
             $object = Registry::gedcomRecordFactory()->make($xref, $tree);
@@ -1769,8 +1770,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	/**
      * Import a tree into the database
-     * Code from: Fisharebest\Webtrees\Cli\Commands\TreeImport, function execute()    
-     * 
+     * Code from: Fisharebest\Webtrees\Cli\Commands\TreeImport, function execute()
+     * Last check: 2026-04-05
+	 *
      * @param Tree   $tree
      * @param string $gedcom_file
      * @param string $encoding
@@ -2241,7 +2243,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 try {
                     //Save file
                     $resource = $this->filtered_gedcom_export_service->filteredResource(
-                    $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params, $clippings_cart_records, $export_clippings_cart);
+                        $tree, true, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filter_set, $params, $clippings_cart_records, $export_clippings_cart);
                     $this->root_filesystem->writeStream($folder_on_server . $export_file_name, $resource);
                 } 
                 catch (FilesystemException | UnableToWriteFile | DownloadGedcomWithUrlException $ex) {

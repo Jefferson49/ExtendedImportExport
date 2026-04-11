@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fisharebest\Webtrees\I18N;
+use Jefferson49\Webtrees\Internationalization\MoreI18N;
 
 /**
  * A GEDCOM filter, which includes birth, marriage, and death data only.
@@ -92,7 +93,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
         'SUBM:_UID'                 => [],
 
         //Add a source to the end of the data. The source is used for links in INDI and FAM (links in souce citations) 
-        'TRLR'                      => ["0 TRLR\n" => "0 @S1@ SOUR\n1 TITL %BASE_URL%/tree/%TREE%/\n0 TRLR\n"],
+        'TRLR'                      => ["0 TRLR\n" => "0 @S1@ SOUR\n1 TITL webtrees %I18N_FAMILY_TREE% '%TREE_TITLE%' - %BASE_URL_SHORT%\n0 TRLR\n"],
     ];
 
     /**
@@ -117,8 +118,20 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
 
         $gedcom_filter = [];
 
-        if (empty($params)) {
-            $params = ['tree' => 'tree', 'base_url' => 'https://mysite.info'];
+        $default_params = [
+            'tree'       => 'tree',
+            'tree_title' => 'title',
+            'base_url'   => 'https://MY_SITE',
+        ];
+
+        if (!isset($params['tree'])) {
+            $params['tree'] = 'tree';
+        }
+
+        foreach($default_params as $key => $default_value) {
+            if (!isset($params[$key])) {
+                $params[$key] = $default_value;
+            }
         }
 
         foreach(parent::getGedcomFilterRules($params) as $tag => $regexps) {
@@ -127,10 +140,21 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
 
             foreach($regexps as $search => $replace) {
 
+                //Replace %BASE_URL% in the filter rule by the actual base URL in webtrees
+                $replace = str_replace('%BASE_URL%' , $params['base_url'], $replace);
+				$base_url_short = str_replace(['https://', 'http://', 'www.'], '', $params['base_url']);
+                $replace = str_replace('%BASE_URL_SHORT%', $base_url_short, $replace);    
+
                 //Replace %TREE% in the filter rule by the actual tree name in webtrees
-                //This is needed to generated an URL to the records in webtrees
-                $replace = str_replace('%BASE_URL%' , $params['base_url'] !== '' ? $params['base_url'] : 'https://MY_SITE', $replace);
-                $replace = str_replace('%TREE%' , $params['tree'] !== '' ? $params['tree'] : 'TREE', $replace);
+                $replace = str_replace('%TREE%' , $params['tree'], $replace);
+                $replaced_regexps[$search] = $replace;
+
+                //Replace %TREE_TITLE% in the filter rule by the actual tree title in webtrees
+                $replace = str_replace('%TREE_TITLE%' , $params['tree_title'], $replace);
+                $replaced_regexps[$search] = $replace;
+
+                //Replace %I18N_FAMILY_TREE% in the filter rule by the translation of family tree
+                $replace = str_replace('%I18N_FAMILY_TREE%' , MoreI18N::xlate('Family tree'), $replace);
                 $replaced_regexps[$search] = $replace;
             }
 

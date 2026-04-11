@@ -1991,6 +1991,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
             throw new DownloadGedcomWithUrlException(I18N::translate('Internal module error: Neither GET nor POST request received.'));
         }
 
+        // Add title of the tree to params (for use in GEDCOM filters)
+        $params['tree_title'] = $tree instanceof Tree ? $tree->title() : '';
+
         //Create the response parameters for the case we return to the control panel with the received options
         $parameters_for_control_panel = [
             'tree_name'             => $tree_name,

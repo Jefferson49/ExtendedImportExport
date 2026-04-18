@@ -6,7 +6,8 @@
         }
     ],
     "require": {
-        "jefferson49/webtrees-common": ">=1.2.14"
+        "php": ">=8.1",
+        "jefferson49/webtrees-common": ">=1.2.24"
     },
     "config": {
         "prepend-autoloader": false

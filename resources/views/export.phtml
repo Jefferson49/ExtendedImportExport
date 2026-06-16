@@ -125,7 +125,7 @@ if ($gedbas_upload_allowed) {
 	<?= csrf_field() ?>
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="export_clippings_cart" id="export_clippings_cart" value="<?= $export_clippings_cart ? '1' : '0' ?>">
-	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
+	<input type="hidden" name="called_from" id="called_from" value="<?= DownloadGedcomWithURL::CALLED_FROM_CONTROL_PANEL ?>">
 	<input type="hidden" name="reload_form" id="reload_form" value="0">
 
 	<div class="row mb-3">

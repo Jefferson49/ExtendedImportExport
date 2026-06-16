@@ -40,7 +40,7 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 <form method="post" action="<?= e(route(DownloadGedcomWithURL::class)) ?>" enctype="multipart/form-data">
 	<?= csrf_field() ?>
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
-	<input type="hidden" name="called_from_control_panel" id="called_from_control_panel" value="1">
+	<input type="hidden" name="called_from" id="called_from" value="<?= DownloadGedcomWithURL::CALLED_FROM_CONTROL_PANEL ?>">
 	<input type="hidden" name="action" id="action" value="<?= DownloadGedcomWithURL::ACTION_UPLOAD ?>">	
 	
 		<div class="h4">

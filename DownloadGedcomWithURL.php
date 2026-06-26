@@ -47,6 +47,7 @@ use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Exceptions\FileUploadException;
+use Fisharebest\Webtrees\Exceptions\GedcomErrorException;
 use Fisharebest\Webtrees\Factories\GedcomRecordFactory;
 use Fisharebest\Webtrees\Family;
 use Fisharebest\Webtrees\FlashMessages;
@@ -259,7 +260,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
     private const RECORD_TYPE_HEAD = 'HEAD';
 
     //Others
-    private const UPLOAD_TEMP_FOLDER = 'tmp/';
+    private const UPLOAD_TEMP_FOLDER = 'tmp';
 
 
    /**
@@ -1784,17 +1785,19 @@ class DownloadGedcomWithURL extends AbstractModule implements
      * @param bool   $word_wrapped_notes
      * @param string $gedcom_media_path
      *
-     * @return bool  true if import was successful, false if import failed
+     * @return string  empty if import was successful, error texts if import failed
      * 
      * @throws RuntimeException
      */	
-    private function importTree(Tree $tree, string $gedcom_file, string $encoding, bool $keep_media, bool $word_wrapped_notes, string $gedcom_media_path): bool
+    private function importTree(Tree $tree, string $gedcom_file, string $encoding, bool $keep_media, bool $word_wrapped_notes, string $gedcom_media_path): string
     {
+        $errors = '';
+
         // Replace backslashes by slashes
         $gedcom_file = str_replace('\\' , '/', $gedcom_file);
 
         if (!file_exists($gedcom_file)) {
-            return false;
+            throw new DownloadGedcomWithUrlException('File does not exist' . ': ' . $gedcom_file);
         }
 
         try {
@@ -1856,9 +1859,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $buffer = array_pop($records);
 
                 foreach ($records as $record) {
-                    $this->gedcom_import_service->importRecord($record, $tree, false);
+                    try {
+                        $this->gedcom_import_service->importRecord($record, $tree, false);
+                    } catch (GedcomErrorException $exception) {
+                        $errors .= $exception->getMessage();
+                    }
                 }
-
             }
 
             if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
@@ -1870,13 +1876,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
             
             DB::connection()->commit();
 
-        } catch (Throwable $ex) {
+        } catch (Throwable $th) {
             DB::connection()->rollBack();
-
-            return false;
+            throw $th;
         }
 
-        return true;
+        return $errors;
     }
 
 	/**
@@ -2121,7 +2126,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         // Otherwise, return bad request due to invalid "called_from" parameteter
         else {
-            return $this->createResponse(I18N::translate('Invalid call. Parameter called_from is not valid.'), StatusCodeInterface::STATUS_BAD_REQUEST, $html_response, $redirect_url);
+            return $this->createResponse('Invalid value for parameter "called_from".', StatusCodeInterface::STATUS_BAD_REQUEST, $html_response, $redirect_url);
         }
 
         //Error if privacy level is not valid
@@ -2509,35 +2514,31 @@ class DownloadGedcomWithURL extends AbstractModule implements
                             $temporary_folder .= 'x';
                         }
 
-                        $temporary_file = $temporary_folder . $file_info['filename'] . $file_info['extension']; 
+                        $temporary_file = $temporary_folder . '/' . $file_info['filename'] . $file_info['extension']; 
 
                         //Save the filtered export to a temporary file
                         $this->root_filesystem->writeStream($temporary_file, $resource);
 
                         //Message needs to be created before import, because importTree can confuse the translation system
-                        $message_success = I18N::translate('The tree was successfully imported into the database.');
-                        $message_error   = I18N::translate('Error during importing the tree into the database.');
+                        $message_success       = I18N::translate('The tree was successfully imported into the database.');
+                        $message_import_errors = I18N::translate('The tree was imported into the database. However, some of the records were removed due to creating the following errors');
 
                         //Import the tree into the database
-                        $import_successful = $this->importTree($tree, Webtrees::ROOT_DIR . $temporary_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
+                        $import_errors = $this->importTree($tree, Webtrees::ROOT_DIR . $temporary_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
 
                         //Delete the temporary folder
                         $this->root_filesystem->deleteDirectory($temporary_folder);
                     }
-                    catch (Throwable $ex) {
-                        return $this->createResponse($ex->getMessage(), StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $html_response, $redirect_url);
+                    catch (Throwable $th) {
+                        return $this->createResponse($th->getMessage(), StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $html_response, $redirect_url);
                     }
 
                     // Return after upload/import
                     $parameters_for_control_panel['gedcom_filename'] = $filename;
                     $redirect_url = route(ImportGedcomPage::class, $parameters_for_control_panel);
+                    $message = $import_errors === '' ? $message_success : $message_import_errors . ': ' . $import_errors;
 
-                    return $this->createResponse(
-                        $import_successful ? $message_success : $message_error,
-                        $import_successful ? StatusCodeInterface::STATUS_OK : StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
-                        $html_response,
-                        $redirect_url
-                    );
+                    return $this->createResponse($message, StatusCodeInterface::STATUS_OK, $html_response, $redirect_url);
                 }
                 else {
                     return $this->createResponse( I18N::translate('Remote URL requests to upload GEDCOM files to the server are not allowed.') . ' ' . 

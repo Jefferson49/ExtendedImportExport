@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ExtendedImportExport for webtrees 2\n"
-"POT-Creation-Date: 2026-02-17 20:39+0100\n"
+"POT-Creation-Date: 2026-06-26 06:24+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 "X-Poedit-Basepath: ../..\n"
 "X-Poedit-KeywordsList: translate\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -133,8 +133,8 @@ msgid "The %s method of the used GEDCOM filter (%s) throws a PHP error"
 msgstr ""
 "Die %s Methode des genutzten GEDCOM -Filters (%s) erzeugt einen PHP-Fehler"
 
-#: ConvertGedcomPage.php:85 DownloadGedcomWithURL.php:1978
-#: ImportGedcomPage.php:88
+#: ConvertGedcomPage.php:92 DownloadGedcomWithURL.php:2092
+#: ExportGedcomPage.php:110 ImportGedcomPage.php:93 SelectionPage.php:107
 msgid "Access denied. The user needs to be an administrator."
 msgstr "Zugriff verweigert. Der Benutzer muss Administrator sein."
 
@@ -142,11 +142,11 @@ msgstr "Zugriff verweigert. Der Benutzer muss Administrator sein."
 msgid "GEDCOM Conversion"
 msgstr "GEDCOM-Konvertierung"
 
-#: DownloadGedcomWithURL.php:340
+#: DownloadGedcomWithURL.php:345
 msgid "Extended Import/Export"
 msgstr "Erweiterter Import/Export"
 
-#: DownloadGedcomWithURL.php:353
+#: DownloadGedcomWithURL.php:358
 msgid ""
 "A custom module for advanced GEDCOM import, export, and filter operations. "
 "The module also supports remote downloads/uploads/filters via URL requests."
@@ -155,7 +155,7 @@ msgstr ""
 "sowie Filter Operationen. Das Modul unterstützt zusätzlich Remote-Downloads/-"
 "Uploads/-Filter mittels URL-Aufrufen."
 
-#: DownloadGedcomWithURL.php:575
+#: DownloadGedcomWithURL.php:580
 msgid ""
 "The provided secret key is too short. Please provide a minimum length of 8 "
 "characters."
@@ -163,7 +163,7 @@ msgstr ""
 "Der angegebene Autorisierungs-Schlüssel ist zu kurz. Bitte geben Sie "
 "mindestens eine Länge von 8 Zeichen ein."
 
-#: DownloadGedcomWithURL.php:581
+#: DownloadGedcomWithURL.php:586
 msgid ""
 "The provided secret key contains characters, which are not accepted. Please "
 "provide a different key."
@@ -172,7 +172,7 @@ msgstr ""
 "nicht akzeptiert werden. Bitte geben Sie einen anderen Autorisierungs-"
 "Schlüssel ein."
 
-#: DownloadGedcomWithURL.php:611
+#: DownloadGedcomWithURL.php:616
 #, php-format
 msgid ""
 "The folder settings could not be saved, because the folder \"%s\" does not "
@@ -181,12 +181,12 @@ msgstr ""
 "Die Einstellungen für den Ordner konnten nicht gespeichert werden, weil der "
 "Ordner \"%s\" nicht existiert."
 
-#: DownloadGedcomWithURL.php:640
+#: DownloadGedcomWithURL.php:645
 #, php-format
 msgid "The preferences for the module \"%s\" were updated."
 msgstr "Die Einstellungen für das Modul \"%s\" wurden aktualisiert."
 
-#: DownloadGedcomWithURL.php:736
+#: DownloadGedcomWithURL.php:739
 #, php-format
 msgid ""
 "The preferences for the custom module \"%s\" were sucessfully updated to the "
@@ -195,7 +195,7 @@ msgstr ""
 "Die Einstellungen für das benutzerdefinierte Modul \"%s\" wurden für die "
 "neue Modul-Version %s aktualisiert."
 
-#: DownloadGedcomWithURL.php:789
+#: DownloadGedcomWithURL.php:792
 #, php-format
 msgid ""
 "The preferences for the custom module %s were imported from the earlier "
@@ -204,7 +204,7 @@ msgstr ""
 "Die Einstellungen für das benutzerdefinierte Modul %s wurden von der "
 "früheren Modul-Version %s importiert."
 
-#: DownloadGedcomWithURL.php:816
+#: DownloadGedcomWithURL.php:819
 #, php-format
 msgid ""
 "The preferences for the default GEDCOM filter were reset to \"none\", "
@@ -213,27 +213,27 @@ msgstr ""
 "Die Voreinstellung für den GEDCOM-Filter wurden auf \"keine\" zurückgesetzt, "
 "weil der ausgewählte GEDCOM-Filter %s nicht gefunden wurde"
 
-#: DownloadGedcomWithURL.php:887
+#: DownloadGedcomWithURL.php:908
 msgid "A compilation error was detected in the following GEDCOM filter"
 msgstr "In folgendem Export-Filter wurde ein Kompilierungs-Fehler erkannt"
 
-#: DownloadGedcomWithURL.php:888
+#: DownloadGedcomWithURL.php:909
 msgid "line"
 msgstr "Zeile"
 
-#: DownloadGedcomWithURL.php:888
+#: DownloadGedcomWithURL.php:909
 msgid "error message"
 msgstr "Fehlermeldung"
 
-#: DownloadGedcomWithURL.php:927
+#: DownloadGedcomWithURL.php:948
 msgid "No filter"
 msgstr "Kein Filter"
 
-#: DownloadGedcomWithURL.php:947 DownloadGedcomWithURL.php:1380
+#: DownloadGedcomWithURL.php:968 DownloadGedcomWithURL.php:1394
 msgid "The GEDCOM filter was not found"
 msgstr "Der GEDCOM-Filter wurde nicht gefunden"
 
-#: DownloadGedcomWithURL.php:985
+#: DownloadGedcomWithURL.php:1006
 #, php-format
 msgid ""
 "The include hierarchy for GEDCOM filters exceeds the maximum level of %s "
@@ -242,7 +242,7 @@ msgstr ""
 "Die Include-Hierarchie für Export-Filter überschreitet die maximale Schwelle "
 "von %s Includes."
 
-#: DownloadGedcomWithURL.php:989
+#: DownloadGedcomWithURL.php:1010
 msgid ""
 "The following GEDCOM filter might cause a loop in the include structure, "
 "because it was detected more than once in the include hierarchy"
@@ -251,42 +251,42 @@ msgstr ""
 "Include-Struktur, weil der Filter mehr als einmal in der Include-Hierarchie "
 "detektiert wurde"
 
-#: DownloadGedcomWithURL.php:992
+#: DownloadGedcomWithURL.php:1013
 msgid "Please check the include structure of the selected GEDCOM filters."
 msgstr ""
 "Bitte überprüfen Sie die Include-Struktur der ausgewählten Export-Filter."
 
-#: DownloadGedcomWithURL.php:1645 DownloadGedcomWithURL.php:1706
+#: DownloadGedcomWithURL.php:1660 DownloadGedcomWithURL.php:1721
 msgid "Invalid GEDBAS API key"
 msgstr "Ungültiger GEDBAS API-Schlüssel"
 
-#: DownloadGedcomWithURL.php:1649 DownloadGedcomWithURL.php:2044
+#: DownloadGedcomWithURL.php:1664 DownloadGedcomWithURL.php:2168
 #, php-format
 msgid "GEDBAS Id does not contain an Integer: %s"
 msgstr "Die GEDBAS Id enthält keinen Integer-Wert: %s"
 
-#: DownloadGedcomWithURL.php:1653
+#: DownloadGedcomWithURL.php:1668
 msgid "Invalid file name for GEDBAS upload"
 msgstr "Ungültiger Dateiname für das Hochladen zu GEDBAS"
 
-#: DownloadGedcomWithURL.php:1833 DownloadGedcomWithURL.php:1840
+#: DownloadGedcomWithURL.php:1919 DownloadGedcomWithURL.php:1929
 msgid "Tree not found"
 msgstr "Stammbaum nicht gefunden"
 
-#: DownloadGedcomWithURL.php:1910 SelectionPage.php:77
+#: DownloadGedcomWithURL.php:2000
 msgid "Internal module error: Neither GET nor POST request received."
 msgstr "Interner Modul-Fehler: Weder GET- noch POST-Request empfangen."
 
-#: DownloadGedcomWithURL.php:1947 DownloadGedcomWithURL.php:2223
+#: DownloadGedcomWithURL.php:2060 DownloadGedcomWithURL.php:2337
 msgid "Error during communication with GEDBAS"
 msgstr "Fehler bei der Kommunikation mit GEDBAS"
 
-#: DownloadGedcomWithURL.php:1972 ExportGedcomPage.php:108
+#: DownloadGedcomWithURL.php:2085
 msgid "Access denied. The user needs to be a manager of the tree."
 msgstr ""
 "Zugriff verweigert. Der Benutzer muss Verwalter für den Stammbaum sein."
 
-#: DownloadGedcomWithURL.php:1991
+#: DownloadGedcomWithURL.php:2106
 msgid ""
 "No key provided. For checking of the access rights, it is mandatory to "
 "provide a key as parameter in the URL."
@@ -295,7 +295,7 @@ msgstr ""
 "ist die Angabe eines Autorisierungs-Schlüssels als URL-Parameter "
 "erforderlich."
 
-#: DownloadGedcomWithURL.php:1995
+#: DownloadGedcomWithURL.php:2110
 msgid ""
 "No secret key defined. Please define secret key in the module settings: "
 "Control Panel / Modules / All Modules / "
@@ -304,167 +304,152 @@ msgstr ""
 "Autorisierungs-Schlüssel in den Modul-Einstellungen: Verwaltung / Module / "
 "Alle Module / "
 
-#: DownloadGedcomWithURL.php:1999
+#: DownloadGedcomWithURL.php:2114
 msgid "Key not accepted. Access denied."
 msgstr "Autorisierungs-Schlüssel nicht akzeptiert. Zugriff verweigert."
 
-#: DownloadGedcomWithURL.php:2003
+#: DownloadGedcomWithURL.php:2118
 msgid "Key (encrypted) not accepted. Access denied."
 msgstr ""
 "Autorisierungs-Schlüssel (verschlüsselt) nicht akzeptiert. Zugriff "
 "verweigert."
 
-#: DownloadGedcomWithURL.php:2009
+#: DownloadGedcomWithURL.php:2134
 msgid "Privacy level not accepted"
 msgstr "Wert für Datenschutzeinstellungen nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:2013
+#: DownloadGedcomWithURL.php:2138
 msgid "Export format not accepted"
 msgstr "Export-Format nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:2017
+#: DownloadGedcomWithURL.php:2142
 msgid "Encoding not accepted"
 msgstr "Zeichencodierung nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:2021
+#: DownloadGedcomWithURL.php:2146
 msgid "Action not accepted"
 msgstr "Angeforderte Aktion nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:2025
+#: DownloadGedcomWithURL.php:2150
 msgid "Line endings not accepted"
 msgstr "Angabe bzgl. Zeilenenden nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:2029
+#: DownloadGedcomWithURL.php:2154
 msgid "Time stamp setting not accepted"
 msgstr "Einstellung zum Zeitstempel nicht akzeptiert"
 
-#: DownloadGedcomWithURL.php:2033
+#: DownloadGedcomWithURL.php:2158
 msgid "No file name provided for the requested GEDCOM conversion"
 msgstr "Kein Dateiname für die angeforderte GEDCOM-Konvertierung übergeben"
 
-#: DownloadGedcomWithURL.php:2041 DownloadGedcomWithURL.php:2044
-#: DownloadGedcomWithURL.php:2047
+#: DownloadGedcomWithURL.php:2164 DownloadGedcomWithURL.php:2168
+#: DownloadGedcomWithURL.php:2172
 msgid "Error during GEDBAS upload."
 msgstr "Fehler beim Hochladen zu GEDBAS."
 
-#: DownloadGedcomWithURL.php:2041
+#: DownloadGedcomWithURL.php:2164
 msgid "Empty GEDBAS API key."
 msgstr "Leerer GEDBAS API-Schlüssel."
 
-#: DownloadGedcomWithURL.php:2047
+#: DownloadGedcomWithURL.php:2172
 msgid "No filename provided."
 msgstr "Kein Dateiname angegeben."
 
-#: DownloadGedcomWithURL.php:2160 DownloadGedcomWithURL.php:2226
-#: DownloadGedcomWithURL.php:2402
+#: DownloadGedcomWithURL.php:2280 DownloadGedcomWithURL.php:2340
+#: DownloadGedcomWithURL.php:2490
 #, php-format
 msgid "The file %s could not be created."
 msgstr "Die Datei %s konnte nicht erzeugt werden."
 
-#: DownloadGedcomWithURL.php:2164
+#: DownloadGedcomWithURL.php:2284
 #, php-format
 msgid "The family tree \"%s\" was sucessfully exported to: %s"
 msgstr "Der Stammbaum \"%s\" wurde erfolgreich exportiert nach: %s"
 
-#: DownloadGedcomWithURL.php:2178
+#: DownloadGedcomWithURL.php:2292
 msgid "Remote URL requests to save GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu speichern, "
 "sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:2179 DownloadGedcomWithURL.php:2197
-#: DownloadGedcomWithURL.php:2260 DownloadGedcomWithURL.php:2409
-#: DownloadGedcomWithURL.php:2463
+#: DownloadGedcomWithURL.php:2293 DownloadGedcomWithURL.php:2311
+#: DownloadGedcomWithURL.php:2363 DownloadGedcomWithURL.php:2497
+#: DownloadGedcomWithURL.php:2545
 msgid "Please check the module settings in the control panel."
 msgstr "Bitte überprüfen Sie die Modul-Einstellungen in der Verwaltung."
 
-#: DownloadGedcomWithURL.php:2196
+#: DownloadGedcomWithURL.php:2310
 msgid ""
 "Remote URL requests to download GEDCOM files from the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien herunterzuladen, sind nicht "
 "erlaubt."
 
-#: DownloadGedcomWithURL.php:2248
+#: DownloadGedcomWithURL.php:2355
 #, php-format
 msgid "The family tree \"%s\" was sucessfully uploaded to GEDBAS"
 msgstr "Der Stammbaum \"%s\" wurde erfolgreich zu GEDBAS hochgeladen"
 
-#: DownloadGedcomWithURL.php:2259
+#: DownloadGedcomWithURL.php:2362
 msgid "Remote URL requests to upload GEDCOM files to GEDBAS are disabled."
 msgstr ""
 "Remote-URL-Anfragen zum Hochladen von GEDCOM-Dateien nach GEDBAS sind "
 "deaktiviert."
 
-#: DownloadGedcomWithURL.php:2282 DownloadGedcomWithURL.php:2306
+#: DownloadGedcomWithURL.php:2386 DownloadGedcomWithURL.php:2410
 #, php-format
 msgid "Unable to read file \"%s\"."
 msgstr "Die Datei \"%s\" konnte nicht eingelesen werden."
 
-#: DownloadGedcomWithURL.php:2321
+#: DownloadGedcomWithURL.php:2424
 #, php-format
 msgid "No data imported from file \"%s\". The file might be empty."
 msgstr ""
 "Es wurden keine Daten aus der Datei \"%s\" importiert. Die Datei ist "
 "möglicherweise leer."
 
-#: DownloadGedcomWithURL.php:2325
+#: DownloadGedcomWithURL.php:2428
 #, php-format
 msgid "The file \"%s\" was sucessfully uploaded for the family tree \"%s\""
 msgstr ""
 "Die Datei \"%s\" für den Stammbaum \"%s\" wurde erfolgreich hochgeladen"
 
-#: DownloadGedcomWithURL.php:2375
+#: DownloadGedcomWithURL.php:2477
 #, php-format
 msgid "The GEDCOM file \"%s\" was successfully converted to: %s"
 msgstr "Die GEDCOM-Datei \"%s\" wurde erfolgreich konvertiert nach: %s"
 
-#: DownloadGedcomWithURL.php:2408
+#: DownloadGedcomWithURL.php:2496
 msgid ""
 "Remote URL requests to convert GEDCOM files on the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien auf dem Server zu "
 "konvertieren, sind nicht erlaubt."
 
-#: DownloadGedcomWithURL.php:2445
+#: DownloadGedcomWithURL.php:2523
 msgid "The tree was successfully imported into the database."
 msgstr "Der Stammbaum wurde erfolgreich in die Datenbank importiert."
 
-#: DownloadGedcomWithURL.php:2462
+#: DownloadGedcomWithURL.php:2524
+msgid ""
+"The tree was imported into the database. However, some of the records were "
+"removed due to creating the following errors"
+msgstr ""
+"Der Baum wurde in die Datenbank importiert. Einige der Datensätze wurden "
+"jedoch entfernt, da sie zu folgenden Fehlern führten"
+
+#: DownloadGedcomWithURL.php:2544
 msgid ""
 "Remote URL requests to upload GEDCOM files to the server are not allowed."
 msgstr ""
 "Remote-Aufrufe mittels URL, um GEDCOM-Dateien hochzuladen, sind nicht "
 "erlaubt."
 
-#: DownloadGedcomWithURL.php:2469
+#: DownloadGedcomWithURL.php:2551
 msgid "Reached end of request handle without proper response"
 msgstr "Ende des Request-Handles ohne ordnungsgemäße Antwort erreicht"
 
-#: ExportGedcomPage.php:128
-msgid "Extended GEDCOM Export"
-msgstr "Erweiterter GEDCOM-Export"
-
-#: FilteredGedcomExportService.php:821
-msgid "The following GEDCOM structure could not be matched"
-msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
-
-#: FilteredGedcomExportService.php:996
-msgid "Error during a regular expression replacement."
-msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
-
-#: FilteredGedcomExportService.php:1167
-msgid ""
-"Fatal error: Too many iterations while removing empty and unlinked records."
-msgstr ""
-"Schwerwiegender Fehler: Zu viele Iterationen beim Entfernen von leeren oder "
-"unverknüpften Datensätzen."
-
-#: ImportGedcomPage.php:121
-msgid "Extended GEDCOM Import"
-msgstr "Erweiterter GEDCOM-Import"
-
-#: SelectionPage.php:96
+#: ExportGedcomPage.php:116 ImportGedcomPage.php:99 SelectionPage.php:113
 #, php-format
 msgid ""
 "The current user does not have sufficient rights to access trees with the "
@@ -473,7 +458,30 @@ msgstr ""
 "Der aktuelle Benutzer verfügt nicht über ausreichende Rechte, um mit dem "
 "benutzerdefinierten Modul %s auf Stammbäume zuzugreifen."
 
-#: SelectionPage.php:106
+#: ExportGedcomPage.php:136
+msgid "Extended GEDCOM Export"
+msgstr "Erweiterter GEDCOM-Export"
+
+#: FilteredGedcomExportService.php:850
+msgid "The following GEDCOM structure could not be matched"
+msgstr "Die folgende GEDCOM-Struktur konnte nicht zugeordnet werden"
+
+#: FilteredGedcomExportService.php:1025
+msgid "Error during a regular expression replacement."
+msgstr "Fehler während einer Ersetzung durch einen regulären Ausdruck."
+
+#: FilteredGedcomExportService.php:1196
+msgid ""
+"Fatal error: Too many iterations while removing empty and unlinked records."
+msgstr ""
+"Schwerwiegender Fehler: Zu viele Iterationen beim Entfernen von leeren oder "
+"unverknüpften Datensätzen."
+
+#: ImportGedcomPage.php:131
+msgid "Extended GEDCOM Import"
+msgstr "Erweiterter GEDCOM-Import"
+
+#: SelectionPage.php:123
 msgid "Extended GEDCOM Import/Export"
 msgstr "Erweiterter GEDCOM-Import/Export"
 
@@ -485,7 +493,7 @@ msgstr "Alle Datensätze"
 msgid "Avoid leading spaces for CONC"
 msgstr "Führende Leerzeichen bei CONC vermeiden"
 
-#: resources/filter/BirthMarriageDeathGedcomFilter.php:105
+#: resources/filter/BirthMarriageDeathGedcomFilter.php:106
 msgid "Birth, marriage, death export"
 msgstr "Geburten, Heiraten, Todesfälle exportieren"
 
@@ -643,14 +651,14 @@ msgstr "Prefix Zeitstempel"
 msgid "Postfix time stamp"
 msgstr "Postfix Zeitstempel"
 
-#: resources/views/convert.phtml:198 resources/views/export.phtml:335
+#: resources/views/convert.phtml:198 resources/views/export.phtml:337
 #: resources/views/import.phtml:138
 msgid "Select GEDCOM filters"
 msgstr "Selektieren Sie GEDCOM-Filter"
 
 #: resources/views/convert.phtml:202 resources/views/convert.phtml:214
-#: resources/views/convert.phtml:226 resources/views/export.phtml:339
-#: resources/views/export.phtml:351 resources/views/export.phtml:363
+#: resources/views/convert.phtml:226 resources/views/export.phtml:341
+#: resources/views/export.phtml:353 resources/views/export.phtml:365
 #: resources/views/import.phtml:142 resources/views/import.phtml:154
 #: resources/views/import.phtml:166
 #, php-format
@@ -689,11 +697,11 @@ msgstr "Export-Aktion"
 msgid "Action"
 msgstr "Aktion"
 
-#: resources/views/export.phtml:275 resources/views/export.phtml:281
+#: resources/views/export.phtml:275 resources/views/export.phtml:283
 msgid "GEDBAS API key"
 msgstr "GEDBAS API-Schlüssel"
 
-#: resources/views/export.phtml:280
+#: resources/views/export.phtml:282
 msgid ""
 "GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS "
 "account. You can identify your individual key with the following link"
@@ -702,11 +710,11 @@ msgstr ""
 "bestimmtes GEDBAS-Konto ermöglicht. Ihren individuellen Schlüssel können Sie "
 "mit folgendem Link ermitteln"
 
-#: resources/views/export.phtml:289
+#: resources/views/export.phtml:291
 msgid "GEDBAS database Id"
 msgstr "GEDBAS Datenbank-Nummer"
 
-#: resources/views/export.phtml:296
+#: resources/views/export.phtml:298
 msgid ""
 "Select a GEDBAS database, to which the GEDCOM file shall be uploaded or "
 "create a new database."
@@ -714,11 +722,11 @@ msgstr ""
 "Wählen Sie eine GEDBAS-Datenbank aus, in welche die GEDCOM-Datei hochgeladen "
 "werden soll; oder erstellen Sie eine neue Datenbank."
 
-#: resources/views/export.phtml:302
+#: resources/views/export.phtml:304
 msgid "GEDBAS database title"
 msgstr "GEDBAS Datenbank-Titel"
 
-#: resources/views/export.phtml:310
+#: resources/views/export.phtml:312
 msgid ""
 "By default, the GEDBAS database title is generated from the tree title. "
 "Modify the title according to your needs."
@@ -726,11 +734,11 @@ msgstr ""
 "Standardmäßig wird der GEDBAS-Datenbanktitel aus dem Stammbaum-Titel "
 "generiert. Passen Sie den Titel Ihren Anforderungen entsprechend an."
 
-#: resources/views/export.phtml:317
+#: resources/views/export.phtml:319
 msgid "GEDBAS database description"
 msgstr "Beschreibung der GEDBAS-Datenbank"
 
-#: resources/views/export.phtml:325
+#: resources/views/export.phtml:327
 msgid ""
 "By default, the GEDBAS database description is generated from HEAD:NOTE or "
 "from the tree title. Modify the description according to your needs."
@@ -739,7 +747,7 @@ msgstr ""
 "Stammbaum-Titel generiert. Passen Sie die Beschreibung gemäß Ihren "
 "Anforderungen an."
 
-#: resources/views/export.phtml:379
+#: resources/views/export.phtml:381
 msgid "Transfer GEDCOM file"
 msgstr "GEDCOM-Datei übertragen"
 
@@ -773,7 +781,7 @@ msgstr ""
 msgid "Import GEDCOM file"
 msgstr "GEDCOM-Datei importieren"
 
-#: resources/views/options.phtml:23 resources/views/selection.phtml:114
+#: resources/views/options.phtml:23 resources/views/selection.phtml:107
 msgid "Datafix using GEDCOM filters"
 msgstr "Datenkorrektur mit Hilfe von GEDCOM-Filtern"
 
@@ -805,15 +813,15 @@ msgstr "Selektieren Sie ein GEDCOM-Filter"
 msgid "Select a tree"
 msgstr "Wählen Sie einen Stammbaum"
 
-#: resources/views/selection.phtml:59
+#: resources/views/selection.phtml:58
 msgid "GEDCOM Import"
 msgstr "GEDCOM-Import"
 
-#: resources/views/selection.phtml:76
+#: resources/views/selection.phtml:73
 msgid "GEDCOM Export: Tree"
 msgstr "GEDCOM-Export: Stammbaum"
 
-#: resources/views/selection.phtml:91
+#: resources/views/selection.phtml:88
 msgid "GEDCOM Export: Clippings cart"
 msgstr "GEDCOM-Export: Sammelbehälter"
 
@@ -1244,6 +1252,9 @@ msgid ""
 msgstr ""
 "Um geänderte Einstellungen beim Herunterladen/Hochladen zu nutzen, müssen "
 "die Einstellungen zunächst gespeichert werden."
+
+#~ msgid "File does not exist"
+#~ msgstr "Datei existiert nicht"
 
 #~ msgid "Error during GEDBAS upload"
 #~ msgstr "Fehler beim Hochladen zu GEDBAS"

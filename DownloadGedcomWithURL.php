@@ -165,7 +165,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 
 	//Custom module version
-	public const CUSTOM_VERSION             = '4.2.13';
+	public const CUSTOM_VERSION             = '4.2.14';
     public const CUSTOM_MODULE_TITLE        = 'Extended Import/Export';
 
 	//Routes

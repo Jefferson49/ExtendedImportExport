@@ -61,6 +61,7 @@ use Fisharebest\Webtrees\Http\RequestHandlers\RenumberTreeAction;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Individual;
 use Fisharebest\Webtrees\Location;
+use Fisharebest\Webtrees\Log;
 use Fisharebest\Webtrees\Media;
 use Fisharebest\Webtrees\Note;
 use Fisharebest\Webtrees\Module\AbstractModule;
@@ -115,8 +116,8 @@ use stdClass;
 use Throwable;
 
 use function substr;
+use function strip_tags;
 use function str_replace;
-
 
 class DownloadGedcomWithURL extends AbstractModule implements 
 	ModuleCustomInterface, 
@@ -164,7 +165,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 
 	//Custom module version
-	public const CUSTOM_VERSION = '4.2.13';
+	public const CUSTOM_VERSION             = '4.2.13';
+    public const CUSTOM_MODULE_TITLE        = 'Extended Import/Export';
 
 	//Routes
 	protected const ROUTE_REMOTE_ACTION_OLD = '/DownloadGedcomWithURL';
@@ -2520,8 +2522,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         $this->root_filesystem->writeStream($temporary_file, $resource);
 
                         //Message needs to be created before import, because importTree can confuse the translation system
-                        $message_success       = I18N::translate('The tree was successfully imported into the database.');
-                        $message_import_errors = I18N::translate('The tree was imported into the database. However, some of the records were removed due to creating the following errors');
+                        $message_success            = 'The tree was successfully imported.';
+                        $message_import_errors      = 'The tree was imported. However, some of the records were removed due to creating the following errors';
+                        $i18n_message_success       = I18N::translate('The tree was successfully imported.');
+                        $i18n_message_import_errors = I18N::translate('The tree was imported. However, some of the records were removed due to creating the following errors');
 
                         //Import the tree into the database
                         $import_errors = $this->importTree($tree, Webtrees::ROOT_DIR . $temporary_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
@@ -2533,12 +2537,17 @@ class DownloadGedcomWithURL extends AbstractModule implements
                         return $this->createResponse($th->getMessage(), StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $html_response, $redirect_url);
                     }
 
-                    // Return after upload/import
+                    // Create the message to return
+                    $message      = $import_errors === '' ? $message_success      : $message_import_errors      . ': ' . strip_tags($import_errors);
+                    $i18n_message = $import_errors === '' ? $i18n_message_success : $i18n_message_import_errors . ': ' . $import_errors;
+
+                    // Log the tree import
+                    Log::addConfigurationLog(self::CUSTOM_MODULE_TITLE . ': ' . $message, $tree);
+
                     $parameters_for_control_panel['gedcom_filename'] = $filename;
                     $redirect_url = route(ImportGedcomPage::class, $parameters_for_control_panel);
-                    $message = $import_errors === '' ? $message_success : $message_import_errors . ': ' . $import_errors;
 
-                    return $this->createResponse($message, StatusCodeInterface::STATUS_OK, $html_response, $redirect_url);
+                    return $this->createResponse($i18n_message, StatusCodeInterface::STATUS_OK, $html_response, $redirect_url);
                 }
                 else {
                     return $this->createResponse( I18N::translate('Remote URL requests to upload GEDCOM files to the server are not allowed.') . ' ' . 

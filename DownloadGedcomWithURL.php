@@ -38,7 +38,6 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
-use Fisharebest\Localization\Translation;
 use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\DB;
 use Fisharebest\Webtrees\Encodings\ANSEL;
@@ -455,13 +454,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function customTranslations(string $language): array
     {
-        $lang_dir   = $this->resourcesFolder() . 'lang/';
-        $file       = $lang_dir . $language . '.mo';
-        if (file_exists($file)) {
-            return (new Translation($file))->asArray();
-        } else {
-            return [];
-        }
+        return MoreI18N::readTranslationsFromMoFile($this->resourcesFolder() . 'lang/', $language);
     }
 
     /**

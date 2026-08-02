@@ -36,8 +36,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
-use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;
+use Fisharebest\Webtrees\Enums\AccessLevel;
 use Fisharebest\Webtrees\Factories\AbstractGedcomRecordFactory;
 use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
@@ -52,6 +52,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Collection;
+use Jefferson49\Webtrees\Authorization\Auth;
 use League\Flysystem\FilesystemOperator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -197,7 +198,9 @@ class FilteredGedcomExportService extends GedcomExportService
         array $gedcom_filters = [],
         array $params = [],
         ?Collection $records = null,
-        ?bool $head_and_trlr = false      
+        ?bool $head_and_trlr = false,
+        ?FilesystemOperator $zip_filesystem = null,
+        ?string $media_path = null
     ) {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
@@ -396,7 +399,7 @@ class FilteredGedcomExportService extends GedcomExportService
                 if (is_string($datum)) {
                     $gedcom = $datum;
                 } elseif ($datum instanceof GedcomRecord) {
-                    $gedcom = $datum->privatizeGedcom($access_level);
+                    $gedcom = self::getPrivatizedGedcom($datum, $access_level);
 
                     if ($gedcom === '') {
                         continue;
@@ -503,16 +506,24 @@ class FilteredGedcomExportService extends GedcomExportService
     /**
      * Create a header record for a gedcom file, which exports SUBM/SUBN even if no user is logged in
      *
-     * @param Tree   $tree
-     * @param string $encoding
-     * @param bool   $include_sub   Include SUBM or SUBN
+     * @param Tree            $tree
+     * @param string          $encoding
+     * @param bool            $include_sub   Include SUBM or SUBN
+     * @param AccessLevel|int $access_level
      *
      * @return string
      */
-    public function createHeader(Tree $tree, string $encoding, bool $include_sub, int $access_level = Auth::PRIV_HIDE): string
+    public function createHeader(Tree $tree, string $encoding, bool $include_sub, AccessLevel|int $access_level): string
     {
         //Take GEDCOM from parent method as a base
-        $gedcom = parent::createHeader($tree, $encoding, $include_sub, $access_level);
+        if (version_compare(Webtrees::VERSION, '2.2.6', '>')) {
+            $gedcom = parent::createHeader($tree, $encoding, $include_sub, AccessLevel::from($access_level));
+            $header_facts_access_level = AccessLevel::Hidden;
+        }
+        else {
+            $gedcom = parent::createHeader($tree, $encoding, $include_sub, $access_level);
+            $header_facts_access_level = AUTH::PRIV_HIDE;
+        }
 
         $header = Registry::headerFactory()->make('HEAD', $tree) ?? Registry::headerFactory()->new('HEAD', '0 HEAD', null, $tree);
 
@@ -522,7 +533,7 @@ class FilteredGedcomExportService extends GedcomExportService
 
                 //Apply access level of 'none', because the GEDCOM standard requires to include a submitter and export needs to be consistent if a submitter/submission exists
                 //Privacy of the submitter/submission is handled in the submitter/submission object itself
-                foreach ($header->facts(['SUBM', 'SUBN'], false, Auth::PRIV_HIDE) as $fact) {
+                foreach ($header->facts(['SUBM', 'SUBN'], false, $header_facts_access_level) as $fact) {
 
                     //Add submitter/submission if the parent method did not find it, because of access rights
                     if (strpos($gedcom, "\n1 " . substr($fact->tag(), -4, 4)) === false) {
@@ -1318,5 +1329,23 @@ class FilteredGedcomExportService extends GedcomExportService
         }    
 
         return;
+    }
+
+    /**
+     * Return the privatized GEDCOM of a Gedcom record
+     * 
+     * @param GedcomRecord $record        Gedcom structure
+     * @param int          $access_level  Access level of the user
+     * 
+     * @return string
+     */
+    private static function getPrivatizedGedcom(GedcomRecord $record, int $access_level) : string {
+
+        if (version_compare(Webtrees::VERSION, '2.2.6', '>')) {
+            return $record->privatizeGedcom(AccessLevel::from($access_level));
+        }        
+        else {
+            return $record->privatizeGedcom($access_level);
+        }
     }
 }

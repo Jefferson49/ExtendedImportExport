@@ -38,7 +38,6 @@ namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
-use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\DB;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
@@ -92,10 +91,11 @@ use Fisharebest\Webtrees\View;
 use Fisharebest\Webtrees\Webtrees;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
+use Jefferson49\Webtrees\Authorization\Auth;
 use Jefferson49\Webtrees\Exceptions\GithubCommunicationError;
+use Jefferson49\Webtrees\Helpers\Functions as CommonFunctions;
 use Jefferson49\Webtrees\Helpers\GithubService;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
-use Jefferson49\Webtrees\Helpers\Functions as CommonFunctions;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToWriteFile;
@@ -1757,7 +1757,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Retrieve HEAD:NOTE
         $header_note = '';
         If (boolval($this->getPreference(self::PREF_USE_HEAD_NOTE_FOR_GEDBAS, '0'))) {
-            $header = $this->filtered_gedcom_export_service->createHeader($tree, UTF8::NAME, false);
+            $header = $this->filtered_gedcom_export_service->createHeader($tree, UTF8::NAME, false, Auth::PRIV_HIDE);
             if (preg_match('/1 NOTE (.*)/', $header, $matches)) {
                 $header_note = $matches[1];
             }

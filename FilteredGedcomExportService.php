@@ -53,6 +53,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Collection;
 use Jefferson49\Webtrees\Authorization\Auth;
+use Jefferson49\Webtrees\Helpers\Functions;
 use League\Flysystem\FilesystemOperator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -399,7 +400,7 @@ class FilteredGedcomExportService extends GedcomExportService
                 if (is_string($datum)) {
                     $gedcom = $datum;
                 } elseif ($datum instanceof GedcomRecord) {
-                    $gedcom = self::getPrivatizedGedcom($datum, $access_level);
+                    $gedcom = Functions::getPrivatizedGedcom($datum, $access_level);
 
                     if ($gedcom === '') {
                         continue;
@@ -1329,23 +1330,5 @@ class FilteredGedcomExportService extends GedcomExportService
         }    
 
         return;
-    }
-
-    /**
-     * Return the privatized GEDCOM of a Gedcom record
-     * 
-     * @param GedcomRecord $record        Gedcom structure
-     * @param int          $access_level  Access level of the user
-     * 
-     * @return string
-     */
-    private static function getPrivatizedGedcom(GedcomRecord $record, int $access_level) : string {
-
-        if (version_compare(Webtrees::VERSION, '2.2.6', '>')) {
-            return $record->privatizeGedcom(AccessLevel::from($access_level));
-        }        
-        else {
-            return $record->privatizeGedcom($access_level);
-        }
     }
 }

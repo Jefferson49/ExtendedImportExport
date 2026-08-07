@@ -1598,8 +1598,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
         foreach ($xrefs as $xref) {
             $object = Registry::gedcomRecordFactory()->make($xref, $tree);
             // The object may have been deleted since we added it to the cart....
-            if ($object instanceof GedcomRecord && $object->canShow($access_level)) {
-                $gedcom = $object->privatizeGedcom($access_level);
+            if ($object instanceof GedcomRecord && CommonFunctions::canShowRecord($object, $access_level)) {
+                $gedcom = CommonFunctions::getPrivatizedGedcom($object, $access_level);
 
                 // Remove links to objects that aren't in the cart
                 $patterns = [

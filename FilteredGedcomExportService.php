@@ -181,10 +181,10 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * @param Collection<int,string|object|GedcomRecord>|null $records
-     * @param bool                         $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
-     * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
-     * @param string|null                  $media_path     Location within the zip filesystem
+     * @param ?Collection<int,string|object|GedcomRecord> $records
+     * @param ?bool                        $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
+     * @param ?FilesystemOperator          $zip_filesystem Write media files to this filesystem
+     * @param ?string                      $media_path     Location within the zip filesystem
      *
      * @return resource
      */
@@ -259,10 +259,10 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param string                       $format         One of: gedcom, zip, zipmedia, gedzip
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * @param Collection|null              $records        Just export these records
-     * @param bool                         $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
-     * @param FilesystemOperator|null      $zip_filesystem Write media files to this filesystem
-     * @param string|null                  $media_path     Location within the zip filesystem     
+     * @param ?Collection                  $records        Just export these records
+     * @param ?bool                        $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
+     * @param ?FilesystemOperator          $zip_filesystem Write media files to this filesystem
+     * @param ?string                      $media_path     Location within the zip filesystem     
      *
      * @return ResponseInterface
      */
@@ -322,10 +322,10 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param string                                          $line_endings   CRLF or LF
      * @param array<GedcomFilterInterface>                    $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                                   $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * @param Collection<int,string|object|GedcomRecord>|null $records        Just export these records
-     * @param bool                                            $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
-     * @param ZipArchive|null                                 $zip_filesystem Write media files to this filesystem
-     * @param string|null                                     $media_path     Location within the zip filesystem
+     * @param ?Collection<int,string|object|GedcomRecord>     $records        Just export these records
+     * @param ?bool                                           $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
+     * @param ?ZipArchive                                     $zip_filesystem Write media files to this filesystem
+     * @param ?string                                         $media_path     Location within the zip filesystem
      * 
      * @return resource
      */
@@ -534,7 +534,7 @@ class FilteredGedcomExportService extends GedcomExportService
 
                 //Apply access level of 'none', because the GEDCOM standard requires to include a submitter and export needs to be consistent if a submitter/submission exists
                 //Privacy of the submitter/submission is handled in the submitter/submission object itself
-                foreach ($header->facts(['SUBM', 'SUBN'], false, $header_facts_access_level) as $fact) {
+                foreach (Functions::getRecordFacts($header, ['SUBM', 'SUBN'], false, $header_facts_access_level) as $fact) {
 
                     //Add submitter/submission if the parent method did not find it, because of access rights
                     if (strpos($gedcom, "\n1 " . substr($fact->tag(), -4, 4)) === false) {

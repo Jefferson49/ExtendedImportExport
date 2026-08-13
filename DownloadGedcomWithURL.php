@@ -93,6 +93,7 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Jefferson49\Webtrees\Authorization\Auth;
 use Jefferson49\Webtrees\Exceptions\GithubCommunicationError;
+use Jefferson49\Webtrees\Helpers\Authorization;
 use Jefferson49\Webtrees\Helpers\Functions as CommonFunctions;
 use Jefferson49\Webtrees\Helpers\GithubService;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
@@ -1598,7 +1599,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         foreach ($xrefs as $xref) {
             $object = Registry::gedcomRecordFactory()->make($xref, $tree);
             // The object may have been deleted since we added it to the cart....
-            if ($object instanceof GedcomRecord && CommonFunctions::canShowRecord($object, $access_level)) {
+            if ($object instanceof GedcomRecord && Authorization::canShowRecord($object, $access_level)) {
                 $gedcom = CommonFunctions::getPrivatizedGedcom($object, $access_level);
 
                 // Remove links to objects that aren't in the cart

@@ -122,7 +122,6 @@ if ($gedbas_upload_allowed) {
 <div class="row mb-3"><?= view('icons/spacer') ?></div>
 
 <form method="post" id="export-form" action="<?= e(route(DownloadGedcomWithURL::class)) ?>" enctype="multipart/form-data">
-	<?= csrf_field() ?>
 	<input type="hidden" name="tree" id="tree" value="<?= $tree->name() ?>">
 	<input type="hidden" name="export_clippings_cart" id="export_clippings_cart" value="<?= $export_clippings_cart ? '1' : '0' ?>">
 	<input type="hidden" name="called_from" id="called_from" value="<?= DownloadGedcomWithURL::CALLED_FROM_CONTROL_PANEL ?>">
@@ -382,7 +381,7 @@ if ($gedbas_upload_allowed) {
 			</button>
 		</div>
 	</div>		
-
+	<?= csrf_field() ?>
 </form>
 
 <?php View::push('javascript') ?>

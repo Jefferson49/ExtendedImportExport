@@ -120,8 +120,8 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 
 <?php View::push('javascript') ?>
 <script>
-	$('#tree-select select').change(function () {
-        $('#settings-form').submit();
+	document.querySelector('#tree-select select').addEventListener('change', function () {
+        document.getElementById('settings-form').submit();
     });
 </script>
 <?php View::endpush() ?>

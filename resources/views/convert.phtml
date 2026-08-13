@@ -249,39 +249,18 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 <script>
 	'use strict';
 
-	$('#import-client-file').change(function () {
+	document.getElementById('import-client-file').addEventListener('change', function () {
 		document.getElementById("filename_converted").value = "";
-        $('#export-form').submit();
+        document.getElementById('export-form').submit();
     });
-	$('#import-server-file').change(function () {
+	document.getElementById('import-server-file').addEventListener('change', function () {
 		document.getElementById("filename_converted").value = "";
-        $('#export-form').submit();
+        document.getElementById('export-form').submit();
     });
 
 	document.querySelectorAll('[name=format]').forEach(element => element.addEventListener('change', event => document.getElementById('extension').innerText = event.target.dataset.wtExtension));
 
 	// Firefox will reload the page and change the selected item.
 	document.getElementById('extension').innerText = document.querySelector('[name=format]:checked').dataset.wtExtension;
-
-    $('#select-all-1').change(function(e) {
-        if (e.currentTarget.checked) {
-            $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', true);
-        } else {
-            $('.mb-3 .row').find('input[type="checkbox"]').prop('checked', false);
-        }
-    });
-	function checkGedcomImportForm (message) {
-		let oldFile = $('#gedcom_filename').val();
-		let method = $('input[name=source]:checked').val();
-		let newFile = method === 'server' ? $('#import-server-file').val() : $('#import-client-file').val();
-
-		// Some browsers include c:\fakepath\ in the filename.
-		newFile = newFile.replace(/.*[/\\]/, '');
-		if (newFile !== oldFile && oldFile !== '') {
-		return window.confirm(message);
-		} else {
-		return true;
-		}
-	};
 </script>
 <?php View::endpush() ?>

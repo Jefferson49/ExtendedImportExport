@@ -66,7 +66,6 @@ use Fisharebest\Webtrees\Module\AbstractModule;
 use Fisharebest\Webtrees\Module\ModuleConfigInterface;
 use Fisharebest\Webtrees\Module\ModuleConfigTrait;
 use Fisharebest\Webtrees\Module\ModuleCustomInterface;
-use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Module\ModuleDataFixInterface;
 use Fisharebest\Webtrees\Module\ModuleDataFixTrait;
 use Fisharebest\Webtrees\Module\ModuleGlobalInterface;
@@ -92,11 +91,10 @@ use Fisharebest\Webtrees\Webtrees;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Jefferson49\Webtrees\Authorization\Auth;
-use Jefferson49\Webtrees\Exceptions\GithubCommunicationError;
 use Jefferson49\Webtrees\Helpers\Authorization;
 use Jefferson49\Webtrees\Helpers\Functions as CommonFunctions;
-use Jefferson49\Webtrees\Helpers\GithubService;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
+use Jefferson49\Webtrees\Module\ModuleCustomTrait;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToWriteFile;
@@ -178,10 +176,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	//Github repository
 	public const GITHUB_REPO = 'Jefferson49/ExtendedImportExport';
-
-	//Github API URL to get the information about the latest releases
-	public const GITHUB_API_LATEST_VERSION = 'https://api.github.com/repos/'. self::GITHUB_REPO . '/releases/latest';
-	public const GITHUB_API_TAG_NAME_PREFIX = '"tag_name":"v';
 
 	//Author of custom module
 	public const CUSTOM_AUTHOR = 'Markus Hemprich';
@@ -281,6 +275,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
      */
     public function boot(): void
     {
+        //Register this class in the webtrees container
+        //This allows to access the module instance from other places, e.g. views/scripts (->assetUrl)
+        CommonFunctions::registerInContainer(self::class, $this);
+
         //Check update of module version
         $this->checkModuleVersionUpdate();
 
@@ -358,104 +356,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
     {
         /* I18N: Description of the “AncestorsChart” module */
         return I18N::translate('A custom module for advanced GEDCOM import, export, and filter operations. The module also supports remote downloads/uploads/filters via URL requests.');
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return string
-     *
-     * @see \Fisharebest\Webtrees\Module\AbstractModule::resourcesFolder()
-     */
-    public function resourcesFolder(): string
-    {
-        return __DIR__ . '/resources/';
-    }
-
-    /**
-     * Get the active module name, e.g. the name of the currently running module
-     *
-     * @return string
-     */
-    public static function activeModuleName(): string
-    {
-        return '_' . basename(__DIR__) . '_';
-    }
-    
-    /**
-     * {@inheritDoc}
-     *
-     * @return string
-     *
-     * @see \Fisharebest\Webtrees\Module\ModuleCustomInterface::customModuleAuthorName()
-     */
-    public function customModuleAuthorName(): string
-    {
-        return self::CUSTOM_AUTHOR;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return string
-     *
-     * @see \Fisharebest\Webtrees\Module\ModuleCustomInterface::customModuleVersion()
-     */
-    public function customModuleVersion(): string
-    {
-        return self::CUSTOM_VERSION;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return string
-     *
-     * @see \Fisharebest\Webtrees\Module\ModuleCustomInterface::customModuleLatestVersion()
-     */
-    public function customModuleLatestVersion(): string
-    {
-        return Registry::cache()->file()->remember(
-            $this->name() . '-latest-version',
-            function (): string {
-
-                try {
-                    //Get latest release from GitHub
-                    return GithubService::getLatestReleaseTag(self::GITHUB_REPO);
-                }
-                catch (GithubCommunicationError $ex) {
-                    // Can't connect to GitHub?
-                    return $this->customModuleVersion();
-                }
-            },
-            86400
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return string
-     *
-     * @see \Fisharebest\Webtrees\Module\ModuleCustomInterface::customModuleSupportUrl()
-     */
-    public function customModuleSupportUrl(): string
-    {
-        return 'https://github.com/' . self::GITHUB_REPO;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param string $language
-     *
-     * @return array
-     *
-     * @see \Fisharebest\Webtrees\Module\ModuleCustomInterface::customTranslations()
-     */
-    public function customTranslations(string $language): array
-    {
-        return MoreI18N::readTranslationsFromMoFile($this->resourcesFolder() . 'lang/', $language);
     }
 
     /**

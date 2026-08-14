@@ -45,6 +45,7 @@ use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Validator;
+use Jefferson49\Webtrees\Helpers\Functions;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -87,7 +88,7 @@ class SelectionPage implements RequestHandlerInterface
 
         $tree = $this->tree_service->all()[$tree_name] ?? null;
 
-        $download_gedcom_with_url = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+        $download_gedcom_with_url = Functions::getFromContainer(DownloadGedcomWithURL::class);
         $tree_list = $this->tree_service->titles();
 
         if ($tree === null) {

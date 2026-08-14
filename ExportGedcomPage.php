@@ -46,6 +46,7 @@ use Fisharebest\Webtrees\Services\AdminService;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Services\TreeService;
 use Fisharebest\Webtrees\Validator;
+use Jefferson49\Webtrees\Helpers\Functions;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -85,7 +86,7 @@ class ExportGedcomPage implements RequestHandlerInterface
         $this->layout = 'layouts/administration';
 
         /** @var DownloadGedcomWithURL $download_gedcom_with_url */
-        $download_gedcom_with_url = $this->module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+        $download_gedcom_with_url = Functions::getFromContainer(DownloadGedcomWithURL::class);
 
         $tree_name             = Validator::queryParams($request)->string('tree_name', '');
         $tree                  = $this->tree_service->all()[$tree_name] ?? null;

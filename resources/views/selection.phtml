@@ -10,6 +10,7 @@ use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
+use Jefferson49\Webtrees\Helpers\Functions;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 
 use function e;
@@ -26,7 +27,7 @@ use function e;
 $module_service           = New ModuleService();
 
 /** @var DownloadGedcomWithURL $download_gedcom_with_url */
-$download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::activeModuleName());
+$download_gedcom_with_url = Functions::getFromContainer(DownloadGedcomWithURL::class);
 
 ?>
 
@@ -100,7 +101,7 @@ $download_gedcom_with_url = $module_service->findByName(DownloadGedcomWithURL::a
 			<span class="fa-li"><?= view('icons/data-fix') ?></span>
 			<a href="<?= e(route(DataFixPage::class, [
 					'tree'     => $tree->name(),
-					'data_fix' => DownloadGedcomWithURL::activeModuleName(),
+					'data_fix' => $download_gedcom_with_url->name(),
 					])) ?>">
 				<?= I18N::translate('Datafix using GEDCOM filters') ?>
 			</a>

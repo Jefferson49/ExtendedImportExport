@@ -519,11 +519,9 @@ class FilteredGedcomExportService extends GedcomExportService
         //Take GEDCOM from parent method as a base
         if (version_compare(Webtrees::VERSION, '2.2.6', '>')) {
             $gedcom = parent::createHeader($tree, $encoding, $include_sub, AccessLevel::from($access_level));
-            $header_facts_access_level = AccessLevel::Hidden;
         }
         else {
             $gedcom = parent::createHeader($tree, $encoding, $include_sub, $access_level);
-            $header_facts_access_level = AUTH::PRIV_HIDE;
         }
 
         $header = Registry::headerFactory()->make('HEAD', $tree) ?? Registry::headerFactory()->new('HEAD', '0 HEAD', null, $tree);
@@ -534,7 +532,7 @@ class FilteredGedcomExportService extends GedcomExportService
 
                 //Apply access level of 'none', because the GEDCOM standard requires to include a submitter and export needs to be consistent if a submitter/submission exists
                 //Privacy of the submitter/submission is handled in the submitter/submission object itself
-                foreach (Functions::getRecordFacts($header, ['SUBM', 'SUBN'], false, $header_facts_access_level) as $fact) {
+                foreach (Functions::getRecordFacts($header, ['SUBM', 'SUBN'], false, AUTH::PRIV_HIDE) as $fact) {
 
                     //Add submitter/submission if the parent method did not find it, because of access rights
                     if (strpos($gedcom, "\n1 " . substr($fact->tag(), -4, 4)) === false) {

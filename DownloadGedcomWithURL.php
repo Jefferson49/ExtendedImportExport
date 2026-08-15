@@ -330,7 +330,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             ->allows(RequestMethodInterface::METHOD_POST);
 
 		// Register a namespace for the views.
-		View::registerNamespace($this->name(), $this->resourcesFolder() . 'views/');
+		View::registerNamespace(self::viewsNamespace(), $this->resourcesFolder() . 'views/');
     }
 	
     /**
@@ -924,16 +924,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }    
 
         return $gedcom_filter_set;
-    }
-
-    /**
-     * Get the namespace for the views
-     *
-     * @return string
-     */
-    public static function viewsNamespace(): string
-    {
-        return '_' . basename(__DIR__) . '_';
     }
 
     /**

@@ -1735,11 +1735,20 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             $fp     = fopen($gedcom_file, 'rb');
             $buffer = '';
+            $first_line = true;
 
             while ($bytes_loaded < $total_bytes) {
                 $tmp = fread($fp, 8192);
                 $buffer .= $tmp;
                 $bytes_loaded += strlen($tmp);
+
+                //If first line, remove byte order mark if exists
+                if ($first_line) {
+                    if (str_starts_with($buffer, UTF8::BYTE_ORDER_MARK)) {
+                        $buffer = substr($buffer, strlen(UTF8::BYTE_ORDER_MARK));
+                    }
+                    $first_line = false;
+                }                        
 
                 $records = preg_split('/[\r\n]+(?=0)/', $buffer);
                 $buffer = array_pop($records);

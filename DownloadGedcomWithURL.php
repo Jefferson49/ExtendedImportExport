@@ -392,7 +392,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 		$data_folder_relative = str_replace($root_folder, '', $data_folder);
 
         return $this->viewResponse(
-            $this->name() . '::settings',
+            self::viewsNamespace() . '::settings',
             [
                 'title'                               => $this->title(),
                 'tree_list'                           => $tree_list,
@@ -762,7 +762,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }
 
             // Return a view, i.e. for a browser
-            return $this->viewResponse($this->name() . '::alert', [
+            return $this->viewResponse(self::viewsNamespace() . '::alert', [
                 'title'        	=> $title,
                 'tree'			=> null,
                 'alert_type'    => $is_error ? DownloadGedcomWithURL::ALERT_DANGER : DownloadGedcomWithURL::ALERT_SUCCESS,

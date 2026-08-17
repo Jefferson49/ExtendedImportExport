@@ -172,7 +172,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * Code from: Fisharebest\Webtrees\Services\GedcomExportService function downloadResponse
      * Last Check: 2026-04-06
      * 
-     * @param Tree                         $tree           Export data from this tree
+     * @param ?Tree                        $tree           Export data from this tree
      * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
      * @param string                       $encoding       Convert from UTF-8 to other encoding
      * @param string                       $privacy        Filter records by role
@@ -189,19 +189,19 @@ class FilteredGedcomExportService extends GedcomExportService
      * @return resource
      */
     public function filteredResource(
-        Tree $tree,
-        bool $sort_by_xref,
-        string $encoding,
-        string $privacy,
-        string $line_endings,
-        string $filename,
-        string $format,
-        array $gedcom_filters = [],
-        array $params = [],
-        ?Collection $records = null,
-        ?bool $head_and_trlr = false,
+        ?Tree               $tree,
+        bool                $sort_by_xref,
+        string              $encoding,
+        string              $privacy,
+        string              $line_endings,
+        string              $filename,
+        string              $format,
+        array               $gedcom_filters = [],
+        array               $params = [],
+        ?Collection         $records = null,
+        ?bool               $head_and_trlr = false,
         ?FilesystemOperator $zip_filesystem = null,
-        ?string $media_path = null
+        ?string             $media_path = null
     ) {
         $access_level = self::ACCESS_LEVELS[$privacy];
 
@@ -250,7 +250,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * Code from: Fisharebest\Webtrees\Services\GedcomExportService function downloadResponse
      * Last Check: 2026-04-06     * 
      * 
-     * @param Tree                         $tree           Export data from this tree
+     * @param ?Tree                        $tree           Export data from this tree
      * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
      * @param string                       $encoding       Convert from UTF-8 to other encoding
      * @param string                       $privacy        Filter records by role
@@ -267,20 +267,20 @@ class FilteredGedcomExportService extends GedcomExportService
      * @return ResponseInterface
      */
     public function filteredDownloadResponse(
-        Tree $tree,
-        bool $sort_by_xref,
-        string $encoding,
-        string $privacy,
-        string $line_endings,
-        string $filename,
-        string $extension,
-        string $format,
-        array $gedcom_filters = [],
-        array $params = [],
-        ?Collection $records = null,
-        ?bool $head_and_trlr = false,        
+        ?Tree               $tree,
+        bool                $sort_by_xref,
+        string              $encoding,
+        string              $privacy,
+        string              $line_endings,
+        string              $filename,
+        string              $extension,
+        string              $format,
+        array               $gedcom_filters = [],
+        array               $params = [],
+        ?Collection         $records = null,
+        ?bool               $head_and_trlr = false,        
         ?FilesystemOperator $zip_filesystem = null,
-        ?string $media_path = null        
+        ?string             $media_path = null        
     ): ResponseInterface {
 
         if ($format === 'gedcom' OR $format === 'other') {
@@ -315,32 +315,32 @@ class FilteredGedcomExportService extends GedcomExportService
      * Code from: Fisharebest\Webtrees\Services\GedcomExportService function export
      * Last Check: 2026-04-06
      *
-     * @param Tree                                            $tree           Export data from this tree
-     * @param bool                                            $sort_by_xref   Write GEDCOM records in XREF order
-     * @param string                                          $encoding       Convert from UTF-8 to other encoding
-     * @param int                                             $access_level   Apply privacy filtering
-     * @param string                                          $line_endings   CRLF or LF
-     * @param array<GedcomFilterInterface>                    $gedcom_filters An array, which contains GEDCOM filters
-     * @param array<string>                                   $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * @param ?Collection<int,string|object|GedcomRecord>     $records        Just export these records
-     * @param ?bool                                           $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
-     * @param ?ZipArchive                                     $zip_filesystem Write media files to this filesystem
-     * @param ?string                                         $media_path     Location within the zip filesystem
+     * @param ?Tree                                       $tree           Export data from this tree
+     * @param bool                                        $sort_by_xref   Write GEDCOM records in XREF order
+     * @param string                                      $encoding       Convert from UTF-8 to other encoding
+     * @param int                                         $access_level   Apply privacy filtering
+     * @param string                                      $line_endings   CRLF or LF
+     * @param array<GedcomFilterInterface>                $gedcom_filters An array, which contains GEDCOM filters
+     * @param array<string>                               $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
+     * @param ?Collection<int,string|object|GedcomRecord> $records        Just export these records
+     * @param ?bool                                       $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
+     * @param ?ZipArchive                                 $zip_filesystem Write media files to this filesystem
+     * @param ?string                                     $media_path     Location within the zip filesystem
      * 
      * @return resource
      */
     public function filteredExport(
-        Tree $tree,
-        bool $sort_by_xref = false,
-        string $encoding = UTF8::NAME,
-        int $access_level = Auth::PRIV_HIDE,
-        string $line_endings = 'CRLF',
-        array $gedcom_filters = [],
-        array $params = [],
+        ?Tree       $tree,
+        bool        $sort_by_xref = false,
+        string      $encoding = UTF8::NAME,
+        int         $access_level = Auth::PRIV_HIDE,
+        string      $line_endings = 'CRLF',
+        array       $gedcom_filters = [],
+        array       $params = [],
         ?Collection $records = null,
-        ?bool $head_and_trlr = false,
+        ?bool       $head_and_trlr = false,
         ?ZipArchive $zip_filesystem = null,
-        ?string $media_path = null
+        ?string     $media_path = null
     ) {
         //Create stream and initialize array with Gedcom export
         $stream = fopen('php://memory', 'wb+');
@@ -393,7 +393,9 @@ class FilteredGedcomExportService extends GedcomExportService
             ];
         }
 
-        $media_filesystem = $tree->mediaFilesystem();
+        if ($tree !== null) {
+            $media_filesystem = $tree->mediaFilesystem();
+        }
 
         foreach ($data as $rows) {
             foreach ($rows as $datum) {

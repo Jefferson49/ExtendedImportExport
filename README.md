@@ -1,10 +1,11 @@
 [![Latest Release](https://img.shields.io/github/v/release/Jefferson49/ExtendedImportExport?display_name=tag)](https://github.com/Jefferson49/ExtendedImportExport/releases/latest)
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)](https://webtrees.net/download)
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.2.x-green)](https://webtrees.net/download)
+[![webtrees major version](https://img.shields.io/badge/webtrees-v2.3.x-green)](https://webtrees.net/download)
 
 # Extended Import/Export
 ### (Earlier name: DownloadGedcomWithURL)
-A [webtrees](https://webtrees.net) 2.1/2.2 custom module for **advanced GEDCOM import, export, and filter operations**. The module also supports **remote downloads/uploads via URL requests**.
+A [webtrees](https://webtrees.net) 2.1/2.2/2.3 custom module for **advanced GEDCOM import, export, and filter operations**. The module also supports **remote downloads/uploads via URL requests**.
 
 The module provides a framework for **customizable GEDCOM filters**, which allow to modify the GEDCOM data during an import/export. **A set of pre-configured GECCOM filters is provided**, which support GEDCOM 7 conversion as well as a variety of other GEDCOM filtering operations. The GEDCOM filters can be triggered remotely as well as by the user in specific import/export/conversion/datafix views.
 
@@ -102,7 +103,7 @@ Please note that the earlier **versions v1.0.0 and v2.0.0 did NOT use an authori
 Note: **WEBTREES_BASE_URL** stands for the "base_url" in the webtress config.ini.php file.
 
 ## Webtrees Version
-The module was developed and tested with [webtrees 2.1.21 and 2.2.0](https://webtrees.net/download), but should also run with any other 2.1 or 2.2 version.
+The module was developed and tested with [webtrees 2.2.6 and 2.3.0](https://webtrees.net/download), but should also run with any other 2.1, 2.2, or 2.3 versions.
 
 ## GEDCOM filters
 
@@ -482,9 +483,9 @@ If you experience any bugs or have a feature request for this webtrees custom mo
 + [GNU General Public License, Version 3](LICENSE.md)
 + webtrees
     + webtrees: online genealogy
-    + Copyright (C) 2025 [webtrees development team](http://webtrees.net)
+    + Copyright (C) 6 [webtrees development team](http://webtrees.net)
 + Extended Import/Export (webtrees custom module)
-    + Copyright (C) 2025 [Jefferson49](https://github.com/Jefferson49)
+    + Copyright (C) 2026 [Jefferson49](https://github.com/Jefferson49)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

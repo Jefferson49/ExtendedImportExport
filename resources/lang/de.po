@@ -151,8 +151,8 @@ msgid ""
 "A custom module for advanced GEDCOM import, export, and filter operations. "
 "The module also supports remote downloads/uploads/filters via URL requests."
 msgstr ""
-"Ein benutzerspezifisches Modul für einen erweiterten GEDCOM-Import/-Export "
-"sowie Filter Operationen. Das Modul unterstützt zusätzlich Remote-Downloads/-"
+"Ein Erweiterungsmodul für einen erweiterten GEDCOM-Import/-Export sowie "
+"Filter Operationen. Das Modul unterstützt zusätzlich Remote-Downloads/-"
 "Uploads/-Filter mittels URL-Aufrufen."
 
 #: DownloadGedcomWithURL.php:581
@@ -192,8 +192,8 @@ msgid ""
 "The preferences for the custom module \"%s\" were sucessfully updated to the "
 "new module version %s."
 msgstr ""
-"Die Einstellungen für das benutzerdefinierte Modul \"%s\" wurden für die "
-"neue Modul-Version %s aktualisiert."
+"Die Einstellungen für das Erweiterungsmodul \"%s\" wurden auf die neue Modul-"
+"Version %s aktualisiert."
 
 #: DownloadGedcomWithURL.php:793
 #, php-format
@@ -201,8 +201,8 @@ msgid ""
 "The preferences for the custom module %s were imported from the earlier "
 "custom module version %s."
 msgstr ""
-"Die Einstellungen für das benutzerdefinierte Modul %s wurden von der "
-"früheren Modul-Version %s importiert."
+"Die Einstellungen für das Erweiterungsmodul %s wurden von der früheren Modul-"
+"Version %s importiert."
 
 #: DownloadGedcomWithURL.php:820
 #, php-format
@@ -456,7 +456,7 @@ msgid ""
 "custom module %s."
 msgstr ""
 "Der aktuelle Benutzer verfügt nicht über ausreichende Rechte, um mit dem "
-"benutzerdefinierten Modul %s auf Stammbäume zuzugreifen."
+"Erweiterungsmodul %s auf Stammbäume zuzugreifen."
 
 #: ExportGedcomPage.php:136
 msgid "Extended GEDCOM Export"
@@ -595,7 +595,7 @@ msgstr "XREFs in Notizen und Text durch Namen ersetzen"
 
 #: resources/views/alert.phtml:22
 msgid "Custom module"
-msgstr "Benutzerdefiniertes Modul"
+msgstr "Erweiterungsmodul"
 
 #: resources/views/convert.phtml:42
 msgid "Select a GEDCOM file"

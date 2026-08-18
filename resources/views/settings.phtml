@@ -24,6 +24,7 @@ use function e;
 
 /**
  * @var  string		$title
+ * @var  array      $tree_list
  * @var  bool		$use_hash
  * @var  string		$secret_key
  * @var  string     $base_url
@@ -154,6 +155,16 @@ $remote_url = Html::url($url, $parameters) . DownloadGedcomWithURL::ROUTE_REMOTE
 		</label>
 		<div class="col-sm-9 wt-page-options-value">
 			<span class="input-group-text"><?= e($remote_url . '&key=' . $text_shown_for_secret_key) ?></span>
+		</div>		
+	<?php endif ?>
+	<?= view('icons/spacer') ?>
+	<?php if ($text_shown_for_secret_key !== '' && sizeof($tree_list) > 0) : ?>
+		<div class="row">
+		<label class="col-sm-3 col-form-label wt-page-options-label">
+			<?= I18N::translate('Example URL for the GEDCOM download of a tree') ?>
+		</label>
+		<div class="col-sm-9 wt-page-options-value">
+			<span class="input-group-text"><?= e($remote_url . '&key=' . $text_shown_for_secret_key. '&action=download&tree=' . array_key_first($tree_list)) ?></span>
 		</div>		
 	<?php endif ?>
 	<?= view('icons/spacer') ?>

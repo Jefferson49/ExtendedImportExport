@@ -42,6 +42,7 @@ use Fisharebest\Webtrees\DB;
 use Fisharebest\Webtrees\Encodings\ANSEL;
 use Fisharebest\Webtrees\Encodings\ASCII;
 use Fisharebest\Webtrees\Encodings\UTF16BE;
+use Fisharebest\Webtrees\Encodings\UTF16LE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
 use Fisharebest\Webtrees\Exceptions\FileUploadException;
@@ -1744,10 +1745,12 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
                 //If first line, remove byte order mark if exists
                 if ($first_line) {
-                    if (str_starts_with($buffer, UTF8::BYTE_ORDER_MARK)) {
-                        $buffer = substr($buffer, strlen(UTF8::BYTE_ORDER_MARK));
+                    foreach ([UTF8::BYTE_ORDER_MARK, UTF8::BYTE_ORDER_MARK, UTF16LE::BYTE_ORDER_MARK] as $byte_order_mark) {
+                        if (str_starts_with($buffer, $byte_order_mark)) {
+                            $buffer = substr($buffer, strlen($byte_order_mark));
+                            $first_line = false;
+                        }
                     }
-                    $first_line = false;
                 }                        
 
                 $records = preg_split('/[\r\n]+(?=0)/', $buffer);

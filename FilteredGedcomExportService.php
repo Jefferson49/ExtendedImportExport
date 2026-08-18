@@ -443,7 +443,8 @@ class FilteredGedcomExportService extends GedcomExportService
             $this->addSchema($gedcom_export, $matched_tag_combinations);
         }
 
-        //Add a byte order mark for UTF8 if Gedcom 7 (required by the standard) 
+        // If GEDCOM 7, add a byte order mark for UTF8, which is proposed by the standard
+        // Since GEDCOM 7 always uses UTF8, we do not know what to do for other encodings (which are not allowed by the standard anyway) 
         if ($gedcom7 && $encoding === UTF8::NAME) {
 
             $byte_order_mark = UTF8::BYTE_ORDER_MARK;

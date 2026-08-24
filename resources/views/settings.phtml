@@ -14,6 +14,7 @@ use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
 use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Validator;
+use Fisharebest\Webtrees\Webtrees;
 use Jefferson49\Webtrees\Helpers\ClassName;
 use Jefferson49\Webtrees\Helpers\Functions;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
@@ -64,11 +65,9 @@ $request = Functions::getFromContainer(ServerRequestInterface::class);
 assert($request instanceof ServerRequestInterface);
 
 $base_url   = Validator::attributes($request)->string('base_url');
-$path       = parse_url($base_url, PHP_URL_PATH) ?? '';
-$parameters = ['route' => $path];
+$path       = version_compare(Webtrees::VERSION, '2.3', '>=') ? '' : parse_url($base_url, PHP_URL_PATH) ?? '';
 $url        = $base_url . '/index.php';
-
-$remote_url = Html::url($url, $parameters) . DownloadGedcomWithURL::ROUTE_REMOTE_ACTION;
+$remote_url = Html::url($url, ['route' => $path]) . DownloadGedcomWithURL::ROUTE_REMOTE_ACTION;
 
 ?>
 

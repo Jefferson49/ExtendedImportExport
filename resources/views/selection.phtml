@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
-use Fisharebest\Webtrees\Auth;
-use Fisharebest\Webtrees\Http\RequestHandlers\DataFixPage;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Services\ModuleService;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\View;
+use Jefferson49\Webtrees\Helpers\ClassName;
 use Jefferson49\Webtrees\Helpers\Functions;
 use Jefferson49\Webtrees\Internationalization\MoreI18N;
 
@@ -99,7 +98,7 @@ $download_gedcom_with_url = Functions::getFromContainer(DownloadGedcomWithURL::c
 		</li>
 		<li>
 			<span class="fa-li"><?= view('icons/data-fix') ?></span>
-			<a href="<?= e(route(DataFixPage::class, [
+			<a href="<?= e(route(ClassName::get(ClassName::DATA_FIX_PAGE), [
 					'tree'     => $tree->name(),
 					'data_fix' => $download_gedcom_with_url->name(),
 					])) ?>">
@@ -110,14 +109,14 @@ $download_gedcom_with_url = Functions::getFromContainer(DownloadGedcomWithURL::c
 			<div class="row mb-3"><?= view('icons/spacer') ?></div>
 		</li>
 		<li>
-			<span class="fa-li"><?= view('icons/preferences') ?></span>			
+			<span class="fa-li"><?= view('icons/preferences') ?></span>
 			<a href="<?= e($download_gedcom_with_url->getConfigLink()) ?>" title="<?= MoreI18N::xlate('Preferences') ?>">
 				<?= MoreI18N::xlate('Preferences') ?>
 			</a>
 		</li>
 	</ul>
-	<?= csrf_field() ?>	
-</form>	
+	<?= csrf_field() ?>
+</form>
 
 <?php View::push('javascript') ?>
 <script>

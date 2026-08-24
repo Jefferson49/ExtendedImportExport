@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b7edb5c3c1abddf33bf13ea61baa576",
+    "content-hash": "d1e433ed2b1371b2e5b6b230dd2f23f8",
     "packages": [
         {
             "name": "jefferson49/webtrees-common",
-            "version": "1.2.45",
+            "version": "1.4.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jefferson49/webtrees-common.git",
-                "reference": "203abf0b2b43df6d26c36a2ec96c8d205890ab74"
+                "reference": "27761df483556905ce260102862680706010c2fd"
             },
             "require": {
                 "php": ">=7.4"
@@ -27,7 +27,7 @@
                 "webtrees",
                 "webtrees-module"
             ],
-            "time": "2026-08-15T19:05:32+00:00"
+            "time": "2026-08-22T17:24:38+00:00"
         }
     ],
     "packages-dev": [],

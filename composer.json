@@ -27,7 +27,7 @@
     ],
     "require": {
         "php": ">=8.1",
-        "jefferson49/webtrees-common": ">=1.2.45"
+        "jefferson49/webtrees-common": ">=1.2.49"
     },
     "conflict": {
         "fisharebest/webtrees": "<2.1"

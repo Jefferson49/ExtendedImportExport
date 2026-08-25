@@ -1666,7 +1666,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
         try {
             DB::connection()->beginTransaction();
 
-            if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+            if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
                 $tree->setPreference('imported', '0');
             }
             else {
@@ -1741,7 +1741,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 }
             }
 
-            if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+            if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
                 $tree->setPreference('imported', '1');
             }
             else {

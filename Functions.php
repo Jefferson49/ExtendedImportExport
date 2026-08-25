@@ -59,7 +59,7 @@ class Functions
      */
     public static function getAllTrees(): Collection
     {
-        if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+        if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
 
             //Code for webtrees versions < 2.2.6 with old database schema
 

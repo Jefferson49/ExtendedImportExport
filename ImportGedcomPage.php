@@ -100,7 +100,7 @@ class ImportGedcomPage implements RequestHandlerInterface
             return redirect(route(HomePage::class));
         }
 
-        if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+        if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
             $gedcom_filename = Validator::queryParams($request)->string('gedcom_filename', $tree->getPreference('gedcom_filename'));
         }
         else {

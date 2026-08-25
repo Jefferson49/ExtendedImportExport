@@ -216,7 +216,7 @@ class FilteredGedcomExportService extends GedcomExportService
         $zip_filesystem->open($temp_zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         if ($format === 'zipmedia') {
-            if (version_compare(Webtrees::VERSION, '2.2.6', '<')) {
+            if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
                 $media_path = $tree->getPreference('MEDIA_DIRECTORY');
             }
             else {
@@ -520,7 +520,7 @@ class FilteredGedcomExportService extends GedcomExportService
     public function createHeader(Tree $tree, string $encoding, bool $include_sub, AccessLevel|int $access_level): string
     {
         //Take GEDCOM from parent method as a base
-        if (version_compare(Webtrees::VERSION, '2.2.6', '>')) {
+        if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
             $gedcom = parent::createHeader($tree, $encoding, $include_sub, AccessLevel::from($access_level));
         }
         else {

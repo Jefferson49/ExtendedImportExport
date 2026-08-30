@@ -928,7 +928,7 @@ msgstr "Remote URL"
 
 #: resources/views/settings.phtml:154
 msgid "Remote URL with authorization key"
-msgstr "Remote URL mit Authorisierungs-Schlüssel"
+msgstr "Remote URL mit Autorisierungs-Schlüssel"
 
 #: resources/views/settings.phtml:164
 msgid "Example URL for the GEDCOM download of a tree"
@@ -1039,7 +1039,7 @@ msgstr "Einstellungen für den Autorisierungs-Schlüssel"
 msgid ""
 "An authorization key is needed if remote requests via URL shall be used."
 msgstr ""
-"Ein Authorisierungs-Schlüssel wird benötigt, wenn Remote-Anfragen über URL "
+"Ein Autorisierungs-Schlüssel wird benötigt, wenn Remote-Anfragen über URL "
 "genutzt werden sollen."
 
 #: resources/views/settings.phtml:258
@@ -1051,7 +1051,7 @@ msgid ""
 "does not start with \"https://\"."
 msgstr ""
 "Webtrees verwendet aktuell kein HTTPS-Protokoll. Es wird dringend empfohlen, "
-"HTTPS zu nutzen, um die Verschlüsselung des Authorisierungs-Schlüssels "
+"HTTPS zu nutzen, um die Verschlüsselung des Autorisierungs-Schlüssels "
 "innerhalb der URLs von Remote-Anfragen sicherzustellen. HTTPS kann durch "
 "Ändern von \"base_url\" in der \"config.ini.php\" Datei geändert werden. "
 "Aktuell startet \"base_url\" nicht mit \"https://\"."
@@ -1090,7 +1090,7 @@ msgstr ""
 
 #: resources/views/settings.phtml:277
 msgid "Authorization key has not been set yet"
-msgstr "Bisher wurde noch kein Authorisierungs-Schlüssel eingegeben"
+msgstr "Bisher wurde noch kein Autorisierungs-Schlüssel eingegeben"
 
 #: resources/views/settings.phtml:287
 msgid "New authorization key"
@@ -1136,10 +1136,10 @@ msgstr ""
 "Aktuell ist der Ordner zum Abspeichern von GEDCOM Dateien kein "
 "Unterverzeichnis des webtrees Datenverzeichnisses. Es wird dringend "
 "empfohlen, das webtrees Datenverzeichnis oder ein Unterverzeichnis zu "
-"nutzen, weil webtrees das Datenverzeichnis gegen unauthorisierten Zugriff "
+"nutzen, weil webtrees das Datenverzeichnis gegen unautorisierten Zugriff "
 "absichert. Wenn Sie einen Ordner außerhalb des webtrees Datenverzeichnisses "
 "wählen, sind abgespeicherte GEDCOM-Dateien möglicherweise nicht gegen "
-"unauthorisierten Zugriff geschützt."
+"unautorisierten Zugriff geschützt."
 
 #: resources/views/settings.phtml:331
 msgid ""
@@ -1152,7 +1152,7 @@ msgstr ""
 "Relativer Pfad zu einem Ordner innerhalb des webtrees Installations-Pfads, "
 "in welchem GEDCOM-Importe/-Exporte abgespeichert werden. Es wird dringend "
 "empfohlen, das webtrees Datenverzeichnis oder ein Unterverzeichnis zu "
-"nutzen, weil webtrees das Datenverzeichnis gegen unauthorisierten Zugriff "
+"nutzen, weil webtrees das Datenverzeichnis gegen unautorisierten Zugriff "
 "absichert. Die aktuellen Einstellungen (Verwaltung / Einstellungen Webseite) "
 "für das webtrees Installations- und Daten-Verzeichnis sind:"
 
@@ -1186,7 +1186,7 @@ msgstr ""
 "Diese Einstellungen werden als Default-Werte für Exporte genutzt, z.B. wenn "
 "bestimmte Parameter nicht über die URL übergeben werden. Durch Festlegung "
 "der Default-Werte können die URLs vereinfacht werden. Im Extremfall reicht "
-"es aus, nur den Stammbaun und den Authorisierungs-Schlüssel in der URL zu "
+"es aus, nur den Stammbaun und den Autorisierungs-Schlüssel in der URL zu "
 "übergeben."
 
 #: resources/views/settings.phtml:351

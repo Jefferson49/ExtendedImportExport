@@ -260,8 +260,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
     private const UPLOAD_TEMP_FOLDER = 'tmp';
 
 
-   /**
-     * DownloadGedcomWithURL constructor.
+    /**
+     * Constructor
      */
     public function __construct()
     {
@@ -270,9 +270,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
     /**
-     * Initialization.
+     * {@inheritDoc}
      *
      * @return void
+     *
+     * @see \Fisharebest\Webtrees\Module\AbstractModule::boot()
      */
     public function boot(): void
     {

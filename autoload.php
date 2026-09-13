@@ -24,22 +24,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * 
+ *
  * autoload for webtrees custom module: ExtendedImportExport
  *
  */
 
-declare(strict_types=1); 
+declare(strict_types=1);
 
 use Composer\Autoload\ClassLoader;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 
-//Check availability of correct webtrees-common library; update files if needed
-$file_system = new Filesystem(new LocalFilesystemAdapter(__DIR__));
-if (!$file_system->fileExists('/vendor/jefferson49/webtrees-common/autoload.php')) {
-    if (!require __DIR__ . '/update_module_files.php') return false;
-}
 
 //Autoload the latest version of the common code library, which is shared between webtrees custom modules
 //Caution: This autoload needs to be executed before autoloading any other libraries from __DIR__/vendor

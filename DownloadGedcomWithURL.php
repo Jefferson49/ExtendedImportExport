@@ -53,6 +53,9 @@ use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Gedcom;
 use Fisharebest\Webtrees\GedcomFilters\GedcomEncodingFilter;
 use Fisharebest\Webtrees\GedcomRecord;
+use Fisharebest\Webtrees\Http\Controllers\CreateTree;
+use Fisharebest\Webtrees\Http\Controllers\MergeTrees;
+use Fisharebest\Webtrees\Http\Controllers\RenumberTree;
 use Fisharebest\Webtrees\Http\RequestHandlers\CreateTreeAction;
 use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\RequestHandlers\MergeTreesAction;
@@ -86,6 +89,7 @@ use Fisharebest\Webtrees\Source;
 use Fisharebest\Webtrees\Submitter;
 use Fisharebest\Webtrees\Site;
 use Fisharebest\Webtrees\Tree;
+use Fisharebest\Webtrees\Validate;
 use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\View;
 use Fisharebest\Webtrees\Webtrees;
@@ -1642,7 +1646,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	/**
      * Import a tree into the database
      * Code from:  Fisharebest\Webtrees\Cli\Commands\TreeImport->function execute()
-     * Last check: 2026-04-05
+     * Last check: 2026-09-26
 	 *
      * @param Tree   $tree
      * @param string $gedcom_file
@@ -2041,34 +2045,72 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         if ($action === self::ACTION_RENUMBER_XREF) {
 
-            //Generate a request for the RenumberTreeAction
-            $request         = CommonFunctions::getFromContainer(ServerRequestInterface::class);
-            $request         = $request->withAttribute('tree', $tree instanceof Tree ? $tree : null);
+            //Generate a request for RenumberTree
+            $request = CommonFunctions::getFromContainer(ServerRequestInterface::class);
+            $request = $request->withAttribute('tree', $tree instanceof Tree ? $tree : null);
 
-            $request_handler = new RenumberTreeAction(new AdminService, new TimeoutService(new PhpService));
+            try {
+                if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
+                    $request_handler = new RenumberTree(new AdminService, new TimeoutService(new PhpService));
+                    $response = $request_handler->post($request);
+                }
+                else {
+                    $request_handler = new RenumberTreeAction(new AdminService, new TimeoutService(new PhpService));
+                    $response = $request_handler->handle($request);
+                }
+            }
+            catch (Throwable $th) {
+                return $this->createResponse('Failed to renumber XREFs in tree: ' . $th->getMessage(), StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $html_response, $redirect_url);
+            }
 
-            return $request_handler->handle($request);
+            return $this->createResponse('Successfully renumbered XREFs in tree', StatusCodeInterface::STATUS_OK, $html_response, $redirect_url);
         }
         elseif ($action === self::ACTION_MERGE_TREES) {
 
-            //Generate a request for the MergeTreesAction
-            $request         = CommonFunctions::getFromContainer(ServerRequestInterface::class);
-            $request         = $request->withParsedBody(['tree1_name' => $tree_to_merge->name(), 'tree2_name' => $tree->name()]);
+            //Generate a request for MergeTrees
+            $request = CommonFunctions::getFromContainer(ServerRequestInterface::class);
+            $request = $request->withParsedBody(['tree1_name' => $tree_to_merge->name(), 'tree2_name' => $tree->name()]);
 
-            $request_handler = new MergeTreesAction(new AdminService, new TreeService(new GedcomImportService));
+            try {
+                if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
+                    $request_handler = new MergeTrees(new AdminService, new TreeService(new GedcomImportService));
+                    $response = $request_handler->post($request);
+                }
+                else {
+                    $request_handler = new MergeTreesAction(new AdminService, new TreeService(new GedcomImportService));
+                    $response = $request_handler->handle($request);
+                }
+            }
+            catch (Throwable $th) {
+                return $this->createResponse('Failed to merge trees: ' . $th->getMessage(), StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $html_response, $redirect_url);
+            }
 
-            return $request_handler->handle($request);
+            return $this->createResponse('Successfully merged trees', StatusCodeInterface::STATUS_OK, $html_response, $redirect_url);
         }
         elseif ($action === self::ACTION_CREATE_TREE) {
 
-            //Generate a request for the CreateTreesAction
+            //Generate a request for CreateTree
             //Use tree name as title
-            $request         = CommonFunctions::getFromContainer(ServerRequestInterface::class);
-            $request         = $request->withParsedBody(['name' => $tree_name, 'title' => $tree_name]);
+            $request = CommonFunctions::getFromContainer(ServerRequestInterface::class);
+            $request = $request->withParsedBody(['name' => $tree_name, 'title' => $tree_name]);
 
             $request_handler = new CreateTreeAction(new TreeService(new GedcomImportService));
 
-            return $request_handler->handle($request);
+            try {
+                if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
+                    $request_handler = new CreateTree(new TreeService(new GedcomImportService), new Validate());
+                    $response = $request_handler->post($tree_name, $tree_name);
+                }
+                else {
+                    $request_handler = new MergeTreesAction(new AdminService, new TreeService(new GedcomImportService));
+                    $response = $request_handler->handle($request);
+                }
+            }
+            catch (Throwable $th) {
+                return $this->createResponse('Failed to create tree:  ' . $th->getMessage(), StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $html_response, $redirect_url);
+            }
+
+            return $this->createResponse('Successfully created tree', StatusCodeInterface::STATUS_OK, $html_response, $redirect_url);
         }
 
         if ($gedcom_filter1 !== '' OR $gedcom_filter2 !== '' OR $gedcom_filter3 !== '') {

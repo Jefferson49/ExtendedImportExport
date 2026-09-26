@@ -9,13 +9,13 @@ use Fisharebest\Webtrees\I18N;
 
 /**
  * A GEDCOM filter, which converts deprecated webtrees 1.7 census markup to markdown
- * 
- * Background: 
+ *
+ * Background:
  * If the census assistent is used, census data is imported into shared notes with certain markup structures
  * Since webtrees 2.x, markdown is used. In webtrees 1.7, a different markup was used.
  */
 class ConvertOldCensusMarkupGedcomFilter extends AbstractGedcomFilter
-{    
+{
     protected const GEDCOM_FILTER_RULES = [
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
@@ -23,19 +23,19 @@ class ConvertOldCensusMarkupGedcomFilter extends AbstractGedcomFilter
         //Convert shared notes with a customConvert function
         'NOTE'                      => ["PHP_function" => "customConvert"],
 
-        //Export all other structures      
+        //Export all other structures
         '*'                         => [],
     ];
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Convert webtrees 1.7 census markup to markdown');
-    } 
+    }
 
     /**
      * Custom conversion of a Gedcom string
@@ -45,7 +45,7 @@ class ConvertOldCensusMarkupGedcomFilter extends AbstractGedcomFilter
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
      *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return string                        The converted Gedcom
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {

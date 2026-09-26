@@ -12,7 +12,7 @@ use Fisharebest\Webtrees\I18N;
 class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
 {
     protected const WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES = true;
-    
+
     protected const GEDCOM_FILTER_RULES = [
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
@@ -55,20 +55,20 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
         '!FAM:SOUR:RESN'            => [],
         'FAM:*:RESN'				=> ["1 RESN (?i)NONE\n" => "",
                                         "RegExp_macro" => "Lowercase_enumvalues"],
-                                                                    
+
         //Remove RESN structures, where not allowed by the standard
         '!*:RESN'                   => [],
         '!*:*:RESN'                 => [],
         '!*:*:*:RESN'               => [],
 
-        //Export other structures      
+        //Export other structures
         '*'                         => [],
     ];
 
     protected const REGEXP_MACROS = [
         //Macro Name                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
-        
+
         "Godparent"                 => ["([\d]) RELA (?i)GODPARENT" => "$1 RELA Godparent"],
         "Lowercase_enumvalues"      => ["PHP_function" => "customConvert"],
     ];
@@ -80,17 +80,17 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
         "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED",
         "CHALLENGED", "DISPROVEN", "PROVEN",
         "BMP", "GIF", "JPG", "OLE", "PCX", "TIF", "WAV", "PDF",
-    ];      
+    ];
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Optimization of webtrees export for GEDCOM 5.5.1');
-    } 
+    }
 
     /**
      * Custom conversion of a Gedcom string
@@ -100,7 +100,7 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
      *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return string                        The converted Gedcom
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
@@ -111,7 +111,7 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
             preg_match_all("/([\d]) LANG (.)(.*)/", $gedcom, $matches, PREG_SET_ORDER);
 
             foreach ($matches as $match) {
-        
+
             $search =  $match[1] . " LANG " .            $match[2]  .            $match[3];
             $replace = $match[1] . " LANG " . strtoupper($match[2]) . strtolower($match[3]);
             $gedcom = str_replace($search, $replace, $gedcom);
@@ -127,9 +127,9 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
 
                     $search =  $match[1]  . ' ' .  $match[2] . ' ' .  $match[3];
                     $replace = $match[1]  . ' ' .  $match[2] . ' ' .  strtolower($match[3]);
-                    $gedcom = str_replace($search, $replace, $gedcom);   
+                    $gedcom = str_replace($search, $replace, $gedcom);
                 }
-            }      
+            }
         }
         return $gedcom;
     }
@@ -144,5 +144,5 @@ class OptimizeWebtreesGedcomFilter extends AbstractGedcomFilter
         return [
             new AvoidLeadingSpacesForCONC_GedcomFilter(),
         ];
-    }    
+    }
 }

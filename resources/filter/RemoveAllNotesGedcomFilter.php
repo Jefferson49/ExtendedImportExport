@@ -12,7 +12,7 @@ use Fisharebest\Webtrees\I18N;
 class RemoveAllNotesGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
-      
+
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
@@ -33,11 +33,11 @@ class RemoveAllNotesGedcomFilter extends AbstractGedcomFilter
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Remove all notes');
-    }    
+    }
 }

@@ -12,7 +12,7 @@ use Fisharebest\Webtrees\I18N;
 class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
-        
+
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
@@ -27,7 +27,7 @@ class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         'FAM:RESN'                  => ["1 RESN (?i)NONE\n" => ""],
         '!FAM:NOTE:RESN'            => [],
         '!FAM:OBJE:RESN'            => [],
-        '!FAM:SOUR:RESN'            => [],      
+        '!FAM:SOUR:RESN'            => [],
         'FAM:*:RESN'                => ["1 RESN (?i)NONE\n" => ""],
 
         'OBJE:RESN'                 => ["1 RESN (?i)NONE\n" => ""],
@@ -37,17 +37,17 @@ class OptimizeWebtreesGEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         '!*:*:RESN'                 => [],
         '!*:*:*:RESN'               => [],
 
-    //Export other structures      
+    //Export other structures
         '*'                         => [],
     ];
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Optimization of webtrees export for GEDCOM 7');
-    } 
+    }
 }

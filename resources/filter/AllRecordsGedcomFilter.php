@@ -12,7 +12,7 @@ use Fisharebest\Webtrees\I18N;
 class AllRecordsGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
-      
+
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
@@ -24,11 +24,11 @@ class AllRecordsGedcomFilter extends AbstractGedcomFilter
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('All records');
-    }    
+    }
 }

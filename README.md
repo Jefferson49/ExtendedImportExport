@@ -175,13 +175,13 @@ The list menu entry can be hidden by an option in the module settings (control p
 [<img src="resources/img/screenshot_open_user_views_from_settings.jpg" width="500"/>](resources/img/screenshot_open_user_views_from_settings.jpg)
 
 After opening the user view of the module, four different views are offered to use GEDCOM filters:
-  
+
 [<img src="resources/img/screenshot_user_view_selection.jpg" width="500"/>](resources/img/screenshot_user_view_selection.jpg)
 
 In the corresponding views (e.g. GEDCOM Export), the GEDCOM filters can be selected and applied:
-  
+
 ![Usage of GEDCOM filters](resources/img/usage_of_gedcom_filters.jpg)
-  
+
 Additionally, GEDCOM filter can be applied via the [Remote API](#remote-api), which is described in a separate section.
 
 ### How to add additional GEDCOM filters
@@ -197,16 +197,16 @@ To create a first example for a simple GEDCOM filter, the following steps can be
 ![Creating a new GEDCOM filter](resources/img/creating_a_new_GEDCOM_filter.jpg)
 
 #### Regular Expression Macros
-If the same regular expression replacement shall be used in several filter rules, a macro can be defined, which allows to define a regular expression replacement once and use it several times. 
+If the same regular expression replacement shall be used in several filter rules, a macro can be defined, which allows to define a regular expression replacement once and use it several times.
 
 Macros can be defined within the "const **REGEXP_MACROS**" structure:
-  
+
 ![Definiton of a regular expression macros](resources/img/definition_of_regular_expression_macros.jpg)
 
 In filter rules, the macro name can be used instead of regular expression replacements:
 + Use "RegExp_macro" as "search pattern"
 + Use the macro name as "replace pattern"
-  
+
 ![Usage of regular expression macro](resources/img/usage_of_regular_expression_macros.jpg)
 
 #### PHP function customConvert
@@ -224,8 +224,8 @@ In filter rules, the PHP customConvert function can be used instead of regular e
 
 #### Additional switches
 Additional switched can be used for some specific purposes:
-+   USES_REFERENCES_ANALYSIS (default: false) 
-    + If set to true, the filter will execute an analysis of references in the GEDCOM structures, which will identify empty records and records without references. The result of this analysis can be used by GEDCOM filters. An example can be found in the removeEmptyOrUnlinkedRecords function of the[RemoveEmptyOrUnlinkedRecordsGedcomFilter](resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php#L97). 
++   USES_REFERENCES_ANALYSIS (default: false)
+    + If set to true, the filter will execute an analysis of references in the GEDCOM structures, which will identify empty records and records without references. The result of this analysis can be used by GEDCOM filters. An example can be found in the removeEmptyOrUnlinkedRecords function of the[RemoveEmptyOrUnlinkedRecordsGedcomFilter](resources/filter/RemoveEmptyOrUnlinkedRecordsGedcomFilter.php#L97).
 +   USES_SCHEMA_TAG_ANALYSIS (default: true)
     + If set to true, a SCHMA structure for known custom tags will be included if GEDCOM 7 is detected in the header.
 +   WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES (default: false)
@@ -239,7 +239,7 @@ Additional switched can be used for some specific purposes:
         + BIRT
             + DATE
         + DEAT
-            + DATE        
+            + DATE
 + **Inner** GEDCOM structures are filtered **before outer** structures.
     + In the example above, the order of the executed filter rules will be: "INDI:BIRT:DATE" before "INDI:BIRT", and finally "INDI".
 + Replacements of filter rules will always be applyed to the full GEDCOM structure below, i.e. a filter rule replacement for "INDI" will also affect the data in "INDI:BIRT".
@@ -249,7 +249,7 @@ Additional switched can be used for some specific purposes:
 + After one filter rule has been matched, the filter execution is terminated. Further filter rules, which might also match will NOT be executed.
 
 ### GEDCOM Filter Validation
-The class [AbstractGedcomFilter](AbstractGedcomFilter.php#L128) contains a set of validation rules for GEDCOM filters. Everytime a GEDCOM filter is selected in the control panel or before a filter execution, the validation routines are run. 
+The class [AbstractGedcomFilter](AbstractGedcomFilter.php#L128) contains a set of validation rules for GEDCOM filters. Everytime a GEDCOM filter is selected in the control panel or before a filter execution, the validation routines are run.
 
 The validation includes the following checks:
 + Validate the structure and content of the filter rules (in EXPORT_FILTER)
@@ -291,45 +291,45 @@ The specific GEDBAS settings are only shown if the GEDBAS upload check box is se
 ## Remote API
 
 ### Remote URL
-For calling the remote API, you need to identify the remote URL of the Extended Import/Export module, which is a specific webtrees route. 
+For calling the remote API, you need to identify the remote URL of the Extended Import/Export module, which is a specific webtrees route.
 
 The Remote URL depends on the installation path of webtrees and can be found in the module settings in the control panel. You might want to copy/paste the URL to your browser or to a script.
 
 ![Remote URL in the module setting](resources/img/url_for_remote_requests.jpg)
 
-The Remote URL might look like the following example:  
+The Remote URL might look like the following example:
 http://mysite.net/webtrees/index.php?route=%2Fwebtrees/ExtendedImportExport
 
 ### URL Format for Remote Requests
 The full URL format, which contains all possible parameters is defined as follows:
 
-**REMOTE_URL**  
-&emsp;**&action**=[MY_ACTION](#MY_ACTION)  
-&emsp;**&tree**=[MY_TREE](#MY_TREE)  
-&emsp;**&tree_to_merge**=[TREE_TO_MERGE](#TREE_TO_MERGE)  
-&emsp;**&key**=[MY_KEY](#MY_KEY)  
-&emsp;**&file**=[MY_FILENAME](#MY_FILENAME)  
-&emsp;**&file_converted**=[MY_FILENAME_CONVERTED](#MY_FILENAME_CONVERTED)  
-&emsp;**&format**=[MY_EXPORT_FORMAT](#MY_EXPORT_FORMAT)  
-&emsp;**&privacy**=[MY_PRIVACY_LEVEL](#MY_PRIVACY_LEVEL)  
-&emsp;**&encoding**=[MY_ENCODING](#MY_ENCODING)  
+**REMOTE_URL**
+&emsp;**&action**=[MY_ACTION](#MY_ACTION)
+&emsp;**&tree**=[MY_TREE](#MY_TREE)
+&emsp;**&tree_to_merge**=[TREE_TO_MERGE](#TREE_TO_MERGE)
+&emsp;**&key**=[MY_KEY](#MY_KEY)
+&emsp;**&file**=[MY_FILENAME](#MY_FILENAME)
+&emsp;**&file_converted**=[MY_FILENAME_CONVERTED](#MY_FILENAME_CONVERTED)
+&emsp;**&format**=[MY_EXPORT_FORMAT](#MY_EXPORT_FORMAT)
+&emsp;**&privacy**=[MY_PRIVACY_LEVEL](#MY_PRIVACY_LEVEL)
+&emsp;**&encoding**=[MY_ENCODING](#MY_ENCODING)
 &emsp;**&line_endings**=[MY_ENDINGS](#MY_ENDINGS)
-&emsp;**&time_stamp**=[MY_TIME_STAMP](#MY_TIME_STAMP)  
-&emsp;**&gedcom_filter1**=[MY_GEDCOM_FILTER1](#MY_GEDCOM_FILTER)  
-&emsp;**&gedcom_filter2**=[MY_GEDCOM_FILTER2](#MY_GEDCOM_FILTER)  
-&emsp;**&gedcom_filter3**=[MY_GEDCOM_FILTER3](#MY_GEDCOM_FILTER)  
+&emsp;**&time_stamp**=[MY_TIME_STAMP](#MY_TIME_STAMP)
+&emsp;**&gedcom_filter1**=[MY_GEDCOM_FILTER1](#MY_GEDCOM_FILTER)
+&emsp;**&gedcom_filter2**=[MY_GEDCOM_FILTER2](#MY_GEDCOM_FILTER)
+&emsp;**&gedcom_filter3**=[MY_GEDCOM_FILTER3](#MY_GEDCOM_FILTER)
 &emsp;**&import_encoding**=[MY_IMPORT_ENCODING](#MY_IMPORT_ENCODING)
-&emsp;**&keep_media**=[MY_KEEP_MEDIA](#MY_KEEP_MEDIA)  
-&emsp;**&word_wrapped_notes**=[MY_WORD_WRAPPED_NOTES](#MY_WORD_WRAPPED_NOTES)  
-&emsp;**&gedcom_media_path**=[MY_GEDCOM_MEDIA_PATH](#MY_GEDCOM_MEDIA_PATH)  
-&emsp;**&GEDBAS_apiKey**=[MY_GEDBAS_APIKEY](#MY_GEDBAS_APIKEY)  
-&emsp;**&GEDBAS_Id**=[MY_GEDBAS_ID](#MY_GEDBAS_ID)  
-&emsp;**&GEDBAS_title**=[MY_GEDBAS_TITLE](#MY_GEDBAS_TITLE)  
+&emsp;**&keep_media**=[MY_KEEP_MEDIA](#MY_KEEP_MEDIA)
+&emsp;**&word_wrapped_notes**=[MY_WORD_WRAPPED_NOTES](#MY_WORD_WRAPPED_NOTES)
+&emsp;**&gedcom_media_path**=[MY_GEDCOM_MEDIA_PATH](#MY_GEDCOM_MEDIA_PATH)
+&emsp;**&GEDBAS_apiKey**=[MY_GEDBAS_APIKEY](#MY_GEDBAS_APIKEY)
+&emsp;**&GEDBAS_Id**=[MY_GEDBAS_ID](#MY_GEDBAS_ID)
+&emsp;**&GEDBAS_title**=[MY_GEDBAS_TITLE](#MY_GEDBAS_TITLE)
 &emsp;**&GEDBAS_description**=[MY_GEDBAS_DESCRIPTION](#MY_GEDBAS_DESCRIPTION)
 
 **REMOTE_URL** is the webtrees route to call the remote API of the Extended Import/Export module, see chapter [Remote URL](#remote-url).
 
-The "MY_XXX" place holders need to be replaced by the specific parameter values, which shall be used for the upload/download/conversion. The possible values for the URL parameters are described below. 
+The "MY_XXX" place holders need to be replaced by the specific parameter values, which shall be used for the upload/download/conversion. The possible values for the URL parameters are described below.
 
 Most of the parameters match 1:1 to the webtrees import/export settings in the control panel. To gain a better understanding of these parameters, it is very helpful to check these parameters and run some manual tests in the control panel.
 
@@ -353,7 +353,7 @@ It is not mandatory to provide all parameters. The only mandatory parameters are
 
 For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
-### Values for URL Parameters  
+### Values for URL Parameters
 * **<a name="MY_ACTION">MY_ACTION</a>** specifies whether the GEDCOM file will be uploaded, converted, downloaded, saved on the server, or both (downloaded and saved); or if a tree shall be created, renumbered or merged with another tree.
   * Accepted values: **download** (default), save, both, upload, convert, create_tree, renumber_tree, merge_trees
   * The folder within the webtrees root path to save GEDCOM files can be specified in the module settings in the control panel
@@ -370,7 +370,7 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 * **<a name="MY_FILENAME">MY_FILENAME</a>** can be provided with or without file extension, i.e. use this_file instead of this_file.ged
   * The tree name (MY_TREE) is taken as default if MY_FILENAME is not provided
 
-* **<a name="MY_FILENAME_CONVERTED">MY_FILENAME_CONVERTED</a>** can be provided with or without file extension. 
+* **<a name="MY_FILENAME_CONVERTED">MY_FILENAME_CONVERTED</a>** can be provided with or without file extension.
   * The file name (before conversion) is taken as default if MY_FILENAME_CONVERTED is not provided
 
 * **<a name="MY_EXPORT_FORMAT">MY_EXPORT_FORMAT</a>** specifies the file format for the export
@@ -405,9 +405,9 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
 * **<a name="MY_GEDCOM_MEDIA_PATH">MY_GEDCOM_MEDIA_PATH</a>** specifies a part of the media file path, which shall be removed from file names during the GEDCOM import
   * Accepted values: A file path used in the GEDCOM import file, e.g. "C:\Documents\"
-  * If the file path contains slashes, the value needs to be included in brackets 
+  * If the file path contains slashes, the value needs to be included in brackets
 
-* **<a name="MY_GEDBAS_APIKEY">MY_GEDBAS_APIKEY</a>** specifies a GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account. 
+* **<a name="MY_GEDBAS_APIKEY">MY_GEDBAS_APIKEY</a>** specifies a GEDBAS API key, which allows to upload GEDCOM files for a certain GEDBAS account.
   * If you login into your GEDBAS account, you can identify your individual key with the following link: [GEDBAS API key](https://gedbas.genealogy.net/user/apiKeys)
 
 * **<a name="MY_GEDBAS_ID">MY_GEDBAS_ID</a>** specifies the Id of the GEDBAS database, to which the GEDCOM file shall be uploaded.
@@ -442,7 +442,7 @@ Any parameters provided in the URL have a higher priority and will overrule the 
 
 ![Screenshot: Default value settings in the control panel](resources/img/screenshot_control_panel_default_settings.jpg)
 
-### Example Scripts 
+### Example Scripts
 The release ZIP file of the ExtendedImportExport module also contains 3 example scripts for automatic download of GEDCOM files or storage on the server:
 + [ExampleBashScript\.sh](ExampleBashScript.sh) contains a simple example, how a GEDCOM file can be stored on the webtrees server. To trigger a store process in regular time intervals, this bash script could be triggered by a Cron Job.
 + [ExamplePythonScript\.py](ExamplePythonScript.py) contains a simple example, how an automatic download can be performed with a Python script, e.g. on a Windows PC
@@ -461,7 +461,7 @@ ExtendedImportExport contains a GEDCOM filter, which performs a GEDCOM 7 convers
 
 The GEDCOM 7 export also includes a further option to use the German GEDCOM-L standard.
 
-The GEDCOM 7 filter were successfully valdidated with [GEDCOM Validator](https://chronoplexsoftware.com/gedcomvalidator/) and 
+The GEDCOM 7 filter were successfully valdidated with [GEDCOM Validator](https://chronoplexsoftware.com/gedcomvalidator/) and
 [Gedcom Structure Analysis](https://ofb.hesmer.name/main_gsp_e.html#Analyse). Gedcom Structure Analysis also validates against the [GEDCOM-L standard](https://genealogy.net/GEDCOM/).
 
 ## Translation

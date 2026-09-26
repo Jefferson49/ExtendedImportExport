@@ -24,12 +24,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * 
+ *
  * ExtendedImportExport
  *
  * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, export
  * and filter operations. The module also supports remote downloads/uploads via URL requests.
- * 
+ *
  */
 
 declare(strict_types=1);
@@ -44,8 +44,8 @@ interface GedcomFilterInterface
 {
     /**
      * Get the Gedcom filter rules
-     * 
-     * @param array<string> $params   Parameters from remote URL requests 
+     *
+     * @param array<string> $params   Parameters from remote URL requests
      *                                as well as further parameters, e.g. 'tree' and 'base_url'
      *
      * @return array
@@ -60,7 +60,7 @@ interface GedcomFilterInterface
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
      *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return string                        The converted Gedcom
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string;

@@ -24,12 +24,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * 
+ *
  * ExtendedImportExport
  *
  * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, export
  * and filter operations. The module also supports remote downloads/uploads via URL requests.
- * 
+ *
  */
 
 declare(strict_types=1);
@@ -66,9 +66,9 @@ class Record
      * Constructor
      *
      * @param string $xref   The XREF of the record
-     * 
+     *
      * @return void
-     */    
+     */
     public function __construct($xref, $type = '')
     {
         $this->xref = $xref;
@@ -78,7 +78,7 @@ class Record
         $this->is_empty = false;
         $this->is_minimal_individual = false;
     }
-    
+
     /**
      * Whether the records is referenced by other records, which point to it
      *
@@ -97,8 +97,8 @@ class Record
     public function isReferencing(): bool {
 
         return sizeof($this->other_records_referenced_by_record) > 0;
-    }  
-    
+    }
+
     /**
      * Get list of records, which point to the record
      *
@@ -129,7 +129,7 @@ class Record
         $this->is_empty = true;
         return;
     }
-    
+
     /**
      * Whether the records is empty, i.e. does not contain a Gedcom substructure
      *
@@ -150,7 +150,7 @@ class Record
         $this->is_minimal_individual = true;
         return;
     }
-    
+
     /**
      * Whether the records is a minimal individual, i.e. INDI record with SEX, FAMC, FAMS or less
      *
@@ -159,13 +159,13 @@ class Record
     public function isMinimalIndividual(): bool {
 
         return $this->is_minimal_individual;
-    }    
+    }
 
     /**
      * Add other record, which points to the record
      *
      * @param Record $record
-     * 
+     *
      * @return void
      */
     public function addReferencingRecord(Record $record): void {
@@ -178,7 +178,7 @@ class Record
      * Add other record, which is references by the record
      *
      * @param Record $record
-     * 
+     *
      * @return void
      */
     public function addReferencedRecord(Record $record): void {
@@ -191,7 +191,7 @@ class Record
      * Remove reference of other record, which points to the record
      *
      * @param Record $record
-     * 
+     *
      * @return void
      */
     public function removeReferencingRecord(Record $record): void {
@@ -205,7 +205,7 @@ class Record
      * Remove other record, which is referenced by the record
      *
      * @param Record $record
-     * 
+     *
      * @return void
      */
     public function removeReferencedRecord(Record $record): void {
@@ -217,7 +217,7 @@ class Record
 
     /**
      * Set record tpye
-     * 
+     *
      * @param string $type  A record type, i.e. INDI, FAM, ...
      *
      * @return void
@@ -227,10 +227,10 @@ class Record
         $this->type = $type;
         return;
     }
-    
+
     /**
      * Get the record tpye
-     * 
+     *
      * @return string
      */
     public function type(): string {
@@ -240,22 +240,22 @@ class Record
 
     /**
      * Get the record xref
-     * 
+     *
      * @return string
      */
     public function xref(): string {
 
         return $this->xref;
-    }    
+    }
 
     /**
      * Whether the record exists (in the overall GEDCOM data)
-     * 
+     *
      * @return bool
      */
     public function exists(): bool {
 
         //If the type is set for the record, we assume that it exists
         return $this->type() !== '';
-    }    
+    }
 }

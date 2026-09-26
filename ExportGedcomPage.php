@@ -24,12 +24,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * 
+ *
  * ExtendedImportExport
  *
  * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, export
  * and filter operations. The module also supports remote downloads/uploads via URL requests.
- * 
+ *
  */
 
 declare(strict_types=1);
@@ -107,14 +107,14 @@ class ExportGedcomPage implements RequestHandlerInterface
         $time_stamp            = Validator::queryParams($request)->string('time_stamp', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, DownloadGedcomWithURL::TIME_STAMP_NONE));
 
         //If current user is no admin, return to the home page
-        if (!Auth::isAdmin()) { 
+        if (!Auth::isAdmin()) {
             FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
             return redirect(route(HomePage::class));
         }
 
         //If no tree access
         if ($tree === null) {
-            FlashMessages::addMessage(I18N::translate('The current user does not have sufficient rights to access trees with the custom module %s.', $download_gedcom_with_url->title()), 'danger');	
+            FlashMessages::addMessage(I18N::translate('The current user does not have sufficient rights to access trees with the custom module %s.', $download_gedcom_with_url->title()), 'danger');
             return redirect(route(HomePage::class));
         }
 
@@ -124,7 +124,7 @@ class ExportGedcomPage implements RequestHandlerInterface
         }
         catch (DownloadGedcomWithUrlException $ex) {
             FlashMessages::addMessage($ex->getMessage(), 'danger');
-        }       
+        }
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
 

@@ -36,8 +36,8 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         '*:*:*:AGE'                	=> ["RegExp_macro" => "AgeConversion"],
 
         //Language conversion
-        '*:LANG' 	           		=> ["RegExp_macro" => "LanguageConversion"],		
-        '*:*:LANG'     	   			=> ["RegExp_macro" => "LanguageConversion"],		        
+        '*:LANG' 	           		=> ["RegExp_macro" => "LanguageConversion"],
+        '*:*:LANG'     	   			=> ["RegExp_macro" => "LanguageConversion"],
 
         //UID conversion
         '*:_UID'                 	=> ["RegExp_macro" => "UIdConversion"],
@@ -63,14 +63,14 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         '*:RFN'                     => ["1 (RFN) (.+)" => "1 EXID $2\n2 TYPE https://gedcom.io/terms/v7/$1",],
         '*:RIN'                     => ["1 (RIN) (.+)" => "1 EXID $2\n2 TYPE https://gedcom.io/terms/v7/$1",],
 
-        //RELA, ROLE, _ASSO	
+        //RELA, ROLE, _ASSO
         'INDI:ASSO'		            => ["RegExp_macro" => "ASSO_RELA"],
         'INDI:*:_ASSO'	 	        => ["RegExp_macro" => "ASSO_RELA"],
         'FAM:*:_ASSO'	            => ["RegExp_macro" => "ASSO_RELA"],
 
         '*:SOUR:EVEN:ROLE'          => ["RegExp_macro" => "ROLE_GodparentWitness"],
         '*:*:SOUR:EVEN:ROLE'        => ["RegExp_macro" => "ROLE_GodparentWitness"],
-        
+
         //Media types
         //Allowed GEDCOM 7 media types: https://www.iana.org/assignments/media-types/media-types.xhtml
         //GEDCOM 5.5.1 media types: bmp | gif | jpg | ole | pcx | tif | wav
@@ -96,7 +96,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
         'INDI:*:_WITN'             	=> ["RegExp_macro" => "_GODP_WITN"],
 
         'FAM:_STAT'                 => ["1 _STAT (?i)(NOT|NEVER) MARRIED\n" => "1 NO MARR\n"],
-                                        
+
         'FAM:MARR:TYPE'            	=> ["2 TYPE (?i)RELIGIOUS" => "2 TYPE RELI"],
 
         'TRLR'                      => [],
@@ -187,29 +187,29 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
     /**
      * Constructor
      *
-     */      
+     */
     public function __construct() {
 
-        $file_system = new Filesystem(new LocalFilesystemAdapter(__DIR__ . '/../iana/'));        
+        $file_system = new Filesystem(new LocalFilesystemAdapter(__DIR__ . '/../iana/'));
         $iana_language_registry = $file_system->read('iana_languages.txt');
-        
+
         //Create language table
         preg_match_all("/Type: language\nSubtag: ([^\n]+)\nDescription: ([^\n]+)\n/", $iana_language_registry, $matches, PREG_SET_ORDER);
-        
+
         foreach ($matches as $match) {
             $this->language_to_code_table[strtoupper($match[2])]= $match[1];
-        }   
+        }
     }
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('GEDCOM 7 conversion');
-    }      
+    }
 
     /**
      * Custom conversion of a Gedcom string
@@ -219,7 +219,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
      *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return string                        The converted Gedcom
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
@@ -243,8 +243,8 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
                     $search       = (string) $level . " DATE " . $phrase_value;
                     $replace      = (string) $level . " DATE " . $date_value . "\n" .  (string) ($level + 1) . " PHRASE " . $phrase_value;
                     $gedcom       = str_replace($search, $replace, $gedcom);
-                }			
-            }        
+                }
+            }
 
             //DATE INT (date interpretation)
             $preg_pattern = [
@@ -263,8 +263,8 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
                     $search       = (string) $level . " DATE INT " . $date_value . ' (' . $match[3] . ')';
                     $replace      = (string) $level . " DATE " . $date_value . "\n" .  (string) ($level + 1) . " PHRASE " . $phrase_value;
                     $gedcom       = str_replace($search, $replace, $gedcom);
-                }			
-            }        
+                }
+            }
         }
         elseif (strpos($pattern, ':LANG') > 0) {
 
@@ -300,7 +300,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
 
                     foreach ($matches as $match) {
 
-                        $found_type =  $match[1];		
+                        $found_type =  $match[1];
 
                         //If allowed type
                         if (in_array(strtoupper($found_type), $enum_values)) {
@@ -314,7 +314,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
                             $replace = "2 " . $level2_tag . " OTHER\n3 PHRASE " . $found_type;
                             $gedcom = str_replace($search, $replace, $gedcom);
                         }
-                    }		
+                    }
                 }
             }
         }
@@ -329,7 +329,7 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
                 foreach ($matches as $match) {
                     $level = (int) $match[1];
 
-                    //If no known ENUM value, and OTHER is allowed for this enumtype, use OTHER/PHRASE instead 
+                    //If no known ENUM value, and OTHER is allowed for this enumtype, use OTHER/PHRASE instead
                     if (!in_array(strtoupper($match[2]), $values) && in_array('OTHER', $values)) {
                         $search =  (string) $level . " " . $tag . " " . $match[2];
                         //For specific role descriptions
@@ -344,9 +344,9 @@ class GEDCOM_7_GedcomFilter extends AbstractGedcomFilter
                         $search =  (string) $level . " " . $tag . " " . $match[2];
                         $replace = (string) $level . " " . $tag . " " . strtoupper($match[2]);
                         $gedcom = str_replace($search, $replace, $gedcom);
-                    }					
+                    }
                 }
-            }		
+            }
         }
 
         return $gedcom;

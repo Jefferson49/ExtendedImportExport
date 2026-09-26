@@ -31,30 +31,30 @@ class ExampleGedcomFilter extends AbstractGedcomFilter
         '!FAM:MARR:PLAC'            => [],
         '!FAM:MARR:PLAC:*'          => [],
 
-        //Apply several regular expressikon replacements to one tag pattern. In this case, 2 replacements are used 
+        //Apply several regular expressikon replacements to one tag pattern. In this case, 2 replacements are used
         //Change 'pdf'/'jpg' to 'PDF'/'JPG' in all FORM tags of media objects
         'OBJE:*'                    => ["2 FORM pdf" => "2 FORM PDF",
                                         "2 FORM jpg" => "2 FORM JPG",],
 
-        //Perform a custom conversion for the SUBM record, 
-        //i.e. call the method $this->customConvert(...) to convert the Gedcom. 
+        //Perform a custom conversion for the SUBM record,
+        //i.e. call the method $this->customConvert(...) to convert the Gedcom.
         //The methd is implemented in the PHP code below
         'SUBM'                      => ["PHP_function" => "customConvert"],
 
-        //Export all other GEDCOM structures      
+        //Export all other GEDCOM structures
         '*'                         => [],
     ];
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Example GEDCOM filter');
-    }      
-    
+    }
+
     /**
      * Custom conversion of a Gedcom string
      *
@@ -63,14 +63,14 @@ class ExampleGedcomFilter extends AbstractGedcomFilter
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
      *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return string                        The converted Gedcom
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
 
         //Create a specific record ID for submitters
         if ($pattern === 'SUBM') {
-        
+
         //Get webtrees user if exists in change record, else use default
         preg_match_all("/2 _WT_USER (.*)\n/", $gedcom, $matches, PREG_SET_ORDER);
         $user = $matches[0][1] ?? 'Default';

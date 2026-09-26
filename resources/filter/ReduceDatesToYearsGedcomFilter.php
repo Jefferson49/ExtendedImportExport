@@ -8,12 +8,12 @@ use Fisharebest\Webtrees\I18N;
 
 /**
  * A GEDCOM filter, which reduces all dates to years only
- * 
+ *
  */
 class ReduceDatesToYearsGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
-      
+
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
@@ -36,9 +36,9 @@ class ReduceDatesToYearsGedcomFilter extends AbstractGedcomFilter
         '*:*:DATE'                 	=> ["RegExp_macro" => "DateToYear"],
         '*:*:*:DATE'                => ["RegExp_macro" => "DateToYear"],
         '*:*:*:*:DATE'              => ["RegExp_macro" => "DateToYear"],
-        
-        //Export other structures      
-        '*'                         => [],        
+
+        //Export other structures
+        '*'                         => [],
     ];
 
     protected const REGEXP_MACROS = [
@@ -46,15 +46,15 @@ class ReduceDatesToYearsGedcomFilter extends AbstractGedcomFilter
         //                             ["search pattern" => "replace pattern"],
 
         "DateToYear"                => ["([\d]) DATE (INT )*(ABT |CAL |EST |AFT |BEF |BET )*(?:.*([\d]{4} AND ))*.*([\d]{4})( .*)*" => "$1 DATE $2$3$4$5$6"],
-    ];   
+    ];
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Reduce dates to years');
-    }     
+    }
 }

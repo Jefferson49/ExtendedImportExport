@@ -24,12 +24,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * 
+ *
  * ExtendedImportExport
  *
- * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, 
+ * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import,
  * export and filter operations. The module also supports remote downloads/uploads via URL requests.
- * 
+ *
  */
 
 declare(strict_types=1);
@@ -46,7 +46,7 @@ use Throwable;
  * Abstract Gedcom filter, which contains basic Gedcom filter rules for the mandatory HEAD, SUBM, TRLR structures only
  */
 abstract class AbstractGedcomFilter implements GedcomFilterInterface
-{    
+{
     //A switch, whether the filter uses a references analysis between the records
     protected const USES_REFERENCES_ANALYSIS = false;
 
@@ -77,7 +77,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
@@ -91,8 +91,8 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
 
     /**
      * Get the Gedcom filter rules
-     * 
-     * @param array<string> $params   Parameters from remote URL requests 
+     *
+     * @param array<string> $params   Parameters from remote URL requests
      *                                as well as further parameters, e.g. 'tree' and 'base_url'
      *
      * @return array
@@ -113,7 +113,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>.
      *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return string                        The converted Gedcom
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
@@ -121,7 +121,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
         //As a default, return the un-converted Gedcom
         return $gedcom;
     }
-    
+
     /**
      * Validate the GEDCOM filter
      *
@@ -174,7 +174,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
 
             //Validate regular expressions in GEDCOM filter
             foreach($regexps as $search => $replace) {
-                
+
                 //If the filter contains a PHP function command, check if the filter class has the required method
                 if ($search === self::PHP_FUNCTION_STRING) {
 
@@ -228,7 +228,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
 
                     if ($search !== '' OR $replace !== '') {
                         return I18N::translate('The selected GEDCOM filter (%s) contains a black list filter rule (%s) with a regular expression, which will never be executed, because the black list filter rule will delete the related GEDCOM line.', $class_name, $pattern);
-                    } 
+                    }
                 }
             }
 
@@ -251,7 +251,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
                     return I18N::translate('The filter rule "%s" is dominated by the earlier filter rule "%s" and will never be executed. Please remove the rule or change the order of the filter rules.', $pattern, $pattern_list[$i]);
                 }
                 $i++;
-            }            
+            }
         }
 
         //Validate, if getGedcomFilterRules() creates a PHP error
@@ -261,7 +261,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
         catch (Throwable $th) {
             return I18N::translate('The %s method of the used GEDCOM filter (%s) throws a PHP error', 'getGedcomFilterRules', (new ReflectionClass($this))->getShortName()) .
                                     ': ' . $th->getMessage();
-        }        
+        }
 
         //Validate, if getIncludedFiltersBefore creates a PHP error
         try {
@@ -270,7 +270,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
         catch (Throwable $th) {
             return I18N::translate('The %s method of the used GEDCOM filter (%s) throws a PHP error', 'getIncludedFiltersBefore', (new ReflectionClass($this))->getShortName()) .
                                     ': ' . $th->getMessage();
-        }                
+        }
         //Validate, if getIncludedFiltersAfter creates a PHP error
         try {
             $test = $this->getIncludedFiltersAfter();
@@ -279,13 +279,13 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
             return I18N::translate('The %s method of the used GEDCOM filter (%s) throws a PHP error', 'getIncludedFiltersAfter', (new ReflectionClass($this))->getShortName()) .
                                     ': ' . $th->getMessage();
         }
-        
+
         return '';
-    }     
+    }
 
     /**
      * Merge two sets of filter rules
-     * 
+     *
      * @param array $filter_rules1
      * @param array $filter_rules2
      *
@@ -325,7 +325,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
     public function usesReferencesAnalysis(): bool {
 
         return static::USES_REFERENCES_ANALYSIS;
-    }    
+    }
 
     /**
      * Whether custom tags shall be analyzed and SCHMA structures shall be added to GEDCOM 7
@@ -335,7 +335,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
     public function usesSchemaTagAnalysis(): bool {
 
         return static::USES_SCHEMA_TAG_ANALYSIS;
-    }   
+    }
 
     /**
      * Whether Gedcom lines shall be split (i.e. CONC structure) without leading and trailing spaces
@@ -345,7 +345,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
     public function wrapLinesWithoutLeadingAndTrailingSpaces(): bool {
 
         return static::WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES;
-    }     
+    }
 
     /**
      * Include a set of other filters, which shall be executed before the current filter
@@ -365,14 +365,14 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
     public function getIncludedFiltersAfter(): array {
 
         return [];
-    }   
+    }
 
     /**
      * Replace macros in filter rules
      *
-     * @param array $filter_rules    A list with filter rules 
+     * @param array $filter_rules    A list with filter rules
      * @param array $regexp_macros   A list with macro definitions
-     * 
+     *
      * @return array
      */
     public function replaceMacros(array $filter_rules, array $regexp_macros): array {
@@ -388,7 +388,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
                 if ($search === self::REGEXP_MACROS_STRING) {
 
                     //Add all the conversion rules found in the macro
-                    $modfied_conversion_rules = array_merge($modfied_conversion_rules, $regexp_macros[$replace]);        
+                    $modfied_conversion_rules = array_merge($modfied_conversion_rules, $regexp_macros[$replace]);
                 }
                 else {
                     //Otherwise add the conversion rule found
@@ -400,14 +400,14 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
         }
 
         return $gedcom_filter_rules;
-    }   
-    
-    
+    }
+
+
     /**
      * Add delimiters to regular expression
      *
-     * @param array $filter_rules  A list with filter rules 
-     * 
+     * @param array $filter_rules  A list with filter rules
+     *
      * @return array               Filter rules with delimiters added
      */
     public function addPregDelimiters(array $filter_rules): array {
@@ -423,7 +423,7 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
                 if ($search !== self::PHP_FUNCTION_STRING && $search !== self::REGEXP_MACROS_STRING) {
 
                     //Add delimiters to regular expression
-                    $search = '/' . $search .'/'; 
+                    $search = '/' . $search .'/';
                 }
 
                 $modfied_conversion_rules[$search] = $replace;
@@ -433,5 +433,5 @@ abstract class AbstractGedcomFilter implements GedcomFilterInterface
         }
 
         return $gedcom_filter_rules;
-    }      
+    }
 }

@@ -9,13 +9,13 @@ use Jefferson49\Webtrees\Internationalization\MoreI18N;
 
 /**
  * A GEDCOM filter, which includes birth, marriage, and death data only.
- * 
+ *
  * The generated GEDCOM also contains links to the related individuals and families in webtrees.
  */
 class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
 {
     protected const GEDCOM_FILTER_RULES = [
-      
+
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
         'HEAD'                      => [],
@@ -82,7 +82,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
 
         'FAM:_UID'                  => [],
 
-        //Add "Y" to marriage for the case that substructures might be empty      
+        //Add "Y" to marriage for the case that substructures might be empty
         'FAM:MARR'                  => ["1 MARR\n$" => "1 MARR Y\n"],
         'FAM:MARR:DATE'             => [],
         'FAM:MARR:PLAC'             => [],
@@ -92,24 +92,24 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
         'SUBM:NAME'                 => [],
         'SUBM:_UID'                 => [],
 
-        //Add a source to the end of the data. The source is used for links in INDI and FAM (links in souce citations) 
+        //Add a source to the end of the data. The source is used for links in INDI and FAM (links in souce citations)
         'TRLR'                      => ["0 TRLR\n" => "0 @S1@ SOUR\n1 TITL webtrees %I18N_FAMILY_TREE% '%TREE_TITLE%' - %BASE_URL_SHORT%\n0 TRLR\n"],
     ];
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Birth, marriage, death export');
-    }    
+    }
 
     /**
      * Get the Gedcom filter rules
-     * 
-     * @param array<string> $params   Parameters from remote URL requests 
+     *
+     * @param array<string> $params   Parameters from remote URL requests
      *                                as well as further parameters, e.g. 'tree' and 'base_url'
      *
      * @return array
@@ -143,7 +143,7 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
                 //Replace %BASE_URL% in the filter rule by the actual base URL in webtrees
                 $replace = str_replace('%BASE_URL%' , $params['base_url'], $replace);
 				$base_url_short = str_replace(['https://', 'http://', 'www.'], '', $params['base_url']);
-                $replace = str_replace('%BASE_URL_SHORT%', $base_url_short, $replace);    
+                $replace = str_replace('%BASE_URL_SHORT%', $base_url_short, $replace);
 
                 //Replace %TREE% in the filter rule by the actual tree name in webtrees
                 $replace = str_replace('%TREE%' , $params['tree'], $replace);
@@ -172,19 +172,19 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
      *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return string                        The converted Gedcom
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
 
         $structures_found = [];
         $tags = [
-            'BIRT', 
+            'BIRT',
             'BAPM',
             'CHR',
             'DEAT',
             'BURI',
-            'CREM', 
+            'CREM',
         ];
 
         foreach($tags as $tag) {
@@ -221,5 +221,5 @@ class BirthMarriageDeathGedcomFilter extends AbstractGedcomFilter
         }
 
         return $gedcom;
-    }    
+    }
 }

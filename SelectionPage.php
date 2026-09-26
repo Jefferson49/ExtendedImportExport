@@ -24,12 +24,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * 
+ *
  * ExtendedImportExport
  *
  * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, export
  * and filter operations. The module also supports remote downloads/uploads via URL requests.
- * 
+ *
  */
 
 declare(strict_types=1);
@@ -104,18 +104,18 @@ class SelectionPage implements RequestHandlerInterface
         }
 
         //If current user is no admin, return to the home page
-        if (!Auth::isAdmin()) { 
+        if (!Auth::isAdmin()) {
             FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
             return redirect(route(HomePage::class));
         }
 
         //If no tree access, return to the home page
         if ($tree === null OR empty($tree_list)) {
-            FlashMessages::addMessage(I18N::translate('The current user does not have sufficient rights to access trees with the custom module %s.', $download_gedcom_with_url->title()), 'danger');	
+            FlashMessages::addMessage(I18N::translate('The current user does not have sufficient rights to access trees with the custom module %s.', $download_gedcom_with_url->title()), 'danger');
             return redirect(route(HomePage::class));
         }
 
-        //Set the identifyed tree as the new default tree 
+        //Set the identifyed tree as the new default tree
         $download_gedcom_with_url->setPreference(DownloadGedcomWithURL::PREF_DEFAULT_TREE_NAME, $tree->name());
 
         return $this->viewResponse(
@@ -126,7 +126,7 @@ class SelectionPage implements RequestHandlerInterface
                 'tree_list'  => $tree_list,
                 DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER1 => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER1, ''),
                 DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER2 => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER2, ''),
-                DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER3 => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER3, ''),                
+                DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER3 => $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_GEDCOM_FILTER3, ''),
             ]
         );
     }

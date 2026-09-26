@@ -8,7 +8,7 @@ use Fisharebest\Webtrees\I18N;
 
 /**
  * A GEDCOM filter, which avoids leading spaces from all CONC structures
- * 
+ *
  * Note: Trailing spaces will already be removed by the core webtrees export
  */
 class AvoidLeadingSpacesForCONC_GedcomFilter extends AbstractGedcomFilter
@@ -17,7 +17,7 @@ class AvoidLeadingSpacesForCONC_GedcomFilter extends AbstractGedcomFilter
     protected const WRAP_LINES_WITHOUT_LEADING_AND_TRAILING_SPACES = true;
 
     protected const GEDCOM_FILTER_RULES = [
-      
+
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
         //                             ["search pattern" => "replace pattern"],
 
@@ -27,11 +27,11 @@ class AvoidLeadingSpacesForCONC_GedcomFilter extends AbstractGedcomFilter
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Avoid leading spaces for CONC');
-    }      
+    }
 }

@@ -24,12 +24,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * 
+ *
  * ExtendedImportExport
  *
- * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, 
+ * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import,
  * export and filter operations. The module also supports remote downloads/uploads via URL requests.
- * 
+ *
  */
 
 declare(strict_types=1);
@@ -72,9 +72,9 @@ class ConvertGedcomPage implements RequestHandlerInterface
     public function __construct(AdminService $admin_service, ModuleService  $module_service, TreeService $tree_service)
     {
         $this->admin_service  = $admin_service;
-        $this->module_service = $module_service;    
+        $this->module_service = $module_service;
         $this->tree_service   = $tree_service;
-    }       
+    }
 
     /**
      * @param ServerRequestInterface $request
@@ -89,11 +89,11 @@ class ConvertGedcomPage implements RequestHandlerInterface
         $download_gedcom_with_url = Functions::getFromContainer(DownloadGedcomWithURL::class);
 
         //If current user is no admin, return to the home page
-        if (!Auth::isAdmin()) { 
+        if (!Auth::isAdmin()) {
             FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
             return redirect(route(HomePage::class));
         }
-        
+
         $gedcom_filename    = Validator::queryParams($request)->string('gedcom_filename', '');
         $filename_converted = Validator::queryParams($request)->string('filename_converted', '');
         $format             = Validator::queryParams($request)->string('format', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_EXPORT_FORMAT, 'gedcom'));
@@ -115,7 +115,7 @@ class ConvertGedcomPage implements RequestHandlerInterface
         }
         catch (DownloadGedcomWithUrlException $ex) {
             FlashMessages::addMessage($ex->getMessage(), 'danger');
-        }       
+        }
 
         $gedcom_filter_list = $download_gedcom_with_url->getGedcomFilterList();
 

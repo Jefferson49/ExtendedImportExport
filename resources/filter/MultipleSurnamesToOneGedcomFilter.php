@@ -10,7 +10,7 @@ use Fisharebest\Webtrees\I18N;
  * A GEDCOM filter, which converts NAME patterns with multiple names to one single surname
  */
 class MultipleSurnamesToOneGedcomFilter extends AbstractGedcomFilter
-{    
+{
     private const SURNAME = '%_SURNAME_%';
     protected const GEDCOM_FILTER_RULES = [
         //GEDCOM tag                => Regular expression to be applied for the chosen GEDCOM tag
@@ -19,19 +19,19 @@ class MultipleSurnamesToOneGedcomFilter extends AbstractGedcomFilter
         //Convert names
         'INDI:NAME'                 => ["PHP_function" => "customConvert"],
 
-        //Export all other structures      
+        //Export all other structures
         '*'                         => [],
     ];
 
     /**
      * Get the name of the GEDCOM filter
-     * 
+     *
      * @return string
      */
     public function name(): string {
 
         return I18N::translate('Convert multiple surnames to a single surname');
-    } 
+    }
 
     /**
      * Custom conversion of a Gedcom string
@@ -41,7 +41,7 @@ class MultipleSurnamesToOneGedcomFilter extends AbstractGedcomFilter
      * @param array         $records_list    A list with all xrefs and the related records: array <string xref => Record record>
      *                                       Records offer methods to be checked whether they are empty, referenced, etc.
      * @param array<string> $params          Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return string                        The converted Gedcom
      */
     public function customConvert(string $pattern, string $gedcom, array &$records_list, array $params = []): string {
@@ -57,7 +57,7 @@ class MultipleSurnamesToOneGedcomFilter extends AbstractGedcomFilter
 
         //If only a single surname is found, do nothing
         if (sizeof($surnames) < 2) return $gedcom;
-        
+
         //Replace identified surnames by placeholders
         foreach ($surnames_with_slashes as $search) {
             $name = str_replace($search, self::SURNAME, $name);

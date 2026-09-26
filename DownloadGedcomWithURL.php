@@ -1432,8 +1432,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	/**
      * Get the records stored in the clippings cart
-     * Code from: Fisharebest\Webtrees\Module\ClippingsCartModule, function postDownloadAction
-     * Last check: 2026-04-05
+     * Code from:  Fisharebest\Webtrees\Module\ClippingsCartModule->postDownloadAction
+     * Last check: 2026-09-26
      *
      * @param  Tree       $tree
      * @param  string     $privacy
@@ -1494,6 +1494,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
             }
         }
 
+        // We have already applied privacy filtering, so do not do it again.
         return $records;
     }
 
@@ -1640,7 +1641,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
 	/**
      * Import a tree into the database
-     * Code from: Fisharebest\Webtrees\Cli\Commands\TreeImport, function execute()
+     * Code from:  Fisharebest\Webtrees\Cli\Commands\TreeImport->function execute()
      * Last check: 2026-04-05
 	 *
      * @param Tree   $tree
@@ -1660,6 +1661,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         // Replace backslashes by slashes
         $gedcom_file = str_replace('\\' , '/', $gedcom_file);
+
+        if ($tree === null) {
+            throw new DownloadGedcomWithUrlException('Tree not found');
+        }
 
         if (!file_exists($gedcom_file)) {
             throw new DownloadGedcomWithUrlException('File does not exist' . ': ' . $gedcom_file);
@@ -1691,7 +1696,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 'change'      => DB::table('change')->where('gedcom_id', '=', $tree->id()),
             ];
 
-
             if ($keep_media) {
                 $queries['link'] = DB::table('link')
                     ->where('l_file', '=', $tree->id())
@@ -1708,38 +1712,19 @@ class DownloadGedcomWithURL extends AbstractModule implements
                 $query->delete();
             }
 
-            $total_bytes  = filesize($gedcom_file);
 
-            $bytes_loaded = 0;
+            $fp = fopen($gedcom_file, 'rb');
 
-            $fp     = fopen($gedcom_file, 'rb');
-            $buffer = '';
-            $first_line = true;
+            // Convert to UTF-8.
+            stream_filter_append($fp, GedcomEncodingFilter::class, STREAM_FILTER_READ, ['src_encoding' => $encoding]);
 
-            while ($bytes_loaded < $total_bytes) {
-                $tmp = fread($fp, 8192);
-                $buffer .= $tmp;
-                $bytes_loaded += strlen($tmp);
+            $records = preg_split('/[\r\n]+(?=0)/', stream_get_contents($fp));
 
-                //If first line, remove byte order mark if exists
-                if ($first_line) {
-                    foreach ([UTF8::BYTE_ORDER_MARK, UTF8::BYTE_ORDER_MARK, UTF16LE::BYTE_ORDER_MARK] as $byte_order_mark) {
-                        if (str_starts_with($buffer, $byte_order_mark)) {
-                            $buffer = substr($buffer, strlen($byte_order_mark));
-                            $first_line = false;
-                        }
-                    }
-                }
-
-                $records = preg_split('/[\r\n]+(?=0)/', $buffer);
-                $buffer = array_pop($records);
-
-                foreach ($records as $record) {
-                    try {
-                        $this->gedcom_import_service->importRecord($record, $tree, false);
-                    } catch (GedcomErrorException $exception) {
-                        $errors .= $exception->getMessage();
-                    }
+            foreach ($records as $record) {
+                try {
+                    $this->gedcom_import_service->importRecord($record, $tree, false);
+                } catch (GedcomErrorException $exception) {
+                    $errors .= $exception->getMessage();
                 }
             }
 
@@ -1752,9 +1737,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             DB::connection()->commit();
 
-        } catch (Throwable $th) {
+        } catch (Throwable $ex) {
             DB::connection()->rollBack();
-            throw $th;
+            throw $ex;
         }
 
         return $errors;

@@ -24,12 +24,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * 
+ *
  * ExtendedImportExport
  *
  * A weebtrees(https://webtrees.net) 2.1 custom module for advanced GEDCOM import, export
  * and filter operations. The module also supports remote downloads/uploads via URL requests.
- * 
+ *
  */
 
 declare(strict_types=1);
@@ -93,14 +93,14 @@ class FilteredGedcomExportService extends GedcomExportService
         //Source: https://wiki.genealogy.net/GEDCOM/_Nutzerdef-Tag#Tabelle_1
         ['https://wiki.genealogy.net/GEDCOM/_Nutzerdef-Tag#Tabelle_1' =>
             [
-                '_ABBR', '_ADPF', '_ADPM', '_ADPN', '_AHNNR', '_AIDN', '_AKA', '_AKAN', '_ALIA', '_ALTPATH', '_AON', '_APID', '_ASSO', '_AUTO', '_BIRN', 
+                '_ABBR', '_ADPF', '_ADPM', '_ADPN', '_AHNNR', '_AIDN', '_AKA', '_AKAN', '_ALIA', '_ALTPATH', '_AON', '_APID', '_ASSO', '_AUTO', '_BIRN',
                 '_BRTM', '_BKM', '_BUCH', '_BUERGERORT', '_CALL', '_CDATE', '_CENN', '_CIRC', '_COML', '_CONF_FLAG', '_COR', '_CORR', '_CRE', '_CREAT',
                 '_Creat', '_CTYP', '_CURN', '_CUTOUT', '_DATE', '_DATE_TYPE', '_DATE2', '_DCAUSE', '_DEFN', '_DEG', '_DEP', '_DETS', '_DIVERSES', '_DMGD',
                 '_DNA', '_ELEC', '_EMAIL', '_EMPLOY', '_EVENT_DEFN', '_EVID', '_EVN', '_EXCM', '_EXPORTED_FROM_SITE_ID', '_EYEC', '_EYES', '_FARN', '_FA1',
                 '_FCTRY', '_FID', '_FILESIZE', '_FKAN', '_FNRL', '_FOKOID', '_FOOT', '_FPOST', '_FREL', '_FRKA', '_FSFTID', '_FSTAE', '_FUN', '_GERN',
                 '_GODF', '_GODP', '_GODT', '_GOV', '_GOVTYPE', '_GRUPPE', '_HAIR', '_HEBN', '_HEIG', '_HEIM', '_HEIRATNAME', '_HME', '_HNM', '_HOL', '_HOME',
                 '_HUSB', '_IMPF', '_INDG', '_INDN', '_INET', '_INFO', '_INTE', '_ITALIC', '_JAG', '_JUST', '_KTIT', '_LAD ', '_LAM ', '_LAS ', '_LAN', '_LEBENSORT',
-                '_LINK', '_LIV', '_LNCH', '_LOC', '_LOD ', '_LOM ', '_LOS ', '_LON', '_MAIDENHEAD', '_MARI', '_MARN', '_MARNM', '_MARR', '_MARRNAME', 
+                '_LINK', '_LIV', '_LNCH', '_LOC', '_LOD ', '_LOM ', '_LOS ', '_LON', '_MAIDENHEAD', '_MARI', '_MARN', '_MARNM', '_MARR', '_MARRNAME',
                 '_MARRNAMEHUSB', '_MARRNAMEWIFE', '_MASTER', '_MBON', '_MDCL', '_MEDC', '_MEDI', '_MEND', '_MHRM', '_MHSM', '_MHAV', '_MILI', '_MILT', '_MILTID',
                 '_MISN', '_MREL', '_MREL', '_MSTAT', '_NAM', '_NAMC', '_NAME', '_NAMM', '_NAMS', '_NAMW', '_NAVI', '_NAVM', '_NCHI', '_NEW', '_NLIV', '_NMAR',
                 '_NMR', '_NONE', '_NONE', '_NOTH', '_NR', '_ORGSOUR', '_ORI', '_OTHN', '_OVER', '_PAREN', '_PEI', '_PERC', '_PHOM', '_PHOTO', '_PHOTO_RIN',
@@ -118,12 +118,12 @@ class FilteredGedcomExportService extends GedcomExportService
             [
                 '_WT_USER',
             ],
-        ],        
+        ],
     ];
 
     //GEDCOM-L custom tags and schema definitions
     private const GEDCOM_L_SCHEMAS = [
-        
+
         //GEDCOM-L Addendum, R2
         ['https://genealogy.net/GEDCOM/' =>
             [
@@ -163,15 +163,15 @@ class FilteredGedcomExportService extends GedcomExportService
 		$this->response_factory = $response_factory;
 		$this->stream_factory   = $stream_factory;
         $this->custom_tags_found = [];
-        $this->use_schema_tag_analysis = false;      
-        $this->wrap_lines_without_leading_and_trailing_spaces = false;  
+        $this->use_schema_tag_analysis = false;
+        $this->wrap_lines_without_leading_and_trailing_spaces = false;
 	}
 
     /**
      * Filter GEDCOM data and return a resource.
-     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function downloadResponse
-     * Last Check: 2026-04-06
-     * 
+     * Code from:  Fisharebest\Webtrees\Services\GedcomExportService->downloadResponse
+     * Last Check: 2026-09-06
+     *
      * @param ?Tree                        $tree           Export data from this tree
      * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
      * @param string                       $encoding       Convert from UTF-8 to other encoding
@@ -182,7 +182,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param ?Collection<int,string|object|GedcomRecord> $records
-     * @param ?bool                        $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
+     * @param ?bool                        $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported
      * @param ?FilesystemOperator          $zip_filesystem Write media files to this filesystem
      * @param ?string                      $media_path     Location within the zip filesystem
      *
@@ -244,12 +244,12 @@ class FilteredGedcomExportService extends GedcomExportService
 
         return fopen($temp_zip_file, 'r');
     }
-    
+
     /**
      * Filter GEDCOM data and return a download response.
-     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function downloadResponse
-     * Last Check: 2026-04-06     * 
-     * 
+     * Code from:  Fisharebest\Webtrees\Services\GedcomExportService->downloadResponse
+     * Last Check: 2026-09-26     *
+     *
      * @param ?Tree                        $tree           Export data from this tree
      * @param bool                         $sort_by_xref   Write GEDCOM records in XREF order
      * @param string                       $encoding       Convert from UTF-8 to other encoding
@@ -260,9 +260,9 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<GedcomFilterInterface> $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param ?Collection                  $records        Just export these records
-     * @param ?bool                        $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
+     * @param ?bool                        $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported
      * @param ?FilesystemOperator          $zip_filesystem Write media files to this filesystem
-     * @param ?string                      $media_path     Location within the zip filesystem     
+     * @param ?string                      $media_path     Location within the zip filesystem
      *
      * @return ResponseInterface
      */
@@ -278,9 +278,9 @@ class FilteredGedcomExportService extends GedcomExportService
         array               $gedcom_filters = [],
         array               $params = [],
         ?Collection         $records = null,
-        ?bool               $head_and_trlr = false,        
+        ?bool               $head_and_trlr = false,
         ?FilesystemOperator $zip_filesystem = null,
-        ?string             $media_path = null        
+        ?string             $media_path = null
     ): ResponseInterface {
 
         if ($format === 'gedcom' OR $format === 'other') {
@@ -293,7 +293,7 @@ class FilteredGedcomExportService extends GedcomExportService
                 ->withHeader('content-type', 'text/x-gedcom; charset=' . UTF8::NAME)
                 ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . $extension .'"');
         }
-        
+
         //Create export
         $resource = $this->filteredResource($tree, $sort_by_xref, $encoding, $privacy, $line_endings, $filename, $format, $gedcom_filters, $params, $records, $head_and_trlr, $zip_filesystem, $media_path);
         $stream = $this->stream_factory->createStreamFromResource($resource);
@@ -305,15 +305,14 @@ class FilteredGedcomExportService extends GedcomExportService
         }
 
         return $this->response_factory->createResponse()
-        ->withBody($stream)
-        ->withHeader('content-type', 'application/zip')
-        ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . $extension . '"');
-    }
+            ->withBody($stream)
+            ->withHeader('content-type', 'application/zip')
+            ->withHeader('content-disposition', 'attachment; filename="' . addcslashes($filename, '"') . $extension . '"');    }
 
     /**
      * Filter GEDCOM data and write to a stream.
-     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function export
-     * Last Check: 2026-04-06
+     * Code from:  Fisharebest\Webtrees\Services\GedcomExportService->export
+     * Last Check: 2026-09-26
      *
      * @param ?Tree                                       $tree           Export data from this tree
      * @param bool                                        $sort_by_xref   Write GEDCOM records in XREF order
@@ -323,10 +322,10 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<GedcomFilterInterface>                $gedcom_filters An array, which contains GEDCOM filters
      * @param array<string>                               $params         Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param ?Collection<int,string|object|GedcomRecord> $records        Just export these records
-     * @param ?bool                                       $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported     
+     * @param ?bool                                       $head_and_trlr  Whether to add HEAD and TRLR if just a collection of records is exported
      * @param ?ZipArchive                                 $zip_filesystem Write media files to this filesystem
      * @param ?string                                     $media_path     Location within the zip filesystem
-     * 
+     *
      * @return resource
      */
     public function filteredExport(
@@ -361,11 +360,11 @@ class FilteredGedcomExportService extends GedcomExportService
                     new Collection([$this->createHeader($tree, $encoding, false, $access_level)]),
                     $records,
                     new Collection(['0 TRLR']),
-                    ];    
+                    ];
             } else {
                 $data = [
                     $records,
-                ];    
+                ];
             }
         } elseif ($access_level === Auth::PRIV_HIDE) {
             // If we will be applying privacy filters, then we will need the GEDCOM record objects.
@@ -426,7 +425,7 @@ class FilteredGedcomExportService extends GedcomExportService
 			}
         }
 
-        //Initialize matched tag combinations. 
+        //Initialize matched tag combinations.
         $matched_tag_combinations = [];
         //After filter application, the array keys will contain all tag combinations from the final filter run
         //array: tag combination => matched filter rule
@@ -444,7 +443,7 @@ class FilteredGedcomExportService extends GedcomExportService
         }
 
         // If GEDCOM 7, add a byte order mark for UTF8, which is proposed by the standard
-        // Since GEDCOM 7 always uses UTF8, we do not know what to do for other encodings (which are not allowed by the standard anyway) 
+        // Since GEDCOM 7 always uses UTF8, we do not know what to do for other encodings (which are not allowed by the standard anyway)
         if ($gedcom7 && $encoding === UTF8::NAME) {
 
             $byte_order_mark = UTF8::BYTE_ORDER_MARK;
@@ -593,9 +592,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function familyQuery
-     * Last Check: 2026-04-06
-     * 
+     * Code from:  Fisharebest\Webtrees\Services\GedcomExportService->familyQuery
+     * Last Check: 2026-09-26
+     *
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -617,9 +616,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function individualQuery
-     * Last Check: 2026-04-06
-     * 
+     * Code from:  Fisharebest\Webtrees\Services\GedcomExportService->individualQuery
+     * Last Check: 2026-09-26
+     *
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -641,9 +640,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function sourceQuery
-     * Last Check: 2026-04-06
-     * 
+     * Code from:  Fisharebest\Webtrees\Services\GedcomExportService->sourceQuery
+     * Last Check: 2026-09-26
+     *
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -665,9 +664,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function mediaQuery
-     * Last Check: 2026-04-06
-     * 
+     * Code from:  Fisharebest\Webtrees\Services\GedcomExportService->mediaQuery
+     * Last Check: 2026-09-26
+     *
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -689,9 +688,9 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Code from: Fisharebest\Webtrees\Services\GedcomExportService function otherQuery
-     * Last Check: 2026-04-06
-     * 
+     * Code from:  Fisharebest\Webtrees\Services\GedcomExportService->otherQuery
+     * Last Check: 2026-09-26
+     *
      * @param Tree $tree
      * @param bool $sort_by_xref
      *
@@ -716,16 +715,16 @@ class FilteredGedcomExportService extends GedcomExportService
 
     /**
      * Add to schemas
-     * 
+     *
      * @param array $schema_uris_for_tags  A list of schemas, which are used for the export
      * @param array $schemas               An array with schemas to add
-     * 
+     *
      * @return void
      */
     public function addToSchemas(array &$schema_uris_for_tags, array $schemas) : void
     {
         foreach ($schemas as $schema) {
-        
+
             foreach($schema as $uri => $custom_tags) {
 
                 foreach($custom_tags as $tag) {
@@ -744,7 +743,7 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param array<GedcomFilterInterface>  $gedcom_filters      An array with GEDCOM filters
      * @param array<string>                 $matched_pattern_for_tag_combination   An array with matched tag combinations
      * @param array<string>                 $params              Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
-     * 
+     *
      * @return array<string>                                     An array with Gedcom structures after filter application
      */
     public function applyGedcomFilters(array $gedcom_structures, array $gedcom_filters, array &$matched_pattern_for_tag_combination, array $params = []): array
@@ -769,7 +768,7 @@ class FilteredGedcomExportService extends GedcomExportService
 
             //Create lookup table if regexp exists for a pattern
             foreach($gedcom_filter_patterns as $pattern) {
-                
+
                 //TodDo: Does filter always contain an array??
                 $gedcom_filter_rule_has_regexp[$pattern] = $gedcom_filter_rules[$pattern] !== [];
             }
@@ -790,7 +789,7 @@ class FilteredGedcomExportService extends GedcomExportService
                 if ($records_references_analysis) {
                     $this->identifyEmptyAndUnlinkedRecords($records_references);
                 }
-            }            
+            }
 
             //Apply filter
             $filtered_gedcom_records = [];
@@ -806,12 +805,12 @@ class FilteredGedcomExportService extends GedcomExportService
 
                     if ($gedcom !== '') {
                         $filtered_gedcom_records[] = $gedcom;
-                    }    
+                    }
                 }
             }
             $gedcom_structures = $filtered_gedcom_records;
         }
-             
+
         return $gedcom_structures;
     }
 
@@ -846,7 +845,7 @@ class FilteredGedcomExportService extends GedcomExportService
         array  &$matched_pattern_for_tag_combination,
         array  &$records_references
         ): string
-    {   
+    {
         $converted_gedcom = '';
 
         try {
@@ -855,7 +854,7 @@ class FilteredGedcomExportService extends GedcomExportService
                 $tag = $match[2];
             }
             else {
-                preg_match('/' . $level . ' (' . Gedcom::REGEX_TAG . ')\b ?(.*)/', $gedcom, $match);    
+                preg_match('/' . $level . ' (' . Gedcom::REGEX_TAG . ')\b ?(.*)/', $gedcom, $match);
                 $tag = $match[1];
             }
         }
@@ -866,12 +865,12 @@ class FilteredGedcomExportService extends GedcomExportService
 
         if ($tag_combination === '') {
             $tag_combination = $tag;
-        } 
+        }
         else {
             $tag_combination .= ':' . $tag;
         }
 
-        //Get matched pattern from hash table (if already matched before), otherwise evaluate matched pattern 
+        //Get matched pattern from hash table (if already matched before), otherwise evaluate matched pattern
         $matched_tag_pattern = $matched_pattern_for_tag_combination[$tag_combination] ?? self::getMatchedPattern($tag_combination, $gedcom_filter_patterns);
 
         //Add found tag pattern to the hash table; even if empty, i.e ''
@@ -879,7 +878,7 @@ class FilteredGedcomExportService extends GedcomExportService
 
         //If tag pattern was found, add the related Gedcom
         if ($matched_tag_pattern !== '') {
-           
+
             $converted_gedcom = $match[0] ."\n";
         }
 
@@ -893,17 +892,17 @@ class FilteredGedcomExportService extends GedcomExportService
 
         //If regular expressions are provided for the pattern, run replacements
         //Do not replace again if pattern has already been matched on higher level of the Gedcom structure
-        if (   $matched_tag_pattern !== ''   
-            && $gedcom_filter_rule_has_regexp[$matched_tag_pattern] 
+        if (   $matched_tag_pattern !== ''
+            && $gedcom_filter_rule_has_regexp[$matched_tag_pattern]
             && $matched_tag_pattern !== $higher_level_matched_tag_pattern) {
 
-            $replace_pairs = $gedcom_filter_rules[$matched_tag_pattern];                
+            $replace_pairs = $gedcom_filter_rules[$matched_tag_pattern];
             $converted_gedcom = $this->replaceInGedcom($converted_gedcom, $matched_tag_pattern, $replace_pairs, $gedcom_filter, $params, $records_references);
-        }            
+        }
 
         return $converted_gedcom;
     }
-    
+
     /**
      * Match a given tag (e.g. FAM:MARR:DATE) with a list of tag patterns (e.g. [INDI:BIRT, FAM:*:DATE])
      *
@@ -920,20 +919,20 @@ class FilteredGedcomExportService extends GedcomExportService
         $match = false;
 
         while ($i < $size && !$match) {
- 
+
             $pattern = $patterns[$i];
 
             //If is black list pattern
             if (strpos($pattern, '!') === 0) {
-                
-                //Remove '!' from pattern 
+
+                //Remove '!' from pattern
                 $pattern = substr($pattern, 1);
                 $is_white_list_pattern = false;
             }
             else {
                 $is_white_list_pattern = true;
             }
-    
+
             $match = self::matchTagWithSinglePattern($tag, $pattern);
             $i++;
         }
@@ -951,10 +950,10 @@ class FilteredGedcomExportService extends GedcomExportService
      * @param string     $tag                   e.g. FAM:MARR:DATE
      * @param string     $pattern               e.g. FAM:*:DATE
      *
-     * @return bool      Whether the tag could be matched or not      
+     * @return bool      Whether the tag could be matched or not
      */
     public static function matchTagWithSinglePattern(string $tag, string $pattern): bool
-    {          
+    {
         $tag_token_size =     preg_match_all('/(' . Gedcom::REGEX_TAG . '|[\*)])((?!\:)(' . Gedcom::REGEX_TAG . '|[\*)]))*/', $tag, $tag_tokens, PREG_PATTERN_ORDER);
         $pattern_token_size = preg_match_all('/(' . Gedcom::REGEX_TAG . '|[\*)])((?!\:)(' . Gedcom::REGEX_TAG . '|[\*)]))*/', $pattern, $pattern_tokens, PREG_PATTERN_ORDER);
 
@@ -970,7 +969,7 @@ class FilteredGedcomExportService extends GedcomExportService
             //If tag ends with *, only pattern tokens until the length of the pattern need to be checked
             else {
                 $pattern_token_size = $tag_token_size -1;
-            }   
+            }
         }
     	elseif ($tag_token_size > $pattern_token_size) {
 
@@ -981,7 +980,7 @@ class FilteredGedcomExportService extends GedcomExportService
             //If pattern ends with *, only tag tokens until the length of the pattern need to be checked
             else {
                 $tag_token_size = $pattern_token_size -1;
-            }        
+            }
         }
 
         //Compare tag and pattern
@@ -990,7 +989,7 @@ class FilteredGedcomExportService extends GedcomExportService
 
         while ($i < $tag_token_size && $match) {
 
-            if ($pattern_tokens[0][$i] !== '*' && $pattern_tokens[0][$i] !== $tag_tokens[0][$i]) $match = false;    
+            if ($pattern_tokens[0][$i] !== '*' && $pattern_tokens[0][$i] !== $tag_tokens[0][$i]) $match = false;
             $i++;
         }
 
@@ -998,12 +997,12 @@ class FilteredGedcomExportService extends GedcomExportService
     }
 
     /**
-     * Convert Gedcom based on the matched pattern of a filter rule, 
+     * Convert Gedcom based on the matched pattern of a filter rule,
      * which points to an array of RegExp replace pairs or cutom conversions
      *
      * @param string                $gedcom               Gedcom to convert
      * @param string                $matched_pattern      The matched pattern (i.e. INDI:NAME) of the filter rule, whose replacements shall be applied
-     * @param array                 $replace_pairs        An array with replace pairs, i.e. ["search pattern" => "replace pattern"] 
+     * @param array                 $replace_pairs        An array with replace pairs, i.e. ["search pattern" => "replace pattern"]
      * @param GedcomFilterInterface $gedcom_filter        The GEDCOM filter used
      * @param array<string>         $params               Parameters from remote URL requests as well as further parameters, e.g. 'tree' and 'base_url'
      * @param array                 $records_references   A list of records as <Record> objects, which contain the references between the records
@@ -1013,7 +1012,7 @@ class FilteredGedcomExportService extends GedcomExportService
      */
     private function replaceInGedcom(
         string                $gedcom,
-        string                $matched_pattern,       
+        string                $matched_pattern,
         array                 $replace_pairs,
         GedcomFilterInterface $gedcom_filter,
         array                 $params,
@@ -1030,7 +1029,7 @@ class FilteredGedcomExportService extends GedcomExportService
             }
 
             //Else apply RegExp replacement
-            else { 
+            else {
                 try {
                      $gedcom = preg_replace($search, $replace, $gedcom) ?? '';
                 }
@@ -1049,16 +1048,16 @@ class FilteredGedcomExportService extends GedcomExportService
      *
      * @param string $gedcom
      * @param int    $level    The level, at which the Gedcom structure shall be splitted
-     * 
+     *
      * @return array<string>
      */
     public static function parseGedcomSubstructures(string $gedcom, int $level): array
     {
-        // Split the Gedcom strucuture into sub structures 
+        // Split the Gedcom strucuture into sub structures
         // See: Fisharebest\Webtrees\GedcomRecord, function parseFacts()
         $gedcom_substructures = preg_split('/\n(?=' . $level . ')/', $gedcom);
 
-        //Delete first structure, which is from one Gedcom level up 
+        //Delete first structure, which is from one Gedcom level up
         unset($gedcom_substructures[0]);
 
         return $gedcom_substructures;
@@ -1069,30 +1068,30 @@ class FilteredGedcomExportService extends GedcomExportService
      * Due to performance reasons, a separate method is used for this specific case
      *
      * @param string $gedcom
-     * 
+     *
      * @return array<string>
      */
     public static function parseTopLevelStructures(string $gedcom): array
     {
-        // Split the Gedcom strucuture into level 0 structures 
+        // Split the Gedcom strucuture into level 0 structures
         // See: Fisharebest\Webtrees\GedcomRecord, function parseFacts()
         if ($gedcom !== '') {
 
             $gedcom_records = preg_split("/\n(?=0)/", $gedcom, -1, PREG_SPLIT_DELIM_CAPTURE);
             return $gedcom_records;
-        } 
+        }
         else {
             return [];
         }
     }
-    
+
     /**
      * Perform an analysis of records their references and create a record list and links between the records
      *
      * @param string $gedcom
      * @param array  $records_references  A list of records as <Record> objects, which contain the references between the records
      *                                    array <string xref => Record record>
-     * 
+     *
      * @return void
      */
     private function analyzeRecordsAndReferences(string $gedcom, array &$records_references) : void {
@@ -1147,7 +1146,7 @@ class FilteredGedcomExportService extends GedcomExportService
                     if (!in_array($tag, ['SEX', 'FAMC', 'FAMS'])) {
                         $minimal = false;
                         break;
-                    }    
+                    }
                 }
             }
 
@@ -1183,14 +1182,14 @@ class FilteredGedcomExportService extends GedcomExportService
 
     /**
      * Identify empty and unlinked records in the record list and update references of related records
-     * 
+     *
      * @param array  $records_references  A list of records as <Record> objects, which contain the references between the records
      *                                    array <string xref => Record record>
-     * 
+     *
      * @return void
      */
     private function identifyEmptyAndUnlinkedRecords(array &$records_references) : void {
-        
+
         $modified_references = true;
         $iteration = 0;
 
@@ -1214,9 +1213,9 @@ class FilteredGedcomExportService extends GedcomExportService
 
     /**
      * Propagate references from empty and unlined records to linked records
-     * 
+     *
      * @param Record $record
-     * 
+     *
      * @return bool             True if references of record (or sub structure) were modified, i.e. empty or unlinked record identified
      */
     private function propagateReferences(Record &$record) : bool {
@@ -1254,9 +1253,9 @@ class FilteredGedcomExportService extends GedcomExportService
 
     /**
      * Assess whether a Gedcom structure contains a Gedcom 7 header
-     * 
+     *
      * @param string $gedcom    Gedcom structure
-     * 
+     *
      * @return bool             True if is a Gedcom 7 header, otherwise false
      */
     private function isGedcom7Header(string $gedcom) : bool {
@@ -1265,17 +1264,17 @@ class FilteredGedcomExportService extends GedcomExportService
         $record_type= $match[1] ?? '';
 
         if ($record_type !== 'HEAD') return false;
-    
+
         return preg_match("/1 GEDC\n2 VERS 7/", $gedcom, $match) === 1;
     }
 
     /**
      * Add SCHMA structure to a Gedcom 7 header
-     * 
+     *
      * @param array<string>  $gedcom_structures         An array with the Gedcom structures, i.e.HEAD, all records, TRLRL
      * @param array<string>  $matched_tag_combinations  An array with tag combinations in the array keys
-     * 
-     * @return array<string>                            Gedcom structures with added SCHMA in the header 
+     *
+     * @return array<string>                            Gedcom structures with added SCHMA in the header
      */
     private function addSchema(array &$gedcom_structures, &$matched_tag_combinations) : void {
 
@@ -1313,7 +1312,7 @@ class FilteredGedcomExportService extends GedcomExportService
             }
 
             //Get Gedcom of HEAD
-            $head_gedcom = $gedcom_structures[0]; 
+            $head_gedcom = $gedcom_structures[0];
 
             //Append SCHMA structure to HEAD
             if (sizeof($custom_tags_with_schema) > 0) {
@@ -1325,10 +1324,10 @@ class FilteredGedcomExportService extends GedcomExportService
                     $head_gedcom .= "2 TAG " . $tag . " " . $schema_uris_for_tags[$tag] . "\n";
                 }
             }
-            
+
             //Set new Gedcom for HEAD
             $gedcom_structures[0] = $head_gedcom;
-        }    
+        }
 
         return;
     }

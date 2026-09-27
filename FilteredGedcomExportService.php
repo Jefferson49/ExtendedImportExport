@@ -119,6 +119,13 @@ class FilteredGedcomExportService extends GedcomExportService
                 '_WT_USER',
             ],
         ],
+
+        //GEDCOM 7
+        ['https://gedcom.io/specifications/FamilySearchGEDCOMv7.html#EXID' =>
+            [
+                '_EXID',
+            ],
+        ]
     ];
 
     //GEDCOM-L custom tags and schema definitions

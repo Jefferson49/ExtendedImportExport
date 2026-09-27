@@ -2054,6 +2054,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
         if ($action === self::ACTION_RENUMBER_XREF) {
 
+            //Validate tree
+            if (!$all_trees->hasAny($tree_name)) {
+                return $this->createResponse('Tree not found', StatusCodeInterface::STATUS_BAD_REQUEST, $html_response, $redirect_url);
+            }
+
             //Generate a request for RenumberTree
             $request = CommonFunctions::getFromContainer(ServerRequestInterface::class);
             $request = $request->withAttribute('tree', $tree instanceof Tree ? $tree : null);
@@ -2075,6 +2080,16 @@ class DownloadGedcomWithURL extends AbstractModule implements
             return $this->createResponse('Successfully renumbered XREFs in tree', StatusCodeInterface::STATUS_OK, $html_response, $redirect_url);
         }
         elseif ($action === self::ACTION_MERGE_TREES) {
+
+            //Validate tree
+            if (!$all_trees->hasAny($tree_name)) {
+                return $this->createResponse('Tree not found: ' . $tree_name, StatusCodeInterface::STATUS_BAD_REQUEST, $html_response, $redirect_url);
+            }
+
+            //Validate tree to merge
+            if (!$all_trees->hasAny($tree_to_merge_name)) {
+                return $this->createResponse('Tree not found: ' . $tree_to_merge_name, StatusCodeInterface::STATUS_BAD_REQUEST, $html_response, $redirect_url);
+            }
 
             //Generate a request for MergeTrees
             $request = CommonFunctions::getFromContainer(ServerRequestInterface::class);
@@ -2098,6 +2113,11 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
         elseif ($action === self::ACTION_CREATE_TREE) {
 
+            //Validate tree
+            if ($all_trees->hasAny($tree_name)) {
+                return $this->createResponse('Tree already exists', StatusCodeInterface::STATUS_BAD_REQUEST, $html_response, $redirect_url);
+            }
+
             //Generate a request for CreateTree
             //Use tree name as title
             $request = CommonFunctions::getFromContainer(ServerRequestInterface::class);
@@ -2111,7 +2131,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     $response = $request_handler->post($tree_name, $tree_name);
                 }
                 else {
-                    $request_handler = new MergeTreesAction(new AdminService, new TreeService(new GedcomImportService));
+                    $request_handler = new CreateTreeAction(new TreeService(new GedcomImportService));
                     $response = $request_handler->handle($request);
                 }
             }

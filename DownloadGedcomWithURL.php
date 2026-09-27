@@ -1724,6 +1724,15 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             $records = preg_split('/[\r\n]+(?=0)/', stream_get_contents($fp));
 
+            //Remove byte order mark (BOM) from first line if exists
+            if (isset($records[0])) {
+                foreach ([UTF8::BYTE_ORDER_MARK, UTF8::BYTE_ORDER_MARK, UTF16LE::BYTE_ORDER_MARK] as $byte_order_mark) {
+                    if (str_starts_with($records[0], $byte_order_mark)) {
+                        $records[0] = str_replace($byte_order_mark, '', $records[0]);
+                    }
+                }
+            }
+
             foreach ($records as $record) {
                 try {
                     $this->gedcom_import_service->importRecord($record, $tree, false);

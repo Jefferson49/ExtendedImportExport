@@ -62,11 +62,14 @@ This README file contains the following main sections:
     + Remotely trigger to save GEDCOM files to a folder on the webtrees server without logging into the user interface (webtrees front end)
     + Schedule regular GEDCOM file backups on the server with a Cron Job, see attached [example script](#example-scripts)
     + Apply GEDCOM filters during remote download/upload
++ Remote import/export API in combination with [**webtrees-API**](https://github.com/Jefferson49/webtrees-API)
 
 ## IMPORTANT SECURITY NOTES
 **Module versions starting from v3.0.0 use an authorization key**, which is stored in the module preferences in webtrees. Access to the download is only allowed if the provided key in the URL is identical to a authorization key in the webtrees database (settings).
 
 **Please note that everyone with access to the authorization key, can download/upload GEDCOM files from/to your webtrees installation.**
+
+Extended Import/Export can be used in combination with [**webtrees-API**](https://github.com/Jefferson49/webtrees-API) for a more sophisticated authentification process using OAuth2.
 
 **It is highly recommended to use the HTTPS protocol** (i.e. URLs with https://...) in order to encrypt the URL parameters, especially the authorization key.
 
@@ -109,7 +112,7 @@ The module was developed and tested with [webtrees 2.2.6 and 2.3.0](https://webt
 
 ### Concept
 
-The principle concept of GEDCOM filters is shown in the screenshot below. A GEDCOM filter contains of several filter rules, which are defined as follows:
+The concept of GEDCOM filters is shown in the screenshot below. A GEDCOM filter contains of several filter rules, which are defined as follows:
 1. GEDCOM tag combinations can be selected to be included to the GEDCOM export
 2. A replacement rule can be applied to the selected tag combination by using a search/replace pattern with [regular expressions](https://en.wikipedia.org/wiki/Regular_expression).
 
@@ -290,6 +293,10 @@ The specific GEDBAS settings are only shown if the GEDBAS upload check box is se
 
 ## Remote API
 
+Extended Import/Export offers a simple remote API, which allows to trigger imports/exports by calling certain URLs with a set of URL parameters.
+
+For a more sophisticated authentification process using OAuth2, Extended Import/Export can be used in combination with [**webtrees-API**](https://github.com/Jefferson49/webtrees-API).
+
 ### Remote URL
 For calling the remote API, you need to identify the remote URL of the Extended Import/Export module, which is a specific webtrees route.
 
@@ -355,7 +362,7 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
 
 ### Values for URL Parameters
 * **<a name="MY_ACTION">MY_ACTION</a>** specifies whether the GEDCOM file will be uploaded, converted, downloaded, saved on the server, or both (downloaded and saved); or if a tree shall be created, renumbered or merged with another tree.
-  * Accepted values: **download** (default), save, both, upload, convert, create_tree, renumber_tree, merge_trees
+  * Accepted values: **download** (default), save, both, upload, convert, create_tree, renumber_tree, merge_trees, GEDBAS
   * The folder within the webtrees root path to save GEDCOM files can be specified in the module settings in the control panel
 
 * **<a name="MY_TREE">MY_TREE</a>** specifies the webtrees tree name
@@ -415,7 +422,7 @@ For the definition of **REMOTE_URL** see chapter [Remote URL](#remote-url).
   * If you login into your GEDBAS account, you can identify existing GEDBAS databbase Ids with the following link: [GEDBAS database Ids](https://gedbas.genealogy.net/database/myFiles)
 
 * **<a name="MY_GEDBAS_TITLE">MY_GEDBAS_TITLE</a>** specifies the title of the GEDBAS database.
-  * If no value is provided, the description will default to the tree title
+  * If no value is provided, the title will default to the tree title
 
 * **<a name="MY_GEDBAS_DESCRIPTION">MY_GEDBAS_DESCRIPTION</a>** specifies the description of the GEDBAS database.
   * If no value is provided, the description will default to HEAD:NOTE or the tree name
@@ -434,6 +441,8 @@ The key parameter of the URL is checked against an authorization key. **The auth
 The provided authorization key needs to have a minimum length of 8 characters.
 
 **The control panel also provides an option for the authorization key to be saved as an encrypted hash value**. This option is more secure, because the authorization key is not visible to anyone and also encrypted in the database. However, the authorization key is not readible any more (even for administrators) and cannot be recovered if it is forgotten.
+
+For a more sophisticated authentification process using OAuth2, Extended Import/Export can be used in combination with [**webtrees-API**](https://github.com/Jefferson49/webtrees-API).
 
 ### Default Values in the Module Settings (Control Panel)
 In the control panel, it is possible to provide default values for most of the URL parameters. These default settings are used if no specific parameter values are provided within the URL. By specifying the default values, the URLs to be called for a download can be simplified. If the default values shall be used for a download, it is sufficient to only provide the tree name and the authorization key in the URL.
@@ -483,7 +492,7 @@ If you experience any bugs or have a feature request for this webtrees custom mo
 + [GNU General Public License, Version 3](LICENSE.md)
 + webtrees
     + webtrees: online genealogy
-    + Copyright (C) 6 [webtrees development team](http://webtrees.net)
+    + Copyright (C) 2026 [webtrees development team](http://webtrees.net)
 + Extended Import/Export (webtrees custom module)
     + Copyright (C) 2026 [Jefferson49](https://github.com/Jefferson49)
 

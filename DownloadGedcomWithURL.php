@@ -45,6 +45,7 @@ use Fisharebest\Webtrees\Encodings\UTF16BE;
 use Fisharebest\Webtrees\Encodings\UTF16LE;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\Encodings\Windows1252;
+use Fisharebest\Webtrees\Enums\HttpStatusCode;
 use Fisharebest\Webtrees\Exceptions\FileUploadException;
 use Fisharebest\Webtrees\Exceptions\GedcomErrorException;
 use Fisharebest\Webtrees\Factories\GedcomRecordFactory;
@@ -104,6 +105,7 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToWriteFile;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Clock\ClockInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -755,7 +757,14 @@ class DownloadGedcomWithURL extends AbstractModule implements
         }
 
         // Return plain text response, e.g. for a script
-        return response((string) $status_code . ' ' . $reason_phrase . ': ' . $text, $status_code);
+        $content = (string) $status_code . ' ' . $reason_phrase . ': ' . $text;
+
+        if (version_compare(Webtrees::VERSION, '2.3.0', '>=')) {
+            return response($content, HttpStatusCode::from($status_code));
+        }
+        else {
+            return response($content, $status_code);
+        }
 	}
 
 	/**
@@ -1621,14 +1630,18 @@ class DownloadGedcomWithURL extends AbstractModule implements
     }
 
 	/**
-     * Create a description of a tree for a GEDBAS upload
+     * Create the description of a tree for a GEDBAS upload
      *
-     * @param  Tree $tree
+     * @param ?Tree $tree
      *
      * @return string
      */
-    public function createGEDBASdescription(Tree $tree): string
+    public function createGEDBASdescription(?Tree $tree): string
     {
+        if ($tree === null) {
+            return '';
+        }
+
         //Retrieve HEAD:NOTE
         $header_note = '';
         If (boolval($this->getPreference(self::PREF_USE_HEAD_NOTE_FOR_GEDBAS, '0'))) {
@@ -1641,6 +1654,23 @@ class DownloadGedcomWithURL extends AbstractModule implements
         $description = $header_note !== '' ? $header_note : $tree->title();
 
         return $description;
+    }
+
+	/**
+     * Create the title of a tree for a GEDBAS upload
+     *
+     * @param ?Tree $tree
+     *
+     * @return string
+     */
+    public function createGEDBAStitle(?Tree $tree): string
+    {
+        if ($tree !== null) {
+            return $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_TITLE, $tree->title());
+        }
+        else {
+            return '';
+        }
     }
 
 	/**
@@ -1823,8 +1853,8 @@ class DownloadGedcomWithURL extends AbstractModule implements
             $export_clippings_cart     = false;
             $GEDBAS_apiKey             = Validator::queryParams($request)->string('GEDBAS_apiKey', $tree !== null ? $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_APIKEY, '') : '');
             $GEDBAS_Id                 = Validator::queryParams($request)->string('GEDBAS_Id', $tree !== null ? $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_ID, '') : '');
-            $GEDBAS_title              = Validator::queryParams($request)->string('GEDBAS_title', $tree !== null ? $tree->getPreference(DownloadGedcomWithURL::TREE_PREF_GEDBAS_TITLE, '') : '');
-            $GEDBAS_description        = Validator::queryParams($request)->string('GEDBAS_description', $tree !== null ? $this->createGEDBASdescription($tree) : '');
+            $GEDBAS_title              = Validator::queryParams($request)->string('GEDBAS_title', self::createGEDBAStitle($tree));
+            $GEDBAS_description        = Validator::queryParams($request)->string('GEDBAS_description', self::createGEDBASdescription($tree));
 
             if ($action === self::ACTION_UPLOAD) {
                 $keep_media                = Validator::queryParams($request)->boolean('keep_media', boolval($tree->getPreference('keep_media', '0')));
@@ -2065,8 +2095,9 @@ class DownloadGedcomWithURL extends AbstractModule implements
 
             try {
                 if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
-                    $request_handler = new RenumberTree(new AdminService, new TimeoutService(new PhpService));
-                    $response = $request_handler->post($request);
+                    $clock = CommonFunctions::getFromContainer(ClockInterface::class);
+                    $request_handler = new RenumberTree(new AdminService, new TimeoutService(new PhpService, $clock));
+                    $response = $request_handler->post($tree);
                 }
                 else {
                     $request_handler = new RenumberTreeAction(new AdminService, new TimeoutService(new PhpService));
@@ -2122,8 +2153,6 @@ class DownloadGedcomWithURL extends AbstractModule implements
             //Use tree name as title
             $request = CommonFunctions::getFromContainer(ServerRequestInterface::class);
             $request = $request->withParsedBody(['name' => $tree_name, 'title' => $tree_name]);
-
-            $request_handler = new CreateTreeAction(new TreeService(new GedcomImportService));
 
             try {
                 if (version_compare(Webtrees::VERSION, '2.3', '>=')) {

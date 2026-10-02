@@ -1685,7 +1685,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
 	/**
      * Import a tree into the database
      * Code from:  Fisharebest\Webtrees\Cli\Commands\TreeImport->function execute()
-     * Last check: 2026-09-26
+     * Last check: 2026-10-02
 	 *
      * @param Tree   $tree
      * @param string $gedcom_file
@@ -1713,85 +1713,120 @@ class DownloadGedcomWithURL extends AbstractModule implements
             throw new DownloadGedcomWithUrlException('File does not exist' . ': ' . $gedcom_file);
         }
 
-        try {
-            DB::connection()->beginTransaction();
+        if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
+            try {
+                DB::transaction(function () use ($tree, $encoding, $keep_media, $word_wrapped_notes, $gedcom_file, $gedcom_media_path, &$errors) {
 
-            if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
-                $tree->setPreference('imported', '0');
+                    $errors = $this->importTreeTransaction($tree, $gedcom_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
+                });
+            } catch (Throwable $th) {
+                $errors .= $th->getMessage();
             }
-            else {
-                DB::table('gedcom')->where('gedcom_id', '=', $tree->id())->update(['imported' => 0]);
+        }
+        else {
+            try {
+                DB::connection()->beginTransaction();
+                $errors = $this->importTreeTransaction($tree, $gedcom_file, $encoding, $keep_media, $word_wrapped_notes, $gedcom_media_path);
+                DB::connection()->commit();
             }
+            catch (Throwable $th) {
+                DB::connection()->rollBack();
+                $errors .= $th->getMessage();
+            }
+        }
 
-            $tree->setPreference('keep_media', $keep_media ? '1' : '0');
-            $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
-            $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);
+        return $errors;
+    }
 
-            $queries = [
-                'individuals' => DB::table('individuals')->where('i_file', '=', $tree->id()),
-                'families'    => DB::table('families')->where('f_file', '=', $tree->id()),
-                'sources'     => DB::table('sources')->where('s_file', '=', $tree->id()),
-                'other'       => DB::table('other')->where('o_file', '=', $tree->id()),
-                'places'      => DB::table('places')->where('p_file', '=', $tree->id()),
-                'placelinks'  => DB::table('placelinks')->where('pl_file', '=', $tree->id()),
-                'name'        => DB::table('name')->where('n_file', '=', $tree->id()),
-                'dates'       => DB::table('dates')->where('d_file', '=', $tree->id()),
-                'change'      => DB::table('change')->where('gedcom_id', '=', $tree->id()),
+	/**
+     * Transaction to import a tree into the database
+     * Code from:  Fisharebest\Webtrees\Cli\Commands\TreeImport->function execute()
+     * Last check: 2026-10-02
+	 *
+     * @param Tree   $tree
+     * @param string $gedcom_file
+     * @param string $encoding
+     * @param bool   $keep_media
+     * @param bool   $word_wrapped_notes
+     * @param string $gedcom_media_path
+     *
+     * @return string  Empty if import was successful, error texts if import failed
+     *
+     * @throws RuntimeException
+     */
+    private function importTreeTransaction(Tree $tree, string $gedcom_file, string $encoding, bool $keep_media, bool $word_wrapped_notes, string $gedcom_media_path): string {
+
+        $errors = '';
+
+        if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
+            $tree->setPreference('imported', '0');
+        }
+        else {
+            DB::table('gedcom')->where('gedcom_id', '=', $tree->id())->update(['imported' => 0]);
+        }
+
+        $tree->setPreference('keep_media', $keep_media ? '1' : '0');
+        $tree->setPreference('WORD_WRAPPED_NOTES', $word_wrapped_notes ? '1' : '0');
+        $tree->setPreference('GEDCOM_MEDIA_PATH', $gedcom_media_path);
+
+        $queries = [
+            'individuals' => DB::table('individuals')->where('i_file', '=', $tree->id()),
+            'families'    => DB::table('families')->where('f_file', '=', $tree->id()),
+            'sources'     => DB::table('sources')->where('s_file', '=', $tree->id()),
+            'other'       => DB::table('other')->where('o_file', '=', $tree->id()),
+            'places'      => DB::table('places')->where('p_file', '=', $tree->id()),
+            'placelinks'  => DB::table('placelinks')->where('pl_file', '=', $tree->id()),
+            'name'        => DB::table('name')->where('n_file', '=', $tree->id()),
+            'dates'       => DB::table('dates')->where('d_file', '=', $tree->id()),
+            'change'      => DB::table('change')->where('gedcom_id', '=', $tree->id()),
+        ];
+
+        if ($keep_media) {
+            $queries['link'] = DB::table('link')
+                ->where('l_file', '=', $tree->id())
+                ->where('l_type', '<>', 'OBJE');
+        } else {
+            $queries += [
+                'link'       => DB::table('link')->where('l_file', '=', $tree->id()),
+                'media_file' => DB::table('media_file')->where('m_file', '=', $tree->id()),
+                'media'      => DB::table('media')->where('m_file', '=', $tree->id()),
             ];
+        }
 
-            if ($keep_media) {
-                $queries['link'] = DB::table('link')
-                    ->where('l_file', '=', $tree->id())
-                    ->where('l_type', '<>', 'OBJE');
-            } else {
-                $queries += [
-                    'link'       => DB::table('link')->where('l_file', '=', $tree->id()),
-                    'media_file' => DB::table('media_file')->where('m_file', '=', $tree->id()),
-                    'media'      => DB::table('media')->where('m_file', '=', $tree->id()),
-                ];
-            }
-
-            foreach ($queries as $query) {
-                $query->delete();
-            }
+        foreach ($queries as $query) {
+            $query->delete();
+        }
 
 
-            $fp = fopen($gedcom_file, 'rb');
+        $fp = fopen($gedcom_file, 'rb');
 
-            // Convert to UTF-8.
-            stream_filter_append($fp, GedcomEncodingFilter::class, STREAM_FILTER_READ, ['src_encoding' => $encoding]);
+        // Convert to UTF-8.
+        stream_filter_append($fp, GedcomEncodingFilter::class, STREAM_FILTER_READ, ['src_encoding' => $encoding]);
 
-            $records = preg_split('/[\r\n]+(?=0)/', stream_get_contents($fp));
+        $records = preg_split('/[\r\n]+(?=0)/', stream_get_contents($fp));
 
-            //Remove byte order mark (BOM) from first line if exists
-            if (isset($records[0])) {
-                foreach ([UTF8::BYTE_ORDER_MARK, UTF8::BYTE_ORDER_MARK, UTF16LE::BYTE_ORDER_MARK] as $byte_order_mark) {
-                    if (str_starts_with($records[0], $byte_order_mark)) {
-                        $records[0] = str_replace($byte_order_mark, '', $records[0]);
-                    }
+        //Remove byte order mark (BOM) from first line if exists
+        if (isset($records[0])) {
+            foreach ([UTF8::BYTE_ORDER_MARK, UTF8::BYTE_ORDER_MARK, UTF16LE::BYTE_ORDER_MARK] as $byte_order_mark) {
+                if (str_starts_with($records[0], $byte_order_mark)) {
+                    $records[0] = str_replace($byte_order_mark, '', $records[0]);
                 }
             }
+        }
 
-            foreach ($records as $record) {
-                try {
-                    $this->gedcom_import_service->importRecord($record, $tree, false);
-                } catch (GedcomErrorException $exception) {
-                    $errors .= $exception->getMessage();
-                }
+        foreach ($records as $record) {
+            try {
+                $this->gedcom_import_service->importRecord($record, $tree, false);
+            } catch (GedcomErrorException $exception) {
+                $errors .= $exception->getMessage();
             }
+        }
 
-            if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
-                $tree->setPreference('imported', '1');
-            }
-            else {
-                DB::table('gedcom')->where('gedcom_id', '=', $tree->id())->update(['imported' => 1]);
-            }
-
-            DB::connection()->commit();
-
-        } catch (Throwable $ex) {
-            DB::connection()->rollBack();
-            throw $ex;
+        if (version_compare(Webtrees::VERSION, '2.3', '>=')) {
+            $tree->setPreference('imported', '1');
+        }
+        else {
+            DB::table('gedcom')->where('gedcom_id', '=', $tree->id())->update(['imported' => 1]);
         }
 
         return $errors;

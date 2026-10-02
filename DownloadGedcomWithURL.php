@@ -120,9 +120,18 @@ use ReflectionClass;
 use stdClass;
 use Throwable;
 
+use function date;
+use function fclose;
+use function fopen;
+use function pathinfo;
+use function preg_match_all;
+use function str_replace;
+use function stream_filter_append;
+use function strlen;
+use function strpos;
 use function substr;
 use function strip_tags;
-use function str_replace;
+
 
 class DownloadGedcomWithURL extends AbstractModule implements
 	ModuleCustomInterface,
@@ -2385,7 +2394,7 @@ class DownloadGedcomWithURL extends AbstractModule implements
                     $message = I18N::translate('No data imported from file "%s". The file might be empty.', $filename . $extension);
                     return $this->createResponse($message, StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $html_response, $redirect_url);
                 }
-                elseif ($action === self::ACTION_UPLOAD) {
+                elseif ($action === self::ACTION_UPLOAD && $called_from !== self::CALLED_FROM_REMOTE) {
                     $message = I18N::translate('The file "%s" was sucessfully uploaded for the family tree "%s"', $filename . $extension, $tree_name);
                     FlashMessages::addMessage($message, 'success');
                 }

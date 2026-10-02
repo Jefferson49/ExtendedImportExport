@@ -358,7 +358,7 @@ class FilteredGedcomExportService extends GedcomExportService
             throw new RuntimeException('Failed to create temporary stream');
         }
 
-        stream_filter_append($stream, GedcomEncodingFilter::class, STREAM_FILTER_WRITE, ['src_encoding' => UTF8::NAME, 'dst_encoding' => $encoding]);
+        $stream_filter = stream_filter_append($stream, GedcomEncodingFilter::class, STREAM_FILTER_WRITE, ['src_encoding' => UTF8::NAME, 'dst_encoding' => $encoding]);
 
         if ($records instanceof Collection) {
             // Export just these records - e.g. from clippings cart.
@@ -509,6 +509,8 @@ class FilteredGedcomExportService extends GedcomExportService
         if (rewind($stream) === false) {
             throw new RuntimeException('Cannot rewind temporary stream');
         }
+
+        stream_filter_remove($stream_filter);
 
         return $stream;
     }

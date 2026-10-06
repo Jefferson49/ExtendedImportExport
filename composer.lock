@@ -4,30 +4,116 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "033d4139d531d03e6b11af481a4e828d",
+    "content-hash": "bde479a1c14d3211a9e4c01031eeda90",
     "packages": [
         {
+            "name": "composer/semver",
+            "version": "3.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/semver.git",
+                "reference": "198166618906cb2de69b95d7d47e5fa8aa1b2b95"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/semver/zipball/198166618906cb2de69b95d7d47e5fa8aa1b2b95",
+                "reference": "198166618906cb2de69b95d7d47e5fa8aa1b2b95",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.2 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.11",
+                "symfony/phpunit-bridge": "^3 || ^7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\Semver\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nils Adermann",
+                    "email": "naderman@naderman.de",
+                    "homepage": "http://www.naderman.de"
+                },
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                },
+                {
+                    "name": "Rob Bast",
+                    "email": "rob.bast@gmail.com",
+                    "homepage": "http://robbast.nl"
+                }
+            ],
+            "description": "Semver library that offers utilities, version constraint parsing and validation.",
+            "keywords": [
+                "semantic",
+                "semver",
+                "validation",
+                "versioning"
+            ],
+            "support": {
+                "irc": "ircs://irc.libera.chat:6697/composer",
+                "issues": "https://github.com/composer/semver/issues",
+                "source": "https://github.com/composer/semver/tree/3.4.4"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-08-20T19:15:30+00:00"
+        },
+        {
             "name": "jefferson49/webtrees-common",
-            "version": "1.4.64",
+            "version": "1.4.70",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jefferson49/webtrees-common.git",
-                "reference": "043a0e202b36f5b62953c0431d6a8c67ded54cc1"
+                "reference": "381ac623192f82ed34a5ce5c33006969991083b1"
             },
             "require": {
+                "composer/semver": "=3.4.4",
                 "php": ">=7.4"
             },
             "type": "library",
             "license": [
                 "GPL-3.0"
             ],
+            "authors": [
+                {
+                    "name": "Markus Hemprich",
+                    "homepage": "https://github.com/jefferson49",
+                    "role": "Developer"
+                }
+            ],
             "description": "Library to share common code between webtrees custom modules",
+            "homepage": "https://github.com/jefferson49/webtrees-common",
             "keywords": [
                 "custom-module",
                 "webtrees",
                 "webtrees-module"
             ],
-            "time": "2026-09-19T14:11:22+00:00"
+            "time": "2026-10-06T02:59:17+00:00"
         }
     ],
     "packages-dev": [],

@@ -36,10 +36,8 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
-use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\FlashMessages;
-use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Registry;
@@ -87,12 +85,6 @@ class ConvertGedcomPage implements RequestHandlerInterface
 
         /** @var DownloadGedcomWithURL $download_gedcom_with_url */
         $download_gedcom_with_url = Functions::getFromContainer(DownloadGedcomWithURL::class);
-
-        //If current user is no admin, return to the home page
-        if (!Auth::isAdmin()) {
-            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
-            return redirect(route(HomePage::class));
-        }
 
         $gedcom_filename    = Validator::queryParams($request)->string('gedcom_filename', '');
         $filename_converted = Validator::queryParams($request)->string('filename_converted', '');

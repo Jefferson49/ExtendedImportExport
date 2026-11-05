@@ -37,7 +37,6 @@ declare(strict_types=1);
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
 use Fig\Http\Message\RequestMethodInterface;
-use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
@@ -101,12 +100,6 @@ class SelectionPage implements RequestHandlerInterface
             else {
                 $tree = $this->tree_service->all()->first();
             }
-        }
-
-        //If current user is no admin, return to the home page
-        if (!Auth::isAdmin()) {
-            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
-            return redirect(route(HomePage::class));
         }
 
         //If no tree access, return to the home page

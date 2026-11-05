@@ -57,6 +57,7 @@ use Fisharebest\Webtrees\GedcomRecord;
 use Fisharebest\Webtrees\Http\Controllers\CreateTree;
 use Fisharebest\Webtrees\Http\Controllers\MergeTrees;
 use Fisharebest\Webtrees\Http\Controllers\RenumberTree;
+use Fisharebest\Webtrees\Http\Middleware\AuthAdministrator;
 use Fisharebest\Webtrees\Http\RequestHandlers\CreateTreeAction;
 use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
 use Fisharebest\Webtrees\Http\RequestHandlers\MergeTreesAction;
@@ -318,10 +319,10 @@ class DownloadGedcomWithURL extends AbstractModule implements
         //Register the routes for the custom module
         CommonFunctions::registerRoute(self::ROUTE_REMOTE_ACTION, static::class, $this);
         CommonFunctions::registerRoute(self::ROUTE_REMOTE_ACTION_OLD, 'DownloadGedcomWithURL', $this);
-        CommonFunctions::registerRoute(self::ROUTE_SELECTION_PAGE, SelectionPage::class);
-        CommonFunctions::registerRoute(self::ROUTE_IMPORT_PAGE, ImportGedcomPage::class);
-        CommonFunctions::registerRoute(self::ROUTE_EXPORT_PAGE, ExportGedcomPage::class);
-        CommonFunctions::registerRoute(self::ROUTE_CONVERT_PAGE, ConvertGedcomPage::class);
+        CommonFunctions::registerRoute(self::ROUTE_SELECTION_PAGE, SelectionPage::class, null, [AuthAdministrator::class]);
+        CommonFunctions::registerRoute(self::ROUTE_IMPORT_PAGE, ImportGedcomPage::class, null, [AuthAdministrator::class]);
+        CommonFunctions::registerRoute(self::ROUTE_EXPORT_PAGE, ExportGedcomPage::class, null, [AuthAdministrator::class]);
+        CommonFunctions::registerRoute(self::ROUTE_CONVERT_PAGE, ConvertGedcomPage::class, null, [AuthAdministrator::class]);
 
 		// Register a namespace for the views.
 		View::registerNamespace(self::viewsNamespace(), $this->resourcesFolder() . 'views/');

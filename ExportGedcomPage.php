@@ -36,7 +36,6 @@ declare(strict_types=1);
 
 namespace Jefferson49\Webtrees\Module\ExtendedImportExport;
 
-use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Encodings\UTF8;
 use Fisharebest\Webtrees\FlashMessages;
 use Fisharebest\Webtrees\Http\RequestHandlers\HomePage;
@@ -55,7 +54,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use function e;
 
 /**
- * Import a GEDCOM file into a tree.
+ * Export a GEDCOM file from a tree.
  */
 class ExportGedcomPage implements RequestHandlerInterface
 {
@@ -105,12 +104,6 @@ class ExportGedcomPage implements RequestHandlerInterface
         $encoding              = Validator::queryParams($request)->string('encoding', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENCODING,  UTF8::NAME));
         $endings               = Validator::queryParams($request)->string('endings', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_ENDING, 'CRLF'));
         $time_stamp            = Validator::queryParams($request)->string('time_stamp', $download_gedcom_with_url->getPreference(DownloadGedcomWithURL::PREF_DEFAULT_TIME_STAMP, DownloadGedcomWithURL::TIME_STAMP_NONE));
-
-        //If current user is no admin, return to the home page
-        if (!Auth::isAdmin()) {
-            FlashMessages::addMessage(I18N::translate('Access denied. The user needs to be an administrator.'), 'danger');
-            return redirect(route(HomePage::class));
-        }
 
         //If no tree access
         if ($tree === null) {
